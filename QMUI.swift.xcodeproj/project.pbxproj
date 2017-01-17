@@ -77,6 +77,7 @@
 		D831FC0E1E2E0017009CFB28 /* QMUI.swift */ = {
 			isa = PBXGroup;
 			children = (
+				D831FC301E2E01D1009CFB28 /* QMUIKit */,
 				D831FC0F1E2E0017009CFB28 /* AppDelegate.swift */,
 				D831FC111E2E0017009CFB28 /* ViewController.swift */,
 				D831FC131E2E0017009CFB28 /* Main.storyboard */,
@@ -94,6 +95,13 @@
 				D831FC261E2E0017009CFB28 /* Info.plist */,
 			);
 			path = QMUI.swiftUITests;
+			sourceTree = "<group>";
+		};
+		D831FC301E2E01D1009CFB28 /* QMUIKit */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = QMUIKit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -338,6 +346,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = QMUI.swift/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -350,6 +359,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = QMUI.swift/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -402,6 +412,7 @@
 				D831FC2B1E2E0017009CFB28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D831FC2C1E2E0017009CFB28 /* Build configuration list for PBXNativeTarget "QMUI.swiftUITests" */ = {
 			isa = XCConfigurationList;
@@ -410,6 +421,7 @@
 				D831FC2E1E2E0017009CFB28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
