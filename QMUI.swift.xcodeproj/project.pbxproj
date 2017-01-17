@@ -13,6 +13,14 @@
 		D831FC171E2E0017009CFB28 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D831FC161E2E0017009CFB28 /* Assets.xcassets */; };
 		D831FC1A1E2E0017009CFB28 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D831FC181E2E0017009CFB28 /* LaunchScreen.storyboard */; };
 		D831FC251E2E0017009CFB28 /* QMUI_swiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC241E2E0017009CFB28 /* QMUI_swiftUITests.swift */; };
+		D831FC351E2E04E3009CFB28 /* QMUINavigationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */; };
+		D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC381E2E0591009CFB28 /* QMUICommonViewController.swift */; };
+		D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */; };
+		D831FC3F1E2E07EA009CFB28 /* UIColor+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC3E1E2E07EA009CFB28 /* UIColor+QMUI.swift */; };
+		D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC521E2E08DF009CFB28 /* Curry.swift */; };
+		D831FC671E2E11FD009CFB28 /* UIFont+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC661E2E11FD009CFB28 /* UIFont+QMUI.swift */; };
+		D831FC691E2E1DBA009CFB28 /* UIImage+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC681E2E1DBA009CFB28 /* UIImage+QMUI.swift */; };
+		D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +44,15 @@
 		D831FC201E2E0017009CFB28 /* QMUI.swiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QMUI.swiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D831FC241E2E0017009CFB28 /* QMUI_swiftUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUI_swiftUITests.swift; sourceTree = "<group>"; };
 		D831FC261E2E0017009CFB28 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUINavigationTitleView.swift; sourceTree = "<group>"; };
+		D831FC361E2E0500009CFB28 /* Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging.h; sourceTree = "<group>"; };
+		D831FC381E2E0591009CFB28 /* QMUICommonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUICommonViewController.swift; sourceTree = "<group>"; };
+		D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationManager.swift; sourceTree = "<group>"; };
+		D831FC3E1E2E07EA009CFB28 /* UIColor+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+QMUI.swift"; sourceTree = "<group>"; };
+		D831FC521E2E08DF009CFB28 /* Curry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Curry.swift; sourceTree = "<group>"; };
+		D831FC661E2E11FD009CFB28 /* UIFont+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIFont+QMUI.swift"; sourceTree = "<group>"; };
+		D831FC681E2E1DBA009CFB28 /* UIImage+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+QMUI.swift"; sourceTree = "<group>"; };
+		D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,8 +117,49 @@
 		D831FC301E2E01D1009CFB28 /* QMUIKit */ = {
 			isa = PBXGroup;
 			children = (
+				D831FC3D1E2E07C1009CFB28 /* UIKitExtensions */,
+				D831FC3A1E2E06A8009CFB28 /* UICommon */,
+				D831FC371E2E056F009CFB28 /* UIMainFrame */,
+				D831FC331E2E04BA009CFB28 /* UIComponents */,
+				D831FC361E2E0500009CFB28 /* Bridging.h */,
 			);
 			path = QMUIKit;
+			sourceTree = "<group>";
+		};
+		D831FC331E2E04BA009CFB28 /* UIComponents */ = {
+			isa = PBXGroup;
+			children = (
+				D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */,
+			);
+			path = UIComponents;
+			sourceTree = "<group>";
+		};
+		D831FC371E2E056F009CFB28 /* UIMainFrame */ = {
+			isa = PBXGroup;
+			children = (
+				D831FC381E2E0591009CFB28 /* QMUICommonViewController.swift */,
+			);
+			path = UIMainFrame;
+			sourceTree = "<group>";
+		};
+		D831FC3A1E2E06A8009CFB28 /* UICommon */ = {
+			isa = PBXGroup;
+			children = (
+				D831FC521E2E08DF009CFB28 /* Curry.swift */,
+				D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */,
+				D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */,
+			);
+			path = UICommon;
+			sourceTree = "<group>";
+		};
+		D831FC3D1E2E07C1009CFB28 /* UIKitExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				D831FC3E1E2E07EA009CFB28 /* UIColor+QMUI.swift */,
+				D831FC661E2E11FD009CFB28 /* UIFont+QMUI.swift */,
+				D831FC681E2E1DBA009CFB28 /* UIImage+QMUI.swift */,
+			);
+			path = UIKitExtensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,7 +265,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D831FC671E2E11FD009CFB28 /* UIFont+QMUI.swift in Sources */,
 				D831FC121E2E0017009CFB28 /* ViewController.swift in Sources */,
+				D831FC3F1E2E07EA009CFB28 /* UIColor+QMUI.swift in Sources */,
+				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
+				D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */,
+				D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */,
+				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
+				D831FC351E2E04E3009CFB28 /* QMUINavigationTitleView.swift in Sources */,
+				D831FC691E2E1DBA009CFB28 /* UIImage+QMUI.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,6 +416,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = QMUI.swift/QMUIKit/Bridging.h;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -363,6 +430,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = QMUI.swift/QMUIKit/Bridging.h;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
