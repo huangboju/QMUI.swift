@@ -12,11 +12,9 @@
  * @waining 如果需要增加一个宏，则需要定义一个新的QMUIConfigurationManager属性。(具体请联系zhoonchen/molicechen)
  */
 
-
 // 单例的宏
 
 let QMUICMI = QMUIConfigurationManager.shared
-
 
 // MARK: - Global Color
 
@@ -88,7 +86,6 @@ let ActionSheetButtonBackgroundColorHighlighted = QMUICMI.actionSheetButtonBackg
 let ActionSheetButtonFont = QMUICMI.actionSheetButtonFont
 let ActionSheetButtonFontBold = QMUICMI.actionSheetButtonFontBold
 
-
 // MARK: - NavigationBar
 
 let NavBarHighlightedAlpha = QMUICMI.navBarHighlightedAlpha
@@ -112,7 +109,6 @@ let NavBarAccessoryViewMarginLeft = QMUICMI.navBarAccessoryViewMarginLeft       
 let NavBarActivityIndicatorViewStyle = QMUICMI.navBarActivityIndicatorViewStyle                  // titleView loading 的style
 let NavBarAccessoryViewTypeDisclosureIndicatorImage = QMUICMI.navBarAccessoryViewTypeDisclosureIndicatorImage   // titleView上倒三角的默认图片
 
-
 // MARK: - TabBar
 
 let TabBarBackgroundImage = QMUICMI.tabBarBackgroundImage
@@ -121,7 +117,6 @@ let TabBarShadowImageColor = QMUICMI.tabBarShadowImageColor
 let TabBarTintColor = QMUICMI.tabBarTintColor
 let TabBarItemTitleColor = QMUICMI.tabBarItemTitleColor
 let TabBarItemTitleColorSelected = QMUICMI.tabBarItemTitleColorSelected
-
 
 // MARK: - Toolbar
 
@@ -135,7 +130,6 @@ let ToolBarBarTintColor = QMUICMI.toolBarBarTintColor
 let ToolBarShadowImageColor = QMUICMI.toolBarShadowImageColor
 let ToolBarButtonFont = QMUICMI.toolBarButtonFont
 
-
 // MARK: - SearchBar
 
 let SearchBarTextFieldBackground = QMUICMI.searchBarTextFieldBackground
@@ -148,7 +142,6 @@ let SearchBarPlaceholderColor = QMUICMI.searchBarPlaceholderColor
 let SearchBarSearchIconImage = QMUICMI.searchBarSearchIconImage
 let SearchBarClearIconImage = QMUICMI.searchBarClearIconImage
 let SearchBarTextFieldCornerRadius = QMUICMI.searchBarTextFieldCornerRadius
-
 
 // MARK: - TableView / TableViewCell
 
@@ -186,8 +179,8 @@ let TableViewGroupedSectionFooterHeight = QMUICMI.tableViewGroupedSectionFooterH
 let TableViewGroupedSectionHeaderContentInset = QMUICMI.tableViewGroupedSectionHeaderContentInset
 let TableViewGroupedSectionFooterContentInset = QMUICMI.tableViewGroupedSectionFooterContentInset
 
-let TableViewCellTitleLabelColor = QMUICMI.tableViewCellTitleLabelColor               //cell的title颜色
-let TableViewCellDetailLabelColor = QMUICMI.tableViewCellDetailLabelColor              //cell的detailTitle颜色
+let TableViewCellTitleLabelColor = QMUICMI.tableViewCellTitleLabelColor               // cell的title颜色
+let TableViewCellDetailLabelColor = QMUICMI.tableViewCellDetailLabelColor              // cell的detailTitle颜色
 let TableViewCellContentDefaultPaddingLeft = QMUICMI.tableViewCellContentDefaultPaddingLeft     // Cell默认左边缘的间距
 let TableViewCellContentDefaultPaddingRight = QMUICMI.tableViewCellContentDefaultPaddingRight    // Cell默认右边缘的间距
 
@@ -203,5 +196,3 @@ let SupportedOrientationMask = QMUICMI.supportedOrientationMask          // 默�
 let StatusbarStyleLightInitially = QMUICMI.statusbarStyleLightInitially      // 默认的状态栏内容是否使用白色，默认为NO，也即黑色
 let NeedsBackBarButtonItemTitle = QMUICMI.needsBackBarButtonItemTitle       // 全局是否需要返回按钮的title，不需要则只显示一个返回image
 let HidesBottomBarWhenPushedInitially = QMUICMI.hidesBottomBarWhenPushedInitially // QMUICommonViewController.hidesBottomBarWhenPushed的初始值，默认为YES
-
-

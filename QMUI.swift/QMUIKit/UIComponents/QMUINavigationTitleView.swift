@@ -7,5 +7,4 @@
 //
 
 class QMUINavigationTitleView: UIControl {
-
 }

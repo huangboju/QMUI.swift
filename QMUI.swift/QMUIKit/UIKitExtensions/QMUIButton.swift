@@ -8,12 +8,10 @@
 
 class QMUINavigationButton: UIButton {
     static func renderNavigationButtonAppearanceStyle() {
-
     }
 }
 
 class QMUIToolbarButton: UIButton {
     static func renderToolbarButtonAppearanceStyle() {
-        
     }
 }

@@ -7,7 +7,7 @@
 //
 
 enum QMUIImageShape {
-    case oval                 // 椭圆
+    case oval // 椭圆
     case triangle              // 三角形
     case disclosureIndicator   // 列表cell右边的箭头
     case checkmark             // 列表cell右边的checkmark
@@ -29,12 +29,12 @@ extension UIImage {
         switch shape {
         case .navBack:
             lineWidth = 2.0
-        case.disclosureIndicator:
+        case .disclosureIndicator:
             lineWidth = 1.5
         case .checkmark:
             lineWidth = 1.5
         case .navClose:
-            lineWidth = 1.2   // 取消icon默认的lineWidth
+            lineWidth = 1.2 // 取消icon默认的lineWidth
         default:
             break
         }
@@ -44,11 +44,11 @@ extension UIImage {
     static func qmui_image(with shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor) -> UIImage {
         return UIImage()
     }
-    
+
     func qmui_image(with orientation: UIImageOrientation) -> UIImage {
         return UIImage()
     }
-    
+
     static func qmui_image(with: UIColor, size: CGSize, cornerRadius: CGFloat) -> UIImage {
         return UIImage()
     }
