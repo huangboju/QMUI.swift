@@ -24,7 +24,7 @@ enum QMUIImageBorderPosition: Int {
 }
 
 extension UIImage {
-    class func qmui_image(with shape: QMUIImageShape, size: CGSize, tintColor: UIColor) -> UIImage {
+    static func qmui_image(with shape: QMUIImageShape, size: CGSize, tintColor: UIColor) -> UIImage {
         var lineWidth: CGFloat = 0
         switch shape {
         case .navBack:
@@ -41,11 +41,15 @@ extension UIImage {
         return qmui_image(with: shape, size: size, lineWidth: lineWidth, tintColor: tintColor)
     }
 
-    class func qmui_image(with shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor) -> UIImage {
+    static func qmui_image(with shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor) -> UIImage {
         return UIImage()
     }
     
     func qmui_image(with orientation: UIImageOrientation) -> UIImage {
+        return UIImage()
+    }
+    
+    static func qmui_image(with: UIColor, size: CGSize, cornerRadius: CGFloat) -> UIImage {
         return UIImage()
     }
 }
