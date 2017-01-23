@@ -7,3 +7,7 @@
 //
 
 let PixelOne: CGFloat = 1
+
+
+// 是否支持动态字体
+let IS_RESPOND_DYNAMICTYPE = UIApplication.instancesRespond(to: #selector(getter: UIApplication.preferredContentSizeCategory))

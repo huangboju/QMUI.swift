@@ -7,4 +7,5 @@
 //
 
 class QMUINavigationTitleView: UIControl {
+    var title: String?
 }

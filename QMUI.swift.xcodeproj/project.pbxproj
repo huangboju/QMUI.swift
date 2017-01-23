@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */; };
+		D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B301E35ECD600FE210A /* QMUINavigationController.swift */; };
 		D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC0F1E2E0017009CFB28 /* AppDelegate.swift */; };
 		D831FC121E2E0017009CFB28 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC111E2E0017009CFB28 /* ViewController.swift */; };
 		D831FC151E2E0017009CFB28 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D831FC131E2E0017009CFB28 /* Main.storyboard */; };
@@ -37,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmptyView.swift; sourceTree = "<group>"; };
+		D8125B301E35ECD600FE210A /* QMUINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUINavigationController.swift; sourceTree = "<group>"; };
 		D831FC0C1E2E0017009CFB28 /* QMUI.swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QMUI.swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D831FC0F1E2E0017009CFB28 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D831FC111E2E0017009CFB28 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -136,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */,
+				D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */,
 			);
 			path = UIComponents;
 			sourceTree = "<group>";
@@ -145,6 +150,7 @@
 			children = (
 				D831FC381E2E0591009CFB28 /* QMUICommonViewController.swift */,
 				D831FC701E2E5018009CFB28 /* QMUITabBarViewController.swift */,
+				D8125B301E35ECD600FE210A /* QMUINavigationController.swift */,
 			);
 			path = UIMainFrame;
 			sourceTree = "<group>";
@@ -276,9 +282,11 @@
 			files = (
 				D831FC671E2E11FD009CFB28 /* UIFont+QMUI.swift in Sources */,
 				D831FC121E2E0017009CFB28 /* ViewController.swift in Sources */,
+				D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */,
 				D831FC3F1E2E07EA009CFB28 /* UIColor+QMUI.swift in Sources */,
 				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
 				D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */,
+				D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */,
 				D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */,
 				D831FC711E2E5018009CFB28 /* QMUITabBarViewController.swift in Sources */,
 				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
