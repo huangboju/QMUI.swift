@@ -26,6 +26,9 @@
 		D831FC6D1E2E4BC2009CFB28 /* QMUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC6C1E2E4BC2009CFB28 /* QMUIButton.swift */; };
 		D831FC6F1E2E4F1B009CFB28 /* QMUICommonDefines.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */; };
 		D831FC711E2E5018009CFB28 /* QMUITabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC701E2E5018009CFB28 /* QMUITabBarViewController.swift */; };
+		D83D41E91E4C332500CC083E /* NSObject+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41E81E4C332500CC083E /* NSObject+QMUI.swift */; };
+		D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */; };
+		D869486F1E4870C2003F3EFE /* UINavigationController+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D869486E1E4870C2003F3EFE /* UINavigationController+QMUI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +66,9 @@
 		D831FC6C1E2E4BC2009CFB28 /* QMUIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIButton.swift; sourceTree = "<group>"; };
 		D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUICommonDefines.swift; sourceTree = "<group>"; };
 		D831FC701E2E5018009CFB28 /* QMUITabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QMUITabBarViewController.swift; path = QMUI.swift/QMUIKit/QMUITabBarViewController.swift; sourceTree = SOURCE_ROOT; };
+		D83D41E81E4C332500CC083E /* NSObject+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSObject+QMUI.swift"; sourceTree = "<group>"; };
+		D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIHelper.swift; sourceTree = "<group>"; };
+		D869486E1E4870C2003F3EFE /* UINavigationController+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+QMUI.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +168,7 @@
 				D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */,
 				D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */,
 				D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */,
+				D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */,
 			);
 			path = UICommon;
 			sourceTree = "<group>";
@@ -173,6 +180,8 @@
 				D831FC661E2E11FD009CFB28 /* UIFont+QMUI.swift */,
 				D831FC681E2E1DBA009CFB28 /* UIImage+QMUI.swift */,
 				D831FC6C1E2E4BC2009CFB28 /* QMUIButton.swift */,
+				D869486E1E4870C2003F3EFE /* UINavigationController+QMUI.swift */,
+				D83D41E81E4C332500CC083E /* NSObject+QMUI.swift */,
 			);
 			path = UIKitExtensions;
 			sourceTree = "<group>";
@@ -284,6 +293,7 @@
 				D831FC121E2E0017009CFB28 /* ViewController.swift in Sources */,
 				D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */,
 				D831FC3F1E2E07EA009CFB28 /* UIColor+QMUI.swift in Sources */,
+				D83D41E91E4C332500CC083E /* NSObject+QMUI.swift in Sources */,
 				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
 				D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */,
 				D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */,
@@ -295,6 +305,8 @@
 				D831FC6F1E2E4F1B009CFB28 /* QMUICommonDefines.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
 				D831FC6D1E2E4BC2009CFB28 /* QMUIButton.swift in Sources */,
+				D869486F1E4870C2003F3EFE /* UINavigationController+QMUI.swift in Sources */,
+				D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
