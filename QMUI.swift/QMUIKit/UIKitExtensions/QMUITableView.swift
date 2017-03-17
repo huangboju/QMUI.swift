@@ -8,6 +8,5 @@
 
 class QMUITableView: UITableView {
     func didInitialized() {
-    
     }
 }

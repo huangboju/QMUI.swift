@@ -9,42 +9,42 @@
 protocol QMUINavigationControllerDelegate {
     /// 是否需要将状态栏改为浅色文字，默认为宏StatusbarStyleLightInitially的值
     var shouldSetStatusBarStyleLight: Bool { get }
-    
+
     /// 设置titleView的tintColor
     var titleViewTintColor: UIColor { get }
-    
+
     /// 设置导航栏的背景图，默认为NavBarBackgroundImage
     var navigationBarBackgroundImage: UIImage { get }
-    
+
     /// 设置导航栏底部的分隔线图片，默认为NavBarShadowImage，必须在navigationBar设置了背景图后才有效
     var navigationBarShadowImage: UIImage { get }
-    
+
     /// 设置当前导航栏的UIBarButtonItem的tintColor，默认为NavBarTintColor
     var navigationBarTintColor: UIColor { get }
-    
+
     /// 设置系统返回按钮title，如果返回nil则使用系统默认的返回按钮标题
     func backBarButtonItemTitle(with previousViewController: UIViewController) -> String
-    
-    /**
+
+    /** 
      *  设置当前导航栏是否需要使用自定义的 push/pop transition 效果，默认返回NO。<br/>
      *  因为系统的UINavigationController只有一个navBar，所以会导致在切换controller的时候，如果两个controller的navBar状态不一致（包括backgroundImgae、shadowImage、barTintColor等等），就会导致在刚要切换的瞬间，navBar的状态都立马变成下一个controller所设置的样式了，为了解决这种情况，QMUI给出了一个方案，有四个方法可以决定你在转场的时候要不要使用自定义的navBar来模仿真实的navBar。具体方法如下：
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPushAppearing() -> Bool
-    
-    /**
+
+    /** 
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPushDisappearing() -> Bool
-    
-    /**
+
+    /** 
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPopAppearing() -> Bool
-    
-    /**
+
+    /** 
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
@@ -52,11 +52,11 @@ protocol QMUINavigationControllerDelegate {
 }
 
 extension QMUINavigationControllerDelegate {
-    
+
     var titleViewTintColor: UIColor {
         return UIColor.white
     }
-    
+
     var navigationBarBackgroundImage: UIImage {
         return UIImage()
     }
@@ -91,14 +91,14 @@ extension QMUINavigationControllerDelegate {
 }
 
 class QMUINavigationController: UINavigationController {
-    
+
     /// 记录当前是否正在 push/pop 界面的动画过程，如果动画尚未结束，不应该继续 push/pop 其他界面
     fileprivate var isViewControllerTransiting = false
-    
+
     /// 即将要被pop的controller
     var viewControllerPopping: UIViewController?
 
-    /**
+    /** 
      *  因为QMUINavigationController把delegate指向了自己来做一些基类要做的事情，所以如果当外面重新指定了delegate，那么就会覆盖原本的delegate。<br/>
      *  为了避免这个问题，并且外面也可以实现实现navigationController的delegate方法，这里使用delegateProxy来保存外面指定的delegate，然后在基类的delegate方法实现里面会去调用delegateProxy的方法实现。
      */
@@ -109,22 +109,22 @@ class QMUINavigationController: UINavigationController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     func didInitialized() {
         // UIView.tintColor 并不支持 UIAppearance 协议，所以不能通过 appearance 来设置，只能在实例里设置
         navigationBar.tintColor = NavBarTintColor
         toolbar.tintColor = ToolBarTintColor
     }
-    
+
     deinit {
         delegate = nil
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if delegate == nil {
@@ -132,13 +132,13 @@ class QMUINavigationController: UINavigationController {
         }
         interactivePopGestureRecognizer?.addTarget(self, action: #selector(handleInteractivePop))
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // 在这里为什么还需要调用一次，是因为如果把一个界面dismiss后回来这里，此时并不会调用navigationController:willShowViewController，但会调用viewWillAppear
         renderStyle(in: self, currentViewController: topViewController)
     }
-    
+
     override func popViewController(animated: Bool) -> UIViewController? {
         isViewControllerTransiting = animated
         qmui_isPoppingViewController = true
@@ -168,7 +168,7 @@ class QMUINavigationController: UINavigationController {
         }
         return poppedViewControllers
     }
-    
+
     override func popToRootViewController(animated: Bool) -> [UIViewController]? {
         // 在配合 tabBarItem 使用的情况下，快速重复点击相同 item 可能会重复调用 popToRootViewControllerAnimated:，而此时其实已经处于 rootViewController 了，就没必要继续走后续的流程，否则一些变量会得不到重置。
         if topViewController == qmui_rootViewController {
@@ -176,7 +176,7 @@ class QMUINavigationController: UINavigationController {
         }
 
         isViewControllerTransiting = true
-        
+
         qmui_isPoppingViewController = true
         let viewController = topViewController
         viewControllerPopping = viewController
@@ -189,14 +189,14 @@ class QMUINavigationController: UINavigationController {
         }
         return poppedViewControllers
     }
-    
+
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         if isViewControllerTransiting {
             assert(false, "isViewControllerTransiting = YES, \(#function), self.viewControllers = \(viewControllers)")
         }
-        
+
         isViewControllerTransiting = true
-        
+
         if let currentViewController = topViewController {
             if NeedsBackBarButtonItemTitle {
                 currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: "", position: .left, target: nil, action: nil)
@@ -210,16 +210,15 @@ class QMUINavigationController: UINavigationController {
 
         super.pushViewController(viewController, animated: animated)
     }
-    
+
     override var delegate: UINavigationControllerDelegate? {
         didSet {
             delegateProxy = (delegate as? QMUINavigationController == nil ? delegate : nil)
-            
         }
     }
 
     // MARK: - 自定义方法
-    
+
     // 根据当前的viewController，统一处理导航栏底部的分隔线、状态栏的颜色
     func renderStyle(in navigationController: UINavigationController, currentViewController: UIViewController?) {
         if let vc = currentViewController as? QMUINavigationControllerDelegate {
@@ -233,7 +232,7 @@ class QMUINavigationController: UINavigationController {
                     QMUIHelper.renderStatusBarStyleDark()
                 }
             }
-            
+
             // 导航栏的背景
             let backgroundImage = vc.navigationBarBackgroundImage
             if backgroundImage != UIImage() {
@@ -241,7 +240,7 @@ class QMUINavigationController: UINavigationController {
             } else {
                 navigationBar.setBackgroundImage(NavBarBackgroundImage, for: .default)
             }
-            
+
             // 导航栏底部的分隔线
             let shadowImage = vc.navigationBarShadowImage
             if shadowImage != UIImage() {
@@ -249,7 +248,7 @@ class QMUINavigationController: UINavigationController {
             } else {
                 navigationBar.shadowImage = NavBarShadowImage
             }
-            
+
             // 导航栏上控件的主题色
             let tintColor = vc.navigationBarTintColor
             if tintColor != UIColor.blue {
@@ -269,7 +268,7 @@ class QMUINavigationController: UINavigationController {
             }
         }
     }
-    
+
     // 接管系统手势返回的回调
     func handleInteractivePop(gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
         let state = gestureRecognizer.state
@@ -295,7 +294,7 @@ extension QMUINavigationController: UINavigationControllerDelegate {
             delegateProxy.navigationController!(navigationController, willShow: viewController, animated: animated)
         }
     }
-    
+
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         qmui_isPushingViewController = false
         qmui_isPoppingViewController = false
@@ -305,7 +304,7 @@ extension QMUINavigationController: UINavigationControllerDelegate {
             delegateProxy.navigationController!(navigationController, didShow: viewController, animated: animated)
         }
     }
-    
+
     // http://stackoverflow.com/questions/26953559/in-swift-how-do-i-have-a-uiscrollview-subclass-that-has-an-internal-and-externa
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         if delegateProxy?.responds(to: aSelector) == true {
@@ -318,9 +317,9 @@ extension QMUINavigationController: UINavigationControllerDelegate {
     override func responds(to aSelector: Selector!) -> Bool {
         return super.responds(to: aSelector) || shouldRespondDelegeateProxy(with: aSelector) && (delegateProxy?.responds(to: aSelector) ?? false)
     }
-    
+
     func shouldRespondDelegeateProxy(with selector: Selector) -> Bool {
-    // 目前仅支持下面两个delegate方法，如果需要增加全局的自定义转场动画，可以额外增加多上面注释的两个方法。
+        // 目前仅支持下面两个delegate方法，如果需要增加全局的自定义转场动画，可以额外增加多上面注释的两个方法。
         let strs = [
             "navigationController:didShowViewController:animated:",
             "navigationController:willShowViewController:animated:"

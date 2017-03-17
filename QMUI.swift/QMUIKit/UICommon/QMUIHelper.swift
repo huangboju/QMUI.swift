@@ -7,8 +7,8 @@
 //
 
 class QMUIHelper {
-    
-    //MARK: - UIApplication
+
+    // MARK: - UIApplication
     static func renderStatusBarStyleDark() {
         UIApplication.shared.statusBarStyle = .default
     }
@@ -16,13 +16,13 @@ class QMUIHelper {
     static func renderStatusBarStyleLight() {
         UIApplication.shared.statusBarStyle = .lightContent
     }
-    
+
     static func dimmedApplicationWindow() {
         let window = UIApplication.shared.keyWindow
         window?.tintAdjustmentMode = .dimmed
         window?.tintColorDidChange()
     }
-    
+
     static func resetDimmedApplicationWindow() {
         let window = UIApplication.shared.keyWindow
         window?.tintAdjustmentMode = .normal

@@ -8,10 +8,8 @@
 
 let PixelOne: CGFloat = 1
 
-
 // 是否支持动态字体
 let IS_RESPOND_DYNAMICTYPE = UIApplication.instancesRespond(to: #selector(getter: UIApplication.preferredContentSizeCategory))
-
 
 // MARK: - UIEdgeInsets
 
@@ -20,12 +18,12 @@ extension UIEdgeInsets {
     var horizontalValue: CGFloat {
         return self.left + self.right
     }
-    
+
     /// 获取UIEdgeInsets在垂直方向上的值
     var verticalValue: CGFloat {
         return self.top + self.bottom
     }
-    
+
     /// 将两个UIEdgeInsets合并为一个
     func concat(_ insets1: UIEdgeInsets, _ insets2: UIEdgeInsets) -> UIEdgeInsets {
         let top = insets1.top + insets2.top
