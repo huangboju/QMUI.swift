@@ -306,6 +306,7 @@ extension QMUINavigationController: UINavigationControllerDelegate {
         }
     }
     
+    // http://stackoverflow.com/questions/26953559/in-swift-how-do-i-have-a-uiscrollview-subclass-that-has-an-internal-and-externa
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         if delegateProxy?.responds(to: aSelector) == true {
             return delegateProxy
