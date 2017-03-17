@@ -224,7 +224,7 @@ extension QMUICommonViewController {
      *
      *  @param notification test
      */
-    func contentSizeCategoryDidChanged(notification: Notification) {
+    func contentSizeCategoryDidChanged(_ notification: Notification) {
         // 子类重写
         setUIAfterContentSizeCategoryChanged()
     }

@@ -43,7 +43,15 @@ class QMUICommonTableViewController: QMUICommonViewController {
      *  列表使用自定义的contentInset，不使用系统默认计算的，默认为QMUICommonTableViewControllerInitialContentInsetNotSet。<br/>
      *  当更改了这个值后，会把self.automaticallyAdjustsScrollViewInsets = NO
      */
-    var tableViewInitialContentInset: UIEdgeInsets!
+    var tableViewInitialContentInset: UIEdgeInsets! {
+        didSet {
+            if tableViewInitialContentInset == QMUICommonTableViewControllerInitialContentInsetNotSet {
+                automaticallyAdjustsScrollViewInsets = true
+            } else {
+                automaticallyAdjustsScrollViewInsets = false
+            }
+        }
+    }
     
     /**
      *  是否需要让scrollIndicatorInsets与tableView.contentInsets区分开来，如果不设置，则与tableView.contentInset保持一致。
@@ -67,7 +75,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
     }
 
     func didInitialized(with style: UITableViewStyle) {
-        self.style = style;
+        self.style = style
         tableViewInitialContentInset = QMUICommonTableViewControllerInitialContentInsetNotSet
         tableViewInitialScrollIndicatorInsets = QMUICommonTableViewControllerInitialContentInsetNotSet
     }
@@ -108,13 +116,36 @@ class QMUICommonTableViewController: QMUICommonViewController {
                 // 默认和tableView.contentInset一致
                 tableView.scrollIndicatorInsets = tableView.contentInset
             }
-            [self.tableView qmui_scrollToTop];
+            tableView.qmui_scrollToTop()
             hasSetInitialContentInset = true
         }
-        
-        [self hideTableHeaderViewInitialIfCanWithAnimated:NO];
+
+        hideTableHeaderViewInitialIfCan(with: false)
         
         layoutEmptyView()
+    }
+
+    // MARK: - 工具方法
+
+//    var tableView {
+//        if (!_tableView) {
+//            loadViewIfNeeded()
+//        }
+//        return _tableView
+//    }
+
+    func hideTableHeaderViewInitialIfCan(with animated: Bool) {
+        guard let tableHeaderView = tableView.tableHeaderView, shouldHideTableHeaderViewInitial && !hasHideTableHeaderViewInitial else {
+            return
+        }
+        let contentOffset = CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + tableHeaderView.frame.height)
+        tableView.setContentOffset(contentOffset, animated: animated)
+        hasHideTableHeaderViewInitial = true
+    }
+
+    override func contentSizeCategoryDidChanged(_ notification: Notification) {
+        super.contentSizeCategoryDidChanged(notification)
+        tableView.reloadData()
     }
 
     var shouldAdjustTableViewContentInsetsInitially: Bool {
@@ -123,6 +154,124 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     var shouldAdjustTableViewScrollIndicatorInsetsInitially: Bool {
         return tableViewInitialScrollIndicatorInsets != QMUICommonTableViewControllerInitialContentInsetNotSet
+    }
+    
+    // MARK: - 空列表视图 QMUIEmptyView
+    
+    override func showEmptyView() {
+        if emptyView == nil {
+            emptyView = QMUIEmptyView()
+        }
+        tableView.addSubview(emptyView!)
+        layoutEmptyView()
+
+        if shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == searchBar {
+            tableView.tableHeaderView = nil
+        }
+    }
+
+    override func hideEmptyView() {
+        emptyView?.removeFromSuperview()
+
+        if shouldShowSearchBar(in: tableView) && shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == nil {
+            initSearchController()
+            tableView.tableHeaderView = searchBar
+            hideTableHeaderViewInitialIfCan(with: false)
+        }
+    }
+
+    override func layoutEmptyView() -> Bool {
+        if emptyView == nil || emptyView?.superview == nil {
+            return false
+        }
+
+        // 当存在 tableHeaderView 时，emptyView 的高度为 tableView 的高度减去 headerView 的高度
+        if let tableHeaderView = tableView.tableHeaderView {
+            emptyView?.frame = CGRect(x: 0, y: tableHeaderView.frame.maxY, width: tableView.bounds.width - tableView.contentInset.horizontalValue, height: tableView.bounds.height - tableView.contentInset.verticalValue - tableHeaderView.frame.maxY)
+        } else {
+            emptyView?.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width - tableView.contentInset.horizontalValue, height: tableView.bounds.height - tableView.contentInset.verticalValue)
+        }
+        return true
+    }
+}
+
+extension QMUICommonTableViewController: QMUITableViewDelegate {
+    // 默认拿title来构建一个view然后添加到viewForHeaderInSection里面，如果业务重写了viewForHeaderInSection，则titleForHeaderInSection被覆盖
+    // viewForFooterInSection同上
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let title = _tableView(tableView, realTitleForHeaderIn: section)
+        if let title = title {
+            let headerFooterView = tableHeaderFooterLabel(in: tableView, identifier: "headerTitle")
+            let label = headerFooterView.contentView.viewWithTag(kSectionHeaderFooterLabelTag) as? QMUILabel
+            label?.text = title
+            let isPlain = tableView.style == .plain
+            label?.contentEdgeInsets = isPlain ? TableViewSectionHeaderContentInset : TableViewGroupedSectionHeaderContentInset
+            label?.font = isPlain ? TableViewSectionHeaderFont : TableViewGroupedSectionHeaderFont
+            label?.textColor = isPlain ? TableViewSectionHeaderTextColor : TableViewGroupedSectionHeaderTextColor
+            label?.backgroundColor = isPlain ? TableViewSectionHeaderBackgroundColor : UIColorClear
+            let labelLimitWidth = tableView.bounds.width - tableView.contentInset.horizontalValue
+            let labelSize = label!.sizeThatFits(CGSize(width: labelLimitWidth, height: CGFloat.infinity))
+            label?.frame = CGRect(x: 0, y: 0, width: labelLimitWidth, height: labelSize.height)
+            return label!
+        }
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let title = _tableView(tableView, realTitleForFooterIn: section)
+        if let title = title  {
+            let headerFooterView = tableHeaderFooterLabel(in: tableView, identifier: "footerTitle")
+            let label = headerFooterView.contentView.viewWithTag(kSectionHeaderFooterLabelTag) as? QMUILabel
+            label?.text = title
+            let isPlain = tableView.style == .plain
+            label?.contentEdgeInsets = isPlain ? TableViewSectionFooterContentInset : TableViewGroupedSectionFooterContentInset
+            label?.font = isPlain ? TableViewSectionFooterFont : TableViewGroupedSectionFooterFont
+            label?.textColor = isPlain ? TableViewSectionFooterTextColor : TableViewGroupedSectionFooterTextColor
+            label?.backgroundColor = isPlain ? TableViewSectionFooterBackgroundColor : UIColorClear
+            let labelLimitWidth = tableView.bounds.width - tableView.contentInset.horizontalValue
+            let labelSize = label!.sizeThatFits(CGSize(width: labelLimitWidth, height: .infinity))
+            label?.frame = CGRect(x: 0, y: 0, width: labelLimitWidth, height: labelSize.height)
+            return label!
+        }
+        return nil
+    }
+
+    func tableHeaderFooterLabel(in tableView: UITableView, identifier: String) -> UITableViewHeaderFooterView {
+        var headerFooterView = tableView.dequeueReusableHeaderFooterView(withIdentifier: identifier)
+        if headerFooterView == nil {
+            let label = QMUILabel()
+            label.tag = kSectionHeaderFooterLabelTag
+            label.numberOfLines = 0
+            headerFooterView = UITableViewHeaderFooterView(reuseIdentifier: identifier)
+            headerFooterView?.contentView.addSubview(label)
+        }
+        return headerFooterView!
+    }
+
+    // 是否有定义某个section的header title
+    func _tableView(_ tableView: UITableView, realTitleForHeaderIn section: Int) -> String? {
+        guard let sectionTitle = tableView.dataSource?.tableView?(tableView, titleForHeaderInSection: section), !sectionTitle.isEmpty else {
+            return nil
+        }
+        return sectionTitle
+    }
+
+    // 是否有定义某个section的footer title(编译器bug添加_)
+    func _tableView(_ tableView: UITableView, realTitleForFooterIn section: Int) -> String? {
+        guard let sectionFooter = tableView.dataSource?.tableView?(tableView, titleForFooterInSection: section), !sectionFooter.isEmpty else {
+            return nil
+        }
+        return sectionFooter
+    }
+}
+
+extension QMUICommonTableViewController: QMUITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
     }
 }
 
