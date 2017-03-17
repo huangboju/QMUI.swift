@@ -185,8 +185,8 @@
 			isa = PBXGroup;
 			children = (
 				D831FC521E2E08DF009CFB28 /* Curry.swift */,
-				D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */,
 				D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */,
+				D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */,
 				D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */,
 				D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */,
 			);

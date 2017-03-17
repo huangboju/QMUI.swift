@@ -39,8 +39,8 @@ class QMUICommonTableViewController: QMUICommonViewController {
     private var hasHideTableHeaderViewInitial = false
     private var hasSetInitialContentInset = false
     
-    fileprivate var _searchController: QMUISearchController!
-    fileprivate var _searchBar: UISearchBar!
+    fileprivate var _searchController: QMUISearchController?
+    fileprivate var _searchBar: UISearchBar?
 
     /** 
      *  列表使用自定义的contentInset，不使用系统默认计算的，默认为QMUICommonTableViewControllerInitialContentInsetNotSet。<br/>
@@ -183,6 +183,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
         }
     }
 
+    @discardableResult
     override func layoutEmptyView() -> Bool {
         if emptyView == nil || emptyView?.superview == nil {
             return false
@@ -319,7 +320,7 @@ extension QMUICommonTableViewController {
     /** 
      *  是否需要在第一次进入界面时将tableHeaderView隐藏（通过调整self.tableView.contentOffset实现）
      *
-     *  默认为NO
+     *  默认为false
      *
      *  @see QMUITableViewDelegate
      */
@@ -345,7 +346,7 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
      *
      *  @see QMUITableViewDelegate
      */
-    var searchBar: UISearchBar {
+    var searchBar: UISearchBar? {
         return _searchBar
     }
 

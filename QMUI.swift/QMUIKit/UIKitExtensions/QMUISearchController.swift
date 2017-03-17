@@ -25,8 +25,8 @@ class QMUISearchController: QMUICommonViewController {
      * 在某个指定的UIViewController上创建一个与其绑定的searchController
      * @param viewController 要在哪个viewController上添加搜索功能
      */
-    init(contentsViewController: UIViewController) {
-        
+    convenience init(contentsViewController: UIViewController) {
+        self.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
