@@ -34,10 +34,13 @@ class QMUICommonTableViewController: QMUICommonViewController {
     private(set) var style: UITableViewStyle!
 
     /// 获取当前的 tableView
-    private(set) var tableView: QMUITableView!
+    fileprivate(set) var tableView: QMUITableView!
 
     private var hasHideTableHeaderViewInitial = false
     private var hasSetInitialContentInset = false
+    
+    fileprivate var _searchController: QMUISearchController!
+    fileprivate var _searchBar: UISearchBar!
 
     /** 
      *  列表使用自定义的contentInset，不使用系统默认计算的，默认为QMUICommonTableViewControllerInitialContentInsetNotSet。<br/>
@@ -248,6 +251,22 @@ extension QMUICommonTableViewController: QMUITableViewDelegate {
         return headerFooterView!
     }
 
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let headerView = tableView.delegate?.tableView?(tableView, viewForHeaderInSection: section) else {
+            // 默认 plain 类型直接设置为 0，TableViewSectionHeaderHeight 是在需要重写 headerHeight 的时候才用的
+            return tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderHeight
+        }
+        return max(headerView.bounds.height, tableView.style == .plain ? TableViewSectionHeaderHeight : TableViewGroupedSectionHeaderHeight)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        guard let footerView = tableView.delegate?.tableView?(tableView, viewForFooterInSection: section) else {
+            // 默认 plain 类型直接设置为 0，TableViewSectionFooterHeight 是在需要重写 footerHeight 的时候才用的
+            return tableView.style == .plain ? 0 : TableViewGroupedSectionFooterHeight
+        }
+        return max(footerView.bounds.height, tableView.style == .plain ? TableViewSectionFooterHeight : TableViewGroupedSectionFooterHeight)
+    }
+
     // 是否有定义某个section的header title
     func _tableView(_ tableView: UITableView, realTitleForHeaderIn section: Int) -> String? {
         guard let sectionTitle = tableView.dataSource?.tableView?(tableView, titleForHeaderInSection: section), !sectionTitle.isEmpty else {
@@ -273,6 +292,14 @@ extension QMUICommonTableViewController: QMUITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 0
     }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return TableViewCellNormalHeight
+    }
 }
 
 // MARK: - QMUISubclassingHooks
@@ -282,7 +309,12 @@ extension QMUICommonTableViewController {
      *
      *  一般情况下，有关tableView的设置属性的代码都应该写在这里。
      */
-    func initTableView() {}
+    func initTableView() {
+        tableView = QMUITableView(frame: view.bounds, style: style)
+        tableView.delegate = self
+        tableView.dataSource = self
+        view.addSubview(tableView)
+    }
 
     /** 
      *  是否需要在第一次进入界面时将tableHeaderView隐藏（通过调整self.tableView.contentOffset实现）
@@ -302,8 +334,8 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
      *
      *  @see QMUITableViewDelegate
      */
-    var searchController: QMUISearchController {
-        return QMUISearchController()
+    var searchController: QMUISearchController? {
+        return _searchController
     }
 
     /** 
@@ -314,13 +346,13 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
      *  @see QMUITableViewDelegate
      */
     var searchBar: UISearchBar {
-        return UISearchBar()
+        return _searchBar
     }
 
     /** 
      *  是否应该在显示空界面时自动隐藏搜索框
      *
-     *  默认为 `NO`
+     *  默认为 `false`
      */
     var shouldHideSearchBarWhenEmptyViewShowing: Bool { return false }
 
@@ -331,5 +363,16 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
      *
      *  @warning `shouldShowSearchBarInTableView:` 默认返回 NO，需要 searchBar 的界面必须重写该方法并返回 `YES`
      */
-    func initSearchController() {}
+    func initSearchController() {
+        guard let delegate = tableView.delegate as? QMUITableViewDelegate else { return }
+        if delegate.shouldShowSearchBar(in: tableView) && searchController == nil {
+            _searchController = QMUISearchController(contentsViewController: self)
+            searchController?.searchResultsDelegate = self
+            searchController?.searchBar?.placeholder = "搜索"
+            tableView.tableHeaderView = searchController?.searchBar
+            _searchBar = searchController?.searchBar
+        }
+    }
+
+    func searchController(_ searchController: QMUISearchController, updateResultsFor searchString: String) {}
 }
