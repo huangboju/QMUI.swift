@@ -6,10 +6,28 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+// 是否横竖屏
+// 用户界面横屏了才会返回true
+let IS_LANDSCAPE = UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation)
+
+// 屏幕宽度，会根据横竖屏的变化而变化
+let SCREEN_WIDTH = UIScreen.main.bounds.width
+
+// 屏幕高度，会根据横竖屏的变化而变化
+let SCREEN_HEIGHT = UIScreen.main.bounds.height
+
+// 屏幕宽度，跟横竖屏无关
+let DEVICE_WIDTH = IS_LANDSCAPE ? UIScreen.main.bounds.height : UIScreen.main.bounds.width
+
+// 屏幕高度，跟横竖屏无关
+let DEVICE_HEIGHT = IS_LANDSCAPE ? UIScreen.main.bounds.width : UIScreen.main.bounds.height
+
 let PixelOne: CGFloat = 1
 
 // 是否支持动态字体
 let IS_RESPOND_DYNAMICTYPE = UIApplication.instancesRespond(to: #selector(getter: UIApplication.preferredContentSizeCategory))
+
+// 同上，加多一个iPad的参数
 
 // MARK: - UIEdgeInsets
 
