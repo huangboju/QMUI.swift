@@ -71,10 +71,10 @@ extension QMUIHelper {
             // TODO:
             /*
              if ([UIImage respondsToSelector:@selector(imageNamed:inBundle:compatibleWithTraitCollection:)]) {
-             return [UIImage imageNamed:name inBundle:bundle compatibleWithTraitCollection:nil];
+             return [UIImage imageNamed:name inBundle:bundle compatibleWithTraitCollection:nil]
              } else {
-             NSString *imagePath = [[bundle resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", name]];
-             return [UIImage imageWithContentsOfFile:imagePath];
+             NSString *imagePath = [[bundle resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", name]]
+             return [UIImage imageWithContentsOfFile:imagePath]
              }
              */
             let imagePath = (bundle.resourcePath ?? "") + "\(name).png"
@@ -164,7 +164,7 @@ extension QMUIHelper {
         self._isKeyboardVisible = false
     }
 
-    var _isKeyboardVisible: Bool {
+    private var _isKeyboardVisible: Bool {
         set {
             objc_setAssociatedObject(self, &kAssociatedObjectKey.isKeyboardVisible, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
@@ -173,11 +173,14 @@ extension QMUIHelper {
         }
     }
 
+    /**
+     * 判断当前App里的键盘是否升起，默认为NO
+     */
     public static var isKeyboardVisible: Bool {
         return shared._isKeyboardVisible
     }
     
-    var lastKeyboardHeight: CGFloat {
+    private var lastKeyboardHeight: CGFloat {
         set {
             objc_setAssociatedObject(self, &kAssociatedObjectKey.LastKeyboardHeight, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
@@ -186,20 +189,35 @@ extension QMUIHelper {
         }
     }
 
+    /**
+     * 记录上一次键盘显示时的高度（基于整个 App 所在的 window 的坐标系），注意使用前用 `isKeyboardVisible` 判断键盘是否显示，因为即便是键盘被隐藏的情况下，调用 `lastKeyboardHeightInApplicationWindowWhenVisible` 也会得到高度值。
+     */
     public static var lastKeyboardHeightInApplicationWindowWhenVisible: CGFloat {
         return shared.lastKeyboardHeight
     }
 
-    static func keyboardRect(with notification: Notification) -> CGRect {
+    /**
+     * 获取当前键盘frame相关
+     * @warning 注意iOS8以下的系统在横屏时得到的rect，宽度和高度相反了，所以不建议直接通过这个方法获取高度，而是使用<code>keyboardHeightWithNotification:inView:</code>，因为在后者的实现里会将键盘的rect转换坐标系，转换过程就会处理横竖屏旋转问题。
+     */
+    public static func keyboardRect(with notification: Notification) -> CGRect {
         guard let keyboardRect = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
         return keyboardRect
     }
     
-    static func keyboardHeight(with notification: Notification) -> CGFloat {
+    /// 获取当前键盘的高度，注意高度可能为0（例如第三方键盘会发出两次notification，其中第一次的高度就为0
+    public static func keyboardHeight(with notification: Notification) -> CGFloat {
         return QMUIHelper.keyboardHeight(with: notification, in: nil)
     }
 
-    static func keyboardHeight(with notification: Notification, in view: UIView?) -> CGFloat {
+    /**
+     * 获取当前键盘在屏幕上的可见高度，注意外接键盘（iPad那种）时，[QMUIHelper keyboardRectWithNotification]得到的键盘rect里有一部分是超出屏幕，不可见的，如果直接拿rect的高度来计算就会与意图相悖。
+     * @param notification 接收到的键盘事件的UINotification对象
+     * @param view 要得到的键盘高度是相对于哪个View的键盘高度，若为nil，则等同于调用QMUIHelper.keyboardHeight(with: notification)
+     * @warning 如果view.window为空（当前View尚不可见），则会使用App默认的UIWindow来做坐标转换，可能会导致一些计算错误
+     * @return 键盘在view里的可视高度
+     */
+    public static func keyboardHeight(with notification: Notification, in view: UIView?) -> CGFloat {
         let rect = keyboardRect(with: notification)
         guard let view = view else {
             return rect.height
@@ -209,19 +227,88 @@ extension QMUIHelper {
         let resultHeight = keyboardVisibleRectInView.isNull ? 0 : keyboardVisibleRectInView.height
         return resultHeight
     }
-    
-    static func keyboardAnimationDuration(with notification: Notification) -> TimeInterval {
+
+    /// 获取键盘显示/隐藏的动画时长，注意返回值可能为0
+    public static func keyboardAnimationDuration(with notification: Notification) -> TimeInterval {
         guard let animationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double else { return 0 }
         return animationDuration
     }
 
-    static func keyboardAnimationCurve(with notification: Notification) -> UIViewAnimationCurve {
+    /// 获取键盘显示/隐藏的动画时间函数
+    public static func keyboardAnimationCurve(with notification: Notification) -> UIViewAnimationCurve {
         guard let curve = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? Int else { return .easeIn }
         return UIViewAnimationCurve(rawValue: curve)!
     }
-    
-    static func keyboardAnimationOptions(with notification: Notification) -> UIViewAnimationOptions {
+
+    /// 获取键盘显示/隐藏的动画时间函数
+    public static func keyboardAnimationOptions(with notification: Notification) -> UIViewAnimationOptions {
         let rawValue = UInt(QMUIHelper.keyboardAnimationCurve(with: notification).rawValue)
         return UIViewAnimationOptions(rawValue: rawValue)
+    }
+}
+
+// MARK: - AudioSession
+extension QMUIHelper {
+    /**
+     *  听筒和扬声器的切换
+     *
+     *  @param speaker   是否转为扬声器，NO则听筒
+     *  @param temporary 决定使用kAudioSessionProperty_OverrideAudioRoute还是kAudioSessionProperty_OverrideCategoryDefaultToSpeaker，两者的区别请查看本组的博客文章:http://km.oa.com/group/gyui/articles/show/235957
+     */
+    static func redirectAudioRoute(with speaker: Bool, temporary: Bool) {
+        let audioSession = AVAudioSession.sharedInstance()
+        if audioSession.category != AVAudioSessionCategoryPlayAndRecord {
+            return
+        }
+        if temporary {
+            try? audioSession.overrideOutputAudioPort(speaker ? .speaker : .none)
+        } else {
+            try? audioSession.setCategory(audioSession.category, with: speaker ? .defaultToSpeaker : [])
+        }
+    }
+
+    /**
+     *  设置category
+     *
+     *  @param category 使用iOS7的category，iOS6的会自动适配
+     */
+    static func setAudioSession(category: String) {
+        let categories = [
+            AVAudioSessionCategoryAmbient,
+            AVAudioSessionCategorySoloAmbient,
+            AVAudioSessionCategoryPlayback,
+            AVAudioSessionCategoryRecord,
+            AVAudioSessionCategoryPlayAndRecord,
+            AVAudioSessionCategoryAudioProcessing
+        ]
+
+        // 如果不属于系统category，返回
+        guard categories.contains(category) else {
+            return
+        }
+
+        try? AVAudioSession.sharedInstance().setCategory(category)
+    }
+    
+    static func categoryForLowVersion(with category: String) -> Int {
+        if category == AVAudioSessionCategoryAmbient {
+            return kAudioSessionCategory_AmbientSound
+        }
+        if category == AVAudioSessionCategorySoloAmbient {
+            return kAudioSessionCategory_SoloAmbientSound
+        }
+        if category == AVAudioSessionCategoryPlayback {
+            return kAudioSessionCategory_MediaPlayback
+        }
+        if category == AVAudioSessionCategoryRecord {
+            return kAudioSessionCategory_RecordAudio
+        }
+        if category == AVAudioSessionCategoryPlayAndRecord {
+            return kAudioSessionCategory_PlayAndRecord
+        }
+        if category == AVAudioSessionCategoryAudioProcessing {
+            return kAudioSessionCategory_AudioProcessing
+        }
+        return kAudioSessionCategory_AmbientSound
     }
 }
