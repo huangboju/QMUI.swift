@@ -10,11 +10,11 @@ protocol QMUIHelperDelegate: class {
     func QMUIHelperPrint(_ log: String)
 }
 
-class QMUIHelper {
+class QMUIHelper: NSObject {
     
     static let shared = QMUIHelper()
     
-    private init() {}
+    private override init() {}
     
     weak var helperDelegate: QMUIHelperDelegate?
 
@@ -134,5 +134,94 @@ extension QMUIHelper {
     static func heightForDynamicTypeCell(_ heights: [CGFloat]) -> CGFloat {
         let index = QMUIHelper.preferredContentSizeLevel
         return heights[index]
+    }
+}
+
+
+// MARK: - Keyboard
+
+extension QMUIHelper {
+    static let _onceToken = UUID().uuidString
+    
+    private struct kAssociatedObjectKey {
+        static var LastKeyboardHeight = "LastKeyboardHeight"
+        static var isKeyboardVisible = "isKeyboardVisible"
+    }
+
+    override class func initialize() {
+        DispatchQueue.once(token: _onceToken) {
+            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+        }
+    }
+
+    func handleKeyboardWillShow(notification: Notification) {
+        self._isKeyboardVisible = true
+        self.lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
+    }
+
+    func handleKeyboardWillHide(notification: Notification) {
+        self._isKeyboardVisible = false
+    }
+
+    var _isKeyboardVisible: Bool {
+        set {
+            objc_setAssociatedObject(self, &kAssociatedObjectKey.isKeyboardVisible, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &kAssociatedObjectKey.isKeyboardVisible) as? Bool ?? false
+        }
+    }
+
+    public static var isKeyboardVisible: Bool {
+        return shared._isKeyboardVisible
+    }
+    
+    var lastKeyboardHeight: CGFloat {
+        set {
+            objc_setAssociatedObject(self, &kAssociatedObjectKey.LastKeyboardHeight, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &kAssociatedObjectKey.LastKeyboardHeight) as? CGFloat ?? 0
+        }
+    }
+
+    public static var lastKeyboardHeightInApplicationWindowWhenVisible: CGFloat {
+        return shared.lastKeyboardHeight
+    }
+
+    static func keyboardRect(with notification: Notification) -> CGRect {
+        guard let keyboardRect = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
+        return keyboardRect
+    }
+    
+    static func keyboardHeight(with notification: Notification) -> CGFloat {
+        return QMUIHelper.keyboardHeight(with: notification, in: nil)
+    }
+
+    static func keyboardHeight(with notification: Notification, in view: UIView?) -> CGFloat {
+        let rect = keyboardRect(with: notification)
+        guard let view = view else {
+            return rect.height
+        }
+        let keyboardRectInView = view.convert(rect, from: view.window)
+        let keyboardVisibleRectInView = view.bounds.intersection(keyboardRectInView)
+        let resultHeight = keyboardVisibleRectInView.isNull ? 0 : keyboardVisibleRectInView.height
+        return resultHeight
+    }
+    
+    static func keyboardAnimationDuration(with notification: Notification) -> TimeInterval {
+        guard let animationDuration = notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double else { return 0 }
+        return animationDuration
+    }
+
+    static func keyboardAnimationCurve(with notification: Notification) -> UIViewAnimationCurve {
+        guard let curve = notification.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? Int else { return .easeIn }
+        return UIViewAnimationCurve(rawValue: curve)!
+    }
+    
+    static func keyboardAnimationOptions(with notification: Notification) -> UIViewAnimationOptions {
+        let rawValue = UInt(QMUIHelper.keyboardAnimationCurve(with: notification).rawValue)
+        return UIViewAnimationOptions(rawValue: rawValue)
     }
 }
