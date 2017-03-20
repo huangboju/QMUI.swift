@@ -14,3 +14,7 @@
 # 联系方式：
 QQ: 529940945
 邮箱: xiao-ju@foxmail.com
+
+# 现有作者
+* [haungboju](https://github.com/huangboju)
+* [lixin](https://github.com/lixin147741)
