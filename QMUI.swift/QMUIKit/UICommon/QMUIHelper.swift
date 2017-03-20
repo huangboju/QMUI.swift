@@ -312,3 +312,27 @@ extension QMUIHelper {
         return kAudioSessionCategory_AmbientSound
     }
 }
+
+
+// MARK: - UIGraphic
+extension QMUIHelper {
+    static var pixelOne: CGFloat {
+        return 1 / UIScreen.main.scale
+    }
+
+    /// 判断size是否超出范围
+    static func inspectContext(size: CGSize) {
+        if size.width < 0 || size.height < 0 {
+            assert(false, "QMUI CGPostError, \(#file):\(#line) \(#function), 非法的size：\(size)\n\(Thread.callStackSymbols)")
+        }
+    }
+    
+    /// context是否合法
+//    static func inspectContextIfInvalidatedInDebugMode(context: CGContext) {
+//    
+//    }
+//
+//    static func inspectContextIfInvalidatedInReleaseMode(context: CGContext) -> Bool {
+//    
+//    }
+}
