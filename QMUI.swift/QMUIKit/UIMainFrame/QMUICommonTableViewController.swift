@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-/** 
+/**
  *  配合属性 `tableViewInitialContentInset` 使用，标志 `tableViewInitialContentInset` 是否有被修改过
  *  @see tableViewInitialContentInset
  */
@@ -14,7 +14,7 @@ let QMUICommonTableViewControllerInitialContentInsetNotSet = UIEdgeInsets(top: -
 
 let kSectionHeaderFooterLabelTag = 1024
 
-/** 
+/**
  *  可作为项目内所有 `UITableViewController` 的基类，注意是继承自 `QMUICommonViewController` 而不是 `UITableViewController`。
  *
  *  一般通过 `initWithStyle:` 方法初始化，对于要生成 `UITableViewStylePlain` 类型的列表，推荐使用 `init:` 方法。
@@ -38,11 +38,11 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     private var hasHideTableHeaderViewInitial = false
     private var hasSetInitialContentInset = false
-    
+
     fileprivate var _searchController: QMUISearchController?
     fileprivate var _searchBar: UISearchBar?
 
-    /** 
+    /**
      *  列表使用自定义的contentInset，不使用系统默认计算的，默认为QMUICommonTableViewControllerInitialContentInsetNotSet。<br/>
      *  当更改了这个值后，会把self.automaticallyAdjustsScrollViewInsets = NO
      */
@@ -56,7 +56,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
         }
     }
 
-    /** 
+    /**
      *  是否需要让scrollIndicatorInsets与tableView.contentInsets区分开来，如果不设置，则与tableView.contentInset保持一致。
      *
      *  只有当更改了tableViewInitialContentInset后，这个属性才会生效。
@@ -259,7 +259,7 @@ extension QMUICommonTableViewController: QMUITableViewDelegate {
         }
         return max(headerView.bounds.height, tableView.style == .plain ? TableViewSectionHeaderHeight : TableViewGroupedSectionHeaderHeight)
     }
-    
+
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         guard let footerView = tableView.delegate?.tableView?(tableView, viewForFooterInSection: section) else {
             // 默认 plain 类型直接设置为 0，TableViewSectionFooterHeight 是在需要重写 footerHeight 的时候才用的
@@ -286,26 +286,26 @@ extension QMUICommonTableViewController: QMUITableViewDelegate {
 }
 
 extension QMUICommonTableViewController: QMUITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in _: UITableView) -> Int {
         return 1
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return 0
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_: UITableView, cellForRowAt _: IndexPath) -> UITableViewCell {
         return UITableViewCell()
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+
+    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
         return TableViewCellNormalHeight
     }
 }
 
 // MARK: - QMUISubclassingHooks
 extension QMUICommonTableViewController {
-    /** 
+    /**
      *  初始化tableView，在initSubViews的时候被自动调用。
      *
      *  一般情况下，有关tableView的设置属性的代码都应该写在这里。
@@ -317,7 +317,7 @@ extension QMUICommonTableViewController {
         view.addSubview(tableView)
     }
 
-    /** 
+    /**
      *  是否需要在第一次进入界面时将tableHeaderView隐藏（通过调整self.tableView.contentOffset实现）
      *
      *  默认为false
@@ -328,7 +328,7 @@ extension QMUICommonTableViewController {
 }
 
 extension QMUICommonTableViewController: QMUISearchControllerDelegate {
-    /** 
+    /**
      *  获取当前的searchController，注意只有当 `shouldShowSearchBarInTableView:` 返回 `YES` 时才有用
      *
      *  默认为 `nil`
@@ -339,7 +339,7 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
         return _searchController
     }
 
-    /** 
+    /**
      *  获取当前的searchBar，注意只有当 `shouldShowSearchBarInTableView:` 返回 `YES` 时才有用
      *
      *  默认为 `nil`
@@ -350,14 +350,14 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
         return _searchBar
     }
 
-    /** 
+    /**
      *  是否应该在显示空界面时自动隐藏搜索框
      *
      *  默认为 `false`
      */
     var shouldHideSearchBarWhenEmptyViewShowing: Bool { return false }
 
-    /** 
+    /**
      *  初始化searchController和searchBar，在initSubViews的时候被自动调用。
      *
      *  会询问 `[self.tableView.delegate shouldShowSearchBarInTableView:]`，若返回 `YES`，则创建 searchBar 并将其以 `tableHeaderView` 的形式呈现在界面里；若返回 `NO`，则将 `tableHeaderView` 置为nil。
@@ -375,5 +375,5 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
         }
     }
 
-    func searchController(_ searchController: QMUISearchController, updateResultsFor searchString: String) {}
+    func searchController(_: QMUISearchController, updateResultsFor _: String) {}
 }

@@ -10,8 +10,8 @@ extension UITableView {
     func qmui_styledAsQMUITableView() {
         backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor
         separatorColor = TableViewSeparatorColor
-        tableFooterView = UIView()// 去掉尾部空cell
-        backgroundView = UIView()// 设置一个空的backgroundView，去掉系统的，以使backgroundColor生效
+        tableFooterView = UIView() // 去掉尾部空cell
+        backgroundView = UIView() // 设置一个空的backgroundView，去掉系统的，以使backgroundColor生效
 
         sectionIndexColor = TableSectionIndexColor
         sectionIndexTrackingBackgroundColor = TableSectionIndexTrackingBackgroundColor

@@ -11,11 +11,11 @@ protocol QMUIHelperDelegate: class {
 }
 
 class QMUIHelper: NSObject {
-    
+
     static let shared = QMUIHelper()
-    
+
     private override init() {}
-    
+
     weak var helperDelegate: QMUIHelperDelegate?
 
     // MARK: - UIApplication
@@ -52,12 +52,12 @@ extension QMUIHelper {
         let bundle = QMUIHelper.resourcesBundle
         return QMUIHelper.image(in: bundle, with: name)
     }
-    
+
     static func resourcesBundle(with bundleName: String) -> Bundle? {
         var bundle = Bundle(path: (Bundle.main.resourcePath ?? "") + "/\(bundleName)")
         if bundle == nil {
             // 动态framework的bundle资源是打包在framework里面的，所以无法通过mainBundle拿到资源，只能通过其他方法来获取bundle资源。
-            
+
             let frameworkBundle = Bundle(for: self)
             if let bundleData = parse(bundleName) {
                 bundle = Bundle(path: frameworkBundle.path(forResource: bundleData["name"], ofType: bundleData["type"])!)
@@ -87,15 +87,13 @@ extension QMUIHelper {
         let bundleData = bundleName.components(separatedBy: ".")
         guard bundleData.count == 2 else {
             return nil
-            
         }
         return [
             "name": bundleData[0],
-            "type": bundleData[1]
+            "type": bundleData[1],
         ]
     }
 }
-
 
 // MARK: - DynamicType
 extension QMUIHelper {
@@ -126,7 +124,7 @@ extension QMUIHelper {
                 index = 6
             }
         }
-        
+
         return index
     }
 
@@ -137,12 +135,11 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - Keyboard
 
 extension QMUIHelper {
     static let _onceToken = UUID().uuidString
-    
+
     private struct kAssociatedObjectKey {
         static var LastKeyboardHeight = "LastKeyboardHeight"
         static var isKeyboardVisible = "isKeyboardVisible"
@@ -156,12 +153,12 @@ extension QMUIHelper {
     }
 
     func handleKeyboardWillShow(notification: Notification) {
-        self._isKeyboardVisible = true
-        self.lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
+        _isKeyboardVisible = true
+        lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
     }
 
-    func handleKeyboardWillHide(notification: Notification) {
-        self._isKeyboardVisible = false
+    func handleKeyboardWillHide(notification _: Notification) {
+        _isKeyboardVisible = false
     }
 
     private var _isKeyboardVisible: Bool {
@@ -179,7 +176,7 @@ extension QMUIHelper {
     public static var isKeyboardVisible: Bool {
         return shared._isKeyboardVisible
     }
-    
+
     private var lastKeyboardHeight: CGFloat {
         set {
             objc_setAssociatedObject(self, &kAssociatedObjectKey.LastKeyboardHeight, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -204,7 +201,7 @@ extension QMUIHelper {
         guard let keyboardRect = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
         return keyboardRect
     }
-    
+
     /// 获取当前键盘的高度，注意高度可能为0（例如第三方键盘会发出两次notification，其中第一次的高度就为0
     public static func keyboardHeight(with notification: Notification) -> CGFloat {
         return QMUIHelper.keyboardHeight(with: notification, in: nil)
@@ -279,7 +276,7 @@ extension QMUIHelper {
             AVAudioSessionCategoryPlayback,
             AVAudioSessionCategoryRecord,
             AVAudioSessionCategoryPlayAndRecord,
-            AVAudioSessionCategoryAudioProcessing
+            AVAudioSessionCategoryAudioProcessing,
         ]
 
         // 如果不属于系统category，返回
@@ -289,7 +286,7 @@ extension QMUIHelper {
 
         try? AVAudioSession.sharedInstance().setCategory(category)
     }
-    
+
     static func categoryForLowVersion(with category: String) -> Int {
         if category == AVAudioSessionCategoryAmbient {
             return kAudioSessionCategory_AmbientSound
@@ -313,7 +310,6 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - UIGraphic
 extension QMUIHelper {
     static var pixelOne: CGFloat {
@@ -326,22 +322,21 @@ extension QMUIHelper {
             assert(false, "QMUI CGPostError, \(#file):\(#line) \(#function), 非法的size：\(size)\n\(Thread.callStackSymbols)")
         }
     }
-    
-    /// context是否合法
-//    static func inspectContextIfInvalidatedInDebugMode(context: CGContext) {
-//    
-//    }
-//
-//    static func inspectContextIfInvalidatedInReleaseMode(context: CGContext) -> Bool {
-//    
-//    }
-}
 
+    /// context是否合法
+    //    static func inspectContextIfInvalidatedInDebugMode(context: CGContext) {
+    //
+    //    }
+    //
+    //    static func inspectContextIfInvalidatedInReleaseMode(context: CGContext) -> Bool {
+    //
+    //    }
+}
 
 // MARK: - Device
 extension QMUIHelper {
     public static var isIPad: Bool {
-    // [[[UIDevice currentDevice] model] isEqualToString:@"iPad"] 无法判断模拟器，改为以下方式
+        // [[[UIDevice currentDevice] model] isEqualToString:@"iPad"] 无法判断模拟器，改为以下方式
         return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
     }
 
@@ -356,7 +351,7 @@ extension QMUIHelper {
     public static var isIPhone: Bool {
         return UIDevice.current.model.contains("iPhone")
     }
-    
+
     public static var isSimulator: Bool {
         #if TARGET_OS_SIMULATOR
             return true
@@ -368,15 +363,15 @@ extension QMUIHelper {
     public static var is55InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor55Inch
     }
-    
+
     public static var is47InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor47Inch
     }
-    
+
     public static var is40InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor40Inch
     }
-    
+
     public static var is35InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor35Inch
     }
