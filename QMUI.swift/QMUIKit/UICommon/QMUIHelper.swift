@@ -340,24 +340,24 @@ extension QMUIHelper {
 
 // MARK: - Device
 extension QMUIHelper {
-    static var isIPad: Bool {
+    public static var isIPad: Bool {
     // [[[UIDevice currentDevice] model] isEqualToString:@"iPad"] 无法判断模拟器，改为以下方式
         return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
     }
 
-    static var isIPadPro: Bool {
+    public static var isIPadPro: Bool {
         return QMUIHelper.isIPad && (DEVICE_WIDTH == 1024 && DEVICE_HEIGHT == 1366)
     }
 
-    static var isIPod: Bool {
+    public static var isIPod: Bool {
         return UIDevice.current.model.contains("iPod touch")
     }
 
-    static var isIPhone: Bool {
+    public static var isIPhone: Bool {
         return UIDevice.current.model.contains("iPhone")
     }
     
-    static var isSimulator: Bool {
+    public static var isSimulator: Bool {
         #if TARGET_OS_SIMULATOR
             return true
         #else
@@ -365,39 +365,40 @@ extension QMUIHelper {
         #endif
     }
 
-    static var is55InchScreen: Bool {
+    public static var is55InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor55Inch
     }
     
-    static var is47InchScreen: Bool {
+    public static var is47InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor47Inch
     }
     
-    static var is40InchScreen: Bool {
+    public static var is40InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor40Inch
     }
     
-    static var is35InchScreen: Bool {
+    public static var is35InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor35Inch
     }
 
-    static var screenSizeFor55Inch: CGSize {
+    public static var screenSizeFor55Inch: CGSize {
         return CGSize(width: 414, height: 736)
     }
 
-    static var screenSizeFor47Inch: CGSize {
+    public static var screenSizeFor47Inch: CGSize {
         return CGSize(width: 375, height: 667)
     }
 
-    static var screenSizeFor40Inch: CGSize {
+    public static var screenSizeFor40Inch: CGSize {
         return CGSize(width: 320, height: 568)
     }
 
-    static var screenSizeFor35Inch: CGSize {
+    public static var screenSizeFor35Inch: CGSize {
         return CGSize(width: 320, height: 480)
     }
-    
-    static var isHighPerformanceDevice: Bool {
+
+    /// 判断当前设备是否高性能设备，只会判断一次，以后都直接读取结果，所以没有性能问题
+    public static var isHighPerformanceDevice: Bool {
         // TODO:
         return false
     }
