@@ -10,15 +10,6 @@ protocol QMUIHelperDelegate: class {
     func QMUIHelperPrint(_ log: String)
 }
 
-class QMUIHelper: NSObject {
-
-    static let shared = QMUIHelper()
-
-    private override init() {}
-
-    weak var helperDelegate: QMUIHelperDelegate?
-}
-
 let QMUIResourcesMainBundleName = "QMUIResources.bundle"
 
 // MARK: - QMUI专属
@@ -464,6 +455,23 @@ extension QMUIHelper {
 }
 
 
+// MARK: - Log
+extension QMUIHelper {
+    // TODO:
+//    - (void)printLogWithCalledFunction:(nonnull const char *)func log:(nonnull NSString *)log, ... {
+//    va_list args;
+//    va_start(args, log);
+//    NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
+//    if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
+//    [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
+//    } else {
+//    NSLog(@"QMUI - %@. Called By %s", logString, func);
+//    }
+//    va_end(args);
+//    }
+}
+
+
 public let QMUISpringAnimationKey = "QMUISpringAnimationKey"
 // MARK: - Animation
 extension QMUIHelper {
@@ -479,5 +487,18 @@ extension QMUIHelper {
             ].map { NSNumber(value: $0) }
         springAnimation.duration = duration
         view.layer.add(springAnimation, forKey: QMUISpringAnimationKey)
+    }
+}
+
+class QMUIHelper: NSObject {
+
+    static let shared = QMUIHelper()
+
+    private override init() {}
+
+    weak var helperDelegate: QMUIHelperDelegate?
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
