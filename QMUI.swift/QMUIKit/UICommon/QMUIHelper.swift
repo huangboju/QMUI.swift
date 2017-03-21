@@ -398,3 +398,35 @@ extension QMUIHelper {
         return false
     }
 }
+
+
+// MARK: - Orientation
+extension QMUIHelper {
+    /// 根据指定的旋转方向计算出对应的旋转角度
+    static func angleForTransformWithInterface(orientation: UIInterfaceOrientation) -> CGFloat {
+        var angle: CGFloat = 0
+        switch orientation {
+        case .portraitUpsideDown:
+            angle = .pi
+        case .landscapeLeft:
+            angle = .pi / -2
+        case .landscapeRight:
+            angle = .pi / 2
+        default:
+            angle = 0.0
+        }
+        return angle
+    }
+
+    /// 根据当前设备的旋转方向计算出对应的CGAffineTransform
+    static var transformForCurrentInterfaceOrientation: CGAffineTransform {
+        return QMUIHelper.transformWithInterface(orientation: UIApplication.shared.statusBarOrientation)
+    }
+
+    /// 根据指定的旋转方向计算出对应的CGAffineTransform
+    static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
+        
+        let angle = QMUIHelper.angleForTransformWithInterface(orientation: orientation)
+        return CGAffineTransform(rotationAngle: angle)
+    }
+}
