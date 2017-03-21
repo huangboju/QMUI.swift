@@ -462,3 +462,22 @@ extension QMUIHelper {
         window?.tintColorDidChange()
     }
 }
+
+
+public let QMUISpringAnimationKey = "QMUISpringAnimationKey"
+// MARK: - Animation
+extension QMUIHelper {
+    public static func actionSpringAnimation(for view: UIView) {
+        let duration = 0.6
+        let springAnimation = CAKeyframeAnimation(keyPath: "transform.scale")
+        springAnimation.values = [0.85, 1.15, 0.9, 1.0]
+        springAnimation.keyTimes = [
+            (0.0 / duration),
+            (0.15 / duration) ,
+            (0.3 / duration),
+            (0.45 / duration)
+            ].map { NSNumber(value: $0) }
+        springAnimation.duration = duration
+        view.layer.add(springAnimation, forKey: QMUISpringAnimationKey)
+    }
+}
