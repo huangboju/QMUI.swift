@@ -403,7 +403,7 @@ extension QMUIHelper {
 // MARK: - Orientation
 extension QMUIHelper {
     /// 根据指定的旋转方向计算出对应的旋转角度
-    static func angleForTransformWithInterface(orientation: UIInterfaceOrientation) -> CGFloat {
+    public static func angleForTransformWithInterface(orientation: UIInterfaceOrientation) -> CGFloat {
         var angle: CGFloat = 0
         switch orientation {
         case .portraitUpsideDown:
@@ -419,14 +419,26 @@ extension QMUIHelper {
     }
 
     /// 根据当前设备的旋转方向计算出对应的CGAffineTransform
-    static var transformForCurrentInterfaceOrientation: CGAffineTransform {
+    public static var transformForCurrentInterfaceOrientation: CGAffineTransform {
         return QMUIHelper.transformWithInterface(orientation: UIApplication.shared.statusBarOrientation)
     }
 
     /// 根据指定的旋转方向计算出对应的CGAffineTransform
-    static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
+    public static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
         
         let angle = QMUIHelper.angleForTransformWithInterface(orientation: orientation)
         return CGAffineTransform(rotationAngle: angle)
+    }
+}
+
+// MARK: - ViewController
+extension QMUIHelper {
+    /**
+     * 获取当前应用里最顶层的可见viewController
+     */
+    public static var visibleViewController: UIViewController? {
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        let visibleViewController = rootViewController?.qmui_visibleViewControllerIfExist
+        return visibleViewController
     }
 }
