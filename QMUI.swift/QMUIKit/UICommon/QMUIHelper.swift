@@ -17,27 +17,6 @@ class QMUIHelper: NSObject {
     private override init() {}
 
     weak var helperDelegate: QMUIHelperDelegate?
-
-    // MARK: - UIApplication
-    static func renderStatusBarStyleDark() {
-        UIApplication.shared.statusBarStyle = .default
-    }
-
-    static func renderStatusBarStyleLight() {
-        UIApplication.shared.statusBarStyle = .lightContent
-    }
-
-    static func dimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .dimmed
-        window?.tintColorDidChange()
-    }
-
-    static func resetDimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .normal
-        window?.tintColorDidChange()
-    }
 }
 
 let QMUIResourcesMainBundleName = "QMUIResources.bundle"
@@ -431,6 +410,7 @@ extension QMUIHelper {
     }
 }
 
+
 // MARK: - ViewController
 extension QMUIHelper {
     /**
@@ -440,5 +420,45 @@ extension QMUIHelper {
         let rootViewController = UIApplication.shared.keyWindow?.rootViewController
         let visibleViewController = rootViewController?.qmui_visibleViewControllerIfExist
         return visibleViewController
+    }
+}
+
+
+// MARK: - UIApplication
+extension QMUIHelper {
+    /**
+     * 更改状态栏内容颜色为深色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleDark() {
+        UIApplication.shared.statusBarStyle = .default
+    }
+
+    /**
+     * 更改状态栏内容颜色为浅色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleLight() {
+        UIApplication.shared.statusBarStyle = .lightContent
+    }
+
+    /**
+     * 把App的主要window置灰，用于浮层弹出时，请注意要在适当时机调用`resetDimmedApplicationWindow`恢复到正常状态
+     */
+    public static func dimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .dimmed
+        window?.tintColorDidChange()
+    }
+
+    /**
+     * 恢复对App的主要window的置灰操作，与`dimmedApplicationWindow`成对调用
+     */
+    public static func resetDimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .normal
+        window?.tintColorDidChange()
     }
 }
