@@ -74,11 +74,53 @@ let ScreenInDisplayZoomMode = ScreenNativeScale > ScreenScale
 // 状态栏高度(来电等情况下，状态栏高度会发生变化，所以应该实时计算)
 let StatusBarHeight = (IOS_VERSION >= 8.0 ? UIApplication.shared.statusBarFrame.height : (IS_LANDSCAPE ? UIApplication.shared.statusBarFrame.width : UIApplication.shared.statusBarFrame.height))
 
+// navigationBar相关frame
+let NavigationBarHeight: CGFloat = IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44
+
+// toolBar的相关frame
+let ToolBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44)
+
+let TabBarHeight: CGFloat = 49
+
+// 除去navigationBar和toolbar后的中间内容区域
+func NavigationContentHeight(_ viewController: UIViewController) -> CGFloat {
+    guard let nav = viewController.navigationController else {
+        return viewController.view.frame.height - NavigationBarHeight - StatusBarHeight
+    }
+    let height = nav.isToolbarHidden ? 0 : nav.toolbar.frame.height
+    return viewController.view.frame.height - NavigationBarHeight - StatusBarHeight - height
+}
+
+// 兼容controller.view的subView的top值在不同iOS版本下的差异
+let NavigationContentTop = StatusBarHeight + NavigationBarHeight// 这是动态获取的
+let NavigationContentStaticTop = 20 + NavigationBarHeight // 不动态从状态栏获取高度，避免来电模式下多算了20pt（来电模式下系统会把UIViewController.view的frame往下移动20pt）
+func NavigationContentOriginY(_ y: CGFloat) -> CGFloat {
+    return NavigationContentTop + y
+}
+
 let PixelOne: CGFloat = 1
 
-
+// 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏
+func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47Inch: T, _ varFor40Inch: T, _ var4: T) -> T {
+    return (IS_35INCH_SCREEN ? var4 : (IS_40INCH_SCREEN ? varFor40Inch : (IS_47INCH_SCREEN ? varFor47Inch : varFor55Inch)))
+}
 
 // 同上，加多一个iPad的参数
+func PreferredVarForUniversalDevices<T>(varForPad: T, varFor55Inch: T, varFor47Inch: T, varFor40Inch: T, var4: T) -> T {
+    return (IS_IPAD ? varForPad : (IS_55INCH_SCREEN ? varFor55Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_40INCH_SCREEN ? varFor40Inch : var4))))
+}
+
+
+// 字体相关创建器，包括动态字体的支持
+let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
+// 斜体只对数字和字母有效，中文无效
+let UIFontItalicMake: (CGFloat) -> UIFont = { UIFont.italicSystemFont(ofSize: $0) }
+let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
+let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
+let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
+let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
+let UIDynamicFontMake: (CGFloat) -> UIFont = {} 
+
 
 // MARK: - UIEdgeInsets
 
