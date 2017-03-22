@@ -119,7 +119,7 @@ let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
-let UIDynamicFontMake: (CGFloat) -> UIFont = {} 
+let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0, bold: false) }
 
 
 // MARK: - UIEdgeInsets

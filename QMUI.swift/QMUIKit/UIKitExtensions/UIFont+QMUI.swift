@@ -6,15 +6,12 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UIFont {
-    convenience init(systemFor size: CGFloat) {
-        self.init(name: ".SFUIText", size: size)!
-    }
+enum QMUIFontWeight {
+    case light, normal, bold
+}
 
-    convenience init(boldFor size: CGFloat) {
-        self.init(name: ".SFUIText-Semibold", size: size)!
-    }
-    
+extension UIFont {
+
     /**
      *  返回系统字体的细体
      *
