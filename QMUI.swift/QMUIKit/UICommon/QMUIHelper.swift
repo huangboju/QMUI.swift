@@ -10,36 +10,6 @@ protocol QMUIHelperDelegate: class {
     func QMUIHelperPrint(_ log: String)
 }
 
-class QMUIHelper: NSObject {
-    
-    static let shared = QMUIHelper()
-    
-    private override init() {}
-    
-    weak var helperDelegate: QMUIHelperDelegate?
-
-    // MARK: - UIApplication
-    static func renderStatusBarStyleDark() {
-        UIApplication.shared.statusBarStyle = .default
-    }
-
-    static func renderStatusBarStyleLight() {
-        UIApplication.shared.statusBarStyle = .lightContent
-    }
-
-    static func dimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .dimmed
-        window?.tintColorDidChange()
-    }
-
-    static func resetDimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .normal
-        window?.tintColorDidChange()
-    }
-}
-
 let QMUIResourcesMainBundleName = "QMUIResources.bundle"
 
 // MARK: - QMUI专属
@@ -52,12 +22,12 @@ extension QMUIHelper {
         let bundle = QMUIHelper.resourcesBundle
         return QMUIHelper.image(in: bundle, with: name)
     }
-    
+
     static func resourcesBundle(with bundleName: String) -> Bundle? {
         var bundle = Bundle(path: (Bundle.main.resourcePath ?? "") + "/\(bundleName)")
         if bundle == nil {
             // 动态framework的bundle资源是打包在framework里面的，所以无法通过mainBundle拿到资源，只能通过其他方法来获取bundle资源。
-            
+
             let frameworkBundle = Bundle(for: self)
             if let bundleData = parse(bundleName) {
                 bundle = Bundle(path: frameworkBundle.path(forResource: bundleData["name"], ofType: bundleData["type"])!)
@@ -87,15 +57,13 @@ extension QMUIHelper {
         let bundleData = bundleName.components(separatedBy: ".")
         guard bundleData.count == 2 else {
             return nil
-            
         }
         return [
             "name": bundleData[0],
-            "type": bundleData[1]
+            "type": bundleData[1],
         ]
     }
 }
-
 
 // MARK: - DynamicType
 extension QMUIHelper {
@@ -126,7 +94,7 @@ extension QMUIHelper {
                 index = 6
             }
         }
-        
+
         return index
     }
 
@@ -137,12 +105,11 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - Keyboard
 
 extension QMUIHelper {
     static let _onceToken = UUID().uuidString
-    
+
     private struct kAssociatedObjectKey {
         static var LastKeyboardHeight = "LastKeyboardHeight"
         static var isKeyboardVisible = "isKeyboardVisible"
@@ -156,12 +123,12 @@ extension QMUIHelper {
     }
 
     func handleKeyboardWillShow(notification: Notification) {
-        self._isKeyboardVisible = true
-        self.lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
+        _isKeyboardVisible = true
+        lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
     }
 
-    func handleKeyboardWillHide(notification: Notification) {
-        self._isKeyboardVisible = false
+    func handleKeyboardWillHide(notification _: Notification) {
+        _isKeyboardVisible = false
     }
 
     private var _isKeyboardVisible: Bool {
@@ -179,7 +146,7 @@ extension QMUIHelper {
     public static var isKeyboardVisible: Bool {
         return shared._isKeyboardVisible
     }
-    
+
     private var lastKeyboardHeight: CGFloat {
         set {
             objc_setAssociatedObject(self, &kAssociatedObjectKey.LastKeyboardHeight, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -204,7 +171,7 @@ extension QMUIHelper {
         guard let keyboardRect = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
         return keyboardRect
     }
-    
+
     /// 获取当前键盘的高度，注意高度可能为0（例如第三方键盘会发出两次notification，其中第一次的高度就为0
     public static func keyboardHeight(with notification: Notification) -> CGFloat {
         return QMUIHelper.keyboardHeight(with: notification, in: nil)
@@ -279,7 +246,7 @@ extension QMUIHelper {
             AVAudioSessionCategoryPlayback,
             AVAudioSessionCategoryRecord,
             AVAudioSessionCategoryPlayAndRecord,
-            AVAudioSessionCategoryAudioProcessing
+            AVAudioSessionCategoryAudioProcessing,
         ]
 
         // 如果不属于系统category，返回
@@ -289,7 +256,7 @@ extension QMUIHelper {
 
         try? AVAudioSession.sharedInstance().setCategory(category)
     }
-    
+
     static func categoryForLowVersion(with category: String) -> Int {
         if category == AVAudioSessionCategoryAmbient {
             return kAudioSessionCategory_AmbientSound
@@ -313,7 +280,6 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - UIGraphic
 extension QMUIHelper {
     static var pixelOne: CGFloat {
@@ -326,22 +292,21 @@ extension QMUIHelper {
             assert(false, "QMUI CGPostError, \(#file):\(#line) \(#function), 非法的size：\(size)\n\(Thread.callStackSymbols)")
         }
     }
-    
-    /// context是否合法
-//    static func inspectContextIfInvalidatedInDebugMode(context: CGContext) {
-//    
-//    }
-//
-//    static func inspectContextIfInvalidatedInReleaseMode(context: CGContext) -> Bool {
-//    
-//    }
-}
 
+    /// context是否合法
+    //    static func inspectContextIfInvalidatedInDebugMode(context: CGContext) {
+    //
+    //    }
+    //
+    //    static func inspectContextIfInvalidatedInReleaseMode(context: CGContext) -> Bool {
+    //
+    //    }
+}
 
 // MARK: - Device
 extension QMUIHelper {
     public static var isIPad: Bool {
-    // [[[UIDevice currentDevice] model] isEqualToString:@"iPad"] 无法判断模拟器，改为以下方式
+        // [[[UIDevice currentDevice] model] isEqualToString:@"iPad"] 无法判断模拟器，改为以下方式
         return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
     }
 
@@ -356,7 +321,7 @@ extension QMUIHelper {
     public static var isIPhone: Bool {
         return UIDevice.current.model.contains("iPhone")
     }
-    
+
     public static var isSimulator: Bool {
         #if TARGET_OS_SIMULATOR
             return true
@@ -368,15 +333,15 @@ extension QMUIHelper {
     public static var is55InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor55Inch
     }
-    
+
     public static var is47InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor47Inch
     }
-    
+
     public static var is40InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor40Inch
     }
-    
+
     public static var is35InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor35Inch
     }
@@ -401,5 +366,139 @@ extension QMUIHelper {
     public static var isHighPerformanceDevice: Bool {
         // TODO:
         return false
+    }
+}
+
+
+// MARK: - Orientation
+extension QMUIHelper {
+    /// 根据指定的旋转方向计算出对应的旋转角度
+    public static func angleForTransformWithInterface(orientation: UIInterfaceOrientation) -> CGFloat {
+        var angle: CGFloat = 0
+        switch orientation {
+        case .portraitUpsideDown:
+            angle = .pi
+        case .landscapeLeft:
+            angle = .pi / -2
+        case .landscapeRight:
+            angle = .pi / 2
+        default:
+            angle = 0.0
+        }
+        return angle
+    }
+
+    /// 根据当前设备的旋转方向计算出对应的CGAffineTransform
+    public static var transformForCurrentInterfaceOrientation: CGAffineTransform {
+        return QMUIHelper.transformWithInterface(orientation: UIApplication.shared.statusBarOrientation)
+    }
+
+    /// 根据指定的旋转方向计算出对应的CGAffineTransform
+    public static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
+        
+        let angle = QMUIHelper.angleForTransformWithInterface(orientation: orientation)
+        return CGAffineTransform(rotationAngle: angle)
+    }
+}
+
+
+// MARK: - ViewController
+extension QMUIHelper {
+    /**
+     * 获取当前应用里最顶层的可见viewController
+     */
+    public static var visibleViewController: UIViewController? {
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        let visibleViewController = rootViewController?.qmui_visibleViewControllerIfExist
+        return visibleViewController
+    }
+}
+
+
+// MARK: - UIApplication
+extension QMUIHelper {
+    /**
+     * 更改状态栏内容颜色为深色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleDark() {
+        UIApplication.shared.statusBarStyle = .default
+    }
+
+    /**
+     * 更改状态栏内容颜色为浅色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleLight() {
+        UIApplication.shared.statusBarStyle = .lightContent
+    }
+
+    /**
+     * 把App的主要window置灰，用于浮层弹出时，请注意要在适当时机调用`resetDimmedApplicationWindow`恢复到正常状态
+     */
+    public static func dimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .dimmed
+        window?.tintColorDidChange()
+    }
+
+    /**
+     * 恢复对App的主要window的置灰操作，与`dimmedApplicationWindow`成对调用
+     */
+    public static func resetDimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .normal
+        window?.tintColorDidChange()
+    }
+}
+
+
+// MARK: - Log
+extension QMUIHelper {
+    // TODO:
+//    - (void)printLogWithCalledFunction:(nonnull const char *)func log:(nonnull NSString *)log, ... {
+//    va_list args;
+//    va_start(args, log);
+//    NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
+//    if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
+//    [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
+//    } else {
+//    NSLog(@"QMUI - %@. Called By %s", logString, func);
+//    }
+//    va_end(args);
+//    }
+}
+
+
+public let QMUISpringAnimationKey = "QMUISpringAnimationKey"
+// MARK: - Animation
+extension QMUIHelper {
+    public static func actionSpringAnimation(for view: UIView) {
+        let duration = 0.6
+        let springAnimation = CAKeyframeAnimation(keyPath: "transform.scale")
+        springAnimation.values = [0.85, 1.15, 0.9, 1.0]
+        springAnimation.keyTimes = [
+            (0.0 / duration),
+            (0.15 / duration) ,
+            (0.3 / duration),
+            (0.45 / duration)
+            ].map { NSNumber(value: $0) }
+        springAnimation.duration = duration
+        view.layer.add(springAnimation, forKey: QMUISpringAnimationKey)
+    }
+}
+
+class QMUIHelper: NSObject {
+
+    static let shared = QMUIHelper()
+
+    private override init() {}
+
+    weak var helperDelegate: QMUIHelperDelegate?
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }

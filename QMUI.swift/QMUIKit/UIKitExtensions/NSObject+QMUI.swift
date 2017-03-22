@@ -7,7 +7,7 @@
 //
 
 extension NSObject {
-    /** 
+    /**
      判断当前类是否有重写某个父类的指定方法
 
      @param selector 要判断的方法
@@ -28,13 +28,13 @@ extension NSObject {
 
         let superclassMethod = class_getInstanceMethod(superclass, selector)
         let instanceMethod = class_getInstanceMethod(type(of: self), selector)
-        if (instanceMethod == nil || instanceMethod == superclassMethod) {
+        if instanceMethod == nil || instanceMethod == superclassMethod {
             return false
         }
         return true
     }
 
-    /** 
+    /**
      对 super 发送消息
 
      @param aSelector 要发送的消息
@@ -48,7 +48,7 @@ extension NSObject {
     //        return
     //    }
 
-    /** 
+    /**
      对 super 发送消息
 
      @param aSelector 要发送的消息
@@ -60,7 +60,7 @@ extension NSObject {
     //
     //    }
 
-    /** 
+    /**
      遍历某个 protocol 里的所有方法
 
      @param protocol 要遍历的 protocol，例如 \@protocol(xxx)

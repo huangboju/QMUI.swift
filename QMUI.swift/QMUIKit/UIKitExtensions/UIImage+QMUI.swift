@@ -8,11 +8,11 @@
 
 enum QMUIImageShape {
     case oval // 椭圆
-    case triangle              // 三角形
-    case disclosureIndicator   // 列表cell右边的箭头
-    case checkmark             // 列表cell右边的checkmark
-    case navBack               // 返回按钮的箭头
-    case navClose              // 导航栏的关闭icon
+    case triangle // 三角形
+    case disclosureIndicator // 列表cell右边的箭头
+    case checkmark // 列表cell右边的checkmark
+    case navBack // 返回按钮的箭头
+    case navClose // 导航栏的关闭icon
 }
 
 enum QMUIImageBorderPosition: Int {
@@ -41,15 +41,15 @@ extension UIImage {
         return qmui_image(with: shape, size: size, lineWidth: lineWidth, tintColor: tintColor)
     }
 
-    static func qmui_image(with shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor) -> UIImage {
+    static func qmui_image(with _: QMUIImageShape, size _: CGSize, lineWidth _: CGFloat, tintColor _: UIColor) -> UIImage {
         return UIImage()
     }
 
-    func qmui_image(with orientation: UIImageOrientation) -> UIImage {
+    func qmui_image(with _: UIImageOrientation) -> UIImage {
         return UIImage()
     }
 
-    static func qmui_image(with: UIColor, size: CGSize, cornerRadius: CGFloat) -> UIImage {
+    static func qmui_image(with _: UIColor, size _: CGSize, cornerRadius _: CGFloat) -> UIImage {
         return UIImage()
     }
 }

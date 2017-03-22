@@ -17,15 +17,15 @@
  */
 class QMUISearchController: QMUICommonViewController {
 
-    weak open var searchResultsDelegate: QMUISearchControllerDelegate?
-    
+    open weak var searchResultsDelegate: QMUISearchControllerDelegate?
+
     private var searchController: UISearchController?
-    
+
     /**
      * 在某个指定的UIViewController上创建一个与其绑定的searchController
      * @param viewController 要在哪个viewController上添加搜索功能
      */
-    convenience init(contentsViewController: UIViewController) {
+    convenience init(contentsViewController _: UIViewController) {
         self.init(nibName: nil, bundle: nil)
     }
 

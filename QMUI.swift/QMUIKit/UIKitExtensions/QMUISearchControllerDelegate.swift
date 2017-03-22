@@ -20,20 +20,20 @@ protocol QMUISearchControllerDelegate: UITableViewDataSource, UITableViewDelegat
      * @warning 搜索框文字为空（例如第一次点击搜索框进入搜索状态时，或者文字全被删掉了，或者点击搜索框的×）也会走进来，此时参数searchString为@""，这是为了和系统的UISearchController保持一致
      */
     func searchController(_ searchController: QMUISearchController, updateResultsFor searchString: String)
-    
+
     func willPresent(_ searchController: QMUISearchController)
     func didPresent(_ searchController: QMUISearchController)
     func willDismiss(_ searchController: QMUISearchController)
-    func didDismiss(_ searchController:QMUISearchController)
+    func didDismiss(_ searchController: QMUISearchController)
     func search(_ controller: QMUISearchController, didLoadSearchResults tableView: UITableView)
     func search(_ Controller: QMUISearchController, willShow emptyView: QMUIEmptyView)
 }
 
 extension QMUISearchControllerDelegate {
-    func willPresent(_ searchController: QMUISearchController) {}
-    func didPresent(_ searchController: QMUISearchController) {}
-    func willDismiss(_ searchController: QMUISearchController) {}
-    func didDismiss(_ searchController:QMUISearchController) {}
-    func search(_ controller: QMUISearchController, didLoadSearchResults tableView: UITableView) {}
-    func search(_ Controller: QMUISearchController, willShow emptyView: QMUIEmptyView) {}
+    func willPresent(_: QMUISearchController) {}
+    func didPresent(_: QMUISearchController) {}
+    func willDismiss(_: QMUISearchController) {}
+    func didDismiss(_: QMUISearchController) {}
+    func search(_: QMUISearchController, didLoadSearchResults _: UITableView) {}
+    func search(_: QMUISearchController, willShow _: QMUIEmptyView) {}
 }
