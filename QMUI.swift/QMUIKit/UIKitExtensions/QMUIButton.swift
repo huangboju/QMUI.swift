@@ -47,6 +47,12 @@ enum QMUIToolbarButtonType {
     case image          // 图标类型的按钮
 }
 
+enum QMUIToolbarButtonType {
+    case normal         // 普通工具栏按钮
+    case red            // 工具栏红色按钮，用于删除等警告性操作
+    case image          // 图标类型的按钮
+}
+
 enum QMUINavigationButtonPosition: Int {
     case none = -1 // 不处于navigationBar最左（右）边的按钮，则使用None。用None则不会在alignmentRectInsets里调整位置
     case left // 用于leftBarButtonItem，如果用于leftBarButtonItems，则只对最左边的item使用，其他item使用QMUINavigationButtonPositionNone
