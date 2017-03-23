@@ -283,3 +283,11 @@ extension UIEdgeInsets {
         self.right = flat(right)
     }
 }
+
+// MARK: - CGRect
+
+extension CGRect {
+    static func rect(with size: CGSize) -> CGRect {
+        return CGRect(x: 0, y: 0, width: size.width, height: size.height)
+    }
+}
