@@ -179,7 +179,7 @@ func betweenOrEqual(_ minimumValue: CGFloat, _ value: CGFloat, _ maximumValue: C
     return minimumValue <= value && value <= maximumValue
 }
 
-func ReplaceMethod(_ _class: AnyClass, _originSelector: Selector, _newSelector: Selector) {
+func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
     let oriMethod = class_getInstanceMethod(_class, _originSelector)
     let newMethod = class_getInstanceMethod(_class, _newSelector)
     let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))
