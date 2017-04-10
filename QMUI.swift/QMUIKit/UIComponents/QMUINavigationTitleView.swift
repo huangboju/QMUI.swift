@@ -164,11 +164,12 @@ class QMUINavigationTitleView: UIControl {
         subtitleLabel.textAlignment = .center
         subtitleLabel.lineBreakMode = .byTruncatingTail
         addSubview(subtitleLabel)
-        
+
         isUserInteractionEnabled = false
         contentHorizontalAlignment = .center
         self.style = style
 
+        // TODO:
 //        let appearance = QMUINavigationTitleView.appearance
 //        loadingViewSize = appearance.loadingViewSize
 //        loadingViewMarginRight = appearance.loadingViewMarginRight
@@ -180,20 +181,218 @@ class QMUINavigationTitleView: UIControl {
         tintColor = NavBarTitleColor
     }
     
+    override var description: String {
+        return "\(super.description), title = \(title ?? ""), subtitle = \(subtitle ?? "")"
+    }
+    
+    // MARK: - 布局
+
+    func refreshLayout() {
+        superview?.setNeedsLayout()
+        setNeedsLayout()
+    }
+
+    func updateTitleLabelSize() {
+        if titleLabel.text?.isEmpty ?? false {
+            // 这里用 CGSizeCeil 是特地保证 titleView 的 sizeThatFits 计算出来宽度是 pt 取整，这样在 layoutSubviews 我们以 px 取整时，才能保证不会出现水平居中时出现半像素的问题，然后由于我们对半像素会认为一像素，所以导致总体宽度多了一像素，从而导致文字布局可能出现缩略...
+            titleLabelSize = titleLabel.sizeThatFits(CGSize.max).sizeCeil
+        } else {
+            titleLabelSize = .zero
+        }
+    }
+
+    func updateSubtitleLabelSize() {
+        if !(subtitleLabel.text?.isEmpty ?? false) {
+            // 这里用 CGSizeCeil 是特地保证 titleView 的 sizeThatFits 计算出来宽度是 pt 取整，这样在 layoutSubviews 我们以 px 取整时，才能保证不会出现水平居中时出现半像素的问题，然后由于我们对半像素会认为一像素，所以导致总体宽度多了一像素，从而导致文字布局可能出现缩略...
+            subtitleLabelSize = subtitleLabel.sizeThatFits(CGSize.max).sizeCeil
+        } else {
+            subtitleLabelSize = .zero
+        }
+    }
+    
+    var loadingViewSpacingSize: CGSize {
+        if needsLoadingView {
+            return CGSize(width: loadingViewSize.width + loadingViewMarginRight, height: loadingViewSize.height)
+        }
+        return .zero
+    }
+
+    var loadingViewSpacingSizeIfNeedsPlaceholder: CGSize {
+        return CGSize(width: loadingViewSpacingSize.width * (needsLoadingPlaceholderSpace ? 2 : 1), height: loadingViewSpacingSize.height)
+    }
+
+    var accessorySpacingSize: CGSize {
+        if accessoryView != nil || accessoryTypeView != nil {
+            let view = accessoryView ?? accessoryTypeView
+            return CGSize(width: view!.bounds.width + accessoryViewOffset.x, height: view!.bounds.height)
+        }
+        return .zero
+    }
+
+    var accessorySpacingSizeIfNeedesPlaceholder: CGSize {
+        return CGSize(width: accessorySpacingSize.width * (needsAccessoryPlaceholderSpace ? 2 : 1), height: accessorySpacingSize.height)
+    }
+
+    var titleEdgeInsetsIfShowingTitleLabel: UIEdgeInsets {
+        return titleLabelSize.isEmpty ? .zero : titleEdgeInsets
+    }
+
+    var subtitleEdgeInsetsIfShowingSubtitleLabel: UIEdgeInsets {
+        return subtitleLabelSize.isEmpty ? .zero : subtitleEdgeInsets
+    }
+
+    private var contentSize: CGSize {
+        var size = CGSize()
+        if style == .subTitleVertical {
+            // 垂直排列的情况下，loading和accessory与titleLabel同一行
+            var firstLineWidth = titleLabelSize.width + titleEdgeInsetsIfShowingTitleLabel.horizontalValue
+            firstLineWidth += loadingViewSpacingSizeIfNeedsPlaceholder.width
+            firstLineWidth += accessorySpacingSizeIfNeedesPlaceholder.width
+
+            let secondLineWidth = subtitleLabelSize.width + subtitleEdgeInsetsIfShowingSubtitleLabel.horizontalValue
+
+            size.width = max(firstLineWidth, secondLineWidth)
+
+            size.height = titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue + subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue
+        } else {
+            size.width = titleLabelSize.width + titleEdgeInsetsIfShowingTitleLabel.horizontalValue + self.subtitleLabelSize.width + subtitleEdgeInsetsIfShowingSubtitleLabel.horizontalValue
+            size.width += loadingViewSpacingSizeIfNeedsPlaceholder.width +  accessorySpacingSizeIfNeedesPlaceholder.width
+            size.height = max(titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue, subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue)
+            size.height = max(size.height, loadingViewSpacingSizeIfNeedsPlaceholder.height)
+            size.height = max(size.height, accessorySpacingSizeIfNeedesPlaceholder.height)
+        }
+        return size.flatted
+    }
+    
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        return contentSize
+    }
+    
+    override func layoutSubviews() {
+        if bounds.size.isEmpty {
+            print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
+            return
+        }
+        if accessoryViewAnimating {
+            return
+        }
+    
+        super.layoutSubviews()
+
+        let alignLeft = contentHorizontalAlignment == .left
+        let alignRight = contentHorizontalAlignment == .right
+
+        // 通过sizeThatFit计算出来的size，如果大于可使用的最大宽度，则会被系统改为最大限制的最大宽度
+        let maxSize = bounds.size
+
+        // 实际内容的size，小于等于maxSize
+        var contentSize = self.contentSize
+        contentSize.width = min(maxSize.width, contentSize.width)
+        contentSize.height = min(maxSize.height, contentSize.height)
+
+        // 计算左右两边的偏移值
+        var offsetLeft: CGFloat = 0
+        var offsetRight: CGFloat = 0
+        if alignLeft {
+            offsetLeft = 0
+            offsetRight = maxSize.width - contentSize.width
+        } else if alignRight {
+            offsetLeft = maxSize.width - contentSize.width
+            offsetRight = 0
+        } else {
+            offsetLeft = floorInPixel((maxSize.width - contentSize.width) / 2.0)
+            offsetRight = offsetLeft
+        }
+
+        // 计算loading占的单边宽度
+        let loadingViewSpace = loadingViewSpacingSize.width
+
+        // 获取当前accessoryView
+        let accessoryView = self.accessoryView ?? accessoryTypeView
+
+        // 计算accessoryView占的单边宽度
+        let accessoryViewSpace = accessorySpacingSize.width
+        
+        let isTitleLabelShowing = !(titleLabel.text?.isEmpty ?? false)
+        let isSubtitleLabelShowing = !(subtitleLabel.text?.isEmpty ?? false)
+        let titleEdgeInsets = titleEdgeInsetsIfShowingTitleLabel
+        let subtitleEdgeInsets = subtitleEdgeInsetsIfShowingSubtitleLabel
+        
+        var minX = offsetLeft + (needsAccessoryPlaceholderSpace ? accessoryViewSpace : 0)
+        var maxX = maxSize.width - offsetRight - (needsLoadingPlaceholderSpace ? loadingViewSpace : 0)
+        
+        if style == .subTitleVertical {
+
+            if let loadingView = loadingView {
+                loadingView.frame.setXY(minX, y: CGFloatGetCenter(titleLabelSize.height, loadingViewSize.height) + titleEdgeInsets.top)
+                minX = loadingView.frame.maxX + loadingViewMarginRight
+            }
+            if let accessoryView = accessoryView {
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, y: CGFloatGetCenter(titleLabelSize.height, accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
+                maxX = accessoryView.frame.minX - accessoryViewOffset.x
+            }
+            if isTitleLabelShowing {
+                minX += titleEdgeInsets.left
+                maxX -= titleEdgeInsets.right
+                titleLabel.frame = CGRect(x: minX, y: titleEdgeInsets.top, width: maxX - minX, height: titleLabelSize.height).flatted
+            } else {
+                titleLabel.frame = .zero
+            }
+            if isSubtitleLabelShowing {
+                subtitleLabel.frame = CGRect(x: subtitleEdgeInsets.left, y: (isTitleLabelShowing ? titleLabel.frame.maxY + titleEdgeInsets.bottom : 0) + subtitleEdgeInsets.top, width: maxSize.width - subtitleEdgeInsets.horizontalValue, height: subtitleLabelSize.height)
+            } else {
+                subtitleLabel.frame = .zero
+            }
+
+        } else {
+
+            if let loadingView = loadingView {
+                loadingView.frame.setXY(minX, y: CGFloatGetCenter(maxSize.height, loadingViewSize.height))
+                minX = loadingView.frame.maxX + loadingViewMarginRight
+            }
+            if let accessoryView = accessoryView {
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, y: CGFloatGetCenter(maxSize.height, accessoryView.bounds.height) + accessoryViewOffset.y)
+                maxX = accessoryView.frame.minX - accessoryViewOffset.x
+            }
+            if (isSubtitleLabelShowing) {
+                maxX -= subtitleEdgeInsets.right
+                // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
+                let shouldSubtitleLabelCenterVertically = subtitleLabelSize.height + subtitleEdgeInsets.verticalValue < contentSize.height
+                let subtitleMinY = shouldSubtitleLabelCenterVertically ? CGFloatGetCenter(maxSize.height, subtitleLabelSize.height) + subtitleEdgeInsets.top - subtitleEdgeInsets.bottom : subtitleEdgeInsets.top
+                subtitleLabel.frame = CGRect(x: maxX - subtitleLabelSize.width, y: subtitleMinY, width: subtitleLabelSize.width, height: subtitleLabelSize.height)
+                maxX = subtitleLabel.frame.minX - subtitleEdgeInsets.left
+            } else {
+                subtitleLabel.frame = .zero
+            }
+            if (isTitleLabelShowing) {
+                minX += titleEdgeInsets.left
+                maxX -= titleEdgeInsets.right
+                // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
+                let shouldTitleLabelCenterVertically = titleLabelSize.height + titleEdgeInsets.verticalValue < contentSize.height
+                let titleLabelMinY = shouldTitleLabelCenterVertically ? CGFloatGetCenter(maxSize.height, self.titleLabelSize.height) + titleEdgeInsets.top - titleEdgeInsets.bottom : titleEdgeInsets.top
+                titleLabel.frame = CGRect(x: minX, y: titleLabelMinY, width: maxX - minX, height: titleLabelSize.height)
+            } else {
+                titleLabel.frame = .zero
+            }
+        }
+    }
+
+
+    // MARK: - setter / getter
+
+    func handleTouchTitleViewEvent() {
+        let active = !isActive
+        delegate?.didTouch(titleView: self, isActive: active)
+        isActive = active
+        refreshLayout()
+    }
+
     // MARK: - Events
     
-//    func setHighlighted:(BOOL)highlighted {
-//    [super setHighlighted:highlighted];
-//    self.alpha = highlighted ? UIControlHighlightedAlpha : 1;
-//    }
-    
-    func handleTouchTitleViewEvent() {
-//        BOOL active = !self.active;
-//        if ([self.delegate respondsToSelector:@selector(didTouchTitleView:isActive:)]) {
-//            [self.delegate didTouchTitleView:self isActive:active];
-//        }
-//        self.active = active;
-//        [self refreshLayout];
+    override var isHighlighted: Bool {
+        didSet {
+            alpha = isHighlighted ? UIControlHighlightedAlpha : 1
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -221,10 +420,10 @@ extension UINavigationBar {
 
             // 当在UINavigationBar里使用自定义的titleView时，就算titleView的sizeThatFits:返回正确的高度，navigationBar也不会帮你设置高度（但会帮你设置宽度），所以我们需要自己更新高度并且修正y值
             if titleView.bounds.height != titleViewSize.height {
-                //            NSLog(@"【%@】修正布局前\ntitleView = %@", NSStringFromClass(titleView.class), titleView);
+                //            NSLog(@"【%@】修正布局前\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
                 let titleViewMinY = flat(titleView.frame.minY - ((titleViewSize.height - titleView.bounds.height) / 2.0))// 系统对titleView的y值布局是flat，注意，不能改，改了要测试
                 titleView.frame = CGRect(x: titleView.frame.minX, y: titleViewMinY, width: CGFloat(fminf(Float(titleViewMaximumWidth), Float(titleViewSize.width))), height: titleViewSize.height)
-                //            NSLog(@"【%@】修正布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView);
+                //            NSLog(@"【%@】修正布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
             }
         } else {
             titleView = nil
@@ -233,7 +432,7 @@ extension UINavigationBar {
         qmui_navigationBarLayoutSubviews()
     
         if titleView != nil {
-            //        NSLog(@"【%@】系统布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView);
+            //        NSLog(@"【%@】系统布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
         }
     }
 }

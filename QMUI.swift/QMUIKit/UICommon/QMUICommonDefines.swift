@@ -312,10 +312,9 @@ extension CGRect {
         return self
     }
     
-    mutating func setXY(_ x: CGFloat, y: CGFloat) -> CGRect {
+    mutating func setXY(_ x: CGFloat, y: CGFloat) {
         origin.x = flat(x)
         origin.y = flat(y)
-        return self
     }
     
     mutating func setWidth(_ width: CGFloat) -> CGRect {
@@ -358,6 +357,10 @@ extension CGSize {
     /// 将一个 CGSize 以 pt 为单位向下取整
     var sizeFloor: CGSize {
         return CGSize(width: floor(width), height: floor(height))
+    }
+
+    static var max: CGSize {
+        return CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
     }
 }
 
