@@ -65,7 +65,7 @@ class QMUINavigationTitleView: UIControl {
 
     private(set) var subtitleLabel: UILabel!
     public var subtitle: String?
-    
+
     /// 水平布局下的标题字体，默认为 NavBarTitleFont
     public var  horizontalTitleFont = NavBarTitleFont
 
@@ -428,9 +428,9 @@ extension UINavigationBar {
         } else {
             titleView = nil
         }
-        
+
         qmui_navigationBarLayoutSubviews()
-    
+
         if titleView != nil {
             //        NSLog(@"【%@】系统布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
         }
