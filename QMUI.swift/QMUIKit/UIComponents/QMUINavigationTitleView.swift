@@ -56,33 +56,111 @@ enum QMUINavigationTitleViewAccessoryType {
 
 class QMUINavigationTitleView: UIControl {
     public weak var delegate: QMUINavigationTitleViewDelegate?
-    public var style: QMUINavigationTitleViewStyle = .default
-    public var isActive = false
+    public var style: QMUINavigationTitleViewStyle = .default {
+        didSet {
+            if style == .subTitleVertical {
+                titleLabel.font = verticalTitleFont
+                updateTitleLabelSize()
+                
+                subtitleLabel.font = verticalSubtitleFont
+                updateSubtitleLabelSize()
+            } else {
+                titleLabel.font = horizontalTitleFont
+                updateTitleLabelSize()
+
+                subtitleLabel.font = horizontalSubtitleFont
+                updateSubtitleLabelSize()
+            }
+            refreshLayout()
+        }
+    }
+    public var isActive = false {
+        didSet {
+            delegate?.didChanged(active: isActive, for: self)
+            guard accessoryType == .disclosureIndicator else { return }
+            // 目前只对默认的accessoryView添加动画
+            accessoryViewAnimating = true
+            let angle: CGFloat = isActive ? -180 : 0.1
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseIn, animations: {
+                self.accessoryTypeView?.transform = CGAffineTransform(rotationAngle: AngleWithDegrees(angle))
+            }, completion: { (finished) in
+                self.accessoryViewAnimating  = false
+            })
+        }
+    }
 
     // MARK: - Titles
     private(set) var titleLabel: UILabel!
-    public var title: String?
+    public var title: String? {
+        didSet {
+            titleLabel.text = title
+            updateTitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     private(set) var subtitleLabel: UILabel!
-    public var subtitle: String?
+    public var subtitle: String? {
+        didSet {
+            titleLabel.text = subtitle
+            updateTitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     /// 水平布局下的标题字体，默认为 NavBarTitleFont
-    public var  horizontalTitleFont = NavBarTitleFont
+    public var  horizontalTitleFont = NavBarTitleFont {
+        didSet {
+            guard style == .default else { return }
+            titleLabel.font = horizontalTitleFont
+            updateTitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     /// 水平布局下的副标题的字体，默认为 NavBarTitleFont
-    public var horizontalSubtitleFont = NavBarTitleFont
+    public var horizontalSubtitleFont = NavBarTitleFont {
+        didSet {
+            guard style == .default else { return }
+            subtitleLabel.font = horizontalSubtitleFont
+            updateSubtitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     /// 垂直布局下的标题字体，默认为 UIFontMake(15)
-    public var verticalTitleFont = UIFontMake(15)
+    public var verticalTitleFont = UIFontMake(15) {
+        didSet {
+            guard style == .subTitleVertical else { return }
+            titleLabel.font = verticalTitleFont
+            updateTitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     /// 垂直布局下的副标题字体，默认为 UIFontLightMake(12)
-    public var verticalSubtitleFont = UIFontLightMake(12)
+    public var verticalSubtitleFont = UIFontLightMake(12) {
+        didSet {
+            guard style == .subTitleVertical else { return }
+            titleLabel.font = verticalSubtitleFont
+            updateTitleLabelSize()
+            refreshLayout()
+        }
+    }
 
     /// 标题的上下左右间距，当标题不显示时，计算大小及布局时也不考虑这个间距，默认为 UIEdgeInsetsZero
-    public var titleEdgeInsets = UIEdgeInsets.zero
+    public var titleEdgeInsets = UIEdgeInsets.zero {
+        didSet {
+            refreshLayout()
+        }
+    }
 
     /// 副标题的上下左右间距，当副标题不显示时，计算大小及布局时也不考虑这个间距，默认为 UIEdgeInsetsZero
-    public var subtitleEdgeInsets = UIEdgeInsets.zero
+    public var subtitleEdgeInsets = UIEdgeInsets.zero {
+        didSet {
+            refreshLayout()
+        }
+    }
     
     
     // MARK: - Loading
@@ -92,26 +170,59 @@ class QMUINavigationTitleView: UIControl {
     /*
      *  设置是否需要loading，只有开启了这个属性，loading才有可能显示出来。默认值为false。
      */
-    public var needsLoadingView = false
+    public var needsLoadingView = false {
+        didSet {
+            if needsLoadingView {
+                if loadingView == nil {
+                    loadingView = UIActivityIndicatorView(activityIndicatorStyle: NavBarActivityIndicatorViewStyle, size: loadingViewSize)
+                    loadingView?.color = tintColor
+                    loadingView?.stopAnimating()
+                    addSubview(loadingView!)
+                }
+            } else {
+                if let loadingView = loadingView {
+                    loadingView.stopAnimating()
+                    loadingView.removeFromSuperview()
+                    self.loadingView = nil
+                }
+            }
+            refreshLayout()
+        }
+    }
     
     /*
      *  `needsLoadingView`开启之后，通过这个属性来控制loading的显示和隐藏，默认值为YES
      *
      *  @see needsLoadingView
      */
-    public var loadingViewHidden = true
+    public var loadingViewHidden = true {
+        didSet {
+            if needsLoadingView {
+                loadingViewHidden ? loadingView?.stopAnimating() : loadingView?.startAnimating()
+            }
+            refreshLayout()
+        }
+    }
     
     /*
      *  如果为true则title居中，loading放在title的左边，title右边有一个跟左边loading一样大的占位空间；如果为false，loading和title整体居中。默认值为true。
      */
-    public var needsLoadingPlaceholderSpace = true
+    public var needsLoadingPlaceholderSpace = true {
+        didSet {
+            refreshLayout()
+        }
+    }
     
-    public var loadingViewSize = CGSize.zero
+    public var loadingViewSize = CGSize(width: 18, height: 18)
     
     /*
      *  控制loading距离右边的距离
      */
-    public var loadingViewMarginRight: CGFloat = 0
+    public var loadingViewMarginRight: CGFloat = 3 {
+        didSet {
+            refreshLayout()
+        }
+    }
     
     
     // MARK: - Accessory
@@ -119,22 +230,64 @@ class QMUINavigationTitleView: UIControl {
     /*
      *  当accessoryView不为空时，QMUINavigationTitleViewAccessoryType设置无效，一直都是None
      */
-    public var accessoryView: UIView?
+    public var accessoryView: UIView? {
+        didSet {
+            if let accessoryView = accessoryView {
+                accessoryType = .none
+                accessoryView.sizeToFit()
+                addSubview(accessoryView)
+            }
+            refreshLayout()
+        }
+    }
 
     /*
      *  只有当accessoryView为空时才有效
      */
-    public var accessoryType: QMUINavigationTitleViewAccessoryType = .none
+    public var accessoryType: QMUINavigationTitleViewAccessoryType = .none {
+        didSet {
+
+            if accessoryType == .none {
+                accessoryTypeView?.removeFromSuperview()
+                accessoryTypeView = nil
+                refreshLayout()
+                return
+            }
+
+            if accessoryTypeView == nil {
+                accessoryTypeView = UIImageView()
+                accessoryTypeView?.contentMode = .center
+                addSubview(accessoryTypeView!)
+            }
+
+            var accessoryImage: UIImage?
+            if accessoryType == .disclosureIndicator {
+                accessoryImage = NavBarAccessoryViewTypeDisclosureIndicatorImage?.qmui_image(with: .up)
+            }
+
+            accessoryTypeView?.image = accessoryImage
+            accessoryTypeView?.sizeToFit()
+            refreshLayout()
+        }
+    }
 
     /*
      *  用于微调accessoryView的位置
      */
-    public var accessoryViewOffset: CGPoint = .zero
-    
+    public var accessoryViewOffset: CGPoint = CGPoint(x: 3, y: 0) {
+        didSet {
+            refreshLayout()
+        }
+    }
+
     /*
      *  如果为true则title居中，`accessoryView`放在title的左边或右边；如果为false，`accessoryView`和title整体居中。默认值为false。
      */
-    public var needsAccessoryPlaceholderSpace = false
+    public var needsAccessoryPlaceholderSpace = false {
+        didSet {
+            refreshLayout()
+        }
+    }
 
     private var accessoryViewAnimating = false
     private var titleLabelSize: CGSize = .zero
@@ -379,20 +532,33 @@ class QMUINavigationTitleView: UIControl {
 
 
     // MARK: - setter / getter
+    override var contentHorizontalAlignment: UIControlContentHorizontalAlignment {
+        didSet {
+            refreshLayout()
+        }
+    }
+
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        titleLabel.textColor = tintColor
+        subtitleLabel.textColor = tintColor
+        loadingView?.color = tintColor
+    }
+
+
+    // MARK: - Events
+
+    override var isHighlighted: Bool {
+        didSet {
+            alpha = isHighlighted ? UIControlHighlightedAlpha : 1
+        }
+    }
 
     func handleTouchTitleViewEvent() {
         let active = !isActive
         delegate?.didTouch(titleView: self, isActive: active)
         isActive = active
         refreshLayout()
-    }
-
-    // MARK: - Events
-    
-    override var isHighlighted: Bool {
-        didSet {
-            alpha = isHighlighted ? UIControlHighlightedAlpha : 1
-        }
     }
 
     required init?(coder aDecoder: NSCoder) {
