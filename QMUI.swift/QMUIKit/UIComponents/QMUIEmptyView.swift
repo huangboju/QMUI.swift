@@ -12,6 +12,7 @@ class QMUIEmptyView: UIView {
 
     // 显示或隐藏loading图标
     func setLoadingView(_: Bool) {
+        
     }
 
     /**
