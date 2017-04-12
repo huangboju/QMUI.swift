@@ -45,7 +45,7 @@ class QMUIConfigurationManager {
 
     public var segmentTextTintColor: UIColor!
     public var segmentTextSelectedTintColor: UIColor!
-    public var segmentFontSize = UIFont(systemFor: 13)
+    public var segmentFontSize = UIFontMake(13)
 
     // MARK: - UIButton
     public var buttonHighlightedAlpha: CGFloat!
@@ -72,14 +72,14 @@ class QMUIConfigurationManager {
     public var actionSheetButtonTintColor: UIColor!
     public var actionSheetButtonBackgroundColor = UIColor(r: 255, g: 255, b: 255)
     public var actionSheetButtonBackgroundColorHighlighted = UIColor(r: 235, g: 235, b: 235)
-    public var actionSheetButtonFont = UIFont(systemFor: 21)
-    public var actionSheetButtonFontBold = UIFont(boldFor: 21)
+    public var actionSheetButtonFont = UIFontMake(21)
+    public var actionSheetButtonFontBold = UIFontBoldMake(21)
 
     // MARK: - NavigationBar
     public var navBarHighlightedAlpha: CGFloat = 0.2
     public var navBarDisabledAlpha: CGFloat = 0.2
-    public var navBarButtonFont = UIFont(systemFor: 17)
-    public var navBarButtonFontBold = UIFont(boldFor: 17)
+    public var navBarButtonFont = UIFontMake(17)
+    public var navBarButtonFontBold = UIFontBoldMake(17)
     public var navBarBackgroundImage: UIImage?
     public var navBarShadowImage: UIImage?
     public var navBarShadowImageColor = UIColor(r: 178, g: 178, b: 178)
@@ -88,7 +88,7 @@ class QMUIConfigurationManager {
     public var navBarTintColorHighlighted: UIColor!
     public var navBarTintColorDisabled: UIColor!
     public var navBarTitleColor: UIColor?
-    public var navBarTitleFont = UIFont(boldFor: 17)
+    public var navBarTitleFont = UIFontBoldMake(17)
     public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero
     public var navBarBackIndicatorImage: UIImage!
     public var navBarCloseButtonImage: UIImage!
@@ -114,7 +114,7 @@ class QMUIConfigurationManager {
     public var toolBarBackgroundImage: UIImage?
     public var toolBarBarTintColor: UIColor?
     public var toolBarShadowImageColor = UIColor(r: 178, g: 178, b: 178)
-    public var toolBarButtonFont = UIFont(systemFor: 17)
+    public var toolBarButtonFont = UIFontMake(17)
 
     // MARK: - SearchBar
     public var searchBarTextFieldBackground: UIColor!
@@ -143,16 +143,16 @@ class QMUIConfigurationManager {
     public var tableViewCellCheckmarkImage: UIImage!
     public var tableViewSectionHeaderBackgroundColor = UIColor(r: 244, g: 244, b: 244)
     public var tableViewSectionFooterBackgroundColor = UIColor(r: 244, g: 244, b: 244)
-    public var tableViewSectionHeaderFont = UIFont(boldFor: 12)
-    public var tableViewSectionFooterFont = UIFont(boldFor: 12)
+    public var tableViewSectionHeaderFont = UIFontBoldMake(12)
+    public var tableViewSectionFooterFont = UIFontBoldMake(12)
     public var tableViewSectionHeaderTextColor: UIColor!
     public var tableViewSectionFooterTextColor: UIColor!
     public var tableViewSectionHeaderHeight: CGFloat = 20
     public var tableViewSectionFooterHeight: CGFloat = 0
     public var tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
     public var tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
-    public var tableViewGroupedSectionHeaderFont = UIFont(systemFor: 12)
-    public var tableViewGroupedSectionFooterFont = UIFont(systemFor: 12)
+    public var tableViewGroupedSectionHeaderFont = UIFontMake(12)
+    public var tableViewGroupedSectionFooterFont = UIFontMake(12)
     public var tableViewGroupedSectionHeaderTextColor: UIColor!
     public var tableViewGroupedSectionFooterTextColor: UIColor!
     public var tableViewGroupedSectionHeaderHeight: CGFloat = 15

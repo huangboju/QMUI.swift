@@ -10,36 +10,6 @@ protocol QMUIHelperDelegate: class {
     func QMUIHelperPrint(_ log: String)
 }
 
-class QMUIHelper: NSObject {
-
-    static let shared = QMUIHelper()
-
-    private override init() {}
-
-    weak var helperDelegate: QMUIHelperDelegate?
-
-    // MARK: - UIApplication
-    static func renderStatusBarStyleDark() {
-        UIApplication.shared.statusBarStyle = .default
-    }
-
-    static func renderStatusBarStyleLight() {
-        UIApplication.shared.statusBarStyle = .lightContent
-    }
-
-    static func dimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .dimmed
-        window?.tintColorDidChange()
-    }
-
-    static func resetDimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .normal
-        window?.tintColorDidChange()
-    }
-}
-
 let QMUIResourcesMainBundleName = "QMUIResources.bundle"
 
 // MARK: - QMUI专属
@@ -396,5 +366,139 @@ extension QMUIHelper {
     public static var isHighPerformanceDevice: Bool {
         // TODO:
         return false
+    }
+}
+
+
+// MARK: - Orientation
+extension QMUIHelper {
+    /// 根据指定的旋转方向计算出对应的旋转角度
+    public static func angleForTransformWithInterface(orientation: UIInterfaceOrientation) -> CGFloat {
+        var angle: CGFloat = 0
+        switch orientation {
+        case .portraitUpsideDown:
+            angle = .pi
+        case .landscapeLeft:
+            angle = .pi / -2
+        case .landscapeRight:
+            angle = .pi / 2
+        default:
+            angle = 0.0
+        }
+        return angle
+    }
+
+    /// 根据当前设备的旋转方向计算出对应的CGAffineTransform
+    public static var transformForCurrentInterfaceOrientation: CGAffineTransform {
+        return QMUIHelper.transformWithInterface(orientation: UIApplication.shared.statusBarOrientation)
+    }
+
+    /// 根据指定的旋转方向计算出对应的CGAffineTransform
+    public static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
+        
+        let angle = QMUIHelper.angleForTransformWithInterface(orientation: orientation)
+        return CGAffineTransform(rotationAngle: angle)
+    }
+}
+
+
+// MARK: - ViewController
+extension QMUIHelper {
+    /**
+     * 获取当前应用里最顶层的可见viewController
+     */
+    public static var visibleViewController: UIViewController? {
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+        let visibleViewController = rootViewController?.qmui_visibleViewControllerIfExist
+        return visibleViewController
+    }
+}
+
+
+// MARK: - UIApplication
+extension QMUIHelper {
+    /**
+     * 更改状态栏内容颜色为深色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleDark() {
+        UIApplication.shared.statusBarStyle = .default
+    }
+
+    /**
+     * 更改状态栏内容颜色为浅色
+     *
+     * @warning 需在Info.plist文件内设置字段“View controller-based status bar appearance”的值为“NO”才能生效
+     */
+    public static func renderStatusBarStyleLight() {
+        UIApplication.shared.statusBarStyle = .lightContent
+    }
+
+    /**
+     * 把App的主要window置灰，用于浮层弹出时，请注意要在适当时机调用`resetDimmedApplicationWindow`恢复到正常状态
+     */
+    public static func dimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .dimmed
+        window?.tintColorDidChange()
+    }
+
+    /**
+     * 恢复对App的主要window的置灰操作，与`dimmedApplicationWindow`成对调用
+     */
+    public static func resetDimmedApplicationWindow() {
+        let window = UIApplication.shared.keyWindow
+        window?.tintAdjustmentMode = .normal
+        window?.tintColorDidChange()
+    }
+}
+
+
+// MARK: - Log
+extension QMUIHelper {
+    // TODO:
+//    - (void)printLogWithCalledFunction:(nonnull const char *)func log:(nonnull NSString *)log, ... {
+//    va_list args;
+//    va_start(args, log);
+//    NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
+//    if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
+//    [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
+//    } else {
+//    NSLog(@"QMUI - %@. Called By %s", logString, func);
+//    }
+//    va_end(args);
+//    }
+}
+
+
+public let QMUISpringAnimationKey = "QMUISpringAnimationKey"
+// MARK: - Animation
+extension QMUIHelper {
+    public static func actionSpringAnimation(for view: UIView) {
+        let duration = 0.6
+        let springAnimation = CAKeyframeAnimation(keyPath: "transform.scale")
+        springAnimation.values = [0.85, 1.15, 0.9, 1.0]
+        springAnimation.keyTimes = [
+            (0.0 / duration),
+            (0.15 / duration) ,
+            (0.3 / duration),
+            (0.45 / duration)
+            ].map { NSNumber(value: $0) }
+        springAnimation.duration = duration
+        view.layer.add(springAnimation, forKey: QMUISpringAnimationKey)
+    }
+}
+
+class QMUIHelper: NSObject {
+
+    static let shared = QMUIHelper()
+
+    private override init() {}
+
+    weak var helperDelegate: QMUIHelperDelegate?
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
