@@ -11,19 +11,19 @@ protocol qmui_UITableViewDataSource {
 }
 
 extension qmui_UITableViewDataSource {
-    func qmui_tableView(_ tableView: UITableView, cellWith identifier: String) -> UITableViewCell {
+    func qmui_tableView(_: UITableView, cellWith _: String) -> UITableViewCell {
         return UITableViewCell()
     }
 }
 
 protocol QMUITableViewDelegate: UITableViewDelegate {
 
-    /** 
+    /**
      * 控制是否在列表顶部显示搜索框。在QMUICommonTableViewController里已经接管了searchBar的初始化工作，所以外部只需要控制“显示/隐藏”，不需要自己再初始化一次。
      */
     func shouldShowSearchBar(in tableView: QMUITableView) -> Bool
 
-    /** 
+    /**
      * 自定义要在<i>- (BOOL)touchesShouldCancelInContentView:(UIView *)view</i>内的逻辑<br/>
      * 若delegate不实现这个方法，则默认对所有UIControl返回NO（UIButton除外，它会返回YES），非UIControl返回YES。
      */
@@ -34,11 +34,11 @@ protocol QMUITableViewDataSource: UITableViewDataSource, qmui_UITableViewDataSou
 
 // 为了解决可选
 extension QMUITableViewDelegate {
-    func shouldShowSearchBar(in tableView: QMUITableView) -> Bool {
+    func shouldShowSearchBar(in _: QMUITableView) -> Bool {
         return false
     }
 
-    func tableView(_ tableView: QMUITableView, touchesShouldCancelIn contentView: UIView) -> Bool {
+    func tableView(_: QMUITableView, touchesShouldCancelIn _: UIView) -> Bool {
         return false
     }
 }

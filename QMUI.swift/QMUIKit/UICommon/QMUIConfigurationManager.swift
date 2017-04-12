@@ -80,14 +80,14 @@ class QMUIConfigurationManager {
     public var navBarDisabledAlpha: CGFloat = 0.2
     public var navBarButtonFont = UIFont(systemFor: 17)
     public var navBarButtonFontBold = UIFont(boldFor: 17)
-    public var navBarBackgroundImage: UIImage? = nil
-    public var navBarShadowImage: UIImage? = nil
+    public var navBarBackgroundImage: UIImage?
+    public var navBarShadowImage: UIImage?
     public var navBarShadowImageColor = UIColor(r: 178, g: 178, b: 178)
-    public var navBarBarTintColor: UIColor? = nil
+    public var navBarBarTintColor: UIColor?
     public var navBarTintColor: UIColor!
     public var navBarTintColorHighlighted: UIColor!
     public var navBarTintColorDisabled: UIColor!
-    public var navBarTitleColor: UIColor? = nil
+    public var navBarTitleColor: UIColor?
     public var navBarTitleFont = UIFont(boldFor: 17)
     public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero
     public var navBarBackIndicatorImage: UIImage!
@@ -111,8 +111,8 @@ class QMUIConfigurationManager {
     public var toolBarTintColor: UIColor!
     public var toolBarTintColorHighlighted: UIColor!
     public var toolBarTintColorDisabled: UIColor!
-    public var toolBarBackgroundImage: UIImage? = nil
-    public var toolBarBarTintColor: UIColor? = nil
+    public var toolBarBackgroundImage: UIImage?
+    public var toolBarBarTintColor: UIColor?
     public var toolBarShadowImageColor = UIColor(r: 178, g: 178, b: 178)
     public var toolBarButtonFont = UIFont(systemFor: 17)
 
@@ -124,8 +124,8 @@ class QMUIConfigurationManager {
     public var searchBarTintColor: UIColor!
     public var searchBarTextColor: UIColor!
     public var searchBarPlaceholderColor: UIColor!
-    public var searchBarSearchIconImage: UIImage? = nil
-    public var searchBarClearIconImage: UIImage? = nil
+    public var searchBarSearchIconImage: UIImage?
+    public var searchBarClearIconImage: UIImage?
     public var searchBarTextFieldCornerRadius: CGFloat = 2.0
 
     // MARK: - TableView / TableViewCell

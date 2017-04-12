@@ -25,26 +25,26 @@ protocol QMUINavigationControllerDelegate {
     /// 设置系统返回按钮title，如果返回nil则使用系统默认的返回按钮标题
     func backBarButtonItemTitle(with previousViewController: UIViewController) -> String
 
-    /** 
+    /**
      *  设置当前导航栏是否需要使用自定义的 push/pop transition 效果，默认返回NO。<br/>
      *  因为系统的UINavigationController只有一个navBar，所以会导致在切换controller的时候，如果两个controller的navBar状态不一致（包括backgroundImgae、shadowImage、barTintColor等等），就会导致在刚要切换的瞬间，navBar的状态都立马变成下一个controller所设置的样式了，为了解决这种情况，QMUI给出了一个方案，有四个方法可以决定你在转场的时候要不要使用自定义的navBar来模仿真实的navBar。具体方法如下：
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPushAppearing() -> Bool
 
-    /** 
+    /**
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPushDisappearing() -> Bool
 
-    /** 
+    /**
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
     func shouldCustomNavigationBarTransitionWhenPopAppearing() -> Bool
 
-    /** 
+    /**
      *  同上
      *  @see UINavigationController+NavigationBarTransition.h
      */
@@ -69,7 +69,7 @@ extension QMUINavigationControllerDelegate {
         return UIColor.blue
     }
 
-    func backBarButtonItemTitle(with previousViewController: UIViewController) -> String {
+    func backBarButtonItemTitle(with _: UIViewController) -> String {
         return ""
     }
 
@@ -98,7 +98,7 @@ class QMUINavigationController: UINavigationController {
     /// 即将要被pop的controller
     var viewControllerPopping: UIViewController?
 
-    /** 
+    /**
      *  因为QMUINavigationController把delegate指向了自己来做一些基类要做的事情，所以如果当外面重新指定了delegate，那么就会覆盖原本的delegate。<br/>
      *  为了避免这个问题，并且外面也可以实现实现navigationController的delegate方法，这里使用delegateProxy来保存外面指定的delegate，然后在基类的delegate方法实现里面会去调用delegateProxy的方法实现。
      */
@@ -220,7 +220,7 @@ class QMUINavigationController: UINavigationController {
     // MARK: - 自定义方法
 
     // 根据当前的viewController，统一处理导航栏底部的分隔线、状态栏的颜色
-    func renderStyle(in navigationController: UINavigationController, currentViewController: UIViewController?) {
+    func renderStyle(in _: UINavigationController, currentViewController: UIViewController?) {
         if let vc = currentViewController as? QMUINavigationControllerDelegate {
             // 控制界面的状态栏颜色
             if vc.shouldSetStatusBarStyleLight {
@@ -252,7 +252,7 @@ class QMUINavigationController: UINavigationController {
             // 导航栏上控件的主题色
             let tintColor = vc.navigationBarTintColor
             if tintColor != UIColor.blue {
-                self.navigationBar.tintColor = tintColor
+                navigationBar.tintColor = tintColor
             } else {
                 navigationBar.tintColor = NavBarTintColor
             }
@@ -322,7 +322,7 @@ extension QMUINavigationController: UINavigationControllerDelegate {
         // 目前仅支持下面两个delegate方法，如果需要增加全局的自定义转场动画，可以额外增加多上面注释的两个方法。
         let strs = [
             "navigationController:didShowViewController:animated:",
-            "navigationController:willShowViewController:animated:"
+            "navigationController:willShowViewController:animated:",
         ]
         return strs.contains("\(selector)")
     }

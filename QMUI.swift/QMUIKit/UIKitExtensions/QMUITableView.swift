@@ -7,12 +7,12 @@
 //
 
 class QMUITableView: UITableView {
-    
+
     override init(frame: CGRect, style: UITableViewStyle) {
         super.init(frame: frame, style: style)
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
@@ -21,16 +21,15 @@ class QMUITableView: UITableView {
     func didInitialized() {
         qmui_styledAsQMUITableView()
     }
-    
+
     // 保证一直存在tableFooterView，以去掉列表内容不满一屏时尾部的空白分割线
-//    - (void)setTableFooterView:(UIView *)tableFooterView {
-//    if (!tableFooterView) {
-//    tableFooterView = [[UIView alloc] init];
-//    }
-//    [super setTableFooterView:tableFooterView];
-//    }
-    
-    
+    //    - (void)setTableFooterView:(UIView *)tableFooterView {
+    //    if (!tableFooterView) {
+    //    tableFooterView = [[UIView alloc] init];
+    //    }
+    //    [super setTableFooterView:tableFooterView];
+    //    }
+
     override func touchesShouldCancel(in view: UIView) -> Bool {
         if let delegate = delegate as? QMUITableViewDelegate, delegate.responds(to: #selector(touchesShouldCancel)) {
             return delegate.tableView(self, touchesShouldCancelIn: view)
