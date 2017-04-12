@@ -312,7 +312,7 @@ extension CGRect {
         return self
     }
     
-    mutating func setXY(_ x: CGFloat, y: CGFloat) {
+    mutating func setXY(_ x: CGFloat, _ y: CGFloat) {
         origin.x = flat(x)
         origin.y = flat(y)
     }

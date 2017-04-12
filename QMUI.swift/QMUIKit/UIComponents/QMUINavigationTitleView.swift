@@ -477,11 +477,11 @@ class QMUINavigationTitleView: UIControl {
         if style == .subTitleVertical {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, y: CGFloatGetCenter(titleLabelSize.height, loadingViewSize.height) + titleEdgeInsets.top)
+                loadingView.frame.setXY(minX, CGFloatGetCenter(titleLabelSize.height, loadingViewSize.height) + titleEdgeInsets.top)
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, y: CGFloatGetCenter(titleLabelSize.height, accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, CGFloatGetCenter(titleLabelSize.height, accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if isTitleLabelShowing {
@@ -500,11 +500,11 @@ class QMUINavigationTitleView: UIControl {
         } else {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, y: CGFloatGetCenter(maxSize.height, loadingViewSize.height))
+                loadingView.frame.setXY(minX, CGFloatGetCenter(maxSize.height, loadingViewSize.height))
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, y: CGFloatGetCenter(maxSize.height, accessoryView.bounds.height) + accessoryViewOffset.y)
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, CGFloatGetCenter(maxSize.height, accessoryView.bounds.height) + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if (isSubtitleLabelShowing) {
