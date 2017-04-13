@@ -10,6 +10,7 @@
 		D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */; };
 		D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B301E35ECD600FE210A /* QMUINavigationController.swift */; };
 		D812CF221E9F05EE00066344 /* NSMutableParagraphStyle+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D812CF211E9F05EE00066344 /* NSMutableParagraphStyle+QMUI.swift */; };
+		D812CF7F1E9FB07C00066344 /* String+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D812CF7E1E9FB07C00066344 /* String+QMUI.swift */; };
 		D814B2661E9D121D0000B60C /* UIActivityIndicatorView+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D814B2651E9D121D0000B60C /* UIActivityIndicatorView+QMUI.swift */; };
 		D814B29D1E9E681E0000B60C /* UIControl+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D814B29C1E9E681E0000B60C /* UIControl+QMUI.swift */; };
 		D8198B201E81605B00AC98DB /* UIViewController+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8198B1F1E81605B00AC98DB /* UIViewController+QMUI.swift */; };
@@ -59,6 +60,7 @@
 		D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmptyView.swift; sourceTree = "<group>"; };
 		D8125B301E35ECD600FE210A /* QMUINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUINavigationController.swift; sourceTree = "<group>"; };
 		D812CF211E9F05EE00066344 /* NSMutableParagraphStyle+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableParagraphStyle+QMUI.swift"; sourceTree = "<group>"; };
+		D812CF7E1E9FB07C00066344 /* String+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+QMUI.swift"; sourceTree = "<group>"; };
 		D814B2651E9D121D0000B60C /* UIActivityIndicatorView+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIActivityIndicatorView+QMUI.swift"; sourceTree = "<group>"; };
 		D814B29C1E9E681E0000B60C /* UIControl+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+QMUI.swift"; sourceTree = "<group>"; };
 		D8198B1F1E81605B00AC98DB /* UIViewController+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+QMUI.swift"; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				D814B2651E9D121D0000B60C /* UIActivityIndicatorView+QMUI.swift */,
 				D814B29C1E9E681E0000B60C /* UIControl+QMUI.swift */,
 				D812CF211E9F05EE00066344 /* NSMutableParagraphStyle+QMUI.swift */,
+				D812CF7E1E9FB07C00066344 /* String+QMUI.swift */,
 			);
 			path = UIKitExtensions;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */,
 				D83D41F31E4C548D00CC083E /* QMUISearchControllerDelegate.swift in Sources */,
 				D83D41F51E4C553E00CC083E /* QMUISearchController.swift in Sources */,
+				D812CF7F1E9FB07C00066344 /* String+QMUI.swift in Sources */,
 				D831FC711E2E5018009CFB28 /* QMUITabBarViewController.swift in Sources */,
 				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
 				D831FC351E2E04E3009CFB28 /* QMUINavigationTitleView.swift in Sources */,

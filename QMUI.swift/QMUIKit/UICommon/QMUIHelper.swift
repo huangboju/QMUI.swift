@@ -108,7 +108,7 @@ extension QMUIHelper {
 // MARK: - Keyboard
 
 extension QMUIHelper {
-    static let _onceToken = UUID().uuidString
+    private static let _onceToken = UUID().uuidString
 
     private struct kAssociatedObjectKey {
         static var LastKeyboardHeight = "LastKeyboardHeight"
