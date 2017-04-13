@@ -20,7 +20,15 @@ extension UIActivityIndicatorView: QMUIEmptyViewLoadingViewProtocol {
 class QMUIEmptyView: UIView {
 
     // 布局顺序从上到下依次为：imageView, loadingView, textLabel, detailTextLabel, actionButton
-    public var loadingView: UIActivityIndicatorView!   // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
+    public var loadingView: UIActivityIndicatorView! {
+        didSet {
+            if loadingView != oldValue {
+                oldValue.removeFromSuperview()
+                contentView.addSubview(loadingView)
+            }
+            setNeedsLayout()
+        }
+    }   // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
     public lazy private(set)var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .center
@@ -53,32 +61,85 @@ class QMUIEmptyView: UIView {
             setNeedsLayout()
         }
     }
+
     /// 默认为(0, 0, 36, 0)
     public var loadingViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 36, right: 0)
+
     /// 默认为(0, 0, 10, 0)
     public var textLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
         didSet {
             setNeedsLayout()
         }
     }
+
     /// 默认为(0, 0, 10, 0)
     public var detailTextLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
         didSet {
             setNeedsLayout()
         }
     }
-    public var actionButtonInsets = UIEdgeInsets.zero    // 默认为(0, 0, 0, 0)
-    public var verticalOffset: CGFloat = -30 // 如果不想要内容整体垂直居中，则可通过调整此属性来进行垂直偏移。默认为-30，即内容比中间略微偏上
+
+    /// 默认为(0, 0, 0, 0)
+    public var actionButtonInsets = UIEdgeInsets.zero {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+
+    /// 如果不想要内容整体垂直居中，则可通过调整此属性来进行垂直偏移。默认为-30，即内容比中间略微偏上
+    public var verticalOffset: CGFloat = -30 {
+        didSet {
+            setNeedsLayout()
+        }
+    }
     
     // 字体
-    public var textLabelFont = UIFontMake(15)  // 默认为15pt系统字体
-    public var detailTextLabelFont = UIFontMake(14)    // 默认为14pt系统字体
-    public var actionButtonFont = UIFontMake(15)   // 默认为15pt系统字体
+    /// 默认为15pt系统字体
+    public var textLabelFont = UIFontMake(15) {
+        didSet {
+            textLabel.font = textLabelFont
+            setNeedsLayout()
+        }
+    }
     
+    /// 默认为14pt系统字体
+    public var detailTextLabelFont = UIFontMake(14) {
+        didSet {
+            updateDetailTextLabel(with: detailTextLabel.text)
+        }
+    }
+
+    /// 默认为15pt系统字体
+    public var actionButtonFont = UIFontMake(15) {
+        didSet {
+            actionButton.titleLabel?.font = actionButtonFont
+            setNeedsLayout()
+        }
+    }
+
+
     // 颜色
-    public var textLabelTextColor = UIColor(r: 93, g: 100, b: 110)    // 默认为(93, 100, 110)
-    public var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150)  // 默认为(133, 140, 150)
-    public var actionButtonTitleColor = QMUICMI.buttonTintColor    // 默认为QMUICMI.buttonTintColor
+
+    /// 默认为(93, 100, 110)
+    public var textLabelTextColor = UIColor(r: 93, g: 100, b: 110) {
+        didSet {
+            textLabel.textColor = textLabelTextColor
+        }
+    }
+    
+    /// 默认为(133, 140, 150)
+    public var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
+        didSet {
+            updateDetailTextLabel(with: detailTextLabel.text)
+        }
+    }
+
+    /// 默认为QMUICMI.buttonTintColor
+    public var actionButtonTitleColor = QMUICMI.buttonTintColor {
+        didSet {
+            actionButton.setTitleColor(actionButtonTitleColor, for: .normal)
+        }
+    }
     
     /**
      *  如果要继承QMUIEmptyView并添加新的子 view，则必须：
@@ -97,12 +158,12 @@ class QMUIEmptyView: UIView {
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10) // 避免 label 直接撑满到屏幕两边，不好看
         return scrollView
     } ()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
@@ -199,6 +260,19 @@ class QMUIEmptyView: UIView {
 
         return CGSize(width: resultWidth, height: resultHeight)
     }
+    
+    func updateDetailTextLabel(with text: String?) {
+        if let text = text {
+            let string = NSAttributedString(string: text, attributes: [
+                NSFontAttributeName: detailTextLabelFont,
+                NSForegroundColorAttributeName: detailTextLabelTextColor,
+                NSParagraphStyleAttributeName: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping , textAlignment: .center)
+                ])
+            detailTextLabel.attributedText = string
+        }
+        detailTextLabel.isHidden = text == nil
+        setNeedsLayout()
+    }
 
     // 显示或隐藏loading图标
     func setLoadingViewHidden(_ hidden: Bool) {
@@ -233,7 +307,8 @@ class QMUIEmptyView: UIView {
      * 设置详细提示语的文本
      * @param text 详细提示语文本，若为nil则隐藏detailTextLabel
      */
-    func setDetailTextLabelText(_: String?) {
+    func setDetailTextLabelText(_ text: String?) {
+        updateDetailTextLabel(with: text)
     }
 
     /**
