@@ -98,7 +98,7 @@ func NavigationContentOriginY(_ y: CGFloat) -> CGFloat {
     return NavigationContentTop + y
 }
 
-let PixelOne: CGFloat = 1
+let PixelOne = QMUIHelper.pixelOne
 
 // 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏
 func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47Inch: T, _ varFor40Inch: T, _ var4: T) -> T {

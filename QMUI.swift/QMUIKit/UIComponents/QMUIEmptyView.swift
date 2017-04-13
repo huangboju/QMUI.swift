@@ -200,13 +200,13 @@ class QMUIEmptyView: UIView {
         scrollView.contentSize = CGSize(width: max(scrollView.bounds.width - scrollView.contentInset.horizontalValue, contentViewSize.width), height: max(scrollView.bounds.height - scrollView.contentInset.verticalValue, contentView.frame.maxY))
 
         var originY: CGFloat = 0
-        
+
         if !imageView.isHidden {
             imageView.sizeToFit()
             imageView.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: imageView.frame) + imageViewInsets.left - imageViewInsets.right, originY + imageViewInsets.top)
             originY = imageView.frame.maxY + imageViewInsets.bottom
         }
-        
+
         if !loadingView.isHidden {
             loadingView.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: loadingView.frame) + loadingViewInsets.left - loadingViewInsets.right, originY + loadingViewInsets.top)
             originY = loadingView.frame.maxY + loadingViewInsets.bottom
@@ -218,14 +218,14 @@ class QMUIEmptyView: UIView {
             self.textLabel.frame = CGRect(x: textLabelInsets.left, y: originY + textLabelInsets.top, width: labelWidth, height: labelSize.height).flatted
             originY = textLabel.frame.maxY + textLabelInsets.bottom
         }
-        
+
         if !detailTextLabel.isHidden {
             let labelWidth = contentView.bounds.width - detailTextLabelInsets.horizontalValue
             let labelSize = detailTextLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude))
             detailTextLabel.frame = CGRect(x: detailTextLabelInsets.left, y: originY + detailTextLabelInsets.top, width: labelWidth, height: labelSize.height).flatted
             originY = detailTextLabel.frame.maxY + detailTextLabelInsets.bottom
         }
-        
+
         if !actionButton.isHidden {
             actionButton.sizeToFit()
             actionButton.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: actionButton.frame) + actionButtonInsets.left, originY + actionButtonInsets.top)
