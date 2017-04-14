@@ -16,6 +16,7 @@ extension UIColor {
         }
     }
 
+
     var qmui_description: String {
         let red = qmui_red * 255
         let green = qmui_green * 255
@@ -25,7 +26,7 @@ extension UIColor {
         return description
     }
 
-    
+
     /**
      *  使用HEX命名方式的颜色字符串生成一个UIColor对象
      *
