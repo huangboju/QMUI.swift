@@ -107,17 +107,10 @@ extension UIColor {
         let green = qmui_green * 255
         let blue = qmui_blue * 255
 
-        // TODO:
-//        "#\(alignColorHexStringLength(hexString: String.qmui_hexString(with: alpha)))\(String.qmui_hexString(with: red))\(String.qmui_hexString(with: green))\(String.qmui_hexString(with: blue))"
-//        alignColorHexStringLength(hexString: String.qmui_hexString(with: alpha))
-//        [[NSString stringWithFormat:@"#%@%@%@%@",
-//         [self alignColorHexStringLength:[NSString qmui_hexStringWithInteger:alpha]],
-//         [self alignColorHexStringLength:[NSString qmui_hexStringWithInteger:red]],
-//         [self alignColorHexStringLength:[NSString qmui_hexStringWithInteger:green]],
-//         [self alignColorHexStringLength:[NSString qmui_hexStringWithInteger:blue]]] lowercaseString];
-        return ""
+        let str = "#\(alignColorHexStringLength(hexString: String.qmui_hexString(with: Int(alpha))))\(alignColorHexStringLength(hexString: String.qmui_hexString(with: Int(red))))\(alignColorHexStringLength(hexString: String.qmui_hexString(with: Int(green))))\(alignColorHexStringLength(hexString: String.qmui_hexString(with: Int(blue))))"
+        return str
     }
-    
+
     // 对于色值只有单位数的，在前面补一个0，例如“F”会补齐为“0F”
     private func alignColorHexStringLength(hexString: String) -> String {
         return hexString.length < 2 ? "0" + hexString : hexString
