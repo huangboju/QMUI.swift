@@ -119,10 +119,10 @@ let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
-let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0, bold: false) }
-let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: false) }
-let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0, bold: true) }
-let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: true) }
+let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: false) }
+let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: false) }
+let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: true) }
+let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: true) }
 
 
 // MARK: - 数学计算

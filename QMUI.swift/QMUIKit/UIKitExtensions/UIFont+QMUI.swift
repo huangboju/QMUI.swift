@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-enum QMUIFontWeight {
+public enum QMUIFontWeight {
     case light, normal, bold
 }
 
@@ -24,15 +24,47 @@ extension UIFont {
     }
 
     /**
-     * 返回支持动态字体的UIFont
-     *
-     * @param pointSize 默认的size
-     * @param bold 是否加粗
-     *
-     * @return 支持动态字体的UIFont对象
+     *  根据需要生成一个 UIFont 对象并返回
+     *  @param size     字号大小
+     *  @param weight   字体粗细
+     *  @param italic   是否斜体
      */
-    public static func qmui_dynamicFont(with size: CGFloat, bold: Bool) -> UIFont {
-        return UIFont.qmui_dynamicFont(with: size, upperLimitSize: size + 3, lowerLimitSize: 0, bold: bold)
+    public static func qmui_systemFont(ofSize size: CGFloat, weight: QMUIFontWeight, italic: Bool) -> UIFont {
+        let isLight = weight == .light
+        let isBold = weight == .bold
+
+        let shouldUsingHardCode = IOS_VERSION < 10.0// 这 UIFontDescriptor 也是醉人，相同代码只有 iOS 10 能得出正确结果，7-9都无法获取到 Light + Italic 的字体，只能写死。
+        if shouldUsingHardCode {
+            let name = IOS_VERSION < 9.0 ? "HelveticaNeue" : ".SFUIText"
+            let fontSuffix = (isLight ? "Light" : (isBold ? "Bold" : "")) + (italic ? "Italic" : "")
+            let fontName = name + (fontSuffix.length > 0 ? "-" : "") + fontSuffix
+            let font = UIFont(name: fontName, size: size)
+            return font!
+        }
+
+        // iOS 10 以上使用常规写法
+        var font: UIFont!
+
+        if #available(iOS 8.2, *) {
+            font = UIFont.systemFont(ofSize: size, weight: isLight ? UIFontWeightLight : (isBold ? UIFontWeightBold : UIFontWeightRegular))
+        } else {
+            font = UIFont.systemFont(ofSize: size)
+        }
+
+        var fontDescriptor = font.fontDescriptor
+        var traitsAttribute: [String: Any]? = fontDescriptor.fontAttributes[UIFontDescriptorTraitsAttribute] as? [String : Any]
+        if #available(iOS 8.2, *) {
+            traitsAttribute?[UIFontWeightTrait] = isLight ? -1.0 : (isBold ? 1.0 : 0.0)
+        }
+        if italic {
+            traitsAttribute?[UIFontSlantTrait] = 1.0
+        } else {
+            traitsAttribute?[UIFontSlantTrait] = 0.0
+        }
+
+        fontDescriptor = fontDescriptor.addingAttributes([UIFontDescriptorTraitsAttribute : traitsAttribute!])
+        font = UIFont(descriptor: fontDescriptor, size: 0)
+        return font
     }
 
     /**
@@ -45,7 +77,7 @@ extension UIFont {
      *
      * @return 支持动态字体的UIFont对象
      */
-    public static func qmui_dynamicFont(with pointSize: CGFloat, upperLimitSize: CGFloat, lowerLimitSize: CGFloat, bold: Bool) -> UIFont {
+    public static func qmui_dynamicFont(withSize pointSize: CGFloat, upperLimitSize: CGFloat, lowerLimitSize: CGFloat, bold: Bool) -> UIFont {
         var font: UIFont
         var descriptor: UIFontDescriptor
 
@@ -95,5 +127,17 @@ extension UIFont {
             }
         }
         return font
+    }
+
+    /**
+     * 返回支持动态字体的UIFont
+     *
+     * @param pointSize 默认的size
+     * @param bold 是否加粗
+     *
+     * @return 支持动态字体的UIFont对象
+     */
+    public static func qmui_dynamicFont(withSize size: CGFloat, bold: Bool) -> UIFont {
+        return UIFont.qmui_dynamicFont(withSize: size, upperLimitSize: size + 3, lowerLimitSize: 0, bold: bold)
     }
 }
