@@ -255,11 +255,6 @@ extension CGRect {
         return CGRect(x: newX, y: newY, width: newWidth, height: newHeight)
     }
 
-    /// 传入size，返回一个x/y为0的CGRect
-    func with(size: CGSize) -> CGRect {
-        return CGRect(origin: .zero, size: size)
-    }
-    
     mutating func float(top: CGFloat) -> CGRect {
         origin.y = top
         return self
@@ -335,6 +330,11 @@ extension CGRect {
 }
 
 extension CGSize {
+    /// 返回一个x/y为0的CGRect
+    var rect: CGRect {
+        return CGRect(origin: .zero, size: self)
+    }
+
     var center: CGPoint {
         return CGPoint(x: flat(width / 2.0), y: flat(height / 2.0))
     }
