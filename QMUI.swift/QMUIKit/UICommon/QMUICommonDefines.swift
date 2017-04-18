@@ -256,7 +256,7 @@ extension CGRect {
     }
 
     /// 传入size，返回一个x/y为0的CGRect
-    func with(size: CGSize) -> CGRect {
+    static func with(size: CGSize) -> CGRect {
         return CGRect(origin: .zero, size: size)
     }
     
