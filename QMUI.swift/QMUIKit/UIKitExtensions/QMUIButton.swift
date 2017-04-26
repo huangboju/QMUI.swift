@@ -205,8 +205,130 @@ class QMUIButton: UIButton {
             return
         }
         
-        // TODO: - 继续翻译
+        let contentSize = CGSize(width: self.bounds.width - self.contentEdgeInsets.horizontalValue, height: self.bounds.height - self.contentEdgeInsets.verticalValue)
+        if self.imagePosition == .top || self.imagePosition == .bottom {
+            let imageLimitWidth = contentSize.width - self.imageEdgeInsets.horizontalValue
+            let imageSize = self.imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) ?? CGSize.zero ///假设图片的高度必定完整显示
+            var imageFrame = CGRect.with(size: imageSize)
+           
+            
+            let titleLimitSize = CGSize(width: contentSize.width - self.titleEdgeInsets.horizontalValue, height: contentSize.height - self.imageEdgeInsets.verticalValue - imageSize.height - self.titleEdgeInsets.verticalValue)
+            var titleSize = self.titleLabel?.sizeThatFits(titleLimitSize) ?? CGSize.zero
+            titleSize.height = CGFloat(fminf(Float(titleSize.height), Float(titleLimitSize.height)))
+            var titleFrame = CGRect.with(size: titleSize)
+            
+            switch self.contentHorizontalAlignment {
+            case .left:
+                imageFrame = imageFrame.setX(self.contentEdgeInsets.left + self.imageEdgeInsets.left)
+                titleFrame = titleFrame.setX(self.contentEdgeInsets.left + self.titleEdgeInsets.left)
+            case .center:
+                imageFrame = imageFrame.setX(self.contentEdgeInsets.left + self.imageEdgeInsets.left + CGFloatGetCenter(imageLimitWidth, imageSize.width))
+                titleFrame = titleFrame.setX(self.contentEdgeInsets.left + self.titleEdgeInsets.left + CGFloatGetCenter(titleLimitSize.width, titleSize.width))
+            case .right:
+                imageFrame = imageFrame.setX(self.bounds.width - self.contentEdgeInsets.right - self.imageEdgeInsets.right - imageSize.width)
+                titleFrame = titleFrame.setX(self.bounds.width - self.contentEdgeInsets.right - self.imageEdgeInsets.right - titleSize.width)
+            case .fill:
+                imageFrame = imageFrame.setX(self.contentEdgeInsets.left + self.imageEdgeInsets.left)
+                imageFrame = imageFrame.setWidth(imageLimitWidth)
+                titleFrame = imageFrame.setX(self.contentEdgeInsets.left + self.titleEdgeInsets.left)
+                titleFrame = titleFrame.setWidth(titleLimitSize.width)
+            }
+            
+            if self.imagePosition == .top {
+                switch self.contentVerticalAlignment {
+                case .top:
+                    imageFrame = imageFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + self.imageEdgeInsets.bottom + self.titleEdgeInsets.top)
+                case .center:
+                    let contentHeight = imageFrame.height + self.imageEdgeInsets.verticalValue + titleFrame.height + self.titleEdgeInsets.verticalValue
+                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + self.contentEdgeInsets.top
+                    imageFrame = imageFrame.setY(minY + self.imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + self.imageEdgeInsets.bottom + self.titleEdgeInsets.top)
+                case .bottom:
+                    titleFrame = titleFrame.setY(self.bounds.height - self.contentEdgeInsets.bottom - self.titleEdgeInsets.bottom - titleFrame.height)
+                    imageFrame = imageFrame.setY(titleFrame.minY - self.titleEdgeInsets.top - self.imageEdgeInsets.bottom - imageFrame.height)
+                case .fill:
+                    // 图片按自身大小显示，剩余空间由标题占满
+                    imageFrame = imageFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + self.imageEdgeInsets.bottom + self.titleEdgeInsets.top)
+                    titleFrame = titleFrame.setHeight(self.bounds.height - self.contentEdgeInsets.bottom - self.titleEdgeInsets.bottom - titleFrame.minY)
+                }
+            } else {
+                switch self.contentVerticalAlignment {
+                case .top:
+                    titleFrame = titleFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top)
+                    imageFrame = imageFrame.setY(imageFrame.maxY + self.imageEdgeInsets.bottom + self.titleEdgeInsets.top)
+                case .center:
+                    let contentHeight = titleFrame.height + self.titleEdgeInsets.verticalValue + imageFrame.height + self.imageEdgeInsets.verticalValue
+                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + self.contentEdgeInsets.top
+                    titleFrame = titleFrame.setY(minY + self.titleEdgeInsets.top)
+                    imageFrame = imageFrame.setY(titleFrame.maxY + self.titleEdgeInsets.bottom + self.imageEdgeInsets.top)
+                case .bottom:
+                    imageFrame = imageFrame.setY(self.bounds.height - self.contentEdgeInsets.bottom - self.imageEdgeInsets.bottom - imageFrame.height)
+                    titleFrame = titleFrame.setY(imageFrame.minY - self.imageEdgeInsets.top - self.titleEdgeInsets.bottom - titleFrame.height)
+                case .fill:
+                    // 图片按自身大小显示，剩余空间由标题占满
+                    imageFrame = imageFrame.setY(self.bounds.height - self.contentEdgeInsets.bottom - self.imageEdgeInsets.bottom - imageFrame.height)
+                    titleFrame = titleFrame.setY(self.contentEdgeInsets.top + self.titleEdgeInsets.top)
+                    titleFrame = titleFrame.setHeight(imageFrame.minY - self.imageEdgeInsets.top - self.titleEdgeInsets.bottom - titleFrame.minY)
+                }
+                
+            }
+            
+            self.imageView?.frame = imageFrame.flatted
+            self.titleLabel?.frame = titleFrame.flatted
+            
+        } else if self.imagePosition == .right {
+            let imageLimitHeight = contentSize.height - self.imageEdgeInsets.verticalValue
+            let imageSize = self.imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight)) ?? .zero// 假设图片宽度必定完整显示，高度不超过按钮内容
+            var imageFrame = CGRect.with(size: imageSize)
+            
+            let titleLimitSize = CGSize(width: contentSize.width - self.titleEdgeInsets.horizontalValue - imageFrame.width - self.imageEdgeInsets.horizontalValue, height: contentSize.height - self.titleEdgeInsets.verticalValue)
+            var titleSize = self.titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
+            titleSize.height = fminf(Float(titleSize.height), Float(titleLimitSize.height))
+            var titleFrame = CGRect.with(size: titleSize)
+
+            switch self.contentHorizontalAlignment {
+            case .left:
+                titleFrame = titleFrame.setX(self.contentEdgeInsets.left + self.titleEdgeInsets.left)
+                imageFrame = imageFrame.setX(titleFrame.maxX + self.titleEdgeInsets.right + self.imageEdgeInsets.left)
+            case .center:
+                let contentWidth = titleFrame.width + self.titleEdgeInsets.horizontalValue + imageFrame.width + self.imageEdgeInsets.horizontalValue
+                let minX = self.contentEdgeInsets.left + CGFloatGetCenter(contentSize.width, contentWidth);
+                titleFrame = titleFrame.setX(minX + self.titleEdgeInsets.left)
+                imageFrame = imageFrame.setX(titleFrame.maxX + self.titleEdgeInsets.right + self.imageEdgeInsets.left)
+            case .right:
+                imageFrame = imageFrame.setX(self.bounds.width - self.contentEdgeInsets.right - self.imageEdgeInsets.right - imageFrame.width)
+                titleFrame = titleFrame.setX(imageFrame.minX - self.imageEdgeInsets.left - self.titleEdgeInsets.right - titleFrame.width)
+            case .fill:
+                // 图片按自身大小显示，剩余空间由标题占满
+                imageFrame = imageFrame.setX(self.bounds.width - self.contentEdgeInsets.right - self.imageEdgeInsets.right - imageFrame.width)
+                titleFrame = titleFrame.setX(self.contentEdgeInsets.left + self.titleEdgeInsets.left)
+                titleFrame = titleFrame.setX(imageFrame.minX - self.imageEdgeInsets.left - self.titleEdgeInsets.right - titleFrame.minX)
+            }
+            
+            switch self.contentVerticalAlignment {
+            case .top:
+                titleFrame = titleFrame.setY(self.contentEdgeInsets.top + self.titleEdgeInsets.top)
+                imageFrame = imageFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top)
+            case .center:
+                titleFrame = titleFrame.setY(self.contentEdgeInsets.top + self.titleEdgeInsets.top + CGFloatGetCenter(contentSize.height, titleFrame.height + self.titleEdgeInsets.verticalValue))
+                imageFrame = imageFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top + CGFloatGetCenter(contentSize.height, imageFrame.height + self.imageEdgeInsets.verticalValue))
+            case .bottom:
+                titleFrame = titleFrame.setY(self.bounds.height - self.contentEdgeInsets.bottom - self.titleEdgeInsets.bottom - titleFrame.height)
+                imageFrame = imageFrame.setY(self.bounds.height - self.contentEdgeInsets.bottom - self.imageEdgeInsets.bottom - imageFrame.height)
+            case .fill:
+                titleFrame = titleFrame.setY(self.contentEdgeInsets.top + self.titleEdgeInsets.top)
+                titleFrame = titleFrame.setHeight(self.bounds.height - self.contentEdgeInsets.bottom - self.titleEdgeInsets.bottom - titleFrame.minY)
+                imageFrame = imageFrame.setY(self.contentEdgeInsets.top + self.imageEdgeInsets.top)
+                imageFrame = imageFrame.setHeight(self.bounds.height - self.contentEdgeInsets.bottom - self.imageEdgeInsets.bottom - imageFrame.minY)
+            }
+            self.imageView?.frame = imageFrame.flatted
+            self.titleLabel?.frame = titleFrame.flatted
+        }
     }
+    
+    // TODO: - 继续翻译
     
 }
 
