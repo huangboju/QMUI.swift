@@ -6,6 +6,11 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+let CGContextInspectSize: (CGSize) -> () = {
+    QMUIHelper.inspectContext(size: $0)
+}
+
+
 public enum QMUIImageShape {
     case oval // 椭圆
     case triangle // 三角形
@@ -21,6 +26,13 @@ public enum QMUIImageBorderPosition: Int {
     case left
     case bottom
     case right
+}
+
+extension CGSize {
+    // 和全局方法重名 flatSpecificScale
+    func flat(specificScale s: CGFloat) -> CGSize {
+        return CGSize(width: flatSpecificScale(width, s), height: flatSpecificScale(height, s))
+    }
 }
 
 extension UIImage {
@@ -100,7 +112,8 @@ extension UIImage {
      *  @return 设置了透明度之后的图片
      */
     public func qmui_imageWith(alpha: CGFloat) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        // TODO: 这个没有用到需不需要取？
 //        let context = UIGraphicsGetCurrentContext()
         let drawingRect = CGRect(origin: .zero, size: size)
         draw(in: drawingRect, blendMode: .normal, alpha: alpha)
@@ -156,7 +169,7 @@ extension UIImage {
      *
      *  @return 返回一张与原图大小一致的图片，所叠加的图片若超出原图大小，则超出部分被截掉
      */
-    public func qmui_image(with image: UIImage, at point: CGPoint) -> UIImage? {
+    public func qmui_imageWithImageAbove(_ image: UIImage, at point: CGPoint) -> UIImage? {
         let imageIn = self
         var imageOut: UIImage?
         UIGraphicsBeginImageContextWithOptions(imageIn.size, qmui_opaque, imageIn.scale)
@@ -173,7 +186,7 @@ extension UIImage {
      *  @param extension 要拓展的大小
      *  @return 拓展后的图片
      */
-    func qmui_imageWith(insets: UIEdgeInsets) -> UIImage? {
+    func qmui_imageWithSpacingExtensionInsets(_ insets: UIEdgeInsets) -> UIImage? {
         let contextSize = CGSize(width: size.width + insets.horizontalValue, height: size.height + insets.verticalValue)
         UIGraphicsBeginImageContextWithOptions(contextSize, qmui_opaque, scale)
         draw(at: CGPoint(x: insets.left, y: insets.top))
@@ -181,7 +194,97 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return finalImage
     }
+    
+    
+    /**
+     *  切割出在指定位置中的图片
+     *
+     *  @param rect 要切割的rect
+     *
+     *  @return 切割后的新图片
+     */
+    public func qmui_imageWithClippedRect(_ rect: CGRect) -> UIImage {
+        CGContextInspectSize(rect.size)
+        let imageRect = size.rect
+        if rect.contains(imageRect) {
+            // 要裁剪的区域比自身大，所以不用裁剪直接返回自身即可
+            return self
+        }
+        // 由于CGImage是以pixel为单位来计算的，而UIImage是以point为单位，所以这里需要将传进来的point转换为pixel
+        let scaledRect = rect.apply(scale: scale)
+        let imageRef = cgImage?.cropping(to: scaledRect)
 
+        let imageOut = UIImage(cgImage: imageRef!, scale: scale, orientation: imageOrientation)
+        return imageOut
+    }
+
+    
+    /**
+     *  将原图按 UIViewContentModeScaleAspectFit 的方式进行缩放，并返回缩放后的图片，处理完的图片的 scale 保持与原图一致。
+     *  @param size 缩放后的图片尺寸不超过这个尺寸
+     *
+     *  @return 处理完的图片
+     *  @see qmui_imageWithScaleToSize:contentMode:scale:
+     */
+    public func qmui_imageWithScale(to size: CGSize) -> UIImage {
+        return qmui_imageWithScale(to: size, contentMode: .scaleAspectFit)
+    }
+    
+
+    /**
+     *  将原图按指定的 UIViewContentMode 缩放到指定的大小，返回处理完的图片，处理完的图片的 scale 保持与原图一致
+     *  @param size 在这个约束的 size 内进行缩放后的大小，处理后返回的图片的 size 会根据 contentMode 不同而不同
+     *  @param contentMode 希望使用的缩放模式，目前仅支持 UIViewContentModeScaleToFill、UIViewContentModeScaleAspectFill、UIViewContentModeScaleAspectFit（默认）
+     *
+     *  @return 处理完的图片
+     *  @see qmui_imageWithScaleToSize:contentMode:scale:
+     */
+    public func qmui_imageWithScale(to size: CGSize, contentMode: UIViewContentMode) -> UIImage {
+        return qmui_imageWithScale(to: size, contentMode: contentMode, scale: scale)
+    }
+
+    
+    /**
+     *  将原图按指定的 UIViewContentMode 缩放到指定的大小，返回处理完的图片
+     *  @param size 在这个约束的 size 内进行缩放后的大小，处理后返回的图片的 size 会根据 contentMode 不同而不同
+     *  @param contentMode 希望使用的缩放模式，目前仅支持 UIViewContentModeScaleToFill、UIViewContentModeScaleAspectFill、UIViewContentModeScaleAspectFit（默认）
+     *  @param scale 处理后返回的图片的 scale
+     *
+     *  @return 处理完的图片
+     */
+    public func qmui_imageWithScale(to size:CGSize, contentMode: UIViewContentMode, scale: CGFloat) -> UIImage {
+
+        let size = size.flat(specificScale: scale)
+        CGContextInspectSize(size)
+        let imageSize = self.size
+        var drawingRect = CGRect.zero
+        
+        if contentMode == .scaleToFill {
+            drawingRect = size.rect
+        } else {
+            let horizontalRatio = size.width / imageSize.width
+            let verticalRatio = size.height / imageSize.height
+            var ratio: CGFloat = 0
+            if contentMode == .scaleAspectFill {
+                ratio = max(horizontalRatio, verticalRatio)
+            } else {
+                // 默认按 UIViewContentModeScaleAspectFit
+                ratio = min(horizontalRatio, verticalRatio)
+            }
+            drawingRect.size.width = flatSpecificScale(imageSize.width * ratio, scale)
+            drawingRect.size.height = flatSpecificScale(imageSize.height * ratio, scale)
+        }
+
+        UIGraphicsBeginImageContextWithOptions(drawingRect.size, self.qmui_opaque, scale)
+        guard UIGraphicsGetCurrentContext() != nil else {
+            return self
+        }
+        draw(in: drawingRect)
+        let imageOut = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return imageOut ?? self
+    }
+    
 
     public static func qmui_image(with shape: QMUIImageShape, size: CGSize, tintColor: UIColor) -> UIImage {
         var lineWidth: CGFloat = 0
