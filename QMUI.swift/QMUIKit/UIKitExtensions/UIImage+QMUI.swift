@@ -30,7 +30,7 @@ public enum QMUIImageBorderPosition: Int {
 
 extension CGSize {
     // 和全局方法重名 flatSpecificScale
-    func flat(specificScale s: CGFloat) -> CGSize {
+    func flatSpecific(scale s: CGFloat) -> CGSize {
         return CGSize(width: flatSpecificScale(width, s), height: flatSpecificScale(height, s))
     }
 }
@@ -254,7 +254,7 @@ extension UIImage {
      */
     public func qmui_imageWithScale(to size:CGSize, contentMode: UIViewContentMode, scale: CGFloat) -> UIImage {
 
-        let size = size.flat(specificScale: scale)
+        let size = size.flatSpecific(scale: scale)
         CGContextInspectSize(size)
         let imageSize = self.size
         var drawingRect = CGRect.zero
@@ -308,10 +308,12 @@ extension UIImage {
         return UIImage()
     }
 
+    
     public func qmui_image(with _: UIImageOrientation) -> UIImage {
         return UIImage()
     }
 
+    
     public static func qmui_image(with _: UIColor, size _: CGSize, cornerRadius _: CGFloat) -> UIImage {
         return UIImage()
     }
