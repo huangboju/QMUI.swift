@@ -212,7 +212,7 @@ class QMUIConfigurationManager {
         navBarTintColorDisabled = navBarTintColor?.withAlphaComponent(navBarDisabledAlpha)
         navBarBackIndicatorImage = UIImage.qmui_image(with: .navBack, size: CGSize(width: 12, height: 20), tintColor: navBarTintColor)
         navBarCloseButtonImage = UIImage.qmui_image(with: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
-        navBarAccessoryViewTypeDisclosureIndicatorImage = UIImage.qmui_image(with: .triangle, size: CGSize(width: 8, height: 5), tintColor: white).qmui_image(with: .down)
+        navBarAccessoryViewTypeDisclosureIndicatorImage = UIImage.qmui_image(with: .triangle, size: CGSize(width: 8, height: 5), tintColor: white)?.qmui_image(with: .down)
 
         // MARK: - TabBar
         tabBarItemTitleColorSelected = tabBarTintColor
@@ -273,13 +273,13 @@ extension QMUIConfigurationManager {
         let toolBarAppearance = UIToolbar.appearance()
         toolBarAppearance.barTintColor = ToolBarBarTintColor
         toolBarAppearance.setBackgroundImage(ToolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
-        toolBarAppearance.setShadowImage(UIImage.qmui_image(with: ToolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0), forToolbarPosition: .any)
+        toolBarAppearance.setShadowImage(UIImage.qmui_image(withColor: ToolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0), forToolbarPosition: .any)
 
         // UITabBar
         let tabBarAppearance = UITabBar.appearance()
         tabBarAppearance.barTintColor = TabBarBarTintColor
         tabBarAppearance.backgroundImage = TabBarBackgroundImage
-        tabBarAppearance.shadowImage = UIImage.qmui_image(with: TabBarShadowImageColor!, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+        tabBarAppearance.shadowImage = UIImage.qmui_image(withColor: TabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
 
         // UITabBarItem
         let tabBarItemAppearance = UITabBarItem.appearance()

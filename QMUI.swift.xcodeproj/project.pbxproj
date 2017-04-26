@@ -44,6 +44,7 @@
 		D83D41F31E4C548D00CC083E /* QMUISearchControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41F21E4C548D00CC083E /* QMUISearchControllerDelegate.swift */; };
 		D83D41F51E4C553E00CC083E /* QMUISearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41F41E4C553E00CC083E /* QMUISearchController.swift */; };
 		D869486F1E4870C2003F3EFE /* UINavigationController+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D869486E1E4870C2003F3EFE /* UINavigationController+QMUI.swift */; };
+		D86AAA1A1EB0D104001B1398 /* UIBezierPath+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86AAA191EB0D104001B1398 /* UIBezierPath+QMUI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +100,7 @@
 		D83D41F21E4C548D00CC083E /* QMUISearchControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUISearchControllerDelegate.swift; sourceTree = "<group>"; };
 		D83D41F41E4C553E00CC083E /* QMUISearchController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUISearchController.swift; sourceTree = "<group>"; };
 		D869486E1E4870C2003F3EFE /* UINavigationController+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+QMUI.swift"; sourceTree = "<group>"; };
+		D86AAA191EB0D104001B1398 /* UIBezierPath+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+QMUI.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +229,7 @@
 				D814B29C1E9E681E0000B60C /* UIControl+QMUI.swift */,
 				D812CF211E9F05EE00066344 /* NSMutableParagraphStyle+QMUI.swift */,
 				D812CF7E1E9FB07C00066344 /* String+QMUI.swift */,
+				D86AAA191EB0D104001B1398 /* UIBezierPath+QMUI.swift */,
 			);
 			path = UIKitExtensions;
 			sourceTree = "<group>";
@@ -335,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D831FC671E2E11FD009CFB28 /* UIFont+QMUI.swift in Sources */,
+				D86AAA1A1EB0D104001B1398 /* UIBezierPath+QMUI.swift in Sources */,
 				D81E69EC1E7BBB3100C23129 /* UITableView+QMUI.swift in Sources */,
 				D83D41EF1E4C4F3200CC083E /* QMUIOrderedDictionary.swift in Sources */,
 				D81E69F51E7D54D500C23129 /* DispatchQueue+QMUI.swift in Sources */,
