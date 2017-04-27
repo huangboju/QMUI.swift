@@ -121,56 +121,56 @@ class QMUIButton: UIButton {
     private var originBorderColor: UIColor?
     
     private func didInitialized() {
-        self.adjustsTitleTintColorAutomatically = false
-        self.adjustsImageTintColorAutomatically = false
-        self.tintColor = ButtonTintColor
-        if !self.adjustsTitleTintColorAutomatically {
-            self.setTitleColor(ButtonTintColor, for: .normal)
+        adjustsTitleTintColorAutomatically = false
+        adjustsImageTintColorAutomatically = false
+        tintColor = ButtonTintColor
+        if !adjustsTitleTintColorAutomatically {
+            setTitleColor(ButtonTintColor, for: .normal)
         }
         
         // 默认接管highlighted和disabled的表现，去掉系统默认的表现
-        self.adjustsImageWhenHighlighted = false
-        self.adjustsImageWhenDisabled = false
-        self.adjustsButtonWhenHighlighted = true
-        self.adjustsButtonWhenDisabled = true
+        adjustsImageWhenHighlighted = false
+        adjustsImageWhenDisabled = false
+        adjustsButtonWhenHighlighted = true
+        adjustsButtonWhenDisabled = true
         
         // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
         // 不能设为0，否则无效；也不能设置为小数点，否则无法像素对齐
-        self.contentEdgeInsets = UIEdgeInsetsMake(1, 0, 1, 0)
+        contentEdgeInsets = UIEdgeInsetsMake(1, 0, 1, 0)
         
         // 图片默认在按钮左边，与系统UIButton保持一致
-        self.imagePosition = .left
+        imagePosition = .left
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var size = size
         // 如果调用 sizeToFit，那么传进来的 size 就是当前按钮的 size，此时的计算不要去限制宽高
-        if self.bounds.size.equalTo(size) {
+        if bounds.size.equalTo(size) {
             size = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         }
         
         var resultSize = CGSize.zero
-        let contentLimitSize = CGSize(width: size.width - self.contentEdgeInsets.horizontalValue, height: size.height - self.contentEdgeInsets.verticalValue)
-        switch self.imagePosition {
+        let contentLimitSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue, height: size.height - contentEdgeInsets.verticalValue)
+        switch imagePosition {
         case .top:
             fallthrough
         case .bottom:
             // 图片和文字上下排版时，宽度以文字或图片的最大宽度为最终宽度
-            let imageLimitWidth = contentLimitSize.width - self.imageEdgeInsets.horizontalValue
-            let imageSize = self.imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude))// 假设图片高度必定完整显示
+            let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
+            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude))// 假设图片高度必定完整显示
             
-            let titleLimitSize = CGSize(width: contentLimitSize.width - self.titleEdgeInsets.horizontalValue, height: contentLimitSize.height - self.imageEdgeInsets.verticalValue - (imageSize?.height ?? 0) - self.titleEdgeInsets.verticalValue)
-            var titleSize = self.titleLabel?.sizeThatFits(titleLimitSize)
+            let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue, height: contentLimitSize.height - imageEdgeInsets.verticalValue - (imageSize?.height ?? 0) - titleEdgeInsets.verticalValue)
+            var titleSize = titleLabel?.sizeThatFits(titleLimitSize)
             titleSize?.height = CGFloat(fminf(Float(titleSize?.height ?? 0), Float(titleLimitSize.height)))
             
-            resultSize.width = self.contentEdgeInsets.horizontalValue
-            resultSize.width += CGFloat(fmaxf(Float(self.imageEdgeInsets.horizontalValue) + Float(imageSize?.width ?? 0), Float(self.titleEdgeInsets.horizontalValue) + Float(titleSize?.width ?? 0)))
-            resultSize.height = self.contentEdgeInsets.verticalValue + self.imageEdgeInsets.verticalValue + (imageSize?.height ?? 0) + self.titleEdgeInsets.verticalValue + (titleSize?.height ?? 0)
+            resultSize.width = contentEdgeInsets.horizontalValue
+            resultSize.width += CGFloat(fmaxf(Float(imageEdgeInsets.horizontalValue) + Float(imageSize?.width ?? 0), Float(titleEdgeInsets.horizontalValue) + Float(titleSize?.width ?? 0)))
+            resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + (imageSize?.height ?? 0) + titleEdgeInsets.verticalValue + (titleSize?.height ?? 0)
             
         case .left:
             fallthrough
         case .right:
-            if self.imagePosition == .left && self.titleLabel?.numberOfLines == 1 {
+            if imagePosition == .left && titleLabel?.numberOfLines == 1 {
                 
                 // QMUIButtonImagePositionLeft使用系统默认布局
                 resultSize = super.sizeThatFits(size)
@@ -179,16 +179,16 @@ class QMUIButton: UIButton {
                 // 图片和文字水平排版时，高度以文字或图片的最大高度为最终高度
                 // titleLabel为多行时，系统的sizeThatFits计算结果依然为单行的，所以当QMUIButtonImagePositionLeft并且titleLabel多行的情况下，使用自己计算的结果
                 
-                let imageLimitHeight = contentLimitSize.height - self.imageEdgeInsets.verticalValue
-                let imageSize = self.imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight))// 假设图片宽度必定完整显示，高度不超过按钮内容
+                let imageLimitHeight = contentLimitSize.height - imageEdgeInsets.verticalValue
+                let imageSize = imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight))// 假设图片宽度必定完整显示，高度不超过按钮内容
                 
-                let titleLimitSize = CGSize(width: contentLimitSize.width - self.titleEdgeInsets.horizontalValue - (imageSize?.width ?? 0) - self.imageEdgeInsets.horizontalValue, height: contentLimitSize.height - self.titleEdgeInsets.verticalValue)
-                var titleSize = self.titleLabel?.sizeThatFits(titleLimitSize)
+                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue - (imageSize?.width ?? 0) - imageEdgeInsets.horizontalValue, height: contentLimitSize.height - titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel?.sizeThatFits(titleLimitSize)
                 titleSize?.height = CGFloat(fminf(Float(titleSize?.height ?? 0), Float(titleLimitSize.height)))
                 
-                resultSize.width = self.contentEdgeInsets.horizontalValue + self.imageEdgeInsets.horizontalValue + (imageSize?.width ?? 0) + self.titleEdgeInsets.horizontalValue + (titleSize?.width ?? 0)
-                resultSize.height = self.contentEdgeInsets.verticalValue
-                resultSize.height += CGFloat(fmaxf(Float(self.imageEdgeInsets.verticalValue) + Float(imageSize?.height ?? 0), Float(self.titleEdgeInsets.verticalValue) + Float(titleSize?.height ?? 0)))
+                resultSize.width = contentEdgeInsets.horizontalValue + imageEdgeInsets.horizontalValue + (imageSize?.width ?? 0) + titleEdgeInsets.horizontalValue + (titleSize?.width ?? 0)
+                resultSize.height = contentEdgeInsets.verticalValue
+                resultSize.height += CGFloat(fmaxf(Float(imageEdgeInsets.verticalValue) + Float(imageSize?.height ?? 0), Float(titleEdgeInsets.verticalValue) + Float(titleSize?.height ?? 0)))
             }
         }
         return resultSize
@@ -197,16 +197,138 @@ class QMUIButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if self.bounds.isEmpty {
+        if bounds.isEmpty {
             return
         }
         
-        if self.imagePosition == .left {
+        if imagePosition == .left {
             return
         }
         
-        // TODO: - 继续翻译
+        let contentSize = CGSize(width: bounds.width - contentEdgeInsets.horizontalValue, height: bounds.height - contentEdgeInsets.verticalValue)
+        if imagePosition == .top || imagePosition == .bottom {
+            let imageLimitWidth = contentSize.width - imageEdgeInsets.horizontalValue
+            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) ?? CGSize.zero ///假设图片的高度必定完整显示
+            var imageFrame = imageSize.rect
+           
+            
+            let titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue, height: contentSize.height - imageEdgeInsets.verticalValue - imageSize.height - titleEdgeInsets.verticalValue)
+            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? CGSize.zero
+            titleSize.height = CGFloat(fminf(Float(titleSize.height), Float(titleLimitSize.height)))
+            var titleFrame = titleSize.rect
+
+            switch contentHorizontalAlignment {
+            case .left:
+                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+            case .center:
+                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left + CGFloatGetCenter(imageLimitWidth, imageSize.width))
+                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left + CGFloatGetCenter(titleLimitSize.width, titleSize.width))
+            case .right:
+                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageSize.width)
+                titleFrame = titleFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - titleSize.width)
+            case .fill:
+                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                imageFrame = imageFrame.setWidth(imageLimitWidth)
+                titleFrame = imageFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                titleFrame = titleFrame.setWidth(titleLimitSize.width)
+            }
+            
+            if imagePosition == .top {
+                switch contentVerticalAlignment {
+                case .top:
+                    imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                case .center:
+                    let contentHeight = imageFrame.height + imageEdgeInsets.verticalValue + titleFrame.height + titleEdgeInsets.verticalValue
+                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + contentEdgeInsets.top
+                    imageFrame = imageFrame.setY(minY + imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                case .bottom:
+                    titleFrame = titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height)
+                    imageFrame = imageFrame.setY(titleFrame.minY - titleEdgeInsets.top - imageEdgeInsets.bottom - imageFrame.height)
+                case .fill:
+                    // 图片按自身大小显示，剩余空间由标题占满
+                    imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                    titleFrame = titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.minY)
+                }
+            } else {
+                switch contentVerticalAlignment {
+                case .top:
+                    titleFrame = titleFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                    imageFrame = imageFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                case .center:
+                    let contentHeight = titleFrame.height + titleEdgeInsets.verticalValue + imageFrame.height + imageEdgeInsets.verticalValue
+                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + contentEdgeInsets.top
+                    titleFrame = titleFrame.setY(minY + titleEdgeInsets.top)
+                    imageFrame = imageFrame.setY(titleFrame.maxY + titleEdgeInsets.bottom + imageEdgeInsets.top)
+                case .bottom:
+                    imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
+                    titleFrame = titleFrame.setY(imageFrame.minY - imageEdgeInsets.top - titleEdgeInsets.bottom - titleFrame.height)
+                case .fill:
+                    // 图片按自身大小显示，剩余空间由标题占满
+                    imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
+                    titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                    titleFrame = titleFrame.setHeight(imageFrame.minY - imageEdgeInsets.top - titleEdgeInsets.bottom - titleFrame.minY)
+                }
+                
+            }
+            
+            imageView?.frame = imageFrame.flatted
+            titleLabel?.frame = titleFrame.flatted
+            
+        } else if imagePosition == .right {
+            let imageLimitHeight = contentSize.height - imageEdgeInsets.verticalValue
+            let imageSize = imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight)) ?? .zero// 假设图片宽度必定完整显示，高度不超过按钮内容
+            var imageFrame = imageSize.rect
+
+            let titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue - imageFrame.width - imageEdgeInsets.horizontalValue, height: contentSize.height - titleEdgeInsets.verticalValue)
+            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
+            titleSize.height = min(titleSize.height, titleLimitSize.height)
+            var titleFrame = titleSize.rect
+
+            switch contentHorizontalAlignment {
+            case .left:
+                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
+            case .center:
+                let contentWidth = titleFrame.width + titleEdgeInsets.horizontalValue + imageFrame.width + imageEdgeInsets.horizontalValue
+                let minX = contentEdgeInsets.left + CGFloatGetCenter(contentSize.width, contentWidth);
+                titleFrame = titleFrame.setX(minX + titleEdgeInsets.left)
+                imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
+            case .right:
+                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width)
+                titleFrame = titleFrame.setX(imageFrame.minX - imageEdgeInsets.left - titleEdgeInsets.right - titleFrame.width)
+            case .fill:
+                // 图片按自身大小显示，剩余空间由标题占满
+                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width)
+                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                titleFrame = titleFrame.setX(imageFrame.minX - imageEdgeInsets.left - titleEdgeInsets.right - titleFrame.minX)
+            }
+            
+            switch contentVerticalAlignment {
+            case .top:
+                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+            case .center:
+                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top + CGFloatGetCenter(contentSize.height, titleFrame.height + titleEdgeInsets.verticalValue))
+                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top + CGFloatGetCenter(contentSize.height, imageFrame.height + imageEdgeInsets.verticalValue))
+            case .bottom:
+                titleFrame = titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height)
+                imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
+            case .fill:
+                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                titleFrame = titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.minY)
+                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                imageFrame = imageFrame.setHeight(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.minY)
+            }
+            imageView?.frame = imageFrame.flatted
+            titleLabel?.frame = titleFrame.flatted
+        }
     }
+    
+    // TODO: - 继续翻译
     
 }
 
@@ -241,11 +363,11 @@ class QMUINavigationButton: UIButton {
     init(with type: QMUINavigationButtonType, title: String?) {
         super.init(frame: .zero)
         self.type = type
-        self.buttonPosition = .none
-        self.useForBarButtonItem = true
-        self.setTitle(title, for: .normal)
-        self.renderButtonStyle()
-        self.sizeToFit()
+        buttonPosition = .none
+        useForBarButtonItem = true
+        setTitle(title, for: .normal)
+        renderButtonStyle()
+        sizeToFit()
     }
     
     /**
@@ -262,10 +384,10 @@ class QMUINavigationButton: UIButton {
      */
     convenience init(with image: UIImage) {
         self.init(with: .image)
-        self.setImage(image, for: .normal)
+        setImage(image, for: .normal)
         // 系统在iOS8及以后的版本默认对image的UIBarButtonItem加了上下3、左右11的padding，所以这里统一一下
-        self.contentEdgeInsets = UIEdgeInsetsMake(3, 11, 3, 11)
-        self.sizeToFit()
+        contentEdgeInsets = UIEdgeInsetsMake(3, 11, 3, 11)
+        sizeToFit()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -426,9 +548,9 @@ class QMUIToolbarButton: UIButton {
         self.type = type
         super.init(frame: .zero)
 
-        self.setTitle(title, for: .normal)
-        self.renderButtonStyle()
-        self.sizeToFit()
+        setTitle(title, for: .normal)
+        renderButtonStyle()
+        sizeToFit()
     }
     
     /**
@@ -490,7 +612,7 @@ class QMUILinkButton: QMUIButton {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.didInitialized()
+        didInitialized()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -527,7 +649,7 @@ class QMUIGhostButton: QMUIButton {
 
     init(with ghostColor: UIColor, frame: CGRect) {
         super.init(frame: frame)
-        self.initialize(with: ghostColor)
+        initialize(with: ghostColor)
     }
     
     convenience init(with ghostType: QMUIGhostButtonColor) {
@@ -558,12 +680,12 @@ class QMUIGhostButton: QMUIButton {
     convenience override init(frame: CGRect) {
         self.init(with: GhostButtonColorBlue ?? .blue, frame: frame)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.initialize(with: GhostButtonColorBlue ?? .blue)
+        initialize(with: GhostButtonColorBlue ?? .blue)
     }
-    
+
     private func initialize(with ghostColor: UIColor) {
         self.ghostColor = ghostColor
     }

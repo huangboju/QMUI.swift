@@ -98,7 +98,7 @@ func NavigationContentOriginY(_ y: CGFloat) -> CGFloat {
     return NavigationContentTop + y
 }
 
-let PixelOne: CGFloat = 1
+let PixelOne = QMUIHelper.pixelOne
 
 // 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏
 func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47Inch: T, _ varFor40Inch: T, _ var4: T) -> T {
@@ -119,10 +119,10 @@ let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
-let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0, bold: false) }
-let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: false) }
-let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0, bold: true) }
-let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(with: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: true) }
+let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: false) }
+let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: false) }
+let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: true) }
+let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: true) }
 
 
 // MARK: - 数学计算
@@ -255,11 +255,6 @@ extension CGRect {
         return CGRect(x: newX, y: newY, width: newWidth, height: newHeight)
     }
 
-    /// 传入size，返回一个x/y为0的CGRect
-    func with(size: CGSize) -> CGRect {
-        return CGRect(origin: .zero, size: size)
-    }
-    
     mutating func float(top: CGFloat) -> CGRect {
         origin.y = top
         return self
@@ -335,6 +330,11 @@ extension CGRect {
 }
 
 extension CGSize {
+    /// 返回一个x/y为0的CGRect
+    var rect: CGRect {
+        return CGRect(origin: .zero, size: self)
+    }
+
     var center: CGPoint {
         return CGPoint(x: flat(width / 2.0), y: flat(height / 2.0))
     }
