@@ -23,15 +23,16 @@ class QMUITableView: UITableView {
     }
 
     // 保证一直存在tableFooterView，以去掉列表内容不满一屏时尾部的空白分割线
-    //    - (void)setTableFooterView:(UIView *)tableFooterView {
-    //    if (!tableFooterView) {
-    //    tableFooterView = [[UIView alloc] init];
-    //    }
-    //    [super setTableFooterView:tableFooterView];
-    //    }
+    override var tableFooterView: UIView? {
+        didSet {
+            if tableFooterView == nil {
+                tableFooterView = UIView()
+            }
+        }
+    }
 
     override func touchesShouldCancel(in view: UIView) -> Bool {
-        if let delegate = delegate as? QMUITableViewDelegate, delegate.responds(to: #selector(touchesShouldCancel)) {
+        if let delegate = delegate as? QMUITableViewDelegate {
             return delegate.tableView(self, touchesShouldCancelIn: view)
         }
 

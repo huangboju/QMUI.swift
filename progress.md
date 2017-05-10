@@ -15,7 +15,7 @@ Tips
 * QMUIButton  👨🏼‍💻
 * UINavigationController+QMUI  👷
 * NSObject+QMUI  👷
-* QMUITableView  👷
+* QMUITableView  ✅
 * QMUISearchControllerDelegate  👷
 * QMUISearchController  👷
 * UITableView+QMUI  👷
