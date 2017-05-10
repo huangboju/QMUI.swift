@@ -12,7 +12,7 @@ Tips
 * DispatchQueue+QMUI  ❣️ 👷
 * QMUIButton  👨🏼‍💻
 * QMUILabel  👷
-* QMUISearchController  👷
+* QMUISearchController  👨🏼‍💻
 * QMUISegmentedControl  ✅
 * QMUITableView  ✅
 * QMUITableViewProtocols  👷

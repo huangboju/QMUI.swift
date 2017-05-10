@@ -86,7 +86,7 @@ class QMUISearchController: QMUICommonViewController {
     open var isActive: Bool {
         return searchController?.isActive ?? false
     }
-    
+
     /**
      *  控制进入/退出搜索状态
      *  @param active YES 表示进入搜索状态，NO 表示退出搜索状态
