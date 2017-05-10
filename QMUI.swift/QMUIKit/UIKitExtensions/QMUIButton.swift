@@ -67,13 +67,24 @@ class QMUIButton: UIButton {
      * 让按钮的文字颜色自动跟随tintColor调整（系统默认titleColor是不跟随的）<br/>
      * 默认为NO
      */
-    @IBInspectable var adjustsTitleTintColorAutomatically: Bool = false
+    @IBInspectable var adjustsTitleTintColorAutomatically: Bool = false {
+        didSet {
+            self.updateTitleColorIfNeeded()
+        }
+    }
 
     /**
      * 让按钮的图片颜色自动跟随tintColor调整（系统默认image是需要更改renderingMode才可以达到这种效果）<br/>
      * 默认为NO
      */
-    @IBInspectable var adjustsImageTintColorAutomatically: Bool = false
+    @IBInspectable var adjustsImageTintColorAutomatically: Bool = false {
+        didSet {
+            let valueDifference = adjustsImageTintColorAutomatically != oldValue
+            if valueDifference {
+                self.updateImageRenderingModeIfNeeded()
+            }
+        }
+    }
 
     /**
      * 是否自动调整highlighted时的按钮样式，默认为YES。<br/>
@@ -99,13 +110,24 @@ class QMUIButton: UIButton {
      * @warning 当设置<i>highlightedBorderColor</i>时，会强制把<i>adjustsButtonWhenHighlighted</i>设为NO，避免两者效果冲突。
      * @see adjustsButtonWhenHighlighted
      */
-    @IBInspectable var highlightedBorderColor: UIColor?
+    @IBInspectable var highlightedBorderColor: UIColor? {
+        didSet {
+            if highlightedBorderColor {
+                // 只要开启了highlightedBorderColor，就默认不需要alpha的高亮
+                adjustsButtonWhenHighlighted = false
+            }
+        }
+    }
 
     /**
      * 设置按钮里图标和文字的相对位置，默认为QMUIButtonImagePositionLeft<br/>
      * 可配合imageEdgeInsets、titleEdgeInsets、contentHorizontalAlignment、contentVerticalAlignment使用
      */
-    @IBInspectable var imagePosition: QMUIButtonImagePosition = .left
+    @IBInspectable var imagePosition: QMUIButtonImagePosition = .left {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -326,7 +348,111 @@ class QMUIButton: UIButton {
         }
     }
 
-    // TODO: - 继续翻译
+    override var isHighlighted: Bool {
+        didSet {
+            if isHighlighted && !self.originBorderColor {
+                // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
+                self.originBorderColor = UIColor(cgColor: self.layer.borderColor)
+            }
+            // 渲染背景色
+            if highlightedBackgroundColor || highlightedBorderColor {
+                adjustsButtonHighlighted()
+            }
+
+            // 如果此时是disabled，则disabled的样式优先
+            if !self.enabled {
+                return
+            }
+            // 自定义highlighted样式
+            if self.adjustsButtonWhenHighlighted {
+                if isHighlighted {
+                    self.alpha = ButtonHighlightedAlpha
+                } else {
+                    UIView.animate(withDuration: 0.25) {
+                        self.alpha = 1
+                    }
+                }
+            }
+        }
+    }
+
+    override var isEnabled: Bool {
+        didSet {
+            if !isEnabled && adjustsButtonWhenDisabled {
+                alpha = ButtonDisabledAlpha
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    self.alpha = 1
+                }
+            }
+        }
+    }
+
+    private func adjustsButtonHighlighted() {
+        if highlightedBackgroundColor {
+            if !highlightedBackgroundLayer {
+                highlightedBackgroundLayer = CALayer()
+                // TODO: 翻译CALayer+QMUI
+                // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
+                self.layer.insertSublayer(highlightedBackgroundLayer, at: 0)
+            }
+            highlightedBackgroundLayer.frame = self.bounds
+            highlightedBackgroundLayer.cornerRadius = self.layer.cornerRadius
+            highlightedBackgroundLayer.backgroundColor = self.highlighted ? self.highlightedBackgroundColor.CGColor : UIColorClear.CGColor
+
+            if highlightedBorderColor {
+                self.layer.borderColor = self.highlighted ? self.highlightedBorderColor.CGColor : self.originBorderColor.CGColor
+            }
+        }
+    }
+
+    private func updateTitleColorIfNeeded() {
+        if adjustsTitleTintColorAutomatically && currentTitleColor {
+            self.setTitleColor(self.tintColor, for: .normal)
+        }
+        if adjustsTitleTintColorAutomatically && currentAttributedTitle {
+            let attributedString = NSAttributedString(string: currentAttributedTitle)
+            let range = NSRange(location: 0, length: attributedString.length)
+            attributedString.addAttribute(NSForegroundColorAttributeName, value: self.tintColor, range: range)
+            self.setAttributedTitle(attributedString, for: .normal)
+        }
+    }
+
+    private func updateImageRenderingModeIfNeeded() {
+        if currentImage {
+            let states: [UIControlState] = [.normal, .highlighted, .disabled]
+            for state in states {
+                guard let image = self.image(for: state) else {
+                    continue
+                }
+
+                if adjustsImageTintColorAutomatically {
+                    // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
+                    self.setImage(image, for: state)
+                } else {
+                    // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
+                    self.setImage(image.withRenderingMode(.alwaysOriginal), for: state)
+                }
+            }
+        }
+    }
+
+    override func setImage(_ image: UIImage?, for state: UIControlState) {
+        if adjustsImageTintColorAutomatically {
+            image = image.withRenderingMode(.alwaysTemplate)
+        }
+        super.setImage(image, for: state)
+    }
+
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+
+        updateTitleColorIfNeeded()
+
+        if adjustsImageTintColorAutomatically {
+            updateImageRenderingModeIfNeeded()
+        }
+    }
 }
 
 /**
