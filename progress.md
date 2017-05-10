@@ -16,7 +16,6 @@ Tips
 * UINavigationController+QMUI  👷
 * NSObject+QMUI  👷
 * QMUITableView  ✅
-* QMUISearchControllerDelegate  👷
 * QMUISearchController  👷
 * UITableView+QMUI  👷
 * UIScrollView+QMUI  👷
@@ -28,6 +27,7 @@ Tips
 * UIControl+QMUI  👷
 * NSMutableParagraphStyle+QMUI  👷
 * String+QMUI  👷
+* QMUISegmentedControl  ✅
 
 
 
