@@ -112,7 +112,7 @@ class QMUIButton: UIButton {
      */
     @IBInspectable var highlightedBorderColor: UIColor? {
         didSet {
-            if highlightedBorderColor {
+            if highlightedBorderColor != nil {
                 // 只要开启了highlightedBorderColor，就默认不需要alpha的高亮
                 adjustsButtonWhenHighlighted = false
             }
@@ -350,12 +350,12 @@ class QMUIButton: UIButton {
 
     override var isHighlighted: Bool {
         didSet {
-            if isHighlighted && !self.originBorderColor {
+            if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
-                self.originBorderColor = UIColor(cgColor: self.layer.borderColor)
+                self.originBorderColor = UIColor(cgColor: self.layer.borderColor!)
             }
             // 渲染背景色
-            if highlightedBackgroundColor || highlightedBorderColor {
+            if highlightedBackgroundColor != nil || highlightedBorderColor != nil {
                 adjustsButtonHighlighted()
             }
 
@@ -379,7 +379,7 @@ class QMUIButton: UIButton {
     override var isEnabled: Bool {
         didSet {
             if !isEnabled && adjustsButtonWhenDisabled {
-                alpha = ButtonDisabledAlpha
+                alpha = ButtonDisabledAlpha!
             } else {
                 UIView.animate(withDuration: 0.25) {
                     self.alpha = 1
@@ -389,29 +389,28 @@ class QMUIButton: UIButton {
     }
 
     private func adjustsButtonHighlighted() {
-        if highlightedBackgroundColor {
-            if !highlightedBackgroundLayer {
-                highlightedBackgroundLayer = CALayer()
-                // TODO: 翻译CALayer+QMUI
-                // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
-                self.layer.insertSublayer(highlightedBackgroundLayer, at: 0)
-            }
+        if highlightedBackgroundColor != nil {
+            
+            // TODO: 翻译CALayer+QMUI
+            // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
+            self.layer.insertSublayer(highlightedBackgroundLayer, at: 0)
+            
             highlightedBackgroundLayer.frame = self.bounds
             highlightedBackgroundLayer.cornerRadius = self.layer.cornerRadius
-            highlightedBackgroundLayer.backgroundColor = self.highlighted ? self.highlightedBackgroundColor.CGColor : UIColorClear.CGColor
+            highlightedBackgroundLayer.backgroundColor = self.highlighted ? self.highlightedBackgroundColor!.cgColor : UIColorClear.cgColor
 
-            if highlightedBorderColor {
-                self.layer.borderColor = self.highlighted ? self.highlightedBorderColor.CGColor : self.originBorderColor.CGColor
+            if highlightedBorderColor != nil {
+                self.layer.borderColor = self.highlighted ? self.highlightedBorderColor!.cgColor : self.originBorderColor.cgColor
             }
         }
     }
 
     private func updateTitleColorIfNeeded() {
-        if adjustsTitleTintColorAutomatically && currentTitleColor {
+        if adjustsTitleTintColorAutomatically && currentTitleColor != nil {
             self.setTitleColor(self.tintColor, for: .normal)
         }
-        if adjustsTitleTintColorAutomatically && currentAttributedTitle {
-            let attributedString = NSAttributedString(string: currentAttributedTitle)
+        if adjustsTitleTintColorAutomatically && currentAttributedTitle != nil {
+            let attributedString = NSAttributedString(string: currentAttributedTitle!)
             let range = NSRange(location: 0, length: attributedString.length)
             attributedString.addAttribute(NSForegroundColorAttributeName, value: self.tintColor, range: range)
             self.setAttributedTitle(attributedString, for: .normal)
@@ -419,7 +418,7 @@ class QMUIButton: UIButton {
     }
 
     private func updateImageRenderingModeIfNeeded() {
-        if currentImage {
+        if currentImage != nil {
             let states: [UIControlState] = [.normal, .highlighted, .disabled]
             for state in states {
                 guard let image = self.image(for: state) else {
@@ -438,10 +437,11 @@ class QMUIButton: UIButton {
     }
 
     override func setImage(_ image: UIImage?, for state: UIControlState) {
+        var tmpImage: UIImage?
         if adjustsImageTintColorAutomatically {
-            image = image.withRenderingMode(.alwaysTemplate)
+            tmpImage = image?.withRenderingMode(.alwaysTemplate)
         }
-        super.setImage(image, for: state)
+        super.setImage(tmpImage, for: state)
     }
 
     override func tintColorDidChange() {
