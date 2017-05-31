@@ -96,9 +96,9 @@ class QMUICommonViewController: UIViewController {
      */
     func showEmptyViewWithLoading() {
         showEmptyView()
-        emptyView?.setLoadingView(false)
-        emptyView?.setTextLabel(nil)
-        emptyView?.setDetailTextLabel(nil)
+        emptyView?.setLoadingViewHidden(false)
+        emptyView?.setTextLabelText(nil)
+        emptyView?.setDetailTextLabelText(nil)
         emptyView?.setActionButtonTitle(nil)
     }
 
@@ -114,13 +114,13 @@ class QMUICommonViewController: UIViewController {
      */
     func showEmptyView(with image: UIImage?, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector) {
         showEmptyView()
-        emptyView?.setLoadingView(true)
+        emptyView?.setLoadingViewHidden(true)
         emptyView?.set(image: image)
-        emptyView?.setTextLabel(text)
-        emptyView?.setDetailTextLabel(detailText)
+        emptyView?.setTextLabelText(text)
+        emptyView?.setDetailTextLabelText(detailText)
         emptyView?.setActionButtonTitle(buttonTitle)
-        emptyView?.actionButton?.removeTarget(nil, action: nil, for: .allEvents)
-        emptyView?.actionButton?.addTarget(self, action: buttonAction, for: .touchUpInside)
+        emptyView?.actionButton.removeTarget(nil, action: nil, for: .allEvents)
+        emptyView?.actionButton.addTarget(self, action: buttonAction, for: .touchUpInside)
     }
 
     /**
