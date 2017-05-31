@@ -27,7 +27,7 @@ Tips
 * UIImage+QMUI  ✅
 * UINavigationController+QMUI  👷
 * UIScrollView+QMUI  ✅
-* UITableView+QMUI  👷
+* UITableView+QMUI  👨🏼‍💻
 * UIViewController+QMUI  👷
 
 
