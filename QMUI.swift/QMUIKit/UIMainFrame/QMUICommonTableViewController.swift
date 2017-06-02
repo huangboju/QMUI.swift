@@ -375,5 +375,5 @@ extension QMUICommonTableViewController: QMUISearchControllerDelegate {
         }
     }
 
-    func searchController(_: QMUISearchController, updateResultsFor _: String) {}
+    func searchController(_: QMUISearchController, updateResultsFor _: String?) {}
 }
