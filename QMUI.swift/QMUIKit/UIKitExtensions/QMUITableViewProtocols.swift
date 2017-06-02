@@ -6,12 +6,14 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-protocol qmui_UITableViewDataSource {
-    func qmui_tableView(_ tableView: UITableView, cellWith identifier: String) -> UITableViewCell
+protocol qmui_UITableViewDataSource: class {
+    func qmui_tableView(_ tableView: UITableView, cellWithIdentifier identifier: String) -> UITableViewCell
 }
 
 extension qmui_UITableViewDataSource {
-    func qmui_tableView(_: UITableView, cellWith _: String) -> UITableViewCell {
+    // TODO: 这里是不是回有BUG?
+    // 在这个方法有用到func templateCell(forReuseIdentifier identifier: String) -> UITableViewCell
+    func qmui_tableView(_: UITableView, cellWithIdentifier _: String) -> UITableViewCell {
         return UITableViewCell()
     }
 }
