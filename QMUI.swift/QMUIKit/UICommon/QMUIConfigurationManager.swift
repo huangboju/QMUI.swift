@@ -141,7 +141,7 @@ class QMUIConfigurationManager {
     }
     public var tabBarShadowImageColor: UIColor? {
         didSet {
-            UITabBar.appearance().shadowImage = UIImage.qmui_image(withColor: TabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            UITabBar.appearance().shadowImage = UIImage.qmui_image(withColor: tabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
         }
     }
     public var tabBarTintColor = UIColor(r: 22, g: 147, b: 229)
