@@ -89,8 +89,39 @@ class QMUIConfigurationManager {
     public var navBarTintColorDisabled: UIColor!
     public var navBarTitleColor: UIColor?
     public var navBarTitleFont = UIFontBoldMake(17)
-    public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero
-    public var navBarBackIndicatorImage: UIImage!
+    public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero {
+        didSet {
+            if  navBarBackButtonTitlePositionAdjustment != .zero {
+                let backBarButtonItem = UIBarButtonItem.appearance()
+                backBarButtonItem.setBackButtonTitlePositionAdjustment(navBarBackButtonTitlePositionAdjustment, for: .default)
+            }
+        }
+    }
+    public var navBarBackIndicatorImage: UIImage! {
+        didSet {
+            guard let navBarBackIndicatorImage = navBarBackIndicatorImage else {
+                return
+            }
+            let navBarAppearance = UINavigationBar.appearance()
+            
+            // 返回按钮的图片frame是和系统默认的返回图片的大小一致的（13, 21），所以用自定义返回箭头时要保证图片大小与系统的箭头大小一样，否则无法对齐
+            let systemBackIndicatorImageSize = CGSize(width: 13, height: 21) // 在iOS9上实际测量得到
+            let customBackIndicatorImageSize = navBarBackIndicatorImage.size
+            if customBackIndicatorImageSize != systemBackIndicatorImageSize {
+                let imageExtensionVerticalFloat = CGFloatGetCenter(systemBackIndicatorImageSize.height, customBackIndicatorImageSize.height)
+                self.navBarBackIndicatorImage = navBarBackIndicatorImage.qmui_imageWithSpacingExtensionInsets(UIEdgeInsets(
+                    top: imageExtensionVerticalFloat,
+                    left: 0,
+                    bottom: imageExtensionVerticalFloat,
+                    right: systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width
+                    )
+                )
+            }
+
+            navBarAppearance.backIndicatorImage = navBarBackIndicatorImage
+            navBarAppearance.backIndicatorTransitionMaskImage = navBarAppearance.backIndicatorImage
+        }
+    }
     public var navBarCloseButtonImage: UIImage!
     public var navBarLoadingMarginRight: CGFloat = 3
     public var navBarAccessoryViewMarginLeft: CGFloat = 5
@@ -98,12 +129,33 @@ class QMUIConfigurationManager {
     public var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage!
 
     // MARK: - TabBar
-    public var tabBarBackgroundImage: UIImage?
-    public var tabBarBarTintColor: UIColor?
-    public var tabBarShadowImageColor: UIColor?
+    public var tabBarBackgroundImage: UIImage? {
+        didSet {
+            UITabBar.appearance().backgroundImage = tabBarBackgroundImage
+        }
+    }
+    public var tabBarBarTintColor: UIColor? {
+        didSet {
+            UITabBar.appearance().tintColor = tabBarBarTintColor
+        }
+    }
+    public var tabBarShadowImageColor: UIColor? {
+        didSet {
+            UITabBar.appearance().shadowImage = UIImage.qmui_image(withColor: TabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+        }
+    }
     public var tabBarTintColor = UIColor(r: 22, g: 147, b: 229)
-    public var tabBarItemTitleColor = UIColor(r: 119, g: 119, b: 119)
-    public var tabBarItemTitleColorSelected: UIColor!
+    public var tabBarItemTitleColor = UIColor(r: 119, g: 119, b: 119) {
+        didSet {
+            UITabBarItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName: tabBarItemTitleColor], for: .normal)
+        }
+    }
+    public var tabBarItemTitleColorSelected: UIColor! {
+        didSet {
+            guard let tabBarItemTitleColorSelected = tabBarItemTitleColorSelected else { return }
+            UITabBarItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName: tabBarItemTitleColorSelected], for: .normal)
+        }
+    }
 
     // MARK: - Toolbar
     public var toolBarHighlightedAlpha: CGFloat = 0.4
@@ -111,10 +163,32 @@ class QMUIConfigurationManager {
     public var toolBarTintColor: UIColor!
     public var toolBarTintColorHighlighted: UIColor!
     public var toolBarTintColorDisabled: UIColor!
-    public var toolBarBackgroundImage: UIImage?
-    public var toolBarBarTintColor: UIColor?
-    public var toolBarShadowImageColor = UIColor(r: 178, g: 178, b: 178)
-    public var toolBarButtonFont = UIFontMake(17)
+    public var toolBarBackgroundImage: UIImage? {
+        didSet {
+            UIToolbar.appearance().setBackgroundImage(toolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
+        }
+    }
+    public var toolBarBarTintColor: UIColor? {
+        didSet {
+            UIToolbar.appearance().tintColor = toolBarBarTintColor
+        }
+    }
+    public var toolBarShadowImageColor = UIColor(r: 178, g: 178, b: 178) {
+        didSet {
+            let shadowImage = UIImage.qmui_image(withColor: toolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            UIToolbar.appearance().setShadowImage(shadowImage, forToolbarPosition: .any)
+        }
+    }
+    public var toolBarButtonFont = UIFontMake(17) {
+        didSet {
+            let barButtonItemAppearance = UIBarButtonItem.appearance()
+            barButtonItemAppearance.setTitleTextAttributes(
+                [
+                    NSFontAttributeName: toolBarButtonFont
+                ]
+                , for: .normal)
+        }
+    }
 
     // MARK: - SearchBar
     public var searchBarTextFieldBackground: UIColor!
@@ -253,37 +327,5 @@ class QMUIConfigurationManager {
         tableViewCellDetailLabelColor = gray
 
         // MARK: - Others
-    }
-}
-
-extension QMUIConfigurationManager {
-    static func renderGlobalAppearances() {
-
-        // QMUIButton
-        QMUINavigationButton.renderNavigationButtonAppearanceStyle()
-        QMUIToolbarButton.renderToolbarButtonAppearanceStyle()
-
-        // UINavigationBar
-        let navigationBarAppearance = UINavigationBar.appearance()
-        navigationBarAppearance.barTintColor = NavBarBarTintColor
-        navigationBarAppearance.setBackgroundImage(NavBarBackgroundImage, for: .default)
-        navigationBarAppearance.shadowImage = NavBarShadowImage
-
-        // UIToolBar
-        let toolBarAppearance = UIToolbar.appearance()
-        toolBarAppearance.barTintColor = ToolBarBarTintColor
-        toolBarAppearance.setBackgroundImage(ToolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
-        toolBarAppearance.setShadowImage(UIImage.qmui_image(withColor: ToolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0), forToolbarPosition: .any)
-
-        // UITabBar
-        let tabBarAppearance = UITabBar.appearance()
-        tabBarAppearance.barTintColor = TabBarBarTintColor
-        tabBarAppearance.backgroundImage = TabBarBackgroundImage
-        tabBarAppearance.shadowImage = UIImage.qmui_image(withColor: TabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
-
-        // UITabBarItem
-        let tabBarItemAppearance = UITabBarItem.appearance()
-        tabBarItemAppearance.setTitleTextAttributes([NSForegroundColorAttributeName: TabBarItemTitleColor], for: .normal)
-        tabBarItemAppearance.setTitleTextAttributes([NSForegroundColorAttributeName: TabBarItemTitleColorSelected!], for: .selected)
     }
 }
