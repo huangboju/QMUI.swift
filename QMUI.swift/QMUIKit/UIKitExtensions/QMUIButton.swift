@@ -174,9 +174,7 @@ class QMUIButton: UIButton {
         var resultSize = CGSize.zero
         let contentLimitSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue, height: size.height - contentEdgeInsets.verticalValue)
         switch imagePosition {
-        case .top:
-            fallthrough
-        case .bottom:
+        case .bottom, .top:
             // 图片和文字上下排版时，宽度以文字或图片的最大宽度为最终宽度
             let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
             let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) // 假设图片高度必定完整显示
@@ -189,9 +187,7 @@ class QMUIButton: UIButton {
             resultSize.width += CGFloat(fmaxf(Float(imageEdgeInsets.horizontalValue) + Float(imageSize?.width ?? 0), Float(titleEdgeInsets.horizontalValue) + Float(titleSize?.width ?? 0)))
             resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + (imageSize?.height ?? 0) + titleEdgeInsets.verticalValue + (titleSize?.height ?? 0)
 
-        case .left:
-            fallthrough
-        case .right:
+        case .right, .left:
             if imagePosition == .left && titleLabel?.numberOfLines == 1 {
 
                 // QMUIButtonImagePositionLeft使用系统默认布局
@@ -352,7 +348,7 @@ class QMUIButton: UIButton {
         didSet {
             if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
-                self.originBorderColor = UIColor(cgColor: self.layer.borderColor!)
+                originBorderColor = UIColor(cgColor: layer.borderColor!)
             }
             // 渲染背景色
             if highlightedBackgroundColor != nil || highlightedBorderColor != nil {
@@ -360,13 +356,13 @@ class QMUIButton: UIButton {
             }
 
             // 如果此时是disabled，则disabled的样式优先
-            if !self.enabled {
+            if !isEnabled {
                 return
             }
             // 自定义highlighted样式
-            if self.adjustsButtonWhenHighlighted {
+            if adjustsButtonWhenHighlighted {
                 if isHighlighted {
-                    self.alpha = ButtonHighlightedAlpha
+                    alpha = ButtonHighlightedAlpha!
                 } else {
                     UIView.animate(withDuration: 0.25) {
                         self.alpha = 1
@@ -407,7 +403,7 @@ class QMUIButton: UIButton {
 
     private func updateTitleColorIfNeeded() {
         if adjustsTitleTintColorAutomatically && currentTitleColor != nil {
-            self.setTitleColor(self.tintColor, for: .normal)
+            setTitleColor(tintColor, for: .normal)
         }
         if adjustsTitleTintColorAutomatically && currentAttributedTitle != nil {
             let attributedString = NSAttributedString(string: currentAttributedTitle!)
@@ -421,7 +417,7 @@ class QMUIButton: UIButton {
         if currentImage != nil {
             let states: [UIControlState] = [.normal, .highlighted, .disabled]
             for state in states {
-                guard let image = self.image(for: state) else {
+                guard let image = image(for: state) else {
                     continue
                 }
 
