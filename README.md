@@ -20,5 +20,6 @@ QQ: 529940945
 # 现有作者
 * [haungboju](https://github.com/huangboju)
 * [lixin](https://github.com/lixin147741)
+* [xnxin](https://github.com/xnxin)
 
 # [进度](https://github.com/huangboju/QMUI.swift/blob/master/progress.md)
