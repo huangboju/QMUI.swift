@@ -22,7 +22,7 @@ extension UIViewController {
         if isViewLoaded && view.window != nil {
             return self
         } else {
-            print("qmui_visibleViewControllerIfExist:，找不到可见的viewController。self = \(self), view.window = \(view.window)")
+            print("qmui_visibleViewControllerIfExist:，找不到可见的viewController。self = \(self), view.window = \(String(describing: view.window))")
             return nil
         }
     }
