@@ -4,6 +4,7 @@
 * 熟练使用Swift
 * 熟悉[swift-style-guide](https://github.com/raywenderlich/swift-style-guide)
 * 在提交代码前，必须使用[SwiftFormat](https://github.com/nicklockwood/SwiftFormat)对代码进行格式化
+* 每次新建一个swift文件，将文件名贴入[progress.md]()文件中
 
 # 目标
 由于语法的差异，有的OC特性Swift不支持，我的初步计划是：
