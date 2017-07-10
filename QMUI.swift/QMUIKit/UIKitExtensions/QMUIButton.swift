@@ -174,9 +174,7 @@ class QMUIButton: UIButton {
         var resultSize = CGSize.zero
         let contentLimitSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue, height: size.height - contentEdgeInsets.verticalValue)
         switch imagePosition {
-        case .top:
-            fallthrough
-        case .bottom:
+        case .bottom, .top:
             // 图片和文字上下排版时，宽度以文字或图片的最大宽度为最终宽度
             let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
             let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) // 假设图片高度必定完整显示
@@ -189,9 +187,7 @@ class QMUIButton: UIButton {
             resultSize.width += CGFloat(fmaxf(Float(imageEdgeInsets.horizontalValue) + Float(imageSize?.width ?? 0), Float(titleEdgeInsets.horizontalValue) + Float(titleSize?.width ?? 0)))
             resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + (imageSize?.height ?? 0) + titleEdgeInsets.verticalValue + (titleSize?.height ?? 0)
 
-        case .left:
-            fallthrough
-        case .right:
+        case .right, .left:
             if imagePosition == .left && titleLabel?.numberOfLines == 1 {
 
                 // QMUIButtonImagePositionLeft使用系统默认布局
@@ -352,7 +348,7 @@ class QMUIButton: UIButton {
         didSet {
             if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
-                self.originBorderColor = UIColor(cgColor: self.layer.borderColor!)
+                originBorderColor = UIColor(cgColor: layer.borderColor!)
             }
             // 渲染背景色
             if highlightedBackgroundColor != nil || highlightedBorderColor != nil {
@@ -360,13 +356,13 @@ class QMUIButton: UIButton {
             }
 
             // 如果此时是disabled，则disabled的样式优先
-            if !self.enabled {
+            if !isEnabled {
                 return
             }
             // 自定义highlighted样式
-            if self.adjustsButtonWhenHighlighted {
+            if adjustsButtonWhenHighlighted {
                 if isHighlighted {
-                    self.alpha = ButtonHighlightedAlpha
+                    alpha = ButtonHighlightedAlpha!
                 } else {
                     UIView.animate(withDuration: 0.25) {
                         self.alpha = 1
@@ -389,49 +385,47 @@ class QMUIButton: UIButton {
     }
 
     private func adjustsButtonHighlighted() {
-        if highlightedBackgroundColor != nil {
-            
-            // TODO: 翻译CALayer+QMUI
-            // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
-            self.layer.insertSublayer(highlightedBackgroundLayer, at: 0)
-            
-            highlightedBackgroundLayer.frame = self.bounds
-            highlightedBackgroundLayer.cornerRadius = self.layer.cornerRadius
-            highlightedBackgroundLayer.backgroundColor = self.highlighted ? self.highlightedBackgroundColor!.cgColor : UIColorClear.cgColor
+        guard let  highlightedBackgroundColor = highlightedBackgroundColor else { return }
 
-            if highlightedBorderColor != nil {
-                self.layer.borderColor = self.highlighted ? self.highlightedBorderColor!.cgColor : self.originBorderColor.cgColor
-            }
+        // TODO: 翻译CALayer+QMUI
+        // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
+        layer.insertSublayer(highlightedBackgroundLayer, at: 0)
+
+        highlightedBackgroundLayer.frame = bounds
+        highlightedBackgroundLayer.cornerRadius = layer.cornerRadius
+        highlightedBackgroundLayer.backgroundColor = isHighlighted ? highlightedBackgroundColor.cgColor : UIColorClear.cgColor
+
+        if highlightedBorderColor != nil {
+            layer.borderColor = isHighlighted ? highlightedBorderColor?.cgColor : originBorderColor?.cgColor
         }
     }
 
     private func updateTitleColorIfNeeded() {
-        if adjustsTitleTintColorAutomatically && currentTitleColor != nil {
-            self.setTitleColor(self.tintColor, for: .normal)
+        if adjustsTitleTintColorAutomatically {
+            setTitleColor(tintColor, for: .normal)
         }
-        if adjustsTitleTintColorAutomatically && currentAttributedTitle != nil {
-            let attributedString = NSAttributedString(string: currentAttributedTitle!)
+        if adjustsTitleTintColorAutomatically, let currentAttributedTitle = currentAttributedTitle {
+            let attributedString = NSMutableAttributedString(attributedString: currentAttributedTitle)
             let range = NSRange(location: 0, length: attributedString.length)
-            attributedString.addAttribute(NSForegroundColorAttributeName, value: self.tintColor, range: range)
+            attributedString.addAttribute(NSForegroundColorAttributeName, value: tintColor, range: range)
             self.setAttributedTitle(attributedString, for: .normal)
         }
     }
 
     private func updateImageRenderingModeIfNeeded() {
-        if currentImage != nil {
-            let states: [UIControlState] = [.normal, .highlighted, .disabled]
-            for state in states {
-                guard let image = self.image(for: state) else {
-                    continue
-                }
+        guard currentImage != nil else { return }
+        let states: [UIControlState] = [.normal, .highlighted, .disabled]
+        for state in states {
+            guard let image = image(for: state) else {
+                continue
+            }
 
-                if adjustsImageTintColorAutomatically {
-                    // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
-                    self.setImage(image, for: state)
-                } else {
-                    // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
-                    self.setImage(image.withRenderingMode(.alwaysOriginal), for: state)
-                }
+            if adjustsImageTintColorAutomatically {
+                // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
+                setImage(image, for: state)
+            } else {
+                // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
+                setImage(image.withRenderingMode(.alwaysOriginal), for: state)
             }
         }
     }
