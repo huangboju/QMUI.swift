@@ -385,49 +385,47 @@ class QMUIButton: UIButton {
     }
 
     private func adjustsButtonHighlighted() {
-        if highlightedBackgroundColor != nil {
-            
-            // TODO: 翻译CALayer+QMUI
-            // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
-            self.layer.insertSublayer(highlightedBackgroundLayer, at: 0)
-            
-            highlightedBackgroundLayer.frame = self.bounds
-            highlightedBackgroundLayer.cornerRadius = self.layer.cornerRadius
-            highlightedBackgroundLayer.backgroundColor = self.highlighted ? self.highlightedBackgroundColor!.cgColor : UIColorClear.cgColor
+        guard let  highlightedBackgroundColor = highlightedBackgroundColor else { return }
 
-            if highlightedBorderColor != nil {
-                self.layer.borderColor = self.highlighted ? self.highlightedBorderColor!.cgColor : self.originBorderColor.cgColor
-            }
+        // TODO: 翻译CALayer+QMUI
+        // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
+        layer.insertSublayer(highlightedBackgroundLayer, at: 0)
+
+        highlightedBackgroundLayer.frame = bounds
+        highlightedBackgroundLayer.cornerRadius = layer.cornerRadius
+        highlightedBackgroundLayer.backgroundColor = isHighlighted ? highlightedBackgroundColor.cgColor : UIColorClear.cgColor
+
+        if highlightedBorderColor != nil {
+            layer.borderColor = isHighlighted ? highlightedBorderColor?.cgColor : originBorderColor?.cgColor
         }
     }
 
     private func updateTitleColorIfNeeded() {
-        if adjustsTitleTintColorAutomatically && currentTitleColor != nil {
+        if adjustsTitleTintColorAutomatically {
             setTitleColor(tintColor, for: .normal)
         }
-        if adjustsTitleTintColorAutomatically && currentAttributedTitle != nil {
-            let attributedString = NSAttributedString(string: currentAttributedTitle!)
+        if adjustsTitleTintColorAutomatically, let currentAttributedTitle = currentAttributedTitle {
+            let attributedString = NSMutableAttributedString(attributedString: currentAttributedTitle)
             let range = NSRange(location: 0, length: attributedString.length)
-            attributedString.addAttribute(NSForegroundColorAttributeName, value: self.tintColor, range: range)
+            attributedString.addAttribute(NSForegroundColorAttributeName, value: tintColor, range: range)
             self.setAttributedTitle(attributedString, for: .normal)
         }
     }
 
     private func updateImageRenderingModeIfNeeded() {
-        if currentImage != nil {
-            let states: [UIControlState] = [.normal, .highlighted, .disabled]
-            for state in states {
-                guard let image = image(for: state) else {
-                    continue
-                }
+        guard currentImage != nil else { return }
+        let states: [UIControlState] = [.normal, .highlighted, .disabled]
+        for state in states {
+            guard let image = image(for: state) else {
+                continue
+            }
 
-                if adjustsImageTintColorAutomatically {
-                    // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
-                    self.setImage(image, for: state)
-                } else {
-                    // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
-                    self.setImage(image.withRenderingMode(.alwaysOriginal), for: state)
-                }
+            if adjustsImageTintColorAutomatically {
+                // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
+                setImage(image, for: state)
+            } else {
+                // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
+                setImage(image.withRenderingMode(.alwaysOriginal), for: state)
             }
         }
     }

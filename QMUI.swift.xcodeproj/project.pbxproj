@@ -265,8 +265,8 @@
 		D831FC331E2E04BA009CFB28 /* UIComponents */ = {
 			isa = PBXGroup;
 			children = (
-				BEB72CC41F13A7F1006426D3 /* ImagePickerLibrary */,
 				BEB72CBD1F13A769006426D3 /* AssetLibrary */,
+				BEB72CC41F13A7F1006426D3 /* ImagePickerLibrary */,
 				BEB72CCF1F13A878006426D3 /* QMUIDialogViewController.swift */,
 				BEB72CD11F13A88C006426D3 /* QMUIEmotionView.swift */,
 				D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */,
