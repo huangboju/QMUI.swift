@@ -7,6 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BEB72CBF1F13A7C1006426D3 /* QMUIAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CBE1F13A7C1006426D3 /* QMUIAsset.swift */; };
+		BEB72CC11F13A7CE006426D3 /* QMUIAssetsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC01F13A7CE006426D3 /* QMUIAssetsGroup.swift */; };
+		BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC21F13A7D9006426D3 /* QMUIAssetsManager.swift */; };
+		BEB72CC61F13A80B006426D3 /* QMUIAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC51F13A80B006426D3 /* QMUIAlbumViewController.swift */; };
+		BEB72CC81F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC71F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift */; };
+		BEB72CCA1F13A821006426D3 /* QMUIImagePickerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC91F13A821006426D3 /* QMUIImagePickerHelper.swift */; };
+		BEB72CCC1F13A846006426D3 /* QMUIImagePickerPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CCB1F13A846006426D3 /* QMUIImagePickerPreviewViewController.swift */; };
+		BEB72CCE1F13A852006426D3 /* QMUIImagePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CCD1F13A852006426D3 /* QMUIImagePickerViewController.swift */; };
+		BEB72CD01F13A878006426D3 /* QMUIDialogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CCF1F13A878006426D3 /* QMUIDialogViewController.swift */; };
+		BEB72CD21F13A88C006426D3 /* QMUIEmotionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CD11F13A88C006426D3 /* QMUIEmotionView.swift */; };
+		BEB72CD41F13A8A5006426D3 /* QMUIFloatLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CD31F13A8A5006426D3 /* QMUIFloatLayoutView.swift */; };
+		BEB72CD61F13A8B2006426D3 /* QMUIGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CD51F13A8B2006426D3 /* QMUIGridView.swift */; };
+		BEB72CD81F13A8C2006426D3 /* QMUIImagePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CD71F13A8C2006426D3 /* QMUIImagePreviewView.swift */; };
+		BEB72CDA1F13A8CD006426D3 /* QMUIImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CD91F13A8CD006426D3 /* QMUIImagePreviewViewController.swift */; };
+		BEB72CDC1F13A8DB006426D3 /* QMUIKeyboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CDB1F13A8DB006426D3 /* QMUIKeyboardManager.swift */; };
+		BEB72CDE1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CDD1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift */; };
+		BEB72CE01F13A8F2006426D3 /* QMUIMoreOperationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CDF1F13A8F2006426D3 /* QMUIMoreOperationController.swift */; };
+		BEB72CE21F13A915006426D3 /* QMUIPieProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CE11F13A915006426D3 /* QMUIPieProgressView.swift */; };
+		BEB72CE41F13A921006426D3 /* QMUIPopupContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CE31F13A921006426D3 /* QMUIPopupContainerView.swift */; };
+		BEB72CE61F13A92D006426D3 /* QMUIPopupMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CE51F13A92D006426D3 /* QMUIPopupMenuView.swift */; };
+		BEB72CE81F13A93A006426D3 /* QMUIQQEmotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CE71F13A93A006426D3 /* QMUIQQEmotionManager.swift */; };
+		BEB72CEA1F13A9AD006426D3 /* QMUITestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CE91F13A9AD006426D3 /* QMUITestView.swift */; };
+		BEB72CEC1F13A9BA006426D3 /* QMUITips.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CEB1F13A9BA006426D3 /* QMUITips.swift */; };
+		BEB72CEE1F13AA29006426D3 /* QMUIToastAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CED1F13AA29006426D3 /* QMUIToastAnimator.swift */; };
+		BEB72CF01F13AA5F006426D3 /* QMUIToastBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CEF1F13AA5F006426D3 /* QMUIToastBackgroundView.swift */; };
+		BEB72CF21F13AA6F006426D3 /* QMUIToastContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF11F13AA6F006426D3 /* QMUIToastContentView.swift */; };
+		BEB72CF41F13AA7B006426D3 /* QMUIToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF31F13AA7B006426D3 /* QMUIToastView.swift */; };
+		BEB72CF61F13AA87006426D3 /* QMUIVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF51F13AA87006426D3 /* QMUIVisualEffectView.swift */; };
+		BEB72CF81F13AA92006426D3 /* QMUIZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF71F13AA92006426D3 /* QMUIZoomImageView.swift */; };
 		D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */; };
 		D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B301E35ECD600FE210A /* QMUINavigationController.swift */; };
 		D812CF221E9F05EE00066344 /* NSParagraphStyle+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D812CF211E9F05EE00066344 /* NSParagraphStyle+QMUI.swift */; };
@@ -62,6 +91,35 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BEB72CBE1F13A7C1006426D3 /* QMUIAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAsset.swift; sourceTree = "<group>"; };
+		BEB72CC01F13A7CE006426D3 /* QMUIAssetsGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAssetsGroup.swift; sourceTree = "<group>"; };
+		BEB72CC21F13A7D9006426D3 /* QMUIAssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAssetsManager.swift; sourceTree = "<group>"; };
+		BEB72CC51F13A80B006426D3 /* QMUIAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAlbumViewController.swift; sourceTree = "<group>"; };
+		BEB72CC71F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePickerCollectionViewCell.swift; sourceTree = "<group>"; };
+		BEB72CC91F13A821006426D3 /* QMUIImagePickerHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePickerHelper.swift; sourceTree = "<group>"; };
+		BEB72CCB1F13A846006426D3 /* QMUIImagePickerPreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePickerPreviewViewController.swift; sourceTree = "<group>"; };
+		BEB72CCD1F13A852006426D3 /* QMUIImagePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePickerViewController.swift; sourceTree = "<group>"; };
+		BEB72CCF1F13A878006426D3 /* QMUIDialogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIDialogViewController.swift; sourceTree = "<group>"; };
+		BEB72CD11F13A88C006426D3 /* QMUIEmotionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmotionView.swift; sourceTree = "<group>"; };
+		BEB72CD31F13A8A5006426D3 /* QMUIFloatLayoutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIFloatLayoutView.swift; sourceTree = "<group>"; };
+		BEB72CD51F13A8B2006426D3 /* QMUIGridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIGridView.swift; sourceTree = "<group>"; };
+		BEB72CD71F13A8C2006426D3 /* QMUIImagePreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePreviewView.swift; sourceTree = "<group>"; };
+		BEB72CD91F13A8CD006426D3 /* QMUIImagePreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIImagePreviewViewController.swift; sourceTree = "<group>"; };
+		BEB72CDB1F13A8DB006426D3 /* QMUIKeyboardManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIKeyboardManager.swift; sourceTree = "<group>"; };
+		BEB72CDD1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIModalPresentationViewController.swift; sourceTree = "<group>"; };
+		BEB72CDF1F13A8F2006426D3 /* QMUIMoreOperationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIMoreOperationController.swift; sourceTree = "<group>"; };
+		BEB72CE11F13A915006426D3 /* QMUIPieProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIPieProgressView.swift; sourceTree = "<group>"; };
+		BEB72CE31F13A921006426D3 /* QMUIPopupContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIPopupContainerView.swift; sourceTree = "<group>"; };
+		BEB72CE51F13A92D006426D3 /* QMUIPopupMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIPopupMenuView.swift; sourceTree = "<group>"; };
+		BEB72CE71F13A93A006426D3 /* QMUIQQEmotionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIQQEmotionManager.swift; sourceTree = "<group>"; };
+		BEB72CE91F13A9AD006426D3 /* QMUITestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUITestView.swift; sourceTree = "<group>"; };
+		BEB72CEB1F13A9BA006426D3 /* QMUITips.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUITips.swift; sourceTree = "<group>"; };
+		BEB72CED1F13AA29006426D3 /* QMUIToastAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIToastAnimator.swift; sourceTree = "<group>"; };
+		BEB72CEF1F13AA5F006426D3 /* QMUIToastBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIToastBackgroundView.swift; sourceTree = "<group>"; };
+		BEB72CF11F13AA6F006426D3 /* QMUIToastContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIToastContentView.swift; sourceTree = "<group>"; };
+		BEB72CF31F13AA7B006426D3 /* QMUIToastView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIToastView.swift; sourceTree = "<group>"; };
+		BEB72CF51F13AA87006426D3 /* QMUIVisualEffectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIVisualEffectView.swift; sourceTree = "<group>"; };
+		BEB72CF71F13AA92006426D3 /* QMUIZoomImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIZoomImageView.swift; sourceTree = "<group>"; };
 		D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmptyView.swift; sourceTree = "<group>"; };
 		D8125B301E35ECD600FE210A /* QMUINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUINavigationController.swift; sourceTree = "<group>"; };
 		D812CF211E9F05EE00066344 /* NSParagraphStyle+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSParagraphStyle+QMUI.swift"; sourceTree = "<group>"; };
@@ -129,6 +187,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BEB72CBD1F13A769006426D3 /* AssetLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				BEB72CBE1F13A7C1006426D3 /* QMUIAsset.swift */,
+				BEB72CC01F13A7CE006426D3 /* QMUIAssetsGroup.swift */,
+				BEB72CC21F13A7D9006426D3 /* QMUIAssetsManager.swift */,
+			);
+			path = AssetLibrary;
+			sourceTree = "<group>";
+		};
+		BEB72CC41F13A7F1006426D3 /* ImagePickerLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				BEB72CC51F13A80B006426D3 /* QMUIAlbumViewController.swift */,
+				BEB72CC71F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift */,
+				BEB72CC91F13A821006426D3 /* QMUIImagePickerHelper.swift */,
+				BEB72CCB1F13A846006426D3 /* QMUIImagePickerPreviewViewController.swift */,
+				BEB72CCD1F13A852006426D3 /* QMUIImagePickerViewController.swift */,
+			);
+			path = ImagePickerLibrary;
+			sourceTree = "<group>";
+		};
 		D831FC031E2E0017009CFB28 = {
 			isa = PBXGroup;
 			children = (
@@ -185,9 +265,32 @@
 		D831FC331E2E04BA009CFB28 /* UIComponents */ = {
 			isa = PBXGroup;
 			children = (
+				BEB72CBD1F13A769006426D3 /* AssetLibrary */,
+				BEB72CC41F13A7F1006426D3 /* ImagePickerLibrary */,
+				BEB72CCF1F13A878006426D3 /* QMUIDialogViewController.swift */,
+				BEB72CD11F13A88C006426D3 /* QMUIEmotionView.swift */,
 				D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */,
+				BEB72CD31F13A8A5006426D3 /* QMUIFloatLayoutView.swift */,
+				BEB72CD51F13A8B2006426D3 /* QMUIGridView.swift */,
+				BEB72CD71F13A8C2006426D3 /* QMUIImagePreviewView.swift */,
+				BEB72CD91F13A8CD006426D3 /* QMUIImagePreviewViewController.swift */,
+				BEB72CDB1F13A8DB006426D3 /* QMUIKeyboardManager.swift */,
+				BEB72CDD1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift */,
+				BEB72CDF1F13A8F2006426D3 /* QMUIMoreOperationController.swift */,
 				D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */,
 				D83D41EE1E4C4F3200CC083E /* QMUIOrderedDictionary.swift */,
+				BEB72CE11F13A915006426D3 /* QMUIPieProgressView.swift */,
+				BEB72CE31F13A921006426D3 /* QMUIPopupContainerView.swift */,
+				BEB72CE51F13A92D006426D3 /* QMUIPopupMenuView.swift */,
+				BEB72CE71F13A93A006426D3 /* QMUIQQEmotionManager.swift */,
+				BEB72CE91F13A9AD006426D3 /* QMUITestView.swift */,
+				BEB72CEB1F13A9BA006426D3 /* QMUITips.swift */,
+				BEB72CED1F13AA29006426D3 /* QMUIToastAnimator.swift */,
+				BEB72CEF1F13AA5F006426D3 /* QMUIToastBackgroundView.swift */,
+				BEB72CF11F13AA6F006426D3 /* QMUIToastContentView.swift */,
+				BEB72CF31F13AA7B006426D3 /* QMUIToastView.swift */,
+				BEB72CF51F13AA87006426D3 /* QMUIVisualEffectView.swift */,
+				BEB72CF71F13AA92006426D3 /* QMUIZoomImageView.swift */,
 			);
 			path = UIComponents;
 			sourceTree = "<group>";
@@ -349,21 +452,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEB72CD61F13A8B2006426D3 /* QMUIGridView.swift in Sources */,
+				BEB72CE81F13A93A006426D3 /* QMUIQQEmotionManager.swift in Sources */,
+				BEB72CEC1F13A9BA006426D3 /* QMUITips.swift in Sources */,
 				D825A6521EC300380086D58F /* QMUISegmentedControl.swift in Sources */,
 				D831FC671E2E11FD009CFB28 /* UIFont+QMUI.swift in Sources */,
 				D86AAA1A1EB0D104001B1398 /* UIBezierPath+QMUI.swift in Sources */,
 				D81E69EC1E7BBB3100C23129 /* UITableView+QMUI.swift in Sources */,
 				D83D41EF1E4C4F3200CC083E /* QMUIOrderedDictionary.swift in Sources */,
 				D81992E01EE141F60008CD7D /* QMUICellHeightKeyCache.swift in Sources */,
+				BEB72CDA1F13A8CD006426D3 /* QMUIImagePreviewViewController.swift in Sources */,
 				D81E69F51E7D54D500C23129 /* DispatchQueue+QMUI.swift in Sources */,
 				D81E69F01E7BC8D800C23129 /* QMUITableViewProtocols.swift in Sources */,
 				D831FC121E2E0017009CFB28 /* ViewController.swift in Sources */,
 				D8198B201E81605B00AC98DB /* UIViewController+QMUI.swift in Sources */,
+				BEB72CCC1F13A846006426D3 /* QMUIImagePickerPreviewViewController.swift in Sources */,
 				D83D41F11E4C51FD00CC083E /* QMUITableView.swift in Sources */,
+				BEB72CEE1F13AA29006426D3 /* QMUIToastAnimator.swift in Sources */,
+				BEB72CDC1F13A8DB006426D3 /* QMUIKeyboardManager.swift in Sources */,
 				D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */,
 				D83D41ED1E4C4F0A00CC083E /* QMUICommonTableViewController.swift in Sources */,
 				D831FC3F1E2E07EA009CFB28 /* UIColor+QMUI.swift in Sources */,
+				BEB72CF61F13AA87006426D3 /* QMUIVisualEffectView.swift in Sources */,
+				BEB72CDE1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift in Sources */,
 				D83D41E91E4C332500CC083E /* NSObject+QMUI.swift in Sources */,
+				BEB72CCA1F13A821006426D3 /* QMUIImagePickerHelper.swift in Sources */,
+				BEB72CC81F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift in Sources */,
 				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
 				D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */,
 				D825A6981EC31DB50086D58F /* UISearchBar+QMUI.swift in Sources */,
@@ -373,19 +487,37 @@
 				D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */,
 				D83D41F51E4C553E00CC083E /* QMUISearchController.swift in Sources */,
 				D812CF7F1E9FB07C00066344 /* String+QMUI.swift in Sources */,
+				BEB72CEA1F13A9AD006426D3 /* QMUITestView.swift in Sources */,
+				BEB72CBF1F13A7C1006426D3 /* QMUIAsset.swift in Sources */,
+				BEB72CF41F13AA7B006426D3 /* QMUIToastView.swift in Sources */,
 				D831FC711E2E5018009CFB28 /* QMUITabBarViewController.swift in Sources */,
+				BEB72CD41F13A8A5006426D3 /* QMUIFloatLayoutView.swift in Sources */,
+				BEB72CD81F13A8C2006426D3 /* QMUIImagePreviewView.swift in Sources */,
+				BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */,
 				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
 				D831FC351E2E04E3009CFB28 /* QMUINavigationTitleView.swift in Sources */,
+				BEB72CE01F13A8F2006426D3 /* QMUIMoreOperationController.swift in Sources */,
 				D831FC691E2E1DBA009CFB28 /* UIImage+QMUI.swift in Sources */,
 				D831FC6F1E2E4F1B009CFB28 /* QMUICommonDefines.swift in Sources */,
+				BEB72CD21F13A88C006426D3 /* QMUIEmotionView.swift in Sources */,
+				BEB72CE41F13A921006426D3 /* QMUIPopupContainerView.swift in Sources */,
+				BEB72CF01F13AA5F006426D3 /* QMUIToastBackgroundView.swift in Sources */,
+				BEB72CF81F13AA92006426D3 /* QMUIZoomImageView.swift in Sources */,
+				BEB72CD01F13A878006426D3 /* QMUIDialogViewController.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
+				BEB72CF21F13AA6F006426D3 /* QMUIToastContentView.swift in Sources */,
 				D81E69EE1E7BBDAC00C23129 /* UIScrollView+QMUI.swift in Sources */,
 				D81992E51EE143AA0008CD7D /* Array+QMUI.swift in Sources */,
+				BEB72CE21F13A915006426D3 /* QMUIPieProgressView.swift in Sources */,
 				D81992E31EE1433D0008CD7D /* QMUICellHeightIndexPathCache.swift in Sources */,
 				D81E69F21E7BCECB00C23129 /* QMUILabel.swift in Sources */,
 				D831FC6D1E2E4BC2009CFB28 /* QMUIButton.swift in Sources */,
+				BEB72CCE1F13A852006426D3 /* QMUIImagePickerViewController.swift in Sources */,
+				BEB72CC11F13A7CE006426D3 /* QMUIAssetsGroup.swift in Sources */,
 				D869486F1E4870C2003F3EFE /* UINavigationController+QMUI.swift in Sources */,
 				D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */,
+				BEB72CC61F13A80B006426D3 /* QMUIAlbumViewController.swift in Sources */,
+				BEB72CE61F13A92D006426D3 /* QMUIPopupMenuView.swift in Sources */,
 				D814B2661E9D121D0000B60C /* UIActivityIndicatorView+QMUI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
