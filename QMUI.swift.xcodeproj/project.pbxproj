@@ -36,6 +36,7 @@
 		BEB72CF41F13AA7B006426D3 /* QMUIToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF31F13AA7B006426D3 /* QMUIToastView.swift */; };
 		BEB72CF61F13AA87006426D3 /* QMUIVisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF51F13AA87006426D3 /* QMUIVisualEffectView.swift */; };
 		BEB72CF81F13AA92006426D3 /* QMUIZoomImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CF71F13AA92006426D3 /* QMUIZoomImageView.swift */; };
+		BEB72CFB1F13BA68006426D3 /* QMUIMarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CFA1F13BA68006426D3 /* QMUIMarqueeLabel.swift */; };
 		D8125B2F1E35E3BA00FE210A /* QMUIEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */; };
 		D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8125B301E35ECD600FE210A /* QMUINavigationController.swift */; };
 		D812CF221E9F05EE00066344 /* NSParagraphStyle+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D812CF211E9F05EE00066344 /* NSParagraphStyle+QMUI.swift */; };
@@ -120,6 +121,7 @@
 		BEB72CF31F13AA7B006426D3 /* QMUIToastView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIToastView.swift; sourceTree = "<group>"; };
 		BEB72CF51F13AA87006426D3 /* QMUIVisualEffectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIVisualEffectView.swift; sourceTree = "<group>"; };
 		BEB72CF71F13AA92006426D3 /* QMUIZoomImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIZoomImageView.swift; sourceTree = "<group>"; };
+		BEB72CFA1F13BA68006426D3 /* QMUIMarqueeLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIMarqueeLabel.swift; sourceTree = "<group>"; };
 		D8125B2E1E35E3BA00FE210A /* QMUIEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmptyView.swift; sourceTree = "<group>"; };
 		D8125B301E35ECD600FE210A /* QMUINavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUINavigationController.swift; sourceTree = "<group>"; };
 		D812CF211E9F05EE00066344 /* NSParagraphStyle+QMUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSParagraphStyle+QMUI.swift"; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				BEB72CD71F13A8C2006426D3 /* QMUIImagePreviewView.swift */,
 				BEB72CD91F13A8CD006426D3 /* QMUIImagePreviewViewController.swift */,
 				BEB72CDB1F13A8DB006426D3 /* QMUIKeyboardManager.swift */,
+				BEB72CFA1F13BA68006426D3 /* QMUIMarqueeLabel.swift */,
 				BEB72CDD1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift */,
 				BEB72CDF1F13A8F2006426D3 /* QMUIMoreOperationController.swift */,
 				D831FC341E2E04E3009CFB28 /* QMUINavigationTitleView.swift */,
@@ -477,6 +480,7 @@
 				BEB72CDE1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift in Sources */,
 				D83D41E91E4C332500CC083E /* NSObject+QMUI.swift in Sources */,
 				BEB72CCA1F13A821006426D3 /* QMUIImagePickerHelper.swift in Sources */,
+				BEB72CFB1F13BA68006426D3 /* QMUIMarqueeLabel.swift in Sources */,
 				BEB72CC81F13A814006426D3 /* QMUIImagePickerCollectionViewCell.swift in Sources */,
 				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
 				D831FC3C1E2E06C2009CFB28 /* QMUIConfigurationManager.swift in Sources */,
