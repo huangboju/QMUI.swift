@@ -8,30 +8,51 @@ Tips
 * ❣️： 原项目不存在新加的
 
 ## UIKitExtensions
-
+* Array+QMUI  ❣️ 👷
+* CALayer+QMUI 👷
 * DispatchQueue+QMUI  ❣️ 👷
+* NSAttributedString+QMUI 👷
+* NSObject+QMUI  👷
+* NSParagraphStyle+QMUI+QMUI  ✅
+* QMUIAlertController 👷
 * QMUIButton  👨🏼‍💻
 * QMUICellHeightIndexPathCache  ✅
 * QMUICellHeightKeyCache  ✅
+* QMUICollectionViewPagingLayout  👷
 * QMUILabel  👷
+* QMUISearchBar  👷
 * QMUISearchController  ✅
 * QMUISegmentedControl  ✅
+* QMUISlider  👷
 * QMUITableView  ✅
+* QMUITableViewCell  👷
 * QMUITableViewProtocols  ✅
-* Array+QMUI  ❣️ 👷
-* NSObject+QMUI  👷
-* NSParagraphStyle+QMUI+QMUI  ✅
+* QMUITextField  👷
+* QMUITextView  👷
 * String+QMUI  👷
 * UIActivityIndicatorView+QMUI  ✅
 * UIBezierPath+QMUI  ✅
+* UIButton+QMUI  👷
+* UICollectionView+QMUI  👷
 * UIColor+QMUI  ✅
 * UIControl+QMUI  ✅
 * UIFont+QMUI  ✅
 * UIImage+QMUI  ✅
+* UIImageView+QMUI  👷
+* UILabel+QMUI  👷
+* UINavigationBar+Transition  👷
+* UINavigationController+NavigationBarTransition  👷
 * UINavigationController+QMUI  👷
 * UIScrollView+QMUI  ✅
+* UISearchBar+QMUI  👷
+* UITabBar+QMUI  👷
+* UITabBarItem+QMUI  👷
 * UITableView+QMUI  ✅
+* UITextField+QMUI  👷
+* UITextView+QMUI  👷
+* UIView+QMUI  👷
 * UIViewController+QMUI  👷
+* UIWindow+QMUI  👷
 
 
 
@@ -59,3 +80,5 @@ Tips
 * QMUIEmptyView  ✅
 * QMUINavigationTitleView   ✅
 * QMUIOrderedDictionary  👷
+
+
