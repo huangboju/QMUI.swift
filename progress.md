@@ -56,6 +56,42 @@ Tips
 
 ## UIComponents
 
+* **AssetLibrary**
+  * QMUIAsset  👷
+  * QMUIAssetsGroup  👷
+  * QMUIAssetsManager  👷
+
+
+* **ImagePickerLibrary**
+  * QMUIAlbumViewController  👷
+  * QMUIImagePickerCollectionViewCell  👷
+  * QMUIImagePickerHelper  👷
+  * QMUIImagePickerPreviewViewController  👷
+  * QMUIImagePickerViewController  👷
+
+
+* QMUIDialogViewController  👷
+* QMUIEmotionView  👷
 * QMUIEmptyView  ✅
+* QMUIFloatLayoutView  👷
+* QMUIGridView  👷
+* QMUIImagePreviewView  👷
+* QMUIImagePreviewViewController  👷
+* QMUIKeyboardManager  👷
+* QMUIMarqueeLabel  👷
+* QMUIModalPresentationViewController  👷
+* QMUIMoreOperationController  👷
 * QMUINavigationTitleView   ✅
 * QMUIOrderedDictionary  👷
+* QMUIPieProgressView  👷
+* QMUIPopupContainerView  👷
+* QMUIPopupMenuView  👷
+* QMUIQQEmotionManager  👷
+* QMUITestView  👷
+* QMUITips  👷
+* QMUIToastAnimator  👷
+* QMUIToastBackgroundView  👷
+* QMUIToastContentView  👷
+* QMUIToastView  👷
+* QMUIVisualEffectView  👷
+* QMUIZoomImageView  👷
