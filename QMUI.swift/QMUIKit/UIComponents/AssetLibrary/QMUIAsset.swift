@@ -6,8 +6,9 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-import Photos
 import AssetsLibrary
+import MobileCoreServices
+import Photos
 
 /// Asset 的类型
 enum QMUIAssetType {
@@ -122,7 +123,7 @@ class QMUIAsset {
                 }
             }
             // 生成最终返回的 UIImage，同时把图片的 orientation 也补充上去
-            resultImage = UIImage(cgImage: fullResolutionImageRef, scale: CGFloat(alAssetRepresentation.scale()), orientation: alAssetRepresentation.orientation())
+            resultImage = UIImage(cgImage: fullResolutionImageRef, scale: CGFloat(alAssetRepresentation.scale()), orientation: alAssetRepresentation.orientation().imageOrientation)
         }
         return resultImage
     }
@@ -321,7 +322,7 @@ class QMUIAsset {
                     let dataUTI = phAssetInfo[kAssetInfoDataUTI] as? String
                     let isGif = dataUTI == (kUTTypeGIF as String)
                     let originInfo = phAssetInfo[kAssetInfoOriginInfo] as? [String: Any]
-                    completion(phAssetInfo[kAssetInfoImageData], originInfo, isGif)
+                    completion(phAssetInfo[kAssetInfoImageData] as? Data, originInfo, isGif)
                 }
             } else {
                 // PHAsset 的 UIImageOrientation 需要调用过 requestImageDataForAsset 才能获取
@@ -336,7 +337,7 @@ class QMUIAsset {
                          *  为了避免这种情况，这里该 block 主动放到主线程执行。
                          */
                         DispatchQueue.main.async {
-                            completion(phAssetInfo[kAssetInfoImageData], originInfo, isGif)
+                            completion(phAssetInfo[kAssetInfoImageData] as? Data, originInfo, isGif)
                         }
                     }
                 })
@@ -348,12 +349,12 @@ class QMUIAsset {
             assetSize(completion: { size in
                 // 获取 NSData 数据
                 var buffer = [UInt8](repeating: 0, count: Int(size))
-                var error: NSError
-                let bytes = alAssetRepresentation.getBytes(&buffer, fromOffset: 0, length: Int(size), error: &error)
+                var error: NSError?
+                let bytes = self.alAssetRepresentation.getBytes(&buffer, fromOffset: 0, length: Int(size), error: &error)
                 let imageData = Data(bytes: buffer, count: bytes)
                 free(&buffer)
                 // 判断是否为 GIF 图
-                if let gifRepresentation = alAsset?.representation(forUTI: kUTTypeGIF as String) {
+                if let gifRepresentation = self.alAsset?.representation(forUTI: kUTTypeGIF as String) {
                     completion(imageData, nil, true)
                 } else {
                     completion(imageData, nil, false)
@@ -367,25 +368,29 @@ class QMUIAsset {
      */
     public var imageOrientation: UIImageOrientation? {
         var orientation: UIImageOrientation?
-        if assetType == .image || assetType == .livePhoto {
-            if usePhotoKit {
-                if phAssetInfo == nil {
-                    // PHAsset 的 UIImageOrientation 需要调用过 requestImageDataForAsset 才能获取
-                    requestImagePhAssetInfo(synchronous: true, completion: { (info) in
-                        self.phAssetInfo = info
-                    })
+        if #available(iOS 9.1, *) {
+            if assetType == .image || assetType == .livePhoto {
+                if usePhotoKit {
+                    if phAssetInfo == nil {
+                        // PHAsset 的 UIImageOrientation 需要调用过 requestImageDataForAsset 才能获取
+                        requestImagePhAssetInfo(synchronous: true, completion: { (info) in
+                            self.phAssetInfo = info
+                        })
+                    }
+                    // 从 PhAssetInfo 中获取 UIImageOrientation 对应的字段
+                    orientation = phAssetInfo?[kAssetInfoOrientation] as? UIImageOrientation
+                } else {
+                    orientation = alAsset?.value(forProperty: "ALAssetPropertyOrientation") as? UIImageOrientation
                 }
-                // 从 PhAssetInfo 中获取 UIImageOrientation 对应的字段
-                orientation = phAssetInfo?[kAssetInfoOrientation] as? UIImageOrientation
             } else {
-                orientation = alAsset?.value(forProperty: "ALAssetPropertyOrientation") as? UIImageOrientation
+                orientation = .up
             }
         } else {
-            orientation = .up
+
         }
         return orientation
     }
-    
+
     private func requestPhAssetInfo(completion: (([String: Any]) -> Void)?) {
         if assetType == .video {
             QMUIAssetsManager.shared.phCachingImageManager.requestAVAsset(forVideo: phAsset, options: nil, resultHandler: { (asset, audioMix, info) in
@@ -491,6 +496,30 @@ class QMUIAsset {
             return phAsset.duration
         } else {
             return alAsset?.value(forProperty: ALAssetPropertyDuration) as? TimeInterval ?? 0
+        }
+    }
+}
+
+extension ALAssetOrientation {
+
+    var imageOrientation: UIImageOrientation {
+        switch self {
+        case .up:
+            return .up
+        case .down:
+            return .down
+        case .left:
+            return .left
+        case .right:
+            return .right
+        case .upMirrored:
+            return .upMirrored
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .rightMirrored:
+            return .rightMirrored
         }
     }
 }
