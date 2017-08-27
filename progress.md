@@ -86,8 +86,8 @@ Tips
 
 * **AssetLibrary**
   * QMUIAsset  ✅
-  * QMUIAssetsGroup  👨🏼‍💻
-  * QMUIAssetsManager  👷
+  * QMUIAssetsGroup  ✅
+  * QMUIAssetsManager  👨🏼‍💻
 
 
 * **ImagePickerLibrary**

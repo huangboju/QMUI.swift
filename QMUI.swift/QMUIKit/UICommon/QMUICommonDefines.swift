@@ -28,7 +28,7 @@ let IS_IPHONE = QMUIHelper.isIPhone
 let IS_SIMULATOR = QMUIHelper.isSimulator
 
 // 操作系统版本号
-let IOS_VERSION = Double(UIDevice.current.systemVersion) ?? 0
+let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 
 // 是否横竖屏
 // 用户界面横屏了才会返回true
