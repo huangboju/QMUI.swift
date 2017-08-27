@@ -44,13 +44,13 @@ class QMUIAsset {
     
     private var usePhotoKit = false
 
-    private let phAsset: PHAsset
+    private let phAsset: PHAsset?
 
     private var alAsset: ALAsset?
-    private let alAssetRepresentation: ALAssetRepresentation
+    private let alAssetRepresentation: ALAssetRepresentation?
     private var phAssetInfo: [String: Any]?
     private var imageSize = 0.0
-    private var assetIdentityHash = ""
+    private var assetIdentityHash: String?
 
     public init(phAsset: PHAsset) {
         self.phAsset = phAsset
@@ -75,7 +75,7 @@ class QMUIAsset {
             assetType = .unknow
         }
     }
-    
+
     public init(alAsset: ALAsset) {
         self.alAsset = alAsset
         alAssetRepresentation = alAsset.defaultRepresentation()
@@ -90,11 +90,12 @@ class QMUIAsset {
             self.assetType = .unknow
         }
     }
-    
+
     /// Asset 的原图（包含系统相册“编辑”功能处理后的效果）
     public var originImage: UIImage? {
         var resultImage: UIImage?
         if usePhotoKit {
+            guard let phAsset = phAsset else { return nil }
             let phImageRequestOptions = PHImageRequestOptions()
             phImageRequestOptions.isSynchronous = true
             QMUIAssetsManager.shared.phCachingImageManager.requestImage(for: phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .default, options: phImageRequestOptions, resultHandler: { (image, info) in
@@ -102,6 +103,7 @@ class QMUIAsset {
             })
         } else {
             
+            guard let alAssetRepresentation = alAssetRepresentation else { return nil }
             var fullResolutionImageRef = alAssetRepresentation.fullScreenImage().takeUnretainedValue()
             // 通过 fullResolutionImage 获取到的的高清图实际上并不带上在照片应用中使用“编辑”处理的效果，需要额外在 AlAssetRepresentation 中获取这些信息
 
@@ -138,6 +140,7 @@ class QMUIAsset {
     public func thumbnail(with size: CGSize) -> UIImage? {
         let resultImage: UIImage?
         if usePhotoKit {
+            guard let phAsset = phAsset else { return nil }
             let phImageRequestOptions = PHImageRequestOptions()
             phImageRequestOptions.resizeMode = .exact
             // 在 PHImageManager 中，targetSize 等 size 都是使用 px 作为单位，因此需要对targetSize 中对传入的 Size 进行处理，宽高各自乘以 ScreenScale，从而得到正确的图片
@@ -159,15 +162,16 @@ class QMUIAsset {
      *  @return Asset 的全屏图
      */
     public var previewImage: UIImage? {
-        let resultImage: UIImage?
+        var resultImage: UIImage?
         if usePhotoKit {
+            guard let phAsset = phAsset else { return nil }
             let imageRequestOptions = PHImageRequestOptions()
             imageRequestOptions.isSynchronous = true
             QMUIAssetsManager.shared.phCachingImageManager.requestImage(for: phAsset, targetSize: CGSize(width: SCREEN_WIDTH, height: SCREEN_HEIGHT), contentMode: .aspectFill, options: imageRequestOptions, resultHandler: { (result, info) in
                 resultImage = result
             })
         } else {
-            let fullScreenImage = alAssetRepresentation.fullScreenImage().takeUnretainedValue()
+            guard let fullScreenImage = alAssetRepresentation?.fullScreenImage().takeUnretainedValue() else { return nil }
             resultImage = UIImage(cgImage: fullScreenImage)
         }
         return resultImage
@@ -186,6 +190,7 @@ class QMUIAsset {
      */
     public func requestOriginImage(with completion: ((_ result: UIImage?, _ info: [String: Any]?) -> Void)?, with progressHandler: @escaping PHAssetImageProgressHandler) -> Int {
         if usePhotoKit {
+            guard let phAsset = phAsset else { return 0 }
             let imageRequestOptions = PHImageRequestOptions()
             imageRequestOptions.isNetworkAccessAllowed = true // 允许访问网络
             imageRequestOptions.progressHandler = progressHandler
@@ -209,6 +214,7 @@ class QMUIAsset {
      */
     public func requestThumbnailImage(with size: CGSize, completion:((_ result: UIImage?, _ info: [String: Any]?) -> Void)?) -> Int {
         if usePhotoKit {
+            guard let phAsset = phAsset else { return 0 }
             let imageRequestOptions = PHImageRequestOptions()
             imageRequestOptions.resizeMode = .fast
             // 在 PHImageManager 中，targetSize 等 size 都是使用 px 作为单位，因此需要对targetSize 中对传入的 Size 进行处理，宽高各自乘以 ScreenScale，从而得到正确的图片
@@ -234,6 +240,7 @@ class QMUIAsset {
      */
     public func requestPreviewImage(with completion:((_ result: UIImage?, _ info: [String: Any]?) -> Void)?, with progressHandler: @escaping PHAssetImageProgressHandler) -> Int {
         if usePhotoKit {
+            guard let phAsset = phAsset else { return 0 }
             let imageRequestOptions = PHImageRequestOptions()
             imageRequestOptions.isNetworkAccessAllowed = true // 允许访问网络
             imageRequestOptions.progressHandler = progressHandler
@@ -245,7 +252,7 @@ class QMUIAsset {
             return 0
         }
     }
-    
+
     /**
      *  异步请求 Live Photo，可能会有网络请求
      *
@@ -259,6 +266,7 @@ class QMUIAsset {
     @available(iOS 9.1, *)
     public func requestLivePhoto(with completion: ((_ livePhoto: PHLivePhoto?, _ info: [String: Any]?) -> Void)?, with progressHandler: @escaping PHAssetImageProgressHandler) -> Int {
         if usePhotoKit {
+            guard let phAsset = phAsset else { return 0 }
             let livePhotoRequestOptions = PHLivePhotoRequestOptions()
             livePhotoRequestOptions.isNetworkAccessAllowed = true // 允许访问网络
             livePhotoRequestOptions.progressHandler = progressHandler
@@ -283,6 +291,7 @@ class QMUIAsset {
     
     public func requestPlayerItem(with completion: ((_ playerItem: AVPlayerItem?, _ info: [String: Any]?) -> Void)?, with progressHandler: @escaping PHAssetVideoProgressHandler) -> Int     {
         if usePhotoKit {
+            guard let phAsset = phAsset else { return 0 }
             let videoRequestOptions = PHVideoRequestOptions()
             videoRequestOptions.isNetworkAccessAllowed = true // 允许访问网络
             videoRequestOptions.progressHandler = progressHandler
@@ -290,7 +299,7 @@ class QMUIAsset {
                 completion?(playerItem, info as? [String : Any])
             }))
         } else {
-            guard let url = alAssetRepresentation.url() else {
+            guard let url = alAssetRepresentation?.url() else {
                 return 0
             }
             let playerItem = AVPlayerItem(url: url)
@@ -350,7 +359,7 @@ class QMUIAsset {
                 // 获取 NSData 数据
                 var buffer = [UInt8](repeating: 0, count: Int(size))
                 var error: NSError?
-                let bytes = self.alAssetRepresentation.getBytes(&buffer, fromOffset: 0, length: Int(size), error: &error)
+                guard let bytes = self.alAssetRepresentation?.getBytes(&buffer, fromOffset: 0, length: Int(size), error: &error) else { return }
                 let imageData = Data(bytes: buffer, count: bytes)
                 free(&buffer)
                 // 判断是否为 GIF 图
@@ -393,6 +402,7 @@ class QMUIAsset {
 
     private func requestPhAssetInfo(completion: (([String: Any]) -> Void)?) {
         if assetType == .video {
+            guard let phAsset = phAsset else { return }
             QMUIAssetsManager.shared.phCachingImageManager.requestAVAsset(forVideo: phAsset, options: nil, resultHandler: { (asset, audioMix, info) in
                 if let urlAsset = asset as? AVURLAsset {
                     var tempInfo: [String: Any] = [:]
@@ -414,24 +424,26 @@ class QMUIAsset {
     }
     
     private func requestImagePhAssetInfo(synchronous: Bool, completion: (([String: Any]) -> Void)?) {
+        guard let phAsset = phAsset else { return }
         let imageRequestOptions = PHImageRequestOptions()
         imageRequestOptions.isSynchronous = synchronous
         imageRequestOptions.isNetworkAccessAllowed = true
         QMUIAssetsManager.shared.phCachingImageManager.requestImageData(for: phAsset, options: imageRequestOptions) { (imageData, dataUTI, orientation, info) in
-            if let info = info {
-                var tempInfo: [String: Any] = [:]
-                if let imageData = imageData {
-                    tempInfo[kAssetInfoImageData] = imageData
-                    tempInfo[kAssetInfoSize] = imageData.count
-                }
-    
-                tempInfo[kAssetInfoOriginInfo] = info
-                if let dataUTI = dataUTI {
-                    tempInfo[kAssetInfoDataUTI] = dataUTI
-                }
-                tempInfo[kAssetInfoOrientation] = orientation
-                completion?(tempInfo)
+            guard let info = info else {
+                return
             }
+            var tempInfo: [String: Any] = [:]
+            if let imageData = imageData {
+                tempInfo[kAssetInfoImageData] = imageData
+                tempInfo[kAssetInfoSize] = imageData.count
+            }
+            
+            tempInfo[kAssetInfoOriginInfo] = info
+            if let dataUTI = dataUTI {
+                tempInfo[kAssetInfoDataUTI] = dataUTI
+            }
+            tempInfo[kAssetInfoOrientation] = orientation
+            completion?(tempInfo)
         }
     }
     
@@ -440,18 +452,18 @@ class QMUIAsset {
      *
      *  @return Asset 的标识字符串
      */
-    public var assetIdentity: String {
-        if !assetIdentityHash.isEmpty {
+    public var assetIdentity: String? {
+        if assetIdentityHash == nil || !assetIdentityHash!.isEmpty {
             return assetIdentityHash
         }
-        let identity: String
+        let identity: String?
         if usePhotoKit {
-            identity = phAsset.localIdentifier
+            identity = phAsset?.localIdentifier
         } else {
-            identity = alAssetRepresentation.url().absoluteString 
+            identity = alAssetRepresentation?.url().absoluteString
         }
         // 系统输出的 identity 可能包含特殊字符，为了避免引起问题，统一使用 md5 转换
-        assetIdentityHash = identity.qmui_md5
+        assetIdentityHash = identity?.qmui_md5
         return assetIdentityHash
     }
     
@@ -465,7 +477,7 @@ class QMUIAsset {
      */
     public func assetSize(completion: ((Int64) -> Void)?) {
         guard usePhotoKit else {
-            completion?(alAssetRepresentation.size())
+            completion?(alAssetRepresentation?.size() ?? 0)
             return
         }
         guard let phAssetInfo = phAssetInfo else {
@@ -493,7 +505,7 @@ class QMUIAsset {
             return 0
         }
         if usePhotoKit {
-            return phAsset.duration
+            return phAsset?.duration ?? 0
         } else {
             return alAsset?.value(forProperty: ALAssetPropertyDuration) as? TimeInterval ?? 0
         }
