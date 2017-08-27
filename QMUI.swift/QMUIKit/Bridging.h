@@ -7,4 +7,5 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CommonCrypto/CommonDigest.h>
 #import <AVFoundation/AVFoundation.h>

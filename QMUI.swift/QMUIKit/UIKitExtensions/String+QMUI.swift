@@ -7,6 +7,17 @@
 //
 
 public extension String {
+    public var qmui_md5: String {
+        let messageData = data(using:.utf8)!
+        var digestData = Data(count: Int(CC_MD5_DIGEST_LENGTH))
+        _ = digestData.withUnsafeMutableBytes { digestBytes in
+            messageData.withUnsafeBytes {
+                CC_MD5($0, CC_LONG(messageData.count), digestBytes)
+            }
+        }
+        return digestData.map { String(format: "%02hhx", $0) }.joined()
+    }
+
     public static func qmui_hexString(with int: Int) -> String {
         var hexString = ""
         var integer = int
