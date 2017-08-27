@@ -85,8 +85,8 @@ Tips
 ## UIComponents
 
 * **AssetLibrary**
-  * QMUIAsset  👨🏼‍💻
-  * QMUIAssetsGroup  👷
+  * QMUIAsset  ✅
+  * QMUIAssetsGroup  👨🏼‍💻
   * QMUIAssetsManager  👷
 
 
