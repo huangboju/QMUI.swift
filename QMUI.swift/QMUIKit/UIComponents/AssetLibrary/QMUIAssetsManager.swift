@@ -20,16 +20,18 @@ enum QMUIAssetAuthorizationStatus {
     case notAuthorized      // 手动禁止了授权
 }
 
-typealias QMUIWriteAssetCompletionBlock = (_ asset: QMUIAsset, _ error: NSError) -> Void
+typealias QMUIWriteAssetCompletionBlock = ((_ asset: QMUIAsset?, _ error: Error?) -> Void)?
 
 /// 保存图片到指定相册，该方法是一个 C 方法，与系统 ALAssetLibrary 保存图片的 C 方法 UIImageWriteToSavedPhotosAlbum 对应，方便调用
 func QMUIImageWriteToSavedPhotosAlbumWithAlbumAssetsGroup(image: UIImage, albumAssetsGroup: QMUIAssetsGroup, completionBlock: QMUIWriteAssetCompletionBlock) {
+
     QMUIAssetsManager.shared.saveImageWithImageRef(image.cgImage!, albumAssetsGroup: albumAssetsGroup, orientation: image.imageOrientation, completionBlock: completionBlock)
 }
 
 /// 保存视频到指定相册，该方法是一个 C 方法，与系统 ALAssetLibrary 保存图片的 C 方法 UISaveVideoAtPathToSavedPhotosAlbum 对应，方便调用
 func QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(videoPath: String, albumAssetsGroup: QMUIAssetsGroup, completionBlock: QMUIWriteAssetCompletionBlock) {
-    QMUIAssetsManager.shared.saveVideoWithVideoPathURL(URL(fileURLWithPath: videoPath), albumAssetsGroup: albumAssetsGroup, completionBlock: completionBlock)
+
+    QMUIAssetsManager.shared.saveVideo(withVideoPathURL: URL(fileURLWithPath: videoPath), albumAssetsGroup: albumAssetsGroup, completionBlock: completionBlock)
 }
 
 
@@ -114,7 +116,7 @@ class QMUIAssetsManager {
             handler?(.notUsingPhotoKit)
         }
     }
-    
+
     /**
      *  获取所有的相册，在 iOS 8.0 及以上版本中，同时在该方法内部调用了 PhotoKit，可以获取如个人收藏，最近添加，自拍这类“智能相册”
      *
@@ -124,7 +126,7 @@ class QMUIAssetsManager {
      *  @param enumerationBlock          参数 resultAssetsGroup 表示每次枚举时对应的相册。枚举所有相册结束后，enumerationBlock 会被再调用一次，
      *                                   这时 resultAssetsGroup 的值为 nil。可以以此作为判断枚举结束的标记。
      */
-    func enumerateAllAlbumsWithAlbumContentType(_ contentType: QMUIAlbumContentType, showEmptyAlbum: Bool, showSmartAlbumIfSupported: Bool, usingBlock enumerationBlock: ((QMUIAssetsGroup?) -> Void)?) {
+    func enumerateAllAlbumsWithAlbumContentType(_ contentType: QMUIAlbumContentType, showEmptyAlbum: Bool = false, showSmartAlbumIfSupported: Bool = true, usingBlock enumerationBlock: ((QMUIAssetsGroup?) -> Void)?) {
         if _usePhotoKit {
             // 根据条件获取所有合适的相册，并保存到临时数组中
             let tempAlbumsArray = PHPhotoLibrary.fetchAllAlbumsWithAlbumContentType(contentType, showEmptyAlbum: showEmptyAlbum, showSmartAlbum: showSmartAlbumIfSupported)
@@ -159,11 +161,6 @@ class QMUIAssetsManager {
         }
     }
     
-    /// 获取所有相册，默认在 iOS 8.0 及以上系统中显示系统的“智能相册”，不显示空相册（经过 contentType 过滤后为空的相册）
-    func enumerateAllAlbumsWithAlbumContentType(_ contentType: QMUIAlbumContentType, usingBlock enumerationBlock: ((QMUIAssetsGroup) -> Void)?) {
-
-    }
-    
     /**
      *  保存图片或视频到指定的相册
      *
@@ -176,11 +173,70 @@ class QMUIAssetsManager {
      *           “智能相册”只能由系统控制资源的增删。
      */
     func saveImageWithImageRef(_ imageRef: CGImage, albumAssetsGroup: QMUIAssetsGroup, orientation: UIImageOrientation, completionBlock: QMUIWriteAssetCompletionBlock) {
+        if (_usePhotoKit) {
+            let albumPhAssetCollection = albumAssetsGroup.phAssetCollection
+            // 把图片加入到指定的相册对应的 PHAssetCollection
+            PHPhotoLibrary.shared().addImageToAlbum(imageRef, albumAssetCollection: albumPhAssetCollection!, orientation: orientation, completionHandler: { (success, creationDate, error) in
+                if success {
+                    let fetchOptions = PHFetchOptions()
 
+                    fetchOptions.predicate = NSPredicate(format: "creationDate = %@", creationDate! as CVarArg)
+                    let fetchResult = PHAsset.fetchAssets(in: albumPhAssetCollection!, options: fetchOptions)
+                    let phAsset = fetchResult.lastObject
+                    let asset = QMUIAsset(phAsset: phAsset!)
+                    completionBlock?(asset, error)
+                } else {
+                    guard let error = error else { return }
+                    print("Get PHAsset of image error: \(error)")
+                    completionBlock?(nil, error)
+                }
+            })
+        } else {
+            let assetGroup = albumAssetsGroup.alAssetsGroup
+            alAssetsLibrary.writeImage(toSavedPhotosAlbum: imageRef, albumAssetsGroup: assetGroup!, orientation: orientation, completionBlock: { (assetURL, error) in
+                self.alAssetsLibrary.asset(for: assetURL, resultBlock: { asset in
+                    let resultAsset = QMUIAsset(alAsset: asset!)
+                    completionBlock?(resultAsset, (error as NSError?)!)
+                }, failureBlock: { error in
+                    guard let error = error else { return }
+                    print("Get ALAsset of image error : \(error)")
+                    completionBlock?(nil, error as NSError)
+                })
+            })
+        }
     }
     
-    func saveVideoWithVideoPathURL(_ videoPathURL: URL, albumAssetsGroup: QMUIAssetsGroup, completionBlock: QMUIWriteAssetCompletionBlock) {
-
+    func saveVideo(withVideoPathURL videoPathURL: URL, albumAssetsGroup: QMUIAssetsGroup, completionBlock: QMUIWriteAssetCompletionBlock) {
+        if _usePhotoKit {
+            let albumPhAssetCollection = albumAssetsGroup.phAssetCollection
+            // 把视频加入到指定的相册对应的 PHAssetCollection
+            PHPhotoLibrary.shared().addVideoToAlbum(videoPathURL, albumAssetCollection: albumPhAssetCollection!, albumAssetCollection: { (success, creationDate, error) in
+                if success {
+                    let fetchOptions = PHFetchOptions()
+                    fetchOptions.predicate = NSPredicate(format: "creationDate = %@", creationDate as CVarArg)
+                    let fetchResult = PHAsset.fetchAssets(in: albumPhAssetCollection!, options: fetchOptions)
+                    let phAsset = fetchResult.lastObject
+                    let asset = QMUIAsset(phAsset: phAsset!)
+                    completionBlock?(asset, error)
+                } else {
+                    print("Get PHAsset of video Error: \(error)")
+                    completionBlock?(nil, error)
+                }
+            })
+        } else {
+            let assetsGroup = albumAssetsGroup.alAssetsGroup
+            
+            alAssetsLibrary.writeVideoAtPath(toSavedPhotosAlbum: videoPathURL, albumAssetsGroup: assetsGroup!, completionBlock: { (assetURL, error) in
+                self.alAssetsLibrary.asset(for: assetURL, resultBlock: { (asset) in
+                    let resultAsset = QMUIAsset(alAsset: asset!)
+                    completionBlock?(resultAsset, error! as NSError)
+                }, failureBlock: { (error) in
+                    guard let error = error else { return }
+                    print("Get ALAsset of video error: \(error)")
+                    completionBlock?(nil, error as NSError)
+                })
+            })
+        }
     }
     
     /// 强制刷新单例中的 ALAssetLibrary，但你的相册资源发生改变时（创建或删除相册）可以手工调用该方法及时更新
@@ -311,8 +367,38 @@ extension PHPhotoLibrary {
      *           原因请参考 QMUIAssetsManager 对象的保存图片和视频方法的注释。
      *  @warning 无法通过该方法把图片保存到“智能相册”，“智能相册”只能由系统控制资源的增删。
      */
-    func addImageToAlbum(_ imageRef: CGImage, albumAssetCollection: PHAssetCollection, orientation:UIImageOrientation, completionHandler: ((Bool, Date, NSError) -> Void)?) {
+    func addImageToAlbum(_ imageRef: CGImage, albumAssetCollection: PHAssetCollection, orientation:UIImageOrientation, completionHandler: ((Bool, Date?, Error?) -> Void)?) {
+        let targetImage = UIImage(cgImage: imageRef, scale: ScreenScale, orientation: orientation)
+        var creationDate: Date?
 
+        performChanges({ 
+            // 创建一个以图片生成新的 PHAsset，这时图片已经被添加到“相机胶卷”
+
+            let assetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: targetImage)
+            assetChangeRequest.creationDate = Date()
+            creationDate = assetChangeRequest.creationDate
+
+            if albumAssetCollection.assetCollectionType == .album {
+                // 如果传入的相册类型为标准的相册（非“智能相册”和“时刻”），则把刚刚创建的 Asset 添加到传入的相册中。
+                
+                // 创建一个改变 PHAssetCollection 的请求，并指定相册对应的 PHAssetCollection
+                let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: albumAssetCollection)
+
+                /**
+                 *  把 PHAsset 加入到对应的 PHAssetCollection 中，系统推荐的方法是调用 placeholderForCreatedAsset ，
+                 *  返回一个的 placeholder 来代替刚创建的 PHAsset 的引用，并把该引用加入到一个 PHAssetCollectionChangeRequest 中。
+                 */
+                assetCollectionChangeRequest?.addAssets(assetChangeRequest.placeholderForCreatedAsset as! NSFastEnumeration)
+            }
+        }, completionHandler: { (success, error) in
+            if !success, let error = error {
+                print("Creating asset of image error : \(error)")
+            }
+            guard let completionHandler = completionHandler else { return }
+            DispatchQueue.main.async {
+                completionHandler(success, creationDate, error)
+            }
+        })
     }
     
     func addVideoToAlbum(_ videoPathURL: URL, albumAssetCollection: PHAssetCollection, albumAssetCollection completionHandler: ((Bool, Date, NSError) -> Void)?) {
@@ -328,8 +414,33 @@ extension ALAssetsLibrary {
      *  @param enumerationBlock 参数 group 表示每次枚举时对应的相册。枚举所有相册结束后，enumerationBlock 会被再调用一次，
      *                          这时 group 的值为 nil。可以以此作为判断枚举结束的标记。
      */
-    func enumerateAllAlbumsWithAlbumContentType(_ contentType: QMUIAlbumContentType, usingBlock enumerationBlock: ALAssetsLibraryGroupsEnumerationResultsBlock) {
-    
+    func enumerateAllAlbumsWithAlbumContentType(_ contentType: QMUIAlbumContentType, usingBlock enumerationBlock: ALAssetsLibraryGroupsEnumerationResultsBlock?) {
+        enumerateGroups(withTypes: ALAssetsGroupType(ALAssetsGroupAll), using: { group, stop in
+            if let group = group {
+                // 根据输入的内容类型过滤相册内的资源，过滤后 group.numberOfAssets 的值会由自动被更新
+                switch contentType {
+                case .onlyPhoto:
+                    group.setAssetsFilter(ALAssetsFilter.allPhotos())
+                case .onlyVideo:
+                    group.setAssetsFilter(ALAssetsFilter.allVideos())
+                default:
+                    break
+                }
+                
+                if group.numberOfAssets() > 0 {
+                    enumerationBlock?(group, stop)
+                }
+            } else {
+                /**
+                 *  枚举结束，再调用一次 enumerationBlock，并传递 nil 作为实参，作为枚举相册结束的标记。
+                 *  与系统 ALAssetsLibrary enumerateGroupsWithTypes 本身处理枚举结束的方式保持一致。
+                 */
+                enumerationBlock?(nil, stop)
+            }
+        }, failureBlock: { error in
+            guard let error = error else { return }
+            print("Asset group not found!error: \(error)")
+        })
     }
     
     /**
@@ -339,11 +450,41 @@ extension ALAssetsLibrary {
      *           原因请参考 QMUIAssetsManager 对象的保存图片和视频方法的注释。
      *           如果直接调用该接口保存图片或视频到“相机胶卷”中，并不会产生重复保存。
      */
-    func writeImageToSavedPhotosAlbum(imageRef: CGImage, albumAssetsGroup: ALAssetsGroup, orientation: UIImageOrientation, completionBlock: ALAssetsLibraryWriteImageCompletionBlock) {
-    
+    func writeImage(toSavedPhotosAlbum imageRef: CGImage, albumAssetsGroup: ALAssetsGroup, orientation: UIImageOrientation, completionBlock: @escaping ALAssetsLibraryWriteImageCompletionBlock) {
+        // 调用系统的添加照片的接口，把图片保存到相机胶卷，从而生成一个图片的 ALAsset
+        
+        writeImage(toSavedPhotosAlbum: imageRef, orientation: orientation.assetOrientation) { (assetURL, error) in
+            if let error = error {
+                completionBlock(assetURL, error)
+            } else {
+                // 把获取到的 ALAsset 添加到用户指定的相册中
+                self.add(assetURL!, albumAssetsGroup: albumAssetsGroup, completionBlock: { (error) in
+                    completionBlock(assetURL, error)
+                })
+            }
+        }
     }
-    
-    func writeVideoAtPathToSavedPhotosAlbum(_ videoPathURL: URL, albumAssetsGroup: ALAssetsGroup, completionBlock:ALAssetsLibraryWriteImageCompletionBlock) {
-    
+
+    func writeVideoAtPath(toSavedPhotosAlbum videoPathURL: URL, albumAssetsGroup: ALAssetsGroup, completionBlock: @escaping ALAssetsLibraryWriteImageCompletionBlock) {
+        // 调用系统的添加照片的接口，把图片保存到相机胶卷，从而生成一个图片的 ALAsset
+        writeVideoAtPath(toSavedPhotosAlbum: videoPathURL) { (assetURL, error) in
+            if let error = error {
+                completionBlock(assetURL, error)
+            } else {
+                // 把获取到的 ALAsset 添加到用户指定的相册中
+                self.add(assetURL!, albumAssetsGroup: albumAssetsGroup, completionBlock: { (error) in
+                    completionBlock(assetURL, error)
+                })
+            }
+        }
+    }
+
+    private func add(_ assetURL: URL, albumAssetsGroup: ALAssetsGroup, completionBlock: @escaping ALAssetsLibraryAccessFailureBlock) {
+        asset(for: assetURL, resultBlock: { asset in
+            albumAssetsGroup.add(asset)
+            completionBlock(nil);
+        }, failureBlock: { error in
+            completionBlock(error)
+        })
     }
 }

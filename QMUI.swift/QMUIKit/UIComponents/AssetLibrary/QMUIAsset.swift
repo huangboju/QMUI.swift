@@ -44,10 +44,10 @@ class QMUIAsset {
     
     private var usePhotoKit = false
 
-    private let phAsset: PHAsset?
+    private var phAsset: PHAsset?
 
     private var alAsset: ALAsset?
-    private let alAssetRepresentation: ALAssetRepresentation?
+    private var alAssetRepresentation: ALAssetRepresentation?
     private var phAssetInfo: [String: Any]?
     private var imageSize = 0.0
     private var assetIdentityHash: String?
@@ -138,7 +138,7 @@ class QMUIAsset {
      *  @return Asset 的缩略图
      */
     public func thumbnail(with size: CGSize) -> UIImage? {
-        let resultImage: UIImage?
+        var resultImage: UIImage?
         if usePhotoKit {
             guard let phAsset = phAsset else { return nil }
             let phImageRequestOptions = PHImageRequestOptions()
@@ -515,6 +515,29 @@ class QMUIAsset {
 extension ALAssetOrientation {
 
     var imageOrientation: UIImageOrientation {
+        switch self {
+        case .up:
+            return .up
+        case .down:
+            return .down
+        case .left:
+            return .left
+        case .right:
+            return .right
+        case .upMirrored:
+            return .upMirrored
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .rightMirrored:
+            return .rightMirrored
+        }
+    }
+}
+
+extension UIImageOrientation {
+    var assetOrientation: ALAssetOrientation {
         switch self {
         case .up:
             return .up
