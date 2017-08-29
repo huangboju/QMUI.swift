@@ -560,8 +560,9 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func barButtonItem(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    
+    convenience init(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) {
+
     }
 
     /**

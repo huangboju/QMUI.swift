@@ -87,11 +87,11 @@ Tips
 * **AssetLibrary**
   * QMUIAsset  ✅
   * QMUIAssetsGroup  ✅
-  * QMUIAssetsManager  👨🏼‍💻
+  * QMUIAssetsManager  ✅
 
 
 * **ImagePickerLibrary**
-  * QMUIAlbumViewController  👷
+  * QMUIAlbumViewController  ✅
   * QMUIImagePickerCollectionViewCell  👷
   * QMUIImagePickerHelper  👷
   * QMUIImagePickerPreviewViewController  👷

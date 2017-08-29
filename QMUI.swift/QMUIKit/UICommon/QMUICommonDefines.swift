@@ -195,9 +195,13 @@ func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelect
 
 /// 用于居中运算
 
-func CGFloatGetCenter(_ parent: CGFloat, _ child: CGFloat) -> CGFloat {
-    return flat((parent - child) / 2.0)
+
+extension CGFloat {
+    func center(with child: CGFloat) -> CGFloat {
+        return flat((self - child) / 2.0)
+    }
 }
+
 
 
 // MARK: - CGPoint
@@ -306,12 +310,15 @@ extension CGRect {
         origin.y = flat(y)
         return self
     }
-    
-    mutating func setXY(_ x: CGFloat, _ y: CGFloat) {
+
+    @discardableResult
+    mutating func setXY(_ x: CGFloat, _ y: CGFloat) -> CGRect {
         origin.x = flat(x)
         origin.y = flat(y)
+        return self
     }
-    
+
+    @discardableResult
     mutating func setWidth(_ width: CGFloat) -> CGRect {
         size.width = flat(width)
         return self

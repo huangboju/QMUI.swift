@@ -103,16 +103,9 @@ class QMUICommonViewController: UIViewController {
     }
 
     /**
-     *  显示带text、detailText、button的emptyView
-     */
-    func showEmptyView(with text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector) {
-        showEmptyView(with: nil, text: text, detailText: detailText, buttonTitle: buttonTitle, buttonAction: buttonAction)
-    }
-
-    /**
      *  显示带image、text、detailText、button的emptyView
      */
-    func showEmptyView(with image: UIImage?, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector) {
+    func showEmptyView(with image: UIImage? = nil, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector?) {
         showEmptyView()
         emptyView?.setLoadingViewHidden(true)
         emptyView?.set(image: image)
@@ -120,6 +113,7 @@ class QMUICommonViewController: UIViewController {
         emptyView?.setDetailTextLabelText(detailText)
         emptyView?.setActionButtonTitle(buttonTitle)
         emptyView?.actionButton.removeTarget(nil, action: nil, for: .allEvents)
+        guard let buttonAction = buttonAction else { return }
         emptyView?.actionButton.addTarget(self, action: buttonAction, for: .touchUpInside)
     }
 
@@ -202,7 +196,7 @@ extension QMUICommonViewController {
      *  @param isInEditMode 是否用于编辑模式下
      *  @param animated     是否使用动画呈现
      */
-    func setNavigationItems(isInEditMode _: Bool, animated _: Bool) {
+    func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
         // 子类重写
         navigationItem.titleView = titleView
     }
