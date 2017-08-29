@@ -10,7 +10,7 @@ import AssetsLibrary
 import Photos
 
 /// 相册展示内容的类型
-enum QMUIAlbumContentType {
+enum QMUIAlbumContentType: Int {
     case all                                  // 展示所有资源（照片和视频）
     case onlyPhoto                            // 只展示照片
     case onlyVideo                            // 只展示视频

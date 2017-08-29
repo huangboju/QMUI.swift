@@ -34,7 +34,7 @@ private let kAssetInfoDataUTI = "dataUTI"
 private let kAssetInfoOrientation = "orientation"
 private let kAssetInfoSize = "size"
 
-class QMUIAsset {
+class QMUIAsset: NSObject {
     public private (set) var assetType: QMUIAssetType = .unknow
     
     public private (set) var downloadStatus: QMUIAssetDownloadStatus = .failed // 从 iCloud 下载资源大图的状态

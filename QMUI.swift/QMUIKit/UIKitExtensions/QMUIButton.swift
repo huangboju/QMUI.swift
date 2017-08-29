@@ -239,8 +239,8 @@ class QMUIButton: UIButton {
                 imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
                 titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
             case .center:
-                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left + CGFloatGetCenter(imageLimitWidth, imageSize.width))
-                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left + CGFloatGetCenter(titleLimitSize.width, titleSize.width))
+                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left + imageLimitWidth.center(with: imageSize.width))
+                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left + titleLimitSize.width.center(with: titleSize.width))
             case .right:
                 imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageSize.width)
                 titleFrame = titleFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - titleSize.width)
@@ -258,7 +258,7 @@ class QMUIButton: UIButton {
                     titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
                 case .center:
                     let contentHeight = imageFrame.height + imageEdgeInsets.verticalValue + titleFrame.height + titleEdgeInsets.verticalValue
-                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + contentEdgeInsets.top
+                    let minY = contentSize.height.center(with: contentHeight) + contentEdgeInsets.top
                     imageFrame = imageFrame.setY(minY + imageEdgeInsets.top)
                     titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
                 case .bottom:
@@ -277,7 +277,7 @@ class QMUIButton: UIButton {
                     imageFrame = imageFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
                 case .center:
                     let contentHeight = titleFrame.height + titleEdgeInsets.verticalValue + imageFrame.height + imageEdgeInsets.verticalValue
-                    let minY = CGFloatGetCenter(contentSize.height, contentHeight) + contentEdgeInsets.top
+                    let minY = contentSize.height.center(with: contentHeight) + contentEdgeInsets.top
                     titleFrame = titleFrame.setY(minY + titleEdgeInsets.top)
                     imageFrame = imageFrame.setY(titleFrame.maxY + titleEdgeInsets.bottom + imageEdgeInsets.top)
                 case .bottom:
@@ -310,7 +310,7 @@ class QMUIButton: UIButton {
                 imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
             case .center:
                 let contentWidth = titleFrame.width + titleEdgeInsets.horizontalValue + imageFrame.width + imageEdgeInsets.horizontalValue
-                let minX = contentEdgeInsets.left + CGFloatGetCenter(contentSize.width, contentWidth)
+                let minX = contentEdgeInsets.left + contentSize.width.center(with: contentWidth)
                 titleFrame = titleFrame.setX(minX + titleEdgeInsets.left)
                 imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
             case .right:
@@ -328,8 +328,9 @@ class QMUIButton: UIButton {
                 titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
                 imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
             case .center:
-                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top + CGFloatGetCenter(contentSize.height, titleFrame.height + titleEdgeInsets.verticalValue))
-                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top + CGFloatGetCenter(contentSize.height, imageFrame.height + imageEdgeInsets.verticalValue))
+                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top + contentSize.height.center(with: titleFrame.height + titleEdgeInsets.verticalValue))
+
+                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top + contentSize.height.center(with: imageFrame.height + imageEdgeInsets.verticalValue))
             case .bottom:
                 titleFrame = titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height)
                 imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
@@ -360,13 +361,12 @@ class QMUIButton: UIButton {
                 return
             }
             // 自定义highlighted样式
-            if adjustsButtonWhenHighlighted {
-                if isHighlighted {
-                    alpha = ButtonHighlightedAlpha!
-                } else {
-                    UIView.animate(withDuration: 0.25) {
-                        self.alpha = 1
-                    }
+            guard adjustsButtonWhenHighlighted else { return }
+            if isHighlighted {
+                alpha = ButtonHighlightedAlpha!
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    self.alpha = 1
                 }
             }
         }
@@ -561,8 +561,8 @@ class QMUINavigationButton: UIButton {
      *  @param Selector 按钮点击事件的方法
      */
     
-    convenience init(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) {
-
+    class func barButtonItem(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
+        fatalError()
     }
 
     /**

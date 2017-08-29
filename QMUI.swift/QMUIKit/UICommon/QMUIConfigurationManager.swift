@@ -108,7 +108,7 @@ class QMUIConfigurationManager {
             let systemBackIndicatorImageSize = CGSize(width: 13, height: 21) // 在iOS9上实际测量得到
             let customBackIndicatorImageSize = navBarBackIndicatorImage.size
             if customBackIndicatorImageSize != systemBackIndicatorImageSize {
-                let imageExtensionVerticalFloat = CGFloatGetCenter(systemBackIndicatorImageSize.height, customBackIndicatorImageSize.height)
+                let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(with: customBackIndicatorImageSize.height)
                 self.navBarBackIndicatorImage = navBarBackIndicatorImage.qmui_imageWithSpacingExtensionInsets(UIEdgeInsets(
                     top: imageExtensionVerticalFloat,
                     left: 0,
