@@ -67,7 +67,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         didSet {
             switch downloadStatus {
             case .succeed:
-                if (!_singleCheckMode) {
+                if !_singleCheckMode {
                     checkboxButton.isHidden = false
                 }
                 progressView.isHidden = true
@@ -146,7 +146,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         if (!NavigationBarHiddenStateUsable) {
             navigationController?.setNavigationBarHidden(true, animated: false)
         }
-        if (!_singleCheckMode) {
+        if !_singleCheckMode {
             let imageAsset = imagesAssetArray[imagePreviewView!.currentImageIndex]
             checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
         }
@@ -382,11 +382,44 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
+    func numberOfImages(in imagePreviewView: QMUIImagePreviewView) -> Int {
+        return imagesAssetArray.count
+    }
+
     func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, renderZoomImageView zoomImageView: QMUIZoomImageView, at index: Int) {
         requestImage(for: zoomImageView, with: index)
     }
 
-    func numberOfImages(in imagePreviewView: QMUIImagePreviewView) -> Int {
-        return imagesAssetArray.count
+    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, assetTypeAt index: Int) -> QMUIImagePreviewMediaType {
+        let imageAsset = imagesAssetArray[index]
+        if #available(iOS 9.1, *) {
+            if imageAsset.assetType == .livePhoto {
+                return .livePhoto
+            }
+        }
+        if imageAsset.assetType == .image {
+            return .image
+        } else if imageAsset.assetType == .video {
+            return .video
+        } else {
+            return .others
+        }
+    }
+
+    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, willScrollHalfTo index: Int) {
+        if !_singleCheckMode {
+            let imageAsset = imagesAssetArray[index]
+            checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
+        }
+    }
+}
+
+extension QMUIImagePickerPreviewViewController: QMUIZoomImageViewDelegate {
+    func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {
+        topToolBarView.isHidden = !topToolBarView.isHidden
+    }
+
+    func zoomImageView(_ imageView: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {
+        topToolBarView.isHidden = didHide
     }
 }
