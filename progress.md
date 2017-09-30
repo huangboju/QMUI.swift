@@ -95,7 +95,7 @@ Tips
   * QMUIImagePickerCollectionViewCell  👷
   * QMUIImagePickerHelper  ✅
   * QMUIImagePickerPreviewViewController  ✅
-  * QMUIImagePickerViewController  👷
+  * QMUIImagePickerViewController   👨🏼‍💻
 
 
 * QMUIDialogViewController  👷
