@@ -6,4 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-
+class QMUIImagePreviewViewController: QMUICommonViewController {
+    
+    open private(set) var imagePreviewView: QMUIImagePreviewView?
+}

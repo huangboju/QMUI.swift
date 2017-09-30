@@ -52,6 +52,7 @@
 		3E6BE4F21F13C5270089DC6D /* UIView+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BE4C51F13C5270089DC6D /* UIView+QMUI.swift */; };
 		3E6BE4F31F13C5270089DC6D /* UIViewController+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BE4C61F13C5270089DC6D /* UIViewController+QMUI.swift */; };
 		3E6BE4F41F13C5270089DC6D /* UIWindow+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6BE4C71F13C5270089DC6D /* UIWindow+QMUI.swift */; };
+		BE1B6B231F7FD2000065FC54 /* SelfAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1B6B221F7FD2000065FC54 /* SelfAware.swift */; };
 		BEB72CBF1F13A7C1006426D3 /* QMUIAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CBE1F13A7C1006426D3 /* QMUIAsset.swift */; };
 		BEB72CC11F13A7CE006426D3 /* QMUIAssetsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC01F13A7CE006426D3 /* QMUIAssetsGroup.swift */; };
 		BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB72CC21F13A7D9006426D3 /* QMUIAssetsManager.swift */; };
@@ -161,6 +162,7 @@
 		3E6BE4F51F13C5470089DC6D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3E6BE4F61F13C5470089DC6D /* progress.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = progress.md; sourceTree = "<group>"; };
 		3E6BE4F71F13C5470089DC6D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		BE1B6B221F7FD2000065FC54 /* SelfAware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfAware.swift; sourceTree = "<group>"; };
 		BEB72CBE1F13A7C1006426D3 /* QMUIAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAsset.swift; sourceTree = "<group>"; };
 		BEB72CC01F13A7CE006426D3 /* QMUIAssetsGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAssetsGroup.swift; sourceTree = "<group>"; };
 		BEB72CC21F13A7D9006426D3 /* QMUIAssetsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIAssetsManager.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				D831FC371E2E056F009CFB28 /* UIMainFrame */,
 				D831FC331E2E04BA009CFB28 /* UIComponents */,
 				D831FC361E2E0500009CFB28 /* Bridging.h */,
+				BE1B6B221F7FD2000065FC54 /* SelfAware.swift */,
 			);
 			path = QMUIKit;
 			sourceTree = "<group>";
@@ -466,16 +469,18 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "伯驹 黄";
 				TargetAttributes = {
 					D831FC0B1E2E0017009CFB28 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 329FNU8Z9Y;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 					};
 					D831FC1F1E2E0017009CFB28 = {
 						CreatedOnToolsVersion = 8.2.1;
+						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						TestTargetID = D831FC0B1E2E0017009CFB28;
 					};
@@ -531,6 +536,7 @@
 				BEB72CE81F13A93A006426D3 /* QMUIQQEmotionManager.swift in Sources */,
 				BEB72CEC1F13A9BA006426D3 /* QMUITips.swift in Sources */,
 				3E6BE4F11F13C5270089DC6D /* UITextView+QMUI.swift in Sources */,
+				BE1B6B231F7FD2000065FC54 /* SelfAware.swift in Sources */,
 				D83D41EF1E4C4F3200CC083E /* QMUIOrderedDictionary.swift in Sources */,
 				BEB72CDA1F13A8CD006426D3 /* QMUIImagePreviewViewController.swift in Sources */,
 				3E6BE4E11F13C5270089DC6D /* UICollectionView+QMUI.swift in Sources */,
@@ -664,7 +670,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -672,7 +680,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -713,7 +725,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -721,7 +735,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -757,7 +775,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = QMUI.swift/QMUIKit/Bridging.h;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -772,7 +791,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swift";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = QMUI.swift/QMUIKit/Bridging.h;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -784,7 +804,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swiftUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = QMUI.swift;
 			};
 			name = Debug;
@@ -797,7 +818,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huangboju.QMUI-swiftUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = QMUI.swift;
 			};
 			name = Release;

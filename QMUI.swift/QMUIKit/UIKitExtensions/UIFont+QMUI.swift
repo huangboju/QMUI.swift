@@ -46,23 +46,19 @@ extension UIFont {
         var font: UIFont!
 
         if #available(iOS 8.2, *) {
-            font = UIFont.systemFont(ofSize: size, weight: isLight ? UIFontWeightLight : (isBold ? UIFontWeightBold : UIFontWeightRegular))
+            font = UIFont.systemFont(ofSize: size, weight: isLight ? UIFont.Weight.light : (isBold ? UIFont.Weight.bold : UIFont.Weight.regular))
         } else {
             font = UIFont.systemFont(ofSize: size)
         }
 
         var fontDescriptor = font.fontDescriptor
-        var traitsAttribute: [String: Any]? = fontDescriptor.fontAttributes[UIFontDescriptorTraitsAttribute] as? [String : Any]
+        var traitsAttribute: [UIFontDescriptor.TraitKey: Any]? = fontDescriptor.fontAttributes[UIFontDescriptor.AttributeName.traits] as? [UIFontDescriptor.TraitKey: Any]
         if #available(iOS 8.2, *) {
-            traitsAttribute?[UIFontWeightTrait] = isLight ? -1.0 : (isBold ? 1.0 : 0.0)
+            traitsAttribute?[UIFontDescriptor.TraitKey.weight] = isLight ? -1.0 : (isBold ? 1.0 : 0.0)
         }
-        if italic {
-            traitsAttribute?[UIFontSlantTrait] = 1.0
-        } else {
-            traitsAttribute?[UIFontSlantTrait] = 0.0
-        }
+        traitsAttribute?[UIFontDescriptor.TraitKey.slant] = italic ? 1.0 : 0.0
 
-        fontDescriptor = fontDescriptor.addingAttributes([UIFontDescriptorTraitsAttribute : traitsAttribute!])
+        fontDescriptor = fontDescriptor.addingAttributes([UIFontDescriptor.AttributeName.traits: traitsAttribute!])
         font = UIFont(descriptor: fontDescriptor, size: 0)
         return font
     }

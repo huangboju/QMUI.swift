@@ -36,11 +36,11 @@ extension UITableView {
      *  @param view 要计算的 UIView
      *  @return view 所在的 indexPath，若不存在则返回 nil
      */
-    public func qmui_indexPathForRow(at view: UIView) -> IndexPath? {
+    @objc public func qmui_indexPathForRow(at view: UIView) -> IndexPath? {
         let origin = convert(view.frame.origin, from: view.superview)
         return indexPathForRow(at: origin)
     }
-    
+
     /**
      *  计算某个 view 处于当前 tableView 里的哪个 sectionHeaderView 内
      *  @param view 要计算的 UIView
@@ -213,11 +213,10 @@ extension UITableView {
 
 
 // MARK: - QMUIIndexPathHeightCacheInvalidation
-extension UITableView {
+extension UITableView: SelfAware {
     static let _onceToken = UUID().uuidString
-    
-    open override class func initialize() {
-        
+
+    static func awake() {
         DispatchQueue.once(token: _onceToken) {
             let selectors = [
                 #selector(reloadData),
@@ -230,15 +229,18 @@ extension UITableView {
                 #selector(reloadRows(at:with:)),
                 #selector(moveRow(at:to:)),
                 ]
-            
+
             for selector in selectors {
                 let swizzledSelector = Selector("qmui_" + selector.description)
                 let originalMethod = class_getInstanceMethod(self, selector)
                 let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-                method_exchangeImplementations(originalMethod, swizzledMethod)
+                method_exchangeImplementations(originalMethod!, swizzledMethod!)
             }
         }
     }
+}
+
+extension UITableView {
 
     func qmui_reloadData() {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {

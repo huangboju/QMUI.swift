@@ -363,7 +363,7 @@ class QMUIAsset: NSObject {
                 let imageData = Data(bytes: buffer, count: bytes)
                 free(&buffer)
                 // 判断是否为 GIF 图
-                if let gifRepresentation = self.alAsset?.representation(forUTI: kUTTypeGIF as String) {
+                if (self.alAsset?.representation(forUTI: kUTTypeGIF as String)) != nil {
                     completion(imageData, nil, true)
                 } else {
                     completion(imageData, nil, false)

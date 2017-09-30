@@ -264,9 +264,9 @@ class QMUIEmptyView: UIView {
     func updateDetailTextLabel(with text: String?) {
         if let text = text {
             let string = NSAttributedString(string: text, attributes: [
-                NSFontAttributeName: detailTextLabelFont,
-                NSForegroundColorAttributeName: detailTextLabelTextColor,
-                NSParagraphStyleAttributeName: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping , textAlignment: .center)
+                NSAttributedStringKey.font: detailTextLabelFont,
+                NSAttributedStringKey.foregroundColor: detailTextLabelTextColor,
+                NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping , textAlignment: .center)
                 ])
             detailTextLabel.attributedText = string
         }

@@ -40,7 +40,7 @@ class QMUITableViewCell: UITableViewCell {
 }
 
 extension QMUITableViewCell {
-    func updateCellAppearance(with indexPath: IndexPath) {
+    @objc func updateCellAppearance(with indexPath: IndexPath) {
         // 子类继承
         if let parentTableView = parentTableView {
             cellPosition = parentTableView.qmui_positionForRow(at: indexPath)

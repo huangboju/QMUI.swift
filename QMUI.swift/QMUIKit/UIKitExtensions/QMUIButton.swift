@@ -123,7 +123,7 @@ class QMUIButton: UIButton {
      * 设置按钮里图标和文字的相对位置，默认为QMUIButtonImagePositionLeft<br/>
      * 可配合imageEdgeInsets、titleEdgeInsets、contentHorizontalAlignment、contentVerticalAlignment使用
      */
-    @IBInspectable var imagePosition: QMUIButtonImagePosition = .left {
+    var imagePosition: QMUIButtonImagePosition = .left {
         didSet {
             self.setNeedsLayout()
         }
@@ -158,7 +158,7 @@ class QMUIButton: UIButton {
 
         // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
         // 不能设为0，否则无效；也不能设置为小数点，否则无法像素对齐
-        contentEdgeInsets = UIEdgeInsetsMake(1, 0, 1, 0)
+        contentEdgeInsets = UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0)
 
         // 图片默认在按钮左边，与系统UIButton保持一致
         imagePosition = .left
@@ -177,15 +177,15 @@ class QMUIButton: UIButton {
         case .bottom, .top:
             // 图片和文字上下排版时，宽度以文字或图片的最大宽度为最终宽度
             let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
-            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) // 假设图片高度必定完整显示
+            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: .greatestFiniteMagnitude)) ?? .zero // 假设图片高度必定完整显示
 
-            let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue, height: contentLimitSize.height - imageEdgeInsets.verticalValue - (imageSize?.height ?? 0) - titleEdgeInsets.verticalValue)
-            var titleSize = titleLabel?.sizeThatFits(titleLimitSize)
-            titleSize?.height = CGFloat(fminf(Float(titleSize?.height ?? 0), Float(titleLimitSize.height)))
+            let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue, height: contentLimitSize.height - imageEdgeInsets.verticalValue - imageSize.height - titleEdgeInsets.verticalValue)
+            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
+            titleSize.height = min(titleSize.height, titleLimitSize.height)
 
             resultSize.width = contentEdgeInsets.horizontalValue
-            resultSize.width += CGFloat(fmaxf(Float(imageEdgeInsets.horizontalValue) + Float(imageSize?.width ?? 0), Float(titleEdgeInsets.horizontalValue) + Float(titleSize?.width ?? 0)))
-            resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + (imageSize?.height ?? 0) + titleEdgeInsets.verticalValue + (titleSize?.height ?? 0)
+            resultSize.width += max(imageEdgeInsets.horizontalValue + imageSize.width, titleEdgeInsets.horizontalValue + titleSize.width)
+            resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + imageSize.height + titleEdgeInsets.verticalValue + titleSize.height
 
         case .right, .left:
             if imagePosition == .left && titleLabel?.numberOfLines == 1 {
@@ -198,15 +198,16 @@ class QMUIButton: UIButton {
                 // titleLabel为多行时，系统的sizeThatFits计算结果依然为单行的，所以当QMUIButtonImagePositionLeft并且titleLabel多行的情况下，使用自己计算的结果
 
                 let imageLimitHeight = contentLimitSize.height - imageEdgeInsets.verticalValue
-                let imageSize = imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight)) // 假设图片宽度必定完整显示，高度不超过按钮内容
+                let imageSize = imageView?.sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: imageLimitHeight)) ?? .zero // 假设图片宽度必定完整显示，高度不超过按钮内容
 
-                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue - (imageSize?.width ?? 0) - imageEdgeInsets.horizontalValue, height: contentLimitSize.height - titleEdgeInsets.verticalValue)
-                var titleSize = titleLabel?.sizeThatFits(titleLimitSize)
-                titleSize?.height = CGFloat(fminf(Float(titleSize?.height ?? 0), Float(titleLimitSize.height)))
+                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue - imageSize.width - imageEdgeInsets.horizontalValue, height: contentLimitSize.height - titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
+                titleSize.height = min(titleSize.height, titleLimitSize.height)
 
-                resultSize.width = contentEdgeInsets.horizontalValue + imageEdgeInsets.horizontalValue + (imageSize?.width ?? 0) + titleEdgeInsets.horizontalValue + (titleSize?.width ?? 0)
+                let v1 = contentEdgeInsets.horizontalValue + imageEdgeInsets.horizontalValue
+                resultSize.width = v1 + imageSize.width + titleEdgeInsets.horizontalValue + titleSize.width
                 resultSize.height = contentEdgeInsets.verticalValue
-                resultSize.height += CGFloat(fmaxf(Float(imageEdgeInsets.verticalValue) + Float(imageSize?.height ?? 0), Float(titleEdgeInsets.verticalValue) + Float(titleSize?.height ?? 0)))
+                resultSize.height += max(imageEdgeInsets.verticalValue + imageSize.height, titleEdgeInsets.verticalValue + titleSize.height)
             }
         }
         return resultSize
@@ -249,6 +250,8 @@ class QMUIButton: UIButton {
                 imageFrame = imageFrame.setWidth(imageLimitWidth)
                 titleFrame = imageFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
                 titleFrame = titleFrame.setWidth(titleLimitSize.width)
+            default:
+                break
             }
 
             if imagePosition == .top {
@@ -321,6 +324,8 @@ class QMUIButton: UIButton {
                 imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width)
                 titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
                 titleFrame = titleFrame.setX(imageFrame.minX - imageEdgeInsets.left - titleEdgeInsets.right - titleFrame.minX)
+            default:
+                break
             }
 
             switch contentVerticalAlignment {
@@ -407,7 +412,7 @@ class QMUIButton: UIButton {
         if adjustsTitleTintColorAutomatically, let currentAttributedTitle = currentAttributedTitle {
             let attributedString = NSMutableAttributedString(attributedString: currentAttributedTitle)
             let range = NSRange(location: 0, length: attributedString.length)
-            attributedString.addAttribute(NSForegroundColorAttributeName, value: tintColor, range: range)
+            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: tintColor, range: range)
             self.setAttributedTitle(attributedString, for: .normal)
         }
     }

@@ -6,21 +6,23 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UIScrollView {
-    
-    private struct AssociatedKeys {
-        static var description = "description"
-    }
-
+extension UIScrollView: SelfAware {
     private static let _onceToken = UUID().uuidString
-    
-    open override class func initialize() {
+
+    static func awake() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(self, #selector(description), #selector(qmui_description))
         }
     }
+}
 
-    func qmui_description() -> String {
+extension UIScrollView {
+
+    private struct AssociatedKeys {
+        static var description = "description"
+    }
+
+    @objc func qmui_description() -> String {
         return self.qmui_description() + ", contentInset = \(contentInset)"
     }
 
@@ -54,7 +56,7 @@ extension UIScrollView {
      * 判断当前的scrollView内容是否足够滚动
      * @warning 避免与<i>scrollEnabled</i>混淆
      */
-    public var qmui_canScroll: Bool {
+    @objc public var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.size == .zero {
             return false

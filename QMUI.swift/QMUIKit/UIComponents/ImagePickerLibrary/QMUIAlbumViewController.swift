@@ -30,7 +30,7 @@ protocol QMUIAlbumViewControllerDelegate: class {
      *  @see shouldShowDefaultLoadingView
      */
     func albumViewControllerWillStartLoad(_ albumViewController: QMUIAlbumViewController)
-    
+
     /**
      *  即将需要隐藏 Loading 时调用
      *
@@ -229,7 +229,7 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
         navigationController?.pushViewController(_imagePickerViewController!, animated: true)
     }
 
-    func handleCancelSelectAlbum() {
+    @objc func handleCancelSelectAlbum() {
         navigationController?.dismiss(animated: true, completion: { 
             self.albumViewControllerDelegate?.albumViewControllerDidCancel(self)
         })

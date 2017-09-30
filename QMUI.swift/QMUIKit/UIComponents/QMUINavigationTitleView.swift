@@ -554,7 +554,7 @@ class QMUINavigationTitleView: UIControl {
         }
     }
 
-    func handleTouchTitleViewEvent() {
+    @objc func handleTouchTitleViewEvent() {
         let active = !isActive
         delegate?.didTouch(titleView: self, isActive: active)
         isActive = active
@@ -575,7 +575,7 @@ extension UINavigationBar {
         }
     }
 
-    func qmui_navigationBarLayoutSubviews() {
+    @objc func qmui_navigationBarLayoutSubviews() {
         var titleView = topItem?.titleView as? QMUINavigationTitleView
 
         if let titleView = titleView {

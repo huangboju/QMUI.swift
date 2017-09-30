@@ -122,12 +122,12 @@ extension QMUIHelper {
         }
     }
 
-    func handleKeyboardWillShow(notification: Notification) {
+    @objc func handleKeyboardWillShow(notification: Notification) {
         _isKeyboardVisible = true
         lastKeyboardHeight = QMUIHelper.keyboardHeight(with: notification)
     }
 
-    func handleKeyboardWillHide(notification _: Notification) {
+    @objc func handleKeyboardWillHide(notification _: Notification) {
         _isKeyboardVisible = false
     }
 

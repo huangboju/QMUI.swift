@@ -6,6 +6,26 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+extension UIControl: SelfAware {
+    private static let _onceToken = UUID().uuidString
+
+    static func awake() {
+        DispatchQueue.once(token: _onceToken) {
+            let selectors = [
+                #selector(touchesBegan),
+                #selector(touchesMoved),
+                #selector(touchesEnded),
+                #selector(touchesCancelled),
+                #selector(point),
+                ]
+            selectors.forEach {
+                let selector = $0
+                ReplaceMethod(self, selector, Selector("qmui_" + selector.description))
+            }
+        }
+    }
+}
+
 extension UIControl {
     
     private struct AssociatedKeys {
@@ -59,26 +79,6 @@ extension UIControl {
         
         get {
             return (objc_getAssociatedObject(self, &AssociatedKeys.touchEndCount) as? Int) ?? 0
-        }
-    }
-
-    private static let _onceToken = UUID().uuidString
-
-    open override class func initialize() {
-        DispatchQueue.once(token: _onceToken) {
-
-            let selectors = [
-                #selector(touchesBegan),
-                #selector(touchesMoved),
-                #selector(touchesEnded),
-                #selector(touchesCancelled),
-                #selector(point),
-            ]
-
-            selectors.forEach {
-                let selector = $0
-                ReplaceMethod(self, selector, Selector("qmui_" + selector.description))
-            }
         }
     }
 

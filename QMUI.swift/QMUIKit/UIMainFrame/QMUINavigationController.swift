@@ -6,9 +6,19 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-protocol QMUINavigationControllerDelegate {
+enum QMUINavigationBarHiddenState {
+    case showWithAnimated
+    case showWithoutAnimated
+    case hideWithAnimated
+    case hideWithoutAnimated
+}
+
+protocol QMUINavigationControllerDelegate: class {
     /// 是否需要将状态栏改为浅色文字，默认为宏StatusbarStyleLightInitially的值
     var shouldSetStatusBarStyleLight: Bool { get }
+
+    /// 设置每个界面导航栏的显示/隐藏以及是否需要动画，为了减少对项目的侵入性，默认不开启这个接口的功能，只有当配置表中的 NavigationBarHiddenStateUsable 被设置 YES 时才会开启此功能。
+    var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState { get }
 
     /// 设置titleView的tintColor
     var titleViewTintColor: UIColor { get }
@@ -270,7 +280,7 @@ class QMUINavigationController: UINavigationController {
     }
 
     // 接管系统手势返回的回调
-    func handleInteractivePop(gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
+    @objc func handleInteractivePop(gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
         let state = gestureRecognizer.state
         if state == .ended {
             if (topViewController?.view.superview?.frame.minX ?? 0) < 0 {

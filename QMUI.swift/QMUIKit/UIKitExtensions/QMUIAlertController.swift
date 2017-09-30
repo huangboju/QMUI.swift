@@ -6,9 +6,26 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-import UIKit
+enum QMUIAlertControllerStyle: Int {
+    case sheet = 0
+    case alert
+}
+
+enum QMUIAlertActionStyle: Int {
+    case `default` = 0
+    case cancel
+    case destructive
+};
 
 class QMUIAlertController: UIViewController {
+
+    public init(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,16 +37,18 @@ class QMUIAlertController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    public func addAction(_ action: QMUIAlertAction) {
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
     }
-    */
 
+    public func showWithAnimated(_ animated: Bool = true) {
+    
+    }
+}
+
+class QMUIAlertAction {
+    init(title: String?, style: QMUIAlertActionStyle, handler: ((QMUIAlertAction) -> Void)? = nil) {
+        
+    }
 }

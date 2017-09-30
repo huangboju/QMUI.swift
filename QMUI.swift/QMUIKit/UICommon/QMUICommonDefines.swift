@@ -120,9 +120,13 @@ let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
 let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: false) }
-let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: false) }
+let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
+    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: false)
+}
 let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: true) }
-let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0.0, upperLimitSize: $0.1, lowerLimitSize: $0.2, bold: true) }
+let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
+    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: true)
+}
 
 
 // MARK: - 数学计算
@@ -182,11 +186,11 @@ func betweenOrEqual(_ minimumValue: CGFloat, _ value: CGFloat, _ maximumValue: C
 func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
     let oriMethod = class_getInstanceMethod(_class, _originSelector)
     let newMethod = class_getInstanceMethod(_class, _newSelector)
-    let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))
+    let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod!), method_getTypeEncoding(newMethod!))
     if (isAddedMethod) {
-        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod))
+        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod!), method_getTypeEncoding(oriMethod!))
     } else {
-        method_exchangeImplementations(oriMethod, newMethod)
+        method_exchangeImplementations(oriMethod!, newMethod!)
     }
 }
 
@@ -372,8 +376,8 @@ extension CGSize {
 }
 
 /// 创建一个像素对齐的CGRect
-let CGRectFlat: (CGFloat, CGFloat, CGFloat, CGFloat) -> CGRect = {
-    return CGRect(x: flat($0.0), y: flat($0.1), width: flat($0.2), height: flat($0.3))
+let CGRectFlat: (CGFloat, CGFloat, CGFloat, CGFloat) -> CGRect = { x, y, w, h in
+    return CGRect(x: flat(x), y: flat(y), width: flat(w), height: flat(h))
 }
 
 

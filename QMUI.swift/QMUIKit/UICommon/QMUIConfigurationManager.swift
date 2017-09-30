@@ -147,13 +147,13 @@ class QMUIConfigurationManager {
     public var tabBarTintColor = UIColor(r: 22, g: 147, b: 229)
     public var tabBarItemTitleColor = UIColor(r: 119, g: 119, b: 119) {
         didSet {
-            UITabBarItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName: tabBarItemTitleColor], for: .normal)
+            UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: tabBarItemTitleColor], for: .normal)
         }
     }
     public var tabBarItemTitleColorSelected: UIColor! {
         didSet {
             guard let tabBarItemTitleColorSelected = tabBarItemTitleColorSelected else { return }
-            UITabBarItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName: tabBarItemTitleColorSelected], for: .normal)
+            UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: tabBarItemTitleColorSelected], for: .normal)
         }
     }
 
@@ -184,7 +184,7 @@ class QMUIConfigurationManager {
             let barButtonItemAppearance = UIBarButtonItem.appearance()
             barButtonItemAppearance.setTitleTextAttributes(
                 [
-                    NSFontAttributeName: toolBarButtonFont
+                    NSAttributedStringKey.font: toolBarButtonFont
                 ]
                 , for: .normal)
         }
@@ -243,6 +243,8 @@ class QMUIConfigurationManager {
     public var statusbarStyleLightInitially = false
     public var needsBackBarButtonItemTitle = false
     public var hidesBottomBarWhenPushedInitially = true
+    public var navigationBarHiddenStateUsable = false
+    public var navigationBarHiddenStateInitially: QMUINavigationBarHiddenState = .showWithAnimated
 
     static let shared = QMUIConfigurationManager()
 

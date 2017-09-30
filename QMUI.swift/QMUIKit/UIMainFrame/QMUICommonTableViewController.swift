@@ -310,7 +310,7 @@ extension QMUICommonTableViewController {
      *
      *  一般情况下，有关tableView的设置属性的代码都应该写在这里。
      */
-    func initTableView() {
+    @objc func initTableView() {
         tableView = QMUITableView(frame: view.bounds, style: style)
         tableView.delegate = self
         tableView.dataSource = self

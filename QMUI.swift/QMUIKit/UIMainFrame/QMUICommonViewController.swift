@@ -148,10 +148,13 @@ class QMUICommonViewController: UIViewController {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return supportedOrientationMask!
     }
+    
+    var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
+        return NavigationBarHiddenStateInitially
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 }
 
@@ -163,20 +166,24 @@ extension QMUICommonViewController: QMUINavigationControllerDelegate {
      *
      *  @warning 不要尝试将willPopViewController视为点击返回按钮的回调，因为导致viewController被pop的情况不止点击返回按钮这一途径。系统的返回按钮是无法添加回调的，只能使用自定义的返回按钮。
      */
-    func willPopViewController() {
+    @objc func willPopViewController() {
         // 子类按需实现
     }
 
     /**
      *  在self.navigationController popViewControllerAnimated:内被调用，此时self已经不在viewControllers数组内
      */
-    func didPopViewController() {
+    @objc func didPopViewController() {
         // 子类按需实现
     }
 
     // MARK: - <QMUINavigationControllerDelegate>
     var shouldSetStatusBarStyleLight: Bool {
         return StatusbarStyleLightInitially
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return StatusbarStyleLightInitially ? .lightContent : .default
     }
 }
 
@@ -186,7 +193,7 @@ extension QMUICommonViewController {
      *
      *  @warning initSubviews只负责subviews的init，不负责布局。布局相关的代码应该写在 <b>viewDidLayoutSubviews</b>
      */
-    func initSubviews() {
+    @objc func initSubviews() {
         // 子类重写
     }
 
@@ -196,7 +203,7 @@ extension QMUICommonViewController {
      *  @param isInEditMode 是否用于编辑模式下
      *  @param animated     是否使用动画呈现
      */
-    func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
+    @objc func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
         // 子类重写
         navigationItem.titleView = titleView
     }
@@ -218,7 +225,7 @@ extension QMUICommonViewController {
      *
      *  @param notification test
      */
-    func contentSizeCategoryDidChanged(_: Notification) {
+    @objc func contentSizeCategoryDidChanged(_: Notification) {
         // 子类重写
         setUIAfterContentSizeCategoryChanged()
     }

@@ -6,18 +6,19 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UIColor {
-
+extension UIColor: SelfAware {
     private static let _onceToken = UUID().uuidString
 
-    override open class func initialize() {
+    static func awake() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(NSClassFromString("UIDeviceRGBColor")!, #selector(description), #selector(getter: qmui_description))
         }
     }
+}
 
+extension UIColor {
 
-    var qmui_description: String {
+    @objc var qmui_description: String {
         let red = qmui_red * 255
         let green = qmui_green * 255
         let blue = qmui_blue * 255
