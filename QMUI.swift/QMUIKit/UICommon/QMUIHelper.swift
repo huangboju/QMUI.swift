@@ -458,17 +458,17 @@ extension QMUIHelper {
 // MARK: - Log
 extension QMUIHelper {
     // TODO:
-//    - (void)printLogWithCalledFunction:(nonnull const char *)func log:(nonnull NSString *)log, ... {
-//    va_list args;
-//    va_start(args, log);
-//    NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
-//    if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
-//    [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
-//    } else {
-//    NSLog(@"QMUI - %@. Called By %s", logString, func);
-//    }
-//    va_end(args);
-//    }
+    func printLogWithCalledFunction(_ function: String, log: String) {
+//        va_list args;
+//        va_start(args, log);
+//        NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
+//        if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
+//            [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
+//        } else {
+//            NSLog(@"QMUI - %@. Called By %s", logString, func);
+//        }
+//        va_end(args);
+    }
 }
 
 

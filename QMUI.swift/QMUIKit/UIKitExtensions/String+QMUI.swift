@@ -63,11 +63,17 @@ public extension String {
         //        return addingPercentEncoding(withAllowedCharacters: unreservedCharset) ?? self
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
     }
-    
+
+    convenience init(seconds: Double) {
+        let min = floor(seconds / 60)
+        let sec = floor(seconds - min * 60)
+        self.init(format: "%02ld:%02ld", min, sec)
+    }
+
     var decoding: String {
         return removingPercentEncoding ?? self
     }
-    
+
     func index(from: Int) -> Index {
         return index(startIndex, offsetBy: from)
     }

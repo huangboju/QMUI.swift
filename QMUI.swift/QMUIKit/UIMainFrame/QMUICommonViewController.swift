@@ -159,31 +159,20 @@ class QMUICommonViewController: UIViewController {
 }
 
 extension QMUICommonViewController: QMUINavigationControllerDelegate {
-    /**
-     *  在self.navigationController popViewControllerAnimated:内被调用，此时尚未被pop。一些自身被pop的时候需要做的事情可以写在这里。
-     *
-     *  在ARC环境下，viewController可能被放在autorelease池中，因此viewController被pop后不一定立即被销毁，所以一些对实时性要求很高的内存管理逻辑可以写在这里（而不是写在dealloc内）
-     *
-     *  @warning 不要尝试将willPopViewController视为点击返回按钮的回调，因为导致viewController被pop的情况不止点击返回按钮这一途径。系统的返回按钮是无法添加回调的，只能使用自定义的返回按钮。
-     */
-    @objc func willPopViewController() {
-        // 子类按需实现
-    }
 
-    /**
-     *  在self.navigationController popViewControllerAnimated:内被调用，此时self已经不在viewControllers数组内
-     */
-    @objc func didPopViewController() {
-        // 子类按需实现
-    }
-
-    // MARK: - <QMUINavigationControllerDelegate>
+    // MARK: - QMUINavigationControllerDelegate
     var shouldSetStatusBarStyleLight: Bool {
         return StatusbarStyleLightInitially
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return StatusbarStyleLightInitially ? .lightContent : .default
+    }
+    
+    func viewControllerKeepingAppearWhenSetViewControllers(with animated: Bool) {
+        // 通常和 viewWillAppear: 里做的事情保持一致
+        setNavigationItems(isInEditMode: false, animated: false)
+        setToolbarItems(isInEditMode: false, animated: false)
     }
 }
 

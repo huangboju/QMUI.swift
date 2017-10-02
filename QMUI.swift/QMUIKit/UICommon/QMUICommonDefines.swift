@@ -142,7 +142,9 @@ let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }
 
 // MARK: - 其他
 // TODO:
-//#define QMUILog(...) [[QMUIHelper sharedInstance] printLogWithCalledFunction:__FUNCTION__ log:__VA_ARGS__]
+func QMUILog(_ items: Any...) {
+    QMUIHelper.shared.printLogWithCalledFunction(#function, log: "")
+}
 
 
 

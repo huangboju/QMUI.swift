@@ -19,6 +19,37 @@ protocol QMUINavigationControllerDelegate: class {
 
     /// 设置每个界面导航栏的显示/隐藏以及是否需要动画，为了减少对项目的侵入性，默认不开启这个接口的功能，只有当配置表中的 NavigationBarHiddenStateUsable 被设置 YES 时才会开启此功能。
     var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState { get }
+    
+    /**
+     *  在 self.navigationController 进行以下 4 个操作前，相应的 viewController 的 willPopInNavigationControllerWithAnimated: 方法会被调用：
+     *  1. popViewControllerAnimated:
+     *  2. popToViewController:animated:
+     *  3. popToRootViewControllerAnimated:
+     *  4. setViewControllers:animated:
+     *
+     *  此时 self 仍存在于 self.navigationController.viewControllers 堆栈内。
+     *
+     *  在 ARC 环境下，viewController 可能被放在 autorelease 池中，因此 viewController 被pop后不一定立即被销毁，所以一些对实时性要求很高的内存管理逻辑可以写在这里（而不是写在dealloc内）
+     *
+     *  @warning 不要尝试将 willPopInNavigationControllerWithAnimated: 视为点击返回按钮的回调，因为导致 viewController 被 pop 的情况不止点击返回按钮这一途径。系统的返回按钮是无法添加回调的，只能使用自定义的返回按钮。
+     */
+    func willPopInNavigationController(with animated: Bool)
+    
+    /**
+     *  在 self.navigationController 进行以下 4 个操作后，相应的 viewController 的 didPopInNavigationControllerWithAnimated: 方法会被调用：
+     *  1. popViewControllerAnimated:
+     *  2. popToViewController:animated:
+     *  3. popToRootViewControllerAnimated:
+     *  4. setViewControllers:animated:
+     *
+     *  @warning 此时 self 已经不在 viewControllers 数组内
+     */
+    func didPopInNavigationController(with animated: Bool)
+    
+    /**
+     *  当通过 setViewControllers:animated: 来修改 viewController 的堆栈时，如果参数 viewControllers.lastObject 与当前的 self.viewControllers.lastObject 不相同，则意味着会产生界面的切换，这种情况系统会自动调用两个切换的界面的生命周期方法，但如果两者相同，则意味着并不会产生界面切换，此时之前就已经在显示的那个 viewController 的 viewWillAppear:、viewDidAppear: 并不会被调用，那如果用户确实需要在这个时候修改一些界面元素，则找不到一个时机。所以这个方法就是提供这样一个时机给用户修改界面元素。
+     */
+    func viewControllerKeepingAppearWhenSetViewControllers(with animated: Bool)
 
     /// 设置titleView的tintColor
     var titleViewTintColor: UIColor { get }
@@ -78,6 +109,12 @@ extension QMUINavigationControllerDelegate {
     var navigationBarTintColor: UIColor {
         return UIColor.blue
     }
+
+    func willPopInNavigationController(with animated: Bool) {}
+
+    func didPopInNavigationController(with animated: Bool) {}
+
+    func viewControllerKeepingAppearWhenSetViewControllers(with animated: Bool) {}
 
     func backBarButtonItemTitle(with _: UIViewController) -> String {
         return ""

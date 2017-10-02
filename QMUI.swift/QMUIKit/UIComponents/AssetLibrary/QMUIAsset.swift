@@ -212,6 +212,7 @@ class QMUIAsset: NSObject {
      *
      *  @return 返回请求图片的请求 id
      */
+    @discardableResult
     public func requestThumbnailImage(with size: CGSize, completion:((_ result: UIImage?, _ info: [String: Any]?) -> Void)?) -> Int {
         if usePhotoKit {
             guard let phAsset = phAsset else { return 0 }
