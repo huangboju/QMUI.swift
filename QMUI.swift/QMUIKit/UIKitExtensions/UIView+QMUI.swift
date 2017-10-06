@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-enum QMUIBorderViewPosition: Int {
+public enum QMUIBorderViewPosition: Int {
     case none      = 0
     case top
     case left

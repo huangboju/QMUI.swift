@@ -33,6 +33,10 @@ public extension String {
         }
         return hexString
     }
+    
+    public var qmui_trim: String {
+        return trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 
     public static func hexLetterString(with int: Int) -> String {
         assert(int < 16, "要转换的数必须是16进制里的个位数，也即小于16，但你传给我是\(int)")
@@ -64,7 +68,7 @@ public extension String {
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
     }
 
-    convenience init(seconds: Double) {
+    init(seconds: Double) {
         let min = floor(seconds / 60)
         let sec = floor(seconds - min * 60)
         self.init(format: "%02ld:%02ld", min, sec)

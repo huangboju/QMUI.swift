@@ -390,9 +390,9 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         if imageAsset.downloadStatus == .downloading {
             // 下载过程中点击，取消下载，理论上能点击 progressView 就肯定是下载中，这里只是做个保护
             let cell = collectionView.cellForItem(at: indexPath) as? QMUIImagePickerCollectionViewCell
-            QMUIAssetsManager.shared.phCachingImageManager.cancelImageRequest(imageAsset.requestID)
+            QMUIAssetsManager.shared.phCachingImageManager.cancelImageRequest(PHImageRequestID(imageAsset.requestID))
             QMUILog("Cancel download asset image with request ID \(imageAsset.requestID)")
-            cell.downloadStatus = .canceled
+            cell?.downloadStatus = .canceled
             imageAsset.updateDownloadStatusWithDownloadResult(false)
         }
     }

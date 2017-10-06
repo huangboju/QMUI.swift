@@ -34,7 +34,7 @@ protocol QMUINavigationControllerDelegate: class {
      *  @warning 不要尝试将 willPopInNavigationControllerWithAnimated: 视为点击返回按钮的回调，因为导致 viewController 被 pop 的情况不止点击返回按钮这一途径。系统的返回按钮是无法添加回调的，只能使用自定义的返回按钮。
      */
     func willPopInNavigationController(with animated: Bool)
-    
+
     /**
      *  在 self.navigationController 进行以下 4 个操作后，相应的 viewController 的 didPopInNavigationControllerWithAnimated: 方法会被调用：
      *  1. popViewControllerAnimated:
@@ -45,7 +45,7 @@ protocol QMUINavigationControllerDelegate: class {
      *  @warning 此时 self 已经不在 viewControllers 数组内
      */
     func didPopInNavigationController(with animated: Bool)
-    
+
     /**
      *  当通过 setViewControllers:animated: 来修改 viewController 的堆栈时，如果参数 viewControllers.lastObject 与当前的 self.viewControllers.lastObject 不相同，则意味着会产生界面的切换，这种情况系统会自动调用两个切换的界面的生命周期方法，但如果两者相同，则意味着并不会产生界面切换，此时之前就已经在显示的那个 viewController 的 viewWillAppear:、viewDidAppear: 并不会被调用，那如果用户确实需要在这个时候修改一些界面元素，则找不到一个时机。所以这个方法就是提供这样一个时机给用户修改界面元素。
      */
@@ -191,13 +191,9 @@ class QMUINavigationController: UINavigationController {
         qmui_isPoppingViewController = true
         var viewController = topViewController
         viewControllerPopping = viewController
-        if viewController!.responds(to: #selector(QMUICommonViewController.willPopViewController)) {
-            _ = viewController?.perform(#selector(QMUICommonViewController.willPopViewController), with: nil)
-        }
+        _ = viewController?.perform(#selector(QMUINavigationControllerDelegate.willPopInNavigationController(with:)), with: nil)
         viewController = super.popViewController(animated: animated)
-        if viewController!.responds(to: #selector(QMUICommonViewController.didPopViewController)) {
-            _ = viewController?.perform(#selector(QMUICommonViewController.didPopViewController), with: nil)
-        }
+        _ = viewController?.perform(#selector(QMUINavigationControllerDelegate.didPopInNavigationController(with:)), with: nil)
         return viewController
     }
 
@@ -206,13 +202,9 @@ class QMUINavigationController: UINavigationController {
         qmui_isPoppingViewController = true
         let viewControllerPopping = topViewController
         self.viewControllerPopping = viewControllerPopping
-        if viewControllerPopping!.responds(to: #selector(QMUICommonViewController.willPopViewController)) {
-            _ = viewControllerPopping?.perform(#selector(QMUICommonViewController.willPopViewController), with: nil)
-        }
+        _ = viewControllerPopping?.perform(#selector(QMUINavigationControllerDelegate.willPopInNavigationController(with:)), with: nil)
         let poppedViewControllers = super.popToViewController(viewController, animated: animated)
-        if viewControllerPopping!.responds(to: #selector(QMUICommonViewController.didPopViewController)) {
-            _ = viewControllerPopping?.perform(#selector(QMUICommonViewController.didPopViewController), with: nil)
-        }
+        _ = viewControllerPopping?.perform(#selector(QMUINavigationControllerDelegate.didPopInNavigationController(with:)), with: nil)
         return poppedViewControllers
     }
 

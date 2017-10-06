@@ -15,4 +15,5 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
 
     public var isEditing = false
     public var isChecked = false
+    public var downloadStatus: QMUIAssetDownloadStatus = .failed // Cell 中对应资源的下载状态，这个值的变动会相应地调整 UI 表现
 }

@@ -10,12 +10,16 @@ import UIKit
 
 class QMUITextField: UITextField {
 
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
+    /**
+     *  文字在输入框内的 padding。如果出现 clearButton，则 textInsets.right 会控制 clearButton 的右边距
+     *
+     *  默认为 TextFieldTextInsets
+     */
+    public var textInsets: UIEdgeInsets = .zero
 
+    /**
+     *  显示允许输入的最大文字长度，默认为 NSUIntegerMax，也即不限制长度。
+     */
+    @IBInspectable
+    public var maximumTextLength = Int.max
 }
