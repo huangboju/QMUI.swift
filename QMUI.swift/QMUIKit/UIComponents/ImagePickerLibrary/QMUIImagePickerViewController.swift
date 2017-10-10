@@ -431,40 +431,40 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             if downloadSucceed {
                 // 资源资源已经在本地或下载成功
                 imageAsset.updateDownloadStatusWithDownloadResult(true)
-                cell.downloadStatus = .succeed
+                cell?.downloadStatus = .succeed
 
-                if selectedImageAssetArray.count >= maximumSelectImageCount {
-                    if alertTitleWhenExceedMaxSelectImageCount.isEmpty {
-                        alertTitleWhenExceedMaxSelectImageCount = "你最多只能选择\(maximumSelectImageCount)张图片"
+                if self.selectedImageAssetArray.count >= self.maximumSelectImageCount {
+                    if self.alertTitleWhenExceedMaxSelectImageCount.isEmpty {
+                        self.alertTitleWhenExceedMaxSelectImageCount = "你最多只能选择\(self.maximumSelectImageCount)张图片"
                     }
-                    if alertButtonTitleWhenExceedMaxSelectImageCount.isEmpty {
-                        alertButtonTitleWhenExceedMaxSelectImageCount = "我知道了"
+                    if self.alertButtonTitleWhenExceedMaxSelectImageCount.isEmpty {
+                        self.alertButtonTitleWhenExceedMaxSelectImageCount = "我知道了"
                     }
 
-                    let alertController = QMUIAlertController(title: alertTitleWhenExceedMaxSelectImageCount, preferredStyle: .alert)
-                    alertController.addAction(QMUIAlertAction(title: alertButtonTitleWhenExceedMaxSelectImageCount, style: .cancel))
+                    let alertController = QMUIAlertController(title: self.alertTitleWhenExceedMaxSelectImageCount, preferredStyle: .alert)
+                    alertController.addAction(QMUIAlertAction(title: self.alertButtonTitleWhenExceedMaxSelectImageCount, style: .cancel))
                     alertController.showWithAnimated()
                     return
                 }
 
-                imagePickerViewControllerDelegate?.imagePickerViewController(self, willCheckImageAt: indexPath.item)
+                self.imagePickerViewControllerDelegate?.imagePickerViewController(self, willCheckImageAt: indexPath.item)
 
-                cell.isChecked = true
-                selectedImageAssetArray.append(imageAsset)
+                cell?.isChecked = true
+                self.selectedImageAssetArray.append(imageAsset)
 
-                imagePickerViewControllerDelegate?.imagePickerViewController(self, didCheckImageAt: indexPath.item)
+                self.imagePickerViewControllerDelegate?.imagePickerViewController(self, didCheckImageAt: indexPath.item)
 
                 // 根据选择图片数控制预览和发送按钮的 enable，以及修改已选中的图片数
-                updateImageCountAndCheckLimited()
+                self.updateImageCountAndCheckLimited()
             } else if info?[PHImageErrorKey] != nil {
                 // 下载错误
                 imageAsset.updateDownloadStatusWithDownloadResult(false)
-                cell.downloadStatus = .failed
+                cell?.downloadStatus = .failed
             }
         }, with: { (progress, error, stop, info) in
             imageAsset.downloadProgress = progress
 
-            if collectionView.qmui_itemVisible(at: indexPath) {
+            if self.collectionView.qmui_itemVisible(at: indexPath) {
                 /**
                  *  withProgressHandler 不在主线程执行，若用户在该 block 中操作 UI 时会产生一些问题，
                  *  为了避免这种情况，这里该 block 主动放到主线程执行。
@@ -472,23 +472,23 @@ class QMUIImagePickerViewController: QMUICommonViewController {
                 DispatchQueue.main.async {
                     QMUILog("Download iCloud image, current progress is : \(progress)")
 
-                    if (cell.downloadStatus != .downloading) {
-                        cell.downloadStatus = .downloading
+                    if cell?.downloadStatus != .downloading {
+                        cell?.downloadStatus = .downloading
                         // 重置 progressView 的显示的进度为 0
                         cell?.progressView.setProgress(0, animated: false)
                         // 预先设置预览界面的下载状态
-                        imagePickerPreviewViewController.downloadStatus = QMUIAssetDownloadStatusDownloading
+                        self.imagePickerPreviewViewController?.downloadStatus = .downloading
                     }
                     // 拉取资源的初期，会有一段时间没有进度，猜测是发出网络请求以及与 iCloud 建立连接的耗时，这时预先给个 0.02 的进度值，看上去好看些
-                    let targetProgress = max(0.02, progress)
-                    if targetProgress < cell.progressView.progress {
-                        cell.progressView.setProgress(targetProgress, animated: false)
+                    let targetProgress = CGFloat(max(0.02, progress))
+                    if targetProgress < cell!.progressView.progress {
+                        cell?.progressView.setProgress(targetProgress, animated: false)
                     } else {
-                        cell.progressView.progress = max(0.02, progress)
+                        cell?.progressView.progress = CGFloat(max(0.02, progress))
                     }
                     if error != nil {
                         QMUILog("Download iCloud image Failed, current progress is: \(progress)")
-                        cell.downloadStatus = .failed
+                        cell?.downloadStatus = .failed
                     }
                 }
             }

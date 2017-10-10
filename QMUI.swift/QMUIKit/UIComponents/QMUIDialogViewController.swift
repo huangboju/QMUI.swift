@@ -73,10 +73,10 @@ class QMUIDialogViewController: QMUICommonViewController {
     public var buttonTitleAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColorBlue, .kern: 2] {
         didSet {
             if let cancelTitle = cancelButton?.attributedTitle(for: .normal)?.string {
-                cancelButton.setAttributedTitle(NSAttributedString(string: cancelTitle, attributes: buttonTitleAttributes), for: .normal)
+                cancelButton?.setAttributedTitle(NSAttributedString(string: cancelTitle, attributes: buttonTitleAttributes), for: .normal)
             }
             if let submitTitle = submitButton?.attributedTitle(for: .normal)?.string {
-                submitButton.setAttributedTitle(NSAttributedString(string: submitTitle, attributes: buttonTitleAttributes), for: .normal)
+                submitButton?.setAttributedTitle(NSAttributedString(string: submitTitle, attributes: buttonTitleAttributes), for: .normal)
             }
         }
     }
@@ -202,10 +202,10 @@ class QMUIDialogViewController: QMUICommonViewController {
     }
 
     func initFooterViewIfNeeded() {
-        footerView.frame = CGSize(width: view.bounds, height: footerViewHeight).rect
+        footerView.frame = CGSize(width: view.bounds.width, height: footerViewHeight).rect
         footerView.backgroundColor = footerViewBackgroundColor
         footerView.isHidden = true
-        
+
         footerViewSeparatorLayer.qmui_removeDefaultAnimations()
 
         footerViewSeparatorLayer.backgroundColor = headerFooterSeparatorColor.cgColor
@@ -240,7 +240,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 
         initFooterViewIfNeeded()
         footerView.isHidden = false
-        footerView.addSubview(submitButton)
+        footerView.addSubview(submitButton!)
 
         submitButtonBlock = block
     }

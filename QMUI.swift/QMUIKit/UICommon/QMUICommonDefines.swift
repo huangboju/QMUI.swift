@@ -247,10 +247,10 @@ extension CGRect {
     }
 
     /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持垂直居中时，layoutingRect的originY
-    func minYVerticallyCenter(layoutingRect: CGRect) -> CGFloat {
+    func minYVerticallyCenter(_ layoutingRect: CGRect) -> CGFloat {
         return minY + minYVerticallyCenter(in: layoutingRect)
     }
-    
+
     /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持水平居中时，layoutingRect的originX
     func minXHorizontallyCenter(_ layoutingRect: CGRect) -> CGFloat {
         return minX + minXHorizontallyCenter(in: layoutingRect)

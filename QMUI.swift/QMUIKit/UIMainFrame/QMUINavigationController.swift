@@ -189,43 +189,100 @@ class QMUINavigationController: UINavigationController {
     override func popViewController(animated: Bool) -> UIViewController? {
         isViewControllerTransiting = animated
         qmui_isPoppingViewController = true
-        var viewController = topViewController
+        let viewController = topViewController
         viewControllerPopping = viewController
-        _ = viewController?.perform(#selector(QMUINavigationControllerDelegate.willPopInNavigationController(with:)), with: nil)
-        viewController = super.popViewController(animated: animated)
-        _ = viewController?.perform(#selector(QMUINavigationControllerDelegate.didPopInNavigationController(with:)), with: nil)
+        if let vc = viewController as? QMUINavigationControllerDelegate {
+            vc.willPopInNavigationController(with: animated)
+            vc.didPopInNavigationController(with: animated)
+        }
         return viewController
     }
 
     override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
-        isViewControllerTransiting = true
-        qmui_isPoppingViewController = true
-        let viewControllerPopping = topViewController
-        self.viewControllerPopping = viewControllerPopping
-        _ = viewControllerPopping?.perform(#selector(QMUINavigationControllerDelegate.willPopInNavigationController(with:)), with: nil)
-        let poppedViewControllers = super.popToViewController(viewController, animated: animated)
-        _ = viewControllerPopping?.perform(#selector(QMUINavigationControllerDelegate.didPopInNavigationController(with:)), with: nil)
+        // 从横屏界面pop 到竖屏界面，系统会调用两次 popViewController，如果这里加这个 if 判断，会误拦第二次 pop，导致错误
+        //    if (self.isViewControllerTransiting) {
+        //        NSAssert(NO, @"isViewControllerTransiting = YES, %s, self.viewControllers = %@", __func__, self.viewControllers)
+        //        return nil
+        //    }
+        
+        if topViewController == viewController {
+            // 当要被 pop 到的 viewController 已经处于最顶层时，调用 super 默认也是什么都不做，所以直接 return 掉
+            return super.popToViewController(viewController, animated: animated)
+        }
+
+        if animated {
+            isViewControllerTransiting = true
+        }
+        
+        viewControllerPopping = topViewController
+
+        // will pop
+        
+        for (i, viewControllerPopping) in viewControllers.reversed().enumerated() {
+            if viewControllerPopping == viewController {
+                break
+            }
+
+            if let vc = viewControllerPopping as? QMUINavigationControllerDelegate {
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                vc.willPopInNavigationController(with: animatedArgument)
+            }
+        }
+
+        guard let poppedViewControllers = super.popToViewController(viewController, animated: animated) else {
+            return nil
+        }
+
+        // did pop
+        for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
+            if let vc = viewControllerPopped as? QMUINavigationControllerDelegate {
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                vc.didPopInNavigationController(with: animatedArgument)
+            }
+        }
+        
         return poppedViewControllers
     }
 
     override func popToRootViewController(animated: Bool) -> [UIViewController]? {
+        // 从横屏界面pop 到竖屏界面，系统会调用两次 popViewController，如果这里加这个 if 判断，会误拦第二次 pop，导致错误
+        //    if (self.isViewControllerTransiting) {
+        //        NSAssert(NO, @"isViewControllerTransiting = YES, %s, self.viewControllers = %@", __func__, self.viewControllers)
+        //        return nil
+        //    }
+        
         // 在配合 tabBarItem 使用的情况下，快速重复点击相同 item 可能会重复调用 popToRootViewControllerAnimated:，而此时其实已经处于 rootViewController 了，就没必要继续走后续的流程，否则一些变量会得不到重置。
         if topViewController == qmui_rootViewController {
             return nil
         }
-
-        isViewControllerTransiting = true
-
-        qmui_isPoppingViewController = true
-        let viewController = topViewController
-        viewControllerPopping = viewController
-        if viewController!.responds(to: #selector(QMUICommonViewController.willPopViewController)) {
-            _ = viewController?.perform(#selector(QMUICommonViewController.willPopViewController), with: nil)
+        
+        if animated {
+            isViewControllerTransiting = true
         }
-        let poppedViewControllers = super.popToRootViewController(animated: animated)
-        if viewController!.responds(to: #selector(QMUICommonViewController.didPopViewController)) {
-            _ = viewController?.perform(#selector(QMUICommonViewController.didPopViewController), with: nil)
+        
+        viewControllerPopping = topViewController
+        
+        // will pop
+        
+        for (i, viewControllerPopping) in viewControllers.reversed().enumerated() {
+            if let vc = viewControllerPopping as? QMUINavigationControllerDelegate {
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                vc.willPopInNavigationController(with: animatedArgument)
+            }
         }
+
+        guard let poppedViewControllers = super.popToRootViewController(animated: animated) else {
+            return nil
+        }
+
+        // did pop
+        for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
+            if let vc = viewControllerPopped as? QMUINavigationControllerDelegate {
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                vc.didPopInNavigationController(with: animatedArgument)
+            }
+        }
+
         return poppedViewControllers
     }
 
