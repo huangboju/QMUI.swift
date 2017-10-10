@@ -52,6 +52,9 @@ extension QMUIZoomImageViewDelegate {
  *  QMUIZoomImageView 提供最基础的图片预览和缩放功能以及 loading、错误等状态的展示支持，其他功能请通过继承来实现。
  */
 class QMUIZoomImageView: UIView {
+
+    public weak var delegate: QMUIZoomImageViewDelegate?
+
     /// 设置当前要显示的 Live Photo，会把 image/video 相关内容清空，因此注意不要直接通过 livePhotoView.livePhoto 来设置
     @available(iOS 9.1, *)
     public weak var livePhoto: PHLivePhoto?
@@ -61,8 +64,39 @@ class QMUIZoomImageView: UIView {
 
     /// 设置当前要显示的图片，会把 livePhoto/video 相关内容清空，因此注意不要直接通过 imageView.image 来设置图片。
     public weak var image: UIImage?
+
+    public let emptyView = QMUIEmptyView()
+    
+    /**
+     *  显示一个 loading
+     *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
+     */
+    public func showLoading() {
+
+    }
+
+    /**
+     *  将 emptyView 隐藏
+     */
+    public func hideEmptyView() {
+
+    }
+    
+    /**
+     *  重置图片或视频的大小，使用的场景例如：相册控件里放大当前图片、划到下一张、再回来，当前的图片或视频应该恢复到原来大小。
+     *  注意子类重写需要调一下super。
+     */
+    public func revertZooming() {
+
+    }
+    
+    public func endPlayingVideo() {
+        
+    }
 }
 
 class QMUIZoomImageViewVideoToolbar: UIView {
-
+    // 可通过调整此属性来调整 toolbar 的视觉位置，默认为 {25, 25, 25, 18}
+    // 如果同时实现了 QMUIZoomImageViewDelegate 的 contentInsetsForVideoToolbar:inZoomingImageView: 方法，则此处设置的值会覆盖掉 delegate 中返回的值
+    public var contentInsets = UIEdgeInsets(top: 25, left: 25, bottom: 25, right: 18)
 }
