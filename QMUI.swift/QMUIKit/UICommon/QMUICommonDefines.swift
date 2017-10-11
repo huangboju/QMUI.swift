@@ -135,9 +135,15 @@ let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }
 
 
 // MARK: - 动画
-// TODO:
-//let QMUIViewAnimationOptionsCurveOut (7<<16)
-//let QMUIViewAnimationOptionsCurveIn (8<<16)
+extension UIViewAnimationOptions {
+    static var curveOut: UIViewAnimationOptions {
+        return UIViewAnimationOptions(rawValue: 7<<16)
+    }
+
+    static var curveIn: UIViewAnimationOptions {
+        return UIViewAnimationOptions(rawValue: 8<<16)
+    }
+}
 
 
 // MARK: - 其他

@@ -164,11 +164,12 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var identifier = kImageOrUnknownCellIdentifier
 
-        let type = delegate?.imagePreviewView(self, assetTypeAt: indexPath.item)
-        if type == .livePhoto {
-            identifier = kLivePhotoCellIdentifier
-        } else if type == .video {
-            identifier = kVideoCellIdentifier
+        if let type = delegate?.imagePreviewView(self, assetTypeAt: indexPath.item) {
+            if type == .livePhoto {
+                identifier = kLivePhotoCellIdentifier
+            } else if type == .video {
+                identifier = kVideoCellIdentifier
+            }
         }
 
         let _cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)

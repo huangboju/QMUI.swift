@@ -67,6 +67,9 @@ class QMUIZoomImageView: UIView {
 
     public let emptyView = QMUIEmptyView()
     
+    /// 用于显示图片的 UIImageView，注意不要通过 imageView.image 来设置图片，请使用 image 属性。
+    public let imageView = UIImageView()
+
     /**
      *  显示一个 loading
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
@@ -92,6 +95,27 @@ class QMUIZoomImageView: UIView {
     
     public func endPlayingVideo() {
         
+    }
+    
+    /**
+     *  获取当前正在显示的图片/视频在整个 QMUIZoomImageView 坐标系里的 rect（会按照当前的缩放状态来计算）
+     */
+    public var imageViewRectInZoomImageView: CGRect {
+        let imageView = currentContentView
+        return convert(imageView?.frame ?? .zero, from: imageView?.superview)
+    }
+
+    private var currentContentView: UIView? {
+//        if (_imageView) {
+//            return _imageView;
+//        }
+//        if (_livePhotoView) {
+//            return _livePhotoView;
+//        }
+//        if (self.videoPlayerView) {
+//            return self.videoPlayerView;
+//        }
+        return nil
     }
 }
 
