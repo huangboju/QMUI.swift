@@ -107,11 +107,11 @@ Tips
 * QMUIImagePreviewViewController  ✅
 * QMUIKeyboardManager  👷
 * QMUIMarqueeLabel  ✅
-* QMUIModalPresentationViewController  👨🏼‍💻
+* QMUIModalPresentationViewController  ✅
 * QMUIMoreOperationController  👷
 * QMUINavigationTitleView   ✅
 * QMUIOrderedDictionary  👷
-* QMUIPieProgressView  👷
+* QMUIPieProgressView  👨🏼‍💻
 * QMUIPopupContainerView  👷
 * QMUIPopupMenuView  👷
 * QMUIQQEmotionManager  👷
