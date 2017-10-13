@@ -174,7 +174,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @arg  contentViewFrame    动画执行完后`contentView`的最终frame，若使用了`layoutBlock`，则也即`layoutBlock`计算完后的frame
      *  @arg  completion          动画结束后给到modalController的回调，modalController会在这个回调里做一些状态设置，务必调用。
      */
-    public var showingAnimation: (dimmingView: UIView, containerBounds: CGRect, keyboardHeight: CGFloat, contentViewFrame: CGRect, completion: ((Bool) -> Void)?)?
+    public var showingAnimation: ((_ dimmingView: UIView, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ contentViewFrame: CGRect, _ completion: ((Bool) -> Void)?) -> Void)?
 
     /**
      *  管理自定义的隐藏动画，需要管理的对象包括`contentView`和`dimmingView`，在动画结束后，必须调用参数里的`completion` block。
@@ -278,7 +278,7 @@ class QMUIModalPresentationViewController: UIViewController {
                     layoutBlock(view.bounds, keyboardHeight, contentViewFrame)
                     contentViewFrame = contentView!.frame
                 }
-                showingAnimation(dimmingView, view.bounds, keyboardHeight, contentViewFrame, didShownCompletion)
+                showingAnimation(dimmingView!, view.bounds, keyboardHeight, contentViewFrame, didShownCompletion)
             } else {
                 contentView?.frame = contentViewFrame
                 contentView?.setNeedsLayout()

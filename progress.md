@@ -111,7 +111,7 @@ Tips
 * QMUIMoreOperationController  👷
 * QMUINavigationTitleView   ✅
 * QMUIOrderedDictionary  👷
-* QMUIPieProgressView  👨🏼‍💻
+* QMUIPieProgressView  ✅
 * QMUIPopupContainerView  👷
 * QMUIPopupMenuView  👷
 * QMUIQQEmotionManager  👷
