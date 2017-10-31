@@ -317,7 +317,8 @@ extension CGRect {
         origin.x = flat(x)
         return self
     }
-    
+
+    @discardableResult
     mutating func setY(_ y: CGFloat) -> CGRect {
         origin.y = flat(y)
         return self

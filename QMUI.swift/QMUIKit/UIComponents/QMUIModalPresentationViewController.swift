@@ -183,7 +183,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @arg  keyboardHeight      键盘在当前界面里的高度，若无键盘，则为0
      *  @arg  completion          动画结束后给到modalController的回调，modalController会在这个回调里做一些清理工作，务必调用
      */
-    public var hidingAnimation: (dimmingView: UIView, containerBounds: CGRect, keyboardHeight: CGFloat, completion: ((_ finished: Bool) -> Void)?)?
+    public var hidingAnimation: ((_ dimmingView: UIView, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) -> Void)?
 
 
     private var containerWindow: QMUIModalPresentationWindow?
