@@ -224,7 +224,7 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
         assert(_imagePickerViewController != nil, "albumViewControllerDelegate 必须实现 imagePickerViewControllerForAlbumViewController 并返回一个 \(NSStringFromClass(QMUIImagePickerViewController.self)) 对象")
 
         let assetsGroup = _albumsArray[indexPath.row]
-        _imagePickerViewController?.refreshWithAssetsGroup(assetsGroup)
+        _imagePickerViewController?.refresh(with: assetsGroup)
         _imagePickerViewController?.title = assetsGroup.name
         navigationController?.pushViewController(_imagePickerViewController!, animated: true)
     }

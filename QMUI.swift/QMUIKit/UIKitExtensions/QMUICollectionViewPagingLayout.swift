@@ -20,7 +20,8 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
     public var allowsMultipleItemScroll = true
 
     init(style: QMUICollectionViewPagingLayoutStyle = .`default`) {
-        
+        // TODO
+        fatalError()
     }
 
     required init?(coder aDecoder: NSCoder) {

@@ -51,13 +51,26 @@ extension QMUIZoomImageViewDelegate {
  *
  *  QMUIZoomImageView 提供最基础的图片预览和缩放功能以及 loading、错误等状态的展示支持，其他功能请通过继承来实现。
  */
+
 class QMUIZoomImageView: UIView {
 
     public weak var delegate: QMUIZoomImageViewDelegate?
 
     /// 设置当前要显示的 Live Photo，会把 image/video 相关内容清空，因此注意不要直接通过 livePhotoView.livePhoto 来设置
+    
+    private var livePhotoStorge: Any? = nil
     @available(iOS 9.1, *)
-    public weak var livePhoto: PHLivePhoto?
+    public weak var livePhoto: PHLivePhoto? {
+        get {
+            guard let photo = self.livePhotoStorge as? PHLivePhoto else {
+                return nil
+            }
+            return photo
+        }
+        set {
+            self.livePhotoStorge = newValue
+        }
+    }
 
     /// 设置当前要显示的 video ，会把 image/livePhoto 相关内容清空，因此注意不要直接通过 videoPlayerLayer 来设置
     public weak var videoPlayerItem: AVPlayerItem?
