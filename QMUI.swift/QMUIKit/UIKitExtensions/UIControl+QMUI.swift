@@ -18,6 +18,7 @@ extension UIControl: SelfAware {
                 #selector(touchesCancelled),
                 #selector(point),
                 ]
+            
             selectors.forEach {
                 let selector = $0
                 ReplaceMethod(self, selector, Selector("qmui_" + selector.description))

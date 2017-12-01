@@ -107,15 +107,15 @@ extension QMUIHelper {
 
 // MARK: - Keyboard
 
-extension QMUIHelper {
+extension QMUIHelper: SelfAware {
     private static let _onceToken = UUID().uuidString
 
     private struct kAssociatedObjectKey {
         static var LastKeyboardHeight = "LastKeyboardHeight"
         static var isKeyboardVisible = "isKeyboardVisible"
     }
-
-    override class func initialize() {
+    
+    static func awake() {
         DispatchQueue.once(token: _onceToken) {
             NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
             NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)

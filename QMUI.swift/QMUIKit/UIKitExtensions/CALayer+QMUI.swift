@@ -16,10 +16,10 @@ extension CALayer {
      *  @param  sublayer    要被移动的layer
      *  @warning 要被移动的sublayer必须已经添加到当前layer上
      */
-    func qmui_bringSublayerToFront(_ sublayer: CALayer *) {
+    func qmui_bringSublayerToFront(_ sublayer: CALayer) {
         if sublayer.superlayer == self {
             sublayer.removeFromSuperlayer()
-            insertSublayer(sublayer, at: sublayers.count)
+            insertSublayer(sublayer, at: UInt32(sublayers?.count ?? 0))
         }
     }
 }

@@ -214,7 +214,7 @@ extension UITableView {
 
 // MARK: - QMUIIndexPathHeightCacheInvalidation
 extension UITableView: SelfAware {
-    static let _onceToken = UUID().uuidString
+    private static let _onceToken = UUID().uuidString
 
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
@@ -291,7 +291,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
             qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
-                swap(&heightsBySection[section], &heightsBySection[newSection])
+                heightsBySection.swapAt(section, newSection)
             })
         }
         qmui_moveSection(section, toSection: newSection)

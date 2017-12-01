@@ -155,7 +155,7 @@ class QMUIMoreOperationController: UIViewController {
     }
     public var topScrollViewInsets = UIEdgeInsets(top: 18, left: 14, bottom: 12, right: 14)
     public var bottomScrollViewInsets = UIEdgeInsets(top: 18, left: 14, bottom: 12, right: 14)
-    public var cancelButtonHeight = 52
+    public var cancelButtonHeight: CGFloat = 52
     public var cancelButtonMarginTop: CGFloat = 0 {
         didSet {
             updateCornerRadius()
@@ -289,10 +289,10 @@ class QMUIMoreOperationController: UIViewController {
         }
         
         let isLargeSreen = view.bounds.width > QMUIHelper.screenSizeFor40Inch.width
-        let maxItemCountInScrollView = max(importantShowingItems.count, normalShowingItems.count)
+        let maxItemCountInScrollView = CGFloat(max(importantShowingItems.count, normalShowingItems.count))
         let itemCountForTotallyVisibleItem: CGFloat = isLargeSreen ? 4 : 3
 
-        let itemWidth = flat((contentWidth - max(importantScrollViewInsets.horizontalValue, normaltScrollViewInsets.horizontalValue)) / itemCountForTotallyVisibleItem) - (maxItemCountInScrollView > itemCountForTotallyVisibleItem ? 11 : 0)
+        let itemWidth = flat((contentWidth - max(importantScrollViewInsets.horizontalValue, normaltScrollViewInsets.horizontalValue)) / itemCountForTotallyVisibleItem) - (maxItemCountInScrollView > itemCountForTotallyVisibleItem ? 11.0 : 0.0)
 
         var itemMaxHeight: CGFloat = 0
         var itemMaxX: CGFloat = 0
@@ -319,12 +319,12 @@ class QMUIMoreOperationController: UIViewController {
         if !normalShowingItems.isEmpty {
             normalItemsScrollView.isHidden = false
             scrollViewDividingLayer.isHidden = importantShowingItems.isEmpty
-            scrollViewDividingLayer.frame = CGRectFlatted(CGRectMake(0, layoutOriginY, contentWidth, PixelOne))
+            scrollViewDividingLayer.frame = CGRectFlat(0, layoutOriginY, contentWidth, PixelOne)
             layoutOriginY = scrollViewDividingLayer.frame.maxY
             for i in 0 ..< normalShowingItems.count {
                 let itemView = normalShowingItems[i]
                 itemView.sizeToFit()
-                itemView.frame = CGRect(x: itemWidth * i, y: 0, width: itemWidth, height: itemView.bounds.height).flatted
+                itemView.frame = CGRect(x: itemWidth * CGFloat(i), y: 0, width: itemWidth, height: itemView.bounds.height).flatted
                 itemMaxX = itemView.frame.maxX
                 itemMaxHeight = max(itemMaxHeight, itemView.bounds.height)
             }
@@ -345,7 +345,7 @@ class QMUIMoreOperationController: UIViewController {
         
         cancelButtonDividingLayer.isHidden = cancelButtonMarginTop > 0
         cancelButtonDividingLayer.frame = CGRect(x: 0, y: layoutOriginY + cancelButtonMarginTop, width: contentWidth, height: PixelOne).flatted
-        cancelButton.frame = CGRect(x: 0, y: cancelButtonDividingLayer.frame.minY, contentWidth, cancelButtonHeight).flatted
+        cancelButton.frame = CGRect(x: 0.0, y: cancelButtonDividingLayer.frame.minY, width: contentWidth, height: cancelButtonHeight).flatted
 
         containerView.frame = CGRect(x: (view.bounds.width - contentWidth) / 2,
                                      y: view.bounds.height - cancelButton.frame.maxY - contentEdgeMargin,
@@ -433,45 +433,45 @@ class QMUIMoreOperationController: UIViewController {
     
     /// 下面几个`addItem`方法，是用来往面板里面增加item的
     public func addItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> Int {
-        let itemView = [self createItemWithTitle:title selectedTitle:selectedTitle image:image selectedImage:selectedImage type:itemType tag:tag];
+        let itemView = self.createItem(with: title, selectedTitle: selectedTitle, image: image, selectedImage: selectedImage, type: type, tag: tag)
         if itemView.itemType == .important {
-            return [self insertItem:itemView toIndex:self.importantItems.count] ? [self.importantItems indexOfObject:itemView] : -1;
-        } else if (itemView.itemType == QMUIMoreOperationItemTypeNormal) {
-            return [self insertItem:itemView toIndex:self.normalItems.count] ? [self.normalItems indexOfObject:itemView] : -1;
+            return self.insertItem(itemView, to: self.importantItems.count) ? self.importantItems.index(of: itemView) ?? -1 : -1
+        } else if (itemView.itemType == .normal) {
+            return self.insertItem(itemView, to: self.normalItems.count) ? self.normalItems.index(of: itemView) ?? -1 : -1
         }
         return -1
     }
 
     public func addItem(with title: String , selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType) -> Int {
-    
+        fatalError()
     }
 
     public func addItem(with title: String, image: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> Int {
-    
+        fatalError()
     }
 
     public func addItem(with title: String, image: UIImage, type: QMUIMoreOperationItemType) -> Int {
-        
+        fatalError()
     }
     
     /// 初始化一个item，并通过下面的`insertItem`来将item插入到面板的某个位置
     public func createItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> QMUIMoreOperationItemView {
-
+        fatalError()
     }
     
     /// 将通过上面初始化的一个item插入到某个位置
     public func insertItem(_ itemView: QMUIMoreOperationItemView, to index: Int) -> Bool {
-    
+        fatalError()
     }
     
     /// 获取某种类型上的item
     public func item(at index: Int, type: QMUIMoreOperationItemType) -> QMUIMoreOperationItemView {
-
+        fatalError()
     }
     
     /// 获取某个tag的item
     func item(at tag: Int) -> QMUIMoreOperationItemView {
-    
+        fatalError()
     }
     
     /// 下面两个`setItemHidden`方法可以隐藏某一个item
@@ -485,5 +485,10 @@ class QMUIMoreOperationController: UIViewController {
 }
 
 extension QMUIMoreOperationController: QMUIModalPresentationContentViewControllerProtocol {
+    func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+        // TODO
+        return .zero
+    }
+    
     
 }
