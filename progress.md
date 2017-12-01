@@ -117,7 +117,7 @@ Tips
 * QMUIQQEmotionManager  👷
 * QMUITestView  👷
 * QMUITips  👷
-* QMUIToastAnimator  👷
+* QMUIToastAnimator  ✅
 * QMUIToastBackgroundView  👷
 * QMUIToastContentView  👷
 * QMUIToastView  👷
