@@ -273,7 +273,7 @@ class QMUIMoreOperationController: UIViewController {
         maskView.frame = view.bounds
         
         var layoutOriginY: CGFloat = 0
-        var contentWidth: CGFloat = min(view.bounds.width - contentEdgeMargin * 2, contentMaximumWidth)
+        let contentWidth: CGFloat = min(view.bounds.width - contentEdgeMargin * 2, contentMaximumWidth)
         
         var importantScrollViewInsets = topScrollViewInsets
         var normaltScrollViewInsets = bottomScrollViewInsets

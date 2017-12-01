@@ -171,7 +171,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 
         headerView.frame = CGSize(width: view.bounds.width, height: headerViewHeight).rect
         headerViewSeparatorLayer.frame = CGRect(x: 0, y: headerView.bounds.height, width: headerView.bounds.width, height: PixelOne)
-        var headerViewPaddingHorizontal: CGFloat = 16
+        let headerViewPaddingHorizontal: CGFloat = 16
         let headerViewContentWidth = headerView.bounds.width - headerViewPaddingHorizontal * 2
         let titleViewSize = titleView?.sizeThatFits(CGSize(width: headerViewContentWidth, height: .greatestFiniteMagnitude)) ?? .zero
         let titleViewWidth = min(titleViewSize.width, headerViewContentWidth)
