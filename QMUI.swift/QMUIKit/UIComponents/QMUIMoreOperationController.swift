@@ -6,6 +6,8 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+private let TagOffset = 999
+
 /// 操作面板上item的类型，QMUIMoreOperationItemTypeImportant类型的item会放到第一行的scrollView，QMUIMoreOperationItemTypeNormal类型的item会放到第二行的scrollView。
 enum QMUIMoreOperationItemType {
     case important // 将item放在第一行显示
@@ -432,7 +434,7 @@ class QMUIMoreOperationController: UIViewController {
     }
     
     /// 下面几个`addItem`方法，是用来往面板里面增加item的
-    public func addItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> Int {
+    public func addItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int = -1) -> Int {
         let itemView = self.createItem(with: title, selectedTitle: selectedTitle, image: image, selectedImage: selectedImage, type: type, tag: tag)
         if itemView.itemType == .important {
             return self.insertItem(itemView, to: self.importantItems.count) ? self.importantItems.index(of: itemView) ?? -1 : -1
@@ -443,52 +445,95 @@ class QMUIMoreOperationController: UIViewController {
     }
 
     public func addItem(with title: String , selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType) -> Int {
-        fatalError()
-    }
-
-    public func addItem(with title: String, image: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> Int {
-        fatalError()
+        return addItem(with: title , selectedTitle: selectedTitle, image: image, selectedImage: image, type: type)
     }
 
     public func addItem(with title: String, image: UIImage, type: QMUIMoreOperationItemType) -> Int {
-        fatalError()
+        return addItem(with: title , selectedTitle: title, image: image, selectedImage: image, type: type)
     }
-    
+
     /// 初始化一个item，并通过下面的`insertItem`来将item插入到面板的某个位置
     public func createItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> QMUIMoreOperationItemView {
-        fatalError()
+        let itemView = QMUIMoreOperationItemView()
+        itemView.itemType = type
+        itemView.titleLabel?.font = itemTitleFont
+        itemView.titleEdgeInsets.top = itemTitleMarginTop
+        itemView.setImage(image, for: .normal)
+        itemView.setImage(selectedImage, for: .selected)
+        itemView.setImage(selectedImage, for: [.highlighted, .selected])
+        itemView.setTitle(title, for: .normal)
+        itemView.setTitle(selectedTitle, for: [.highlighted, .selected])
+        itemView.setTitle(selectedTitle, for: .selected)
+        itemView.setTitleColor(itemTitleColor, for: .normal)
+        itemView.imageView?.backgroundColor = itemBackgroundColor
+        itemView.tag = tag
+        itemView.addTarget(self, action: #selector(handleButtonClick), for: .touchUpInside)
+        return itemView
     }
-    
+
     /// 将通过上面初始化的一个item插入到某个位置
     public func insertItem(_ itemView: QMUIMoreOperationItemView, to index: Int) -> Bool {
-        fatalError()
+        if itemView.itemType == .important {
+            importantItems.insert(itemView, at: index)
+            importantItemsScrollView.addSubview(itemView)
+            return true
+        } else if itemView.itemType == .normal {
+            normalItems.insert(itemView, at: index)
+            normalItemsScrollView.addSubview(itemView)
+            return true
+        }
+        return false
     }
     
     /// 获取某种类型上的item
     public func item(at index: Int, type: QMUIMoreOperationItemType) -> QMUIMoreOperationItemView {
-        fatalError()
+        if type == .important {
+            return importantItems[index]
+        } else {
+            return normalItems[index]
+        }
     }
-    
+
     /// 获取某个tag的item
     func item(at tag: Int) -> QMUIMoreOperationItemView {
-        fatalError()
+        var item = importantItemsScrollView.viewWithTag(tag + TagOffset) as? QMUIMoreOperationItemView
+        if item == nil {
+            item = normalItemsScrollView.viewWithTag(tag + TagOffset) as? QMUIMoreOperationItemView
+        }
+        return item!
     }
-    
+
     /// 下面两个`setItemHidden`方法可以隐藏某一个item
     public func setItemHidden(_ hidden: Bool, index: Int, type: QMUIMoreOperationItemType) {
-        
+        let item = self.item(at: index, type: type)
+        item.isHidden = hidden
     }
+
     /// 同上
     public func setItemHidden(_ hidden: Bool, tag: Int) {
-    
+        let item = self.item(at: tag)
+        item.isHidden = hidden
+    }
+
+    @objc func handleButtonClick(_ sender: QMUIMoreOperationItemView) {
+        let item = sender
+        var index = 0
+        let itemType: QMUIMoreOperationItemType
+        if item.superview == importantItemsScrollView {
+            index = importantItems.index(of: item) ?? 0
+            itemType = .important
+        } else {
+            index = normalItems.index(of: item) ?? 0
+            itemType = .normal
+        }
+        let tag = item.tag
+        delegate?.moreOperationController(self, didSelectItemAt: index, type: itemType)
+        delegate?.moreOperationController(self, didSelectItemAt: tag)
     }
 }
 
 extension QMUIMoreOperationController: QMUIModalPresentationContentViewControllerProtocol {
     func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
-        // TODO
-        return .zero
+        return modalPresentationViewController.view.bounds.size
     }
-    
-    
 }
