@@ -1050,10 +1050,8 @@ class QMUIFillButton: QMUIButton {
             fillColor = FillButtonColorGray
         case .white:
             fillColor = FillButtonColorWhite
-        default:
-            break
         }
-        
+
         self.init(with: fillColor ?? .blue,titleTextColor: textColor, frame: frame)
     }
     

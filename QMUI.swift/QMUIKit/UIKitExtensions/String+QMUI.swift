@@ -82,23 +82,23 @@ public extension String {
         return index(startIndex, offsetBy: from)
     }
 
+    // https://stackoverflow.com/questions/45562662/how-can-i-use-string-slicing-subscripts-in-swift-4
     func substring(from: Int) -> String {
-        let fromIndex = index(from: from)
-        return substring(from: fromIndex)
+        return String(describing: [from...])
     }
 
     func substring(to: Int) -> String {
-        return substring(to: index(from: to))
+        return String(describing: [..<index(from: to)])
     }
 
     func substring(with range: NSRange) -> String {
         let start = index(startIndex, offsetBy: range.location)
-        let end = index(endIndex, offsetBy: range.location + range.length - characters.count)
-        return substring(with: start ..< end)
+        let end = index(endIndex, offsetBy: range.location + range.length - count)
+        return String(describing: [start..<end])
     }
 
     var length: Int {
-        return characters.count
+        return count
     }
 
     subscript(i: Int) -> String {
