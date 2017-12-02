@@ -6,4 +6,6 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-
+class QMUIToastContentView: UIView {
+    
+}
