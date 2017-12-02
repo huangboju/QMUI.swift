@@ -128,6 +128,10 @@ let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { po
     UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: true)
 }
 
+// MARK: - UIColor相关
+let UIColorMakeWithRGBA: (CGFloat, CGFloat, CGFloat, CGFloat) -> UIColor = { r, g, b, a in
+    return UIColor(r: r / 255.0, g: g / 255.0, b: b / 255.0, a: a / 1.0)
+}
 
 // MARK: - 数学计算
 

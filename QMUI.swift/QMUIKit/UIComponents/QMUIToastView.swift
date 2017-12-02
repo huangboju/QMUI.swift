@@ -238,7 +238,7 @@ class QMUIToastView: UIView {
     /**
      * ToastView距离上下左右的最小间距。
      */
-    public var marginInsets: UIEdgeInsets = UIEdgeInsets(20, 20, 20, 20) {
+    public var marginInsets: UIEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20) {
         didSet {
             setNeedsLayout()
         }
