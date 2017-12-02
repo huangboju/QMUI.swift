@@ -120,7 +120,7 @@ Tips
 * QMUIToastAnimator  ✅
 * QMUIToastBackgroundView  👷
 * QMUIToastContentView  👷
-* QMUIToastView  👷
+* QMUIToastView  ✅
 * QMUIVisualEffectView  👷
 * QMUIZoomImageView  👷
 
