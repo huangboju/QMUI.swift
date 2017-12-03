@@ -152,39 +152,39 @@ class QMUIToastContentView: UIView {
         let hasTextLabel = textLabel.text?.length ?? 0 > 0
         let hasDetailTextLabel = detailTextLabel.text?.length ?? 0 > 0
         
-        var width: Float = 0
-        var height: Float = 0
+        var width: CGFloat = 0
+        var height: CGFloat = 0
         
-        let maxContentWidth: CGFloat = size.width - insets.horizontalValue
-        let maxContentHeight: CGFloat = size.height - insets.verticalValue
+        let maxContentWidth = size.width - insets.horizontalValue
+        let maxContentHeight = size.height - insets.verticalValue
         
         if hasCustomeView {
-            width = fmaxf(width, Float(customView?.bounds.width ?? 0))
-            height += Float(customView?.bounds.height ?? 0 + ((hasTextLabel || hasDetailTextLabel) ? customViewMarginBottom : 0))
+            width = max(width, customView?.bounds.width ?? 0)
+            height += (customView?.bounds.height ?? 0 + ((hasTextLabel || hasDetailTextLabel) ? customViewMarginBottom : 0))
         }
         
         if hasTextLabel {
             let textLabelSize = textLabel.sizeThatFits(CGSize(width: maxContentWidth, height: maxContentHeight))
-            width = fmaxf(width, Float(textLabelSize.width))
-            height += Float(textLabelSize.height + (hasDetailTextLabel ? textLabelMarginBottom : 0));
+            width = max(width, textLabelSize.width)
+            height += textLabelSize.height + (hasDetailTextLabel ? textLabelMarginBottom : 0)
         }
         
         if hasDetailTextLabel {
             let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: maxContentHeight))
-            width = fmaxf(width, Float(detailTextLabelSize.width))
-            height += Float(detailTextLabelSize.height + detailTextLabelMarginBottom)
+            width = max(width, detailTextLabelSize.width)
+            height += (detailTextLabelSize.height + detailTextLabelMarginBottom)
         }
         
-        width += Float(self.insets.horizontalValue)
-        height += Float(self.insets.verticalValue)
+        width += insets.horizontalValue
+        height += insets.verticalValue
         
         if minimumSize != .zero {
-            width = fmaxf(width, Float(minimumSize.width))
-            height = fmaxf(height, Float(minimumSize.height))
+            width = max(width, minimumSize.width)
+            height = max(height, minimumSize.height)
         }
         
-        return CGSize(width: CGFloat(fminf(Float(size.width), width)),
-                      height: CGFloat(fminf(Float(size.height), height)))
+        return CGSize(width: min(size.width, width),
+                      height: min(size.height, height))
     }
     
     override func layoutSubviews() {
@@ -204,15 +204,15 @@ class QMUIToastContentView: UIView {
                 // 处理有minimumSize的情况
                 minY =  bounds.height.center(with: customView?.bounds.height ?? 0)
             }
-            CGRectFlat(contentWidth.center(with: customView?.bounds.width ?? 0),
+            customView?.frame = CGRectFlat(contentWidth.center(with: customView?.bounds.width ?? 0),
                        minY,
                        customView?.bounds.width ?? 0,
                        customView?.bounds.height ?? 0)
             minY = customView?.frame.maxY ?? 0 + customViewMarginBottom
         }
-        
+
         if hasTextLabel {
-            let textLabelSize = textLabel.sizeThatFits(CGSize(width: maxContentWidth, height: CGFloat.greatestFiniteMagnitude))
+            let textLabelSize = textLabel.sizeThatFits(CGSize(width: maxContentWidth, height: .greatestFiniteMagnitude))
             if !hasCustomView && !hasDetailTextLabel {
                 // 处理有minimumSize的情况
                 minY = bounds.height.center(with: textLabelSize.height)
@@ -226,10 +226,10 @@ class QMUIToastContentView: UIView {
         
         if hasDetailTextLabel {
             // 暂时没考虑剩余高度不够用的情况
-            let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: CGFloat.greatestFiniteMagnitude))
+            let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: .greatestFiniteMagnitude))
             if !hasCustomView && !hasTextLabel {
                 // 处理有minimumSize的情况
-                minY = self.bounds.height.center(with: detailTextLabelSize.height)
+                minY = bounds.height.center(with: detailTextLabelSize.height)
             }
             detailTextLabel.frame = CGRectFlat(contentWidth.center(with: maxContentWidth),
                                                minY,
@@ -243,11 +243,11 @@ class QMUIToastContentView: UIView {
             updateCustomViewTintColor()
         }
         
-        textLabelAttributes[NSAttributedStringKey.foregroundColor] = tintColor
+        textLabelAttributes[.foregroundColor] = tintColor
         let tmpStr = textLabelText
         textLabelText = tmpStr
         
-        detailTextLabelAttributes[NSAttributedStringKey.foregroundColor] = tintColor
+        detailTextLabelAttributes[.foregroundColor] = tintColor
         let detailTmpStr = detailTextLabelText
         detailTextLabelText = detailTmpStr
     }
@@ -272,7 +272,7 @@ class QMUIToastContentView: UIView {
         guard let notNilCustomView = customView else {
             return
         }
-        
+
         notNilCustomView.tintColor = tintColor
         if let imageView = notNilCustomView as? UIImageView {
             imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
