@@ -65,7 +65,7 @@ class QMUITestWindow: UIWindow {
 
         print("QMUITestWindow, subviews = \(subviews), view = \(view)")
     }
-    
+
     override var frame: CGRect {
         willSet {
             if newValue != frame {
