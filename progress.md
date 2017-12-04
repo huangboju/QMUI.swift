@@ -6,6 +6,7 @@ Tips
 * 👨🏼‍💻： 正在开发
 * 👷： 建好类
 * ❣️： 原项目不存在新加的
+* 📎： 暂时不需要翻译的
 
 ## UIKitExtensions
 * Array+QMUI  ❣️ 👷
@@ -110,7 +111,7 @@ Tips
 * QMUIModalPresentationViewController  ✅
 * QMUIMoreOperationController  ✅
 * QMUINavigationTitleView   ✅
-* QMUIOrderedDictionary  👷
+* QMUIOrderedDictionary  📎
 * QMUIPieProgressView  ✅
 * QMUIPopupContainerView  👨🏼‍💻
 * QMUIPopupMenuView  👷
