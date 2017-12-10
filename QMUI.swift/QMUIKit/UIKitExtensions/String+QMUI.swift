@@ -112,4 +112,17 @@ public extension String {
         let end = index(start, offsetBy: range.upperBound - range.lowerBound)
         return String(self[Range(start ..< end)])
     }
+    
+    func qmui_stringByRemoveCharacter(at index: Int) -> String {
+        guard let stringIndex = self.index(self.startIndex, offsetBy: index, limitedBy: self.endIndex) else {
+            return self
+        }
+        let rangeForMove = self.rangeOfComposedCharacterSequence(at: stringIndex)
+        let resultString = self.replacingCharacters(in: rangeForMove, with: "")
+        return resultString
+    }
+    
+    func qmui_stringByRemoveLastCharacter() -> String {
+        return qmui_stringByRemoveCharacter(at: self.length - 1)
+    }
 }
