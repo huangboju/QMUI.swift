@@ -10,7 +10,7 @@ Tips
 
 ## UIKitExtensions
 * Array+QMUI  ❣️ 👷
-* CALayer+QMUI 👷
+* CALayer+QMUI ✅
 * DispatchQueue+QMUI  ❣️ 👷
 * NSAttributedString+QMUI 👷
 * NSObject+QMUI  👷
