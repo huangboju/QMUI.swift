@@ -56,11 +56,11 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
             let rowCount = items.count
             for row in 0 ..< rowCount {
                 let item = items[row]
-                item.button?.titleLabel?.font = itemTitleFont
-                item.button?.highlightedBackgroundColor = itemHighlightedBackgroundColor
-                item.button?.imageEdgeInsets = UIEdgeInsets(top: 0, left: -imageMarginRight, bottom: 0, right: imageMarginRight)
-                item.button?.contentEdgeInsets = UIEdgeInsets(top: 0, left: padding.left - item.button!.imageEdgeInsets.left, bottom: 0, right: padding.right)
-                scrollView.addSubview(item.button!)
+                item.button.titleLabel?.font = itemTitleFont
+                item.button.highlightedBackgroundColor = itemHighlightedBackgroundColor
+                item.button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -imageMarginRight, bottom: 0, right: imageMarginRight)
+                item.button.contentEdgeInsets = UIEdgeInsets(top: 0, left: padding.left - item.button.imageEdgeInsets.left, bottom: 0, right: padding.right)
+                scrollView.addSubview(item.button)
 
                 // 配置分隔线，注意每一个 section 里的最后一行是不显示分隔线的
                 let shouldShowSeparatorAtRow = shouldShowSeparator(at: row, rowCount: rowCount, in: section, sectionCount: sectionCount)
@@ -127,7 +127,7 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
             let rowCount = items.count
             for row in 0 ..< rowCount {
                 let button = items[row].button
-                button?.frame = CGRect(x: 0, y: minY, width: contentWidth, height: itemHeight)
+                button!.frame = CGRect(x: 0, y: minY, width: contentWidth, height: itemHeight)
                 minY = button!.frame.maxY
 
                 let shouldShowSeparatorAtRow = shouldShowSeparator(at: row, rowCount: rowCount, in: section, sectionCount: sectionCount)
@@ -165,7 +165,7 @@ public class QMUIPopupMenuItem: NSObject {
 
     public var handler: (() -> Void)?
 
-    public let button: QMUIButton
+    public var button: QMUIButton!
 
     init(image: UIImage?, title: String?, handler: (() -> Void)?) {
         super.init()

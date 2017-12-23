@@ -62,7 +62,8 @@ enum QMUINavigationButtonPosition: Int {
  * <li>支持设置图片在按钮内的位置，无需自行调整imageEdgeInsets（<i>imagePosition</i>）</li>
  * </ol>
  */
-class QMUIButton: UIButton {
+
+public class QMUIButton: UIButton {
     /**
      * 让按钮的文字颜色自动跟随tintColor调整（系统默认titleColor是不跟随的）<br/>
      * 默认为NO
@@ -157,7 +158,7 @@ class QMUIButton: UIButton {
         setImage(image, for: .normal)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
@@ -187,7 +188,7 @@ class QMUIButton: UIButton {
         imagePosition = .left
     }
 
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
+    override public func sizeThatFits(_ size: CGSize) -> CGSize {
         var size = size
         // 如果调用 sizeToFit，那么传进来的 size 就是当前按钮的 size，此时的计算不要去限制宽高
         if bounds.size.equalTo(size) {
@@ -236,7 +237,7 @@ class QMUIButton: UIButton {
         return resultSize
     }
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         if bounds.isEmpty {
@@ -373,7 +374,7 @@ class QMUIButton: UIButton {
         }
     }
 
-    override var isHighlighted: Bool {
+    override public var isHighlighted: Bool {
         didSet {
             if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
@@ -400,7 +401,7 @@ class QMUIButton: UIButton {
         }
     }
 
-    override var isEnabled: Bool {
+    override public var isEnabled: Bool {
         didSet {
             if !isEnabled && adjustsButtonWhenDisabled {
                 alpha = ButtonDisabledAlpha!
@@ -458,7 +459,7 @@ class QMUIButton: UIButton {
         }
     }
 
-    override func setImage(_ image: UIImage?, for state: UIControlState) {
+    override public func setImage(_ image: UIImage?, for state: UIControlState) {
         var tmpImage: UIImage?
         if adjustsImageTintColorAutomatically {
             tmpImage = image?.withRenderingMode(.alwaysTemplate)
@@ -466,7 +467,7 @@ class QMUIButton: UIButton {
         super.setImage(tmpImage, for: state)
     }
 
-    override func tintColorDidChange() {
+    override public func tintColorDidChange() {
         super.tintColorDidChange()
 
         updateTitleColorIfNeeded()

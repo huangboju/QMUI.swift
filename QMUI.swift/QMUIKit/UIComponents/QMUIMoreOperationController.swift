@@ -454,7 +454,7 @@ class QMUIMoreOperationController: UIViewController {
 
     /// 初始化一个item，并通过下面的`insertItem`来将item插入到面板的某个位置
     public func createItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> QMUIMoreOperationItemView {
-        let itemView = QMUIMoreOperationItemView()
+        let itemView = QMUIMoreOperationItemView(frame: .zero)
         itemView.itemType = type
         itemView.titleLabel?.font = itemTitleFont
         itemView.titleEdgeInsets.top = itemTitleMarginTop
