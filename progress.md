@@ -43,7 +43,7 @@ Tips
 * UILabel+QMUI  👷
 * UINavigationBar+Transition  👷
 * UINavigationController+NavigationBarTransition  👷
-* UINavigationController+QMUI  👷
+* UINavigationController+QMUI  ✅
 * UIScrollView+QMUI  ✅
 * UISearchBar+QMUI  👷
 * UITabBar+QMUI  👷

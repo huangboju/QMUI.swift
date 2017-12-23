@@ -229,7 +229,7 @@ public extension String {
      */
     public func qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: Range<String.Index>, lessValue: Bool, countingNonASCIICharacterAsTwo: Bool) -> String {
         
-        var range = countingNonASCIICharacterAsTwo ? self.transformRangeToDefaultModeWithRange(range) : range;
+        let range = countingNonASCIICharacterAsTwo ? self.transformRangeToDefaultModeWithRange(range) : range;
         
         let characterSequencesRange = lessValue ? downRoundRangeOfComposedCharacterSequencesForRange(range) :
             rangeOfComposedCharacterSequences(for: range)
