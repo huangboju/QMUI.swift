@@ -579,9 +579,9 @@ class QMUIPopupContainerView: UIControl {
         
         return shouldLayoutInPopupWindow ? popupWindow : keyWindow
     }
-}
+    
+    // MARK: - UISubclassingHooks
 
-extension QMUIPopupContainerView {
     /// 子类重写，在初始化时做一些操作
     open func didInitialized() {
         layer.addSublayer(backgroundLayer)

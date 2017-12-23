@@ -151,6 +151,12 @@ class QMUIButton: UIButton {
         didInitialized()
     }
 
+    init(title: String?, image: UIImage?) {
+        self.init()
+        setTitle(title, for: .normal)
+        setImage(image, for: .normal)
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()

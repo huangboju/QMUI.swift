@@ -36,4 +36,8 @@ extension UIView {
             return (objc_getAssociatedObject(self, &Keys.borderPosition) as? QMUIBorderViewPosition) ?? QMUIBorderViewPosition.none
         }
     }
+
+    public func qmui_removeAllSubviews() {
+        subviews.forEach { $0.removeFromSuperview() }
+    }
 }
