@@ -101,7 +101,7 @@ public extension String {
     /**
      *  按照中文 2 个字符、英文 1 个字符的方式来计算文本长度
      */
-    public func qmui_lengthWhenCountingNonASCIICharacterAsTwo() -> Int {
+    public var qmui_lengthWhenCountingNonASCIICharacterAsTwo: Int {
         func isChinese(_ char: Character) -> Bool {
             return "\u{4E00}" <= char && char <= "\u{9FA5}"
         }
@@ -302,51 +302,51 @@ public extension String {
         return letter
     }
 
-    var encoding: String {
+    public var encoding: String {
         //        let unreservedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
         //        let unreservedCharset = CharacterSet(charactersIn: unreservedChars)
         //        return addingPercentEncoding(withAllowedCharacters: unreservedCharset) ?? self
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
     }
 
-    init(seconds: Double) {
+    public init(seconds: Double) {
         let min = floor(seconds / 60)
         let sec = floor(seconds - min * 60)
         self.init(format: "%02ld:%02ld", min, sec)
     }
 
-    var decoding: String {
+    public var decoding: String {
         return removingPercentEncoding ?? self
     }
 
-    func index(from: Int) -> Index {
+    public func index(from: Int) -> Index {
         return index(startIndex, offsetBy: from)
     }
 
     // https://stackoverflow.com/questions/45562662/how-can-i-use-string-slicing-subscripts-in-swift-4
-    func substring(from: Int) -> String {
+    public func substring(from: Int) -> String {
         return String(describing: [from...])
     }
 
-    func substring(to: Int) -> String {
+    public func substring(to: Int) -> String {
         return String(describing: [..<index(from: to)])
     }
 
-    func substring(with range: NSRange) -> String {
+    public func substring(with range: NSRange) -> String {
         let start = index(startIndex, offsetBy: range.location)
         let end = index(endIndex, offsetBy: range.location + range.length - count)
         return String(describing: [start ..< end])
     }
 
-    var length: Int {
+    public var length: Int {
         return count
     }
 
-    subscript(i: Int) -> String {
+    public subscript(i: Int) -> String {
         return self[Range(i ..< i + 1)]
     }
 
-    subscript(r: Range<Int>) -> String {
+    public subscript(r: Range<Int>) -> String {
         let range = Range(uncheckedBounds: (lower: max(0, min(length, r.lowerBound)),
                                             upper: min(length, max(0, r.upperBound))))
         let start = index(startIndex, offsetBy: range.lowerBound)
