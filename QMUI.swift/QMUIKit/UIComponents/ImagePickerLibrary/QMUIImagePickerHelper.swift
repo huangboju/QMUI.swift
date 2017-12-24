@@ -67,14 +67,14 @@ struct QMUIImagePickerHelper {
      *
      *  @param button 需要做动画的 checkbox 按钮
      */
-    public static func springAnimationOfImageCheckedWithCheckboxButton(_ button: UIButton) {
+    public static func springAnimationOfImageChecked(with button: UIButton) {
         QMUIHelper.actionSpringAnimation(for: button)
     }
-    
+
     /**
      * 搭配<i>springAnimationOfImageCheckedWithCheckboxButton:</i>一起使用，添加animation之前建议先remove
      */
-    public static func removeSpringAnimationOfImageCheckedWithCheckboxButton(_ button: UIButton) {
+    public static func removeSpringAnimationOfImageChecked(with button: UIButton) {
         button.layer.removeAnimation(forKey: QMUISpringAnimationKey)
     }
     

@@ -210,8 +210,8 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     }
     
     @objc func handleCheckButtonClick(_ sender: QMUIButton) {
-        QMUIImagePickerHelper.removeSpringAnimationOfImageCheckedWithCheckboxButton(sender)
-        
+        QMUIImagePickerHelper.removeSpringAnimationOfImageChecked(with: sender)
+
         let index = imagePreviewView?.currentImageIndex ?? 0
         if sender.isSelected {
             
@@ -240,7 +240,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             delegate?.imagePickerPreviewViewController(self, willCheckImageAt: index)
 
             sender.isSelected = true
-            QMUIImagePickerHelper.springAnimationOfImageCheckedWithCheckboxButton(sender)
+            QMUIImagePickerHelper.springAnimationOfImageChecked(with: sender)
             let imageAsset = imagesAssetArray[index]
             selectedImageAssetArray.append(imageAsset)
             

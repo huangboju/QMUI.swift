@@ -523,7 +523,7 @@ extension QMUIImagePickerViewController: UICollectionViewDataSource {
         }
 
         if imageAsset.assetType == .video {
-            cell?.videoDurationLabel.text = String(seconds: imageAsset.duration)
+            cell?.videoDurationLabel?.text = String(seconds: imageAsset.duration)
         }
 
         cell?.checkboxButton.addTarget(self, action: #selector(handleCheckBoxButtonClick), for: .touchUpInside)

@@ -14,18 +14,16 @@ class QMUIToastBackgroundView: UIView {
     var showldBulrBackgroundView: Bool = false {
         didSet {
             if showldBulrBackgroundView {
-                if NSClassFromString("UIBlurEffect") != nil {
-                    let effect = UIBlurEffect(style: .light)
-                    let effectView = UIVisualEffectView(effect: effect)
-                    effectView.layer.cornerRadius = cornerRadius
-                    effectView.layer.masksToBounds = true
-                    self.addSubview(effectView)
-                    self.effectView = effectView
-                }
+                let effect = UIBlurEffect(style: .light)
+                let effectView = UIVisualEffectView(effect: effect)
+                effectView.layer.cornerRadius = cornerRadius
+                effectView.layer.masksToBounds = true
+                addSubview(effectView)
+                self.effectView = effectView
             } else {
-                if let notNilEffectView = self.effectView {
+                if let notNilEffectView = effectView {
                     notNilEffectView.removeFromSuperview()
-                    self.effectView = nil
+                    effectView = nil
                 }
             }
         }
@@ -34,9 +32,9 @@ class QMUIToastBackgroundView: UIView {
     /**
      * 如果不设置磨砂，则styleColor直接作为`QMUIToastBackgroundView`的backgroundColor；如果需要磨砂，则会新增加一个`UIVisualEffectView`放在`QMUIToastBackgroundView`上面
      */
-    var styleColor: UIColor = UIColorMakeWithRGBA(0, 0, 0, 0.8) {
+    var styleColor: UIColor = UIColor(r: 0, g: 0, b: 0, a: 0.8) {
         didSet {
-            self.backgroundColor = styleColor
+            backgroundColor = styleColor
         }
     }
     
@@ -57,25 +55,25 @@ class QMUIToastBackgroundView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.layer.allowsGroupOpacity = false
-        self.backgroundColor = self.styleColor
-        self.layer.cornerRadius = self.cornerRadius
+        layer.allowsGroupOpacity = false
+        backgroundColor = styleColor
+        layer.cornerRadius = cornerRadius
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.layer.allowsGroupOpacity = false
-        self.backgroundColor = self.styleColor
-        self.layer.cornerRadius = self.cornerRadius
+        layer.allowsGroupOpacity = false
+        backgroundColor = styleColor
+        layer.cornerRadius = cornerRadius
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        if let notNilEffectView = self.effectView {
+
+        if let notNilEffectView = effectView {
             notNilEffectView.removeFromSuperview()
-            self.effectView = nil
+            effectView = nil
         }
     }
     
