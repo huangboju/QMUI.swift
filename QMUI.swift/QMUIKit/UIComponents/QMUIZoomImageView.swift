@@ -58,7 +58,7 @@ class QMUIZoomImageView: UIView {
 
     /// 设置当前要显示的 Live Photo，会把 image/video 相关内容清空，因此注意不要直接通过 livePhotoView.livePhoto 来设置
     
-    private var livePhotoStorge: Any? = nil
+    private var livePhotoStorge: Any?
     @available(iOS 9.1, *)
     public weak var livePhoto: PHLivePhoto? {
         get {
@@ -68,7 +68,7 @@ class QMUIZoomImageView: UIView {
             return photo
         }
         set {
-            self.livePhotoStorge = newValue
+            livePhotoStorge = newValue
         }
     }
 
