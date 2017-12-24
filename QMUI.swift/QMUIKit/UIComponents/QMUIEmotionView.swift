@@ -48,7 +48,7 @@ protocol QMUIEmotionPageViewDelegate: class {
  */
 class QMUIEmotionView: UIView {
     /// 要展示的所有表情
-    public var emotions: [QMUIEmotion] = []  {
+    public var emotions: [QMUIEmotion] = [] {
         didSet {
             pageEmotions()
         }
@@ -61,34 +61,34 @@ class QMUIEmotionView: UIView {
      *  @see QMUIEmotion
      */
     public var didSelectEmotionBlock: ((Int, QMUIEmotion) -> Void)?
-    
+
     /// 删除按钮的点击事件回调
     public var didSelectDeleteButtonBlock: (() -> Void)?
 
     /// 用于展示表情面板的横向滚动collectionView，布局撑满整个控件
     public private(set) var collectionView: UICollectionView!
-    
+
     /// 用于横向按页滚动的collectionViewLayout
     public let collectionViewLayout = UICollectionViewFlowLayout()
-    
+
     /// 控件底部的分页控件，可点击切换表情页面
     public let pageControl = UIPageControl()
 
     /// 控件右下角的发送按钮
     public let sendButton = QMUIButton()
-    
+
     /// 每一页表情的上下左右padding，默认为{18, 18, 65, 18}
     public var paddingInPage = UIEdgeInsets(top: 18, left: 18, bottom: 65, right: 18)
-    
+
     /// 每一页表情允许的最大行数，默认为4
     public var numberOfRowsPerPage = 4
-    
+
     /// 表情的图片大小，不管`QMUIEmotion.image.size`多大，都会被缩放到`emotionSize`里显示，默认为{30, 30}
     public var emotionSize = CGSize(width: 30, height: 30)
-    
+
     /// 表情点击时的背景遮罩相对于`emotionSize`往外拓展的区域，负值表示遮罩比表情还大，正值表示遮罩比表情还小，默认为{-3, -3, -3, -3}
     public var emotionSelectedBackgroundExtension = UIEdgeInsets(top: -3, left: -3, bottom: -3, right: -3)
-    
+
     /// 表情与表情之间的最小水平间距，默认为10
     public var minimumEmotionHorizontalSpacing: CGFloat = 10
 
@@ -110,17 +110,17 @@ class QMUIEmotionView: UIView {
             sendButton.backgroundColor = sendButtonBackgroundColor
         }
     }
-    
+
     /// 发送按钮的圆角大小，默认为4
     public var sendButtonCornerRadius: CGFloat = 4 {
         didSet {
             sendButton.layer.cornerRadius = sendButtonCornerRadius
         }
     }
-    
+
     /// 发送按钮布局时的外边距，相对于控件右下角。仅right/bottom有效，默认为{0, 0, 16, 16}
     public var sendButtonMargins = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 16)
-    
+
     /// 分页控件距离底部的间距，默认为22
     public var pageControlMarginBottom: CGFloat = 22
 
@@ -131,7 +131,7 @@ class QMUIEmotionView: UIView {
         super.init(frame: frame)
         didInitialized(with: frame)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized(with: .zero)
@@ -165,33 +165,33 @@ class QMUIEmotionView: UIView {
         sendButton.sizeToFit()
         addSubview(sendButton)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         let collectionViewSizeChanged = bounds.size != collectionView.bounds.size
         collectionView.frame = bounds
         collectionViewLayout.itemSize = collectionView.bounds.size
-        
+
         if collectionViewSizeChanged {
             pageEmotions()
         }
-        
+
         let pageControlHeight: CGFloat = 16
         pageControl.frame = CGRect(x: 0, y: bounds.height - pageControlMarginBottom - pageControlHeight, width: bounds.width, height: pageControlHeight)
-    
+
         sendButton.frame.setXY(bounds.width - sendButtonMargins.right - sendButton.frame.width, bounds.height - sendButtonMargins.bottom - sendButton.frame.height)
     }
-    
+
     func pageEmotions() {
         pagedEmotions.removeAll(keepingCapacity: true)
         pageControl.numberOfPages = 0
 
-        if (!collectionView.bounds.isEmpty && !emotions.isEmpty && !emotionSize.isEmpty) {
+        if !collectionView.bounds.isEmpty && !emotions.isEmpty && !emotionSize.isEmpty {
             let contentWidthInPage = collectionView.bounds.width - paddingInPage.horizontalValue
             let maximumEmotionCountPerRowInPage = (contentWidthInPage + minimumEmotionHorizontalSpacing) / (emotionSize.width + minimumEmotionHorizontalSpacing)
-            let maximumEmotionCountPerPage = maximumEmotionCountPerRowInPage * CGFloat(numberOfRowsPerPage) - 1// 删除按钮占一个表情位置
+            let maximumEmotionCountPerPage = maximumEmotionCountPerRowInPage * CGFloat(numberOfRowsPerPage) - 1 // 删除按钮占一个表情位置
             let pageCount = Int(ceil(CGFloat(emotions.count) / maximumEmotionCountPerPage))
-            for  i in 0 ..< pageCount {
+            for i in 0 ..< pageCount {
                 let startIdx = Int(maximumEmotionCountPerPage) * i
                 // 最后一页可能不满一整页，所以取剩余的所有表情即可
                 let endIdx = max(startIdx + Int(maximumEmotionCountPerPage), emotions.count)
@@ -204,30 +204,30 @@ class QMUIEmotionView: UIView {
         collectionView.reloadData()
         collectionView.qmui_scrollToTop()
     }
-    
+
     @objc func handlePageControlEvent(_ pageControl: UIPageControl) {
         collectionView.scrollToItem(at: IndexPath(row: pageControl.currentPage, section: 0), at: .centeredHorizontally, animated: true)
     }
 }
 
 extension QMUIEmotionView: QMUIEmotionPageViewDelegate {
-    func emotionPageView(_ emotionPageView: QMUIEmotionPageView, didSelectEmotion emotion: QMUIEmotion, at index: Int) {
+    func emotionPageView(_: QMUIEmotionPageView, didSelectEmotion emotion: QMUIEmotion, at _: Int) {
         if let didSelectEmotionBlock = didSelectEmotionBlock {
             guard let i = emotions.index(of: emotion) else { return }
             didSelectEmotionBlock(i, emotion)
         }
     }
-    
-    func didSelectDeleteButton(in emotionPageView: QMUIEmotionPageView) {
+
+    func didSelectDeleteButton(in _: QMUIEmotionPageView) {
         didSelectDeleteButtonBlock?()
     }
 }
 
 extension QMUIEmotionView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return pagedEmotions.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "page", for: indexPath)
         let pageView = cell as? QMUIEmotionPageView
@@ -261,49 +261,49 @@ class QMUIEmotionPageView: UICollectionViewCell {
 
     /// 表情被点击时盖在表情上方用于表示选中的遮罩
     let emotionSelectedBackgroundView = UIView()
-    
+
     /// 表情面板右下角的删除按钮
     let deleteButton = QMUIButton()
-    
+
     /// 分配给当前pageView的所有表情
     var emotions: [QMUIEmotion] = []
 
     /// 记录当前pageView里所有表情的可点击区域的rect，在drawRect:里更新，在tap事件里使用
     var emotionHittingRects: [CGRect] = []
-    
+
     /// 负责实现表情的点击
     var tapGestureRecognizer: UITapGestureRecognizer!
-    
+
     /// 整个pageView内部的padding
     var padding: UIEdgeInsets = .zero
-    
+
     /// 每个pageView能展示表情的行数
     var numberOfRows = 0
-    
+
     /// 每个表情的绘制区域大小，表情图片最终会以UIViewContentModeScaleAspectFit的方式撑满这个大小。表情计算布局时也是基于这个大小来算的。
     var emotionSize: CGSize = .zero
-    
+
     /// 点击表情时出现的遮罩要在表情所在的矩形位置拓展多少空间，负值表示遮罩比emotionSize更大，正值表示遮罩比emotionSize更小。最终判断表情点击区域时也是以拓展后的区域来判定的
     var emotionSelectedBackgroundExtension: UIEdgeInsets = .zero
-    
+
     /// 表情与表情之间的水平间距的最小值，实际值可能比这个要大一点（pageView会把剩余空间分配到表情的水平间距里）
     var minimumEmotionHorizontalSpacing: CGFloat = 0
-    
+
     /// debug模式会把表情的绘制矩形显示出来
     var isDebug = false
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = UIColorClear
 
         emotionSelectedBackgroundView.isUserInteractionEnabled = false
-        
+
         emotionSelectedBackgroundView.backgroundColor = UIColor(r: 0, g: 0, b: 0, a: 0.16)
         emotionSelectedBackgroundView.layer.cornerRadius = 3
         emotionSelectedBackgroundView.alpha = 0
         addSubview(emotionSelectedBackgroundView)
 
-        deleteButton.adjustsButtonWhenDisabled = false// 去掉QMUIButton默认的高亮动画，从而加快连续快速点击的响应速度
+        deleteButton.adjustsButtonWhenDisabled = false // 去掉QMUIButton默认的高亮动画，从而加快连续快速点击的响应速度
         deleteButton.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
         deleteButton.addTarget(self, action: #selector(handleDeleteButtonEvent), for: .touchUpInside)
         addSubview(deleteButton)
@@ -322,8 +322,8 @@ class QMUIEmotionPageView: UICollectionViewCell {
 
         deleteButton.frame = deleteButton.frame.setXY(flat(bounds.width - padding.right - deleteButtonW - (emotionSize.width - deleteButtonW) / 2.0), flat(bounds.height - padding.bottom - deleteButtonH - (emotionSize.height - deleteButtonH) / 2.0))
     }
-    
-    override func draw(_ rect: CGRect) {
+
+    override func draw(_: CGRect) {
         emotionHittingRects.removeAll(keepingCapacity: true)
 
         let contentSize = bounds.insetEdges(padding).size
@@ -331,13 +331,13 @@ class QMUIEmotionPageView: UICollectionViewCell {
         let emotionHorizontalSpacing = flat((contentSize.width - emotionCountPerRow * emotionSize.width) / (emotionCountPerRow - 1))
         let numberOfRows = CGFloat(self.numberOfRows)
         let emotionVerticalSpacing = flat((contentSize.height - numberOfRows * emotionSize.height) / (numberOfRows - 1))
-        
+
         var emotionOrigin = CGPoint.zero
-        
+
         for j in 0 ..< emotions.count {
             let i = CGFloat(j)
             let row = i / emotionCountPerRow
-            
+
             emotionOrigin.x = padding.left + (emotionSize.width + emotionHorizontalSpacing) * i.truncatingRemainder(dividingBy: emotionCountPerRow)
             emotionOrigin.y = padding.top + (emotionSize.height + emotionVerticalSpacing) * row
             let emotion = emotions[j]
@@ -348,10 +348,10 @@ class QMUIEmotionPageView: UICollectionViewCell {
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func drawImage(_ image: UIImage?, in contextRect: CGRect) {
         guard let image = image else { return }
         let imageSize = image.size
@@ -373,14 +373,14 @@ class QMUIEmotionPageView: UICollectionViewCell {
         image.draw(in: drawingRect)
     }
 
-    @objc func handleDeleteButtonEvent(_ deleteButton: QMUIButton) {
+    @objc func handleDeleteButtonEvent(_: QMUIButton) {
         delegate?.didSelectDeleteButton(in: self)
     }
 
     @objc func handleTapGestureRecognizer(_ gestureRecognizer: UITapGestureRecognizer) {
-        
+
         let location = gestureRecognizer.location(in: self)
-        
+
         for i in 0 ..< emotionHittingRects.count {
 
             let rect = emotionHittingRects[i]

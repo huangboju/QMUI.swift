@@ -17,8 +17,8 @@ extension UIControl: SelfAware {
                 #selector(touchesEnded),
                 #selector(touchesCancelled),
                 #selector(point),
-                ]
-            
+            ]
+
             selectors.forEach {
                 let selector = $0
                 ReplaceMethod(self, selector, Selector("qmui_" + selector.description))
@@ -28,7 +28,7 @@ extension UIControl: SelfAware {
 }
 
 extension UIControl {
-    
+
     private struct AssociatedKeys {
         static var qmui_outsideEdge = "qmui_outsideEdge"
         static var needsTakeOverTouchEvent = "needsTakeOverTouchEvent"
@@ -36,7 +36,7 @@ extension UIControl {
         static var touchEndCount = "touchEndCount"
         static var automaticallyAdjustTouchHighlightedInScrollView = "automaticallyAdjustTouchHighlightedInScrollView"
     }
-    
+
     /**
      *  是否接管control的touch事件
      *  UIControl在UIScrollView上会有300毫秒的延迟，如果手动取消系统的这个延迟，则系统无法判断是否要点击还是滚动，导致setHighlighted会有问题
@@ -63,22 +63,22 @@ extension UIControl {
             return (objc_getAssociatedObject(self, &AssociatedKeys.qmui_outsideEdge) as? UIEdgeInsets) ?? .zero
         }
     }
-    
+
     private var canSetHighlighted: Bool {
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.canSetHighlighted, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-        
+
         get {
             return (objc_getAssociatedObject(self, &AssociatedKeys.canSetHighlighted) as? Bool) ?? false
         }
     }
-    
+
     private var touchEndCount: Int {
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.touchEndCount, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-        
+
         get {
             return (objc_getAssociatedObject(self, &AssociatedKeys.touchEndCount) as? Int) ?? 0
         }
@@ -99,7 +99,7 @@ extension UIControl {
             qmui_touchesBegan(touches, with: event)
         }
     }
-    
+
     open func qmui_touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = false
@@ -128,7 +128,7 @@ extension UIControl {
             qmui_touchesEnded(touches, with: event)
         }
     }
-    
+
     open func qmui_touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = false
@@ -157,7 +157,7 @@ extension UIControl {
             sendActions(for: .allEvents)
         }
     }
-    
+
     /**
      *  是否接管 UIControl 的 touch 事件。
      *
@@ -170,9 +170,9 @@ extension UIControl {
     public var qmui_automaticallyAdjustTouchHighlightedInScrollView: Bool {
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.automaticallyAdjustTouchHighlightedInScrollView,
-                                     newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+                                     newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-        get  {
+        get {
             return objc_getAssociatedObject(self, &AssociatedKeys.automaticallyAdjustTouchHighlightedInScrollView) as? Bool ?? false
         }
     }

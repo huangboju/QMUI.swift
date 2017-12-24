@@ -8,23 +8,23 @@
 
 enum QMUICollectionViewPagingLayoutStyle {
     case `default` // 普通模式，水平滑动
-    case  scale    // 缩放模式，两边的item会小一点，逐渐向中间放大
-    case  rotation // 旋转模式，围绕底部某个点为中心旋转
+    case scale // 缩放模式，两边的item会小一点，逐渐向中间放大
+    case rotation // 旋转模式，围绕底部某个点为中心旋转
 }
 
 class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
-    
+
     /**
      *  是否支持一次滑动可以滚动多个 item，默认为 true
      */
     public var allowsMultipleItemScroll = true
 
-    init(style: QMUICollectionViewPagingLayoutStyle = .`default`) {
-        // TODO
+    init(style _: QMUICollectionViewPagingLayoutStyle = .default) {
+        // TODO:
         fatalError()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

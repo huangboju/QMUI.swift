@@ -43,25 +43,25 @@ class QMUIPopupContainerView: UIControl {
         backgroundLayer.shadowRadius = 10
         return backgroundLayer
     }()
-    
+
     var arrowMinX: CGFloat = 0
-    
+
     public var debug = false
-    
+
     /// 在浮层显示时，点击空白地方是否要自动隐藏浮层，仅在用方法 2 显示时有效。
     /// 默认为 false，也即需要手动调用代码去隐藏浮层。
     public var automaticallyHidesWhenUserTap = false
-    
+
     /// 所有subview都应该添加到contentView上，默认contentView.userInteractionEnabled = NO，需要事件操作时自行打开
     public let contentView = UIView()
-    
+
     /// 预提供的UIImageView，默认为nil，调用到的时候才初始化
     private(set) var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .center
         return imageView
     }()
-    
+
     /// 预提供的UILabel，默认为nil，调用到的时候才初始化。默认支持多行。
     private(set) var textLabel: UILabel = {
         let textLabel = UILabel()
@@ -70,51 +70,51 @@ class QMUIPopupContainerView: UIControl {
         textLabel.numberOfLines = 0
         return textLabel
     }()
-    
+
     /// 圆角矩形气泡内的padding（不包括三角箭头），默认是(8, 8, 8, 8)
-    public var contentEdgeInsets =  UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-    
+    public var contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+
     /// 调整imageView的位置，默认为UIEdgeInsetsZero。top/left正值表示往下/右方偏移，bottom/right仅在对应位置存在下一个子View时生效（例如只有同时存在imageView和textLabel时，imageEdgeInsets.right才会生效）。
     public var imageEdgeInsets: UIEdgeInsets = .zero
-    
+
     /// 调整textLabel的位置，默认为UIEdgeInsetsZero。top/left/bottom/right的作用同<i>imageEdgeInsets</i>
     public var textEdgeInsets: UIEdgeInsets = .zero
-    
+
     /// 三角箭头的大小，默认为 CGSizeMake(18, 9)
     public var arrowSize = CGSize(width: 18, height: 9)
-    
+
     /// 最大宽度（指整个控件的宽度，而不是contentView部分），默认为CGFLOAT_MAX
     public var maximumWidth: CGFloat = 0
-    
+
     /// 最小宽度（指整个控件的宽度，而不是contentView部分），默认为0
     public var minimumWidth: CGFloat = 0
-    
+
     /// 最大高度（指整个控件的高度，而不是contentView部分），默认为CGFLOAT_MAX
     public var maximumHeight: CGFloat = .infinity
-    
+
     /// 最小高度（指整个控件的高度，而不是contentView部分），默认为0
     public var minimumHeight: CGFloat = 0
-    
+
     /// 计算布局时期望的默认位置，默认为QMUIPopupContainerViewLayoutDirectionAbove，也即在目标的上方
     public var preferLayoutDirection: QMUIPopupContainerViewLayoutDirection = .above
-    
+
     /// 最终的布局方向（preferLayoutDirection只是期望的方向，但有可能那个方向已经没有剩余空间可摆放控件了，所以会自动变换）
     public private(set) var currentLayoutDirection: QMUIPopupContainerViewLayoutDirection = .above
-    
+
     /// 最终布局时箭头距离目标边缘的距离，默认为5
     public var distanceBetweenTargetRect: CGFloat = 5
-    
+
     /// 最终布局时与父节点的边缘的临界点，默认为(10, 10, 10, 10)
     public var safetyMarginsOfSuperview = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-    
+
     override var backgroundColor: UIColor? {
         didSet {
             backgroundLayer.fillColor = backgroundColor?.cgColor
         }
     }
-    
+
     public var highlightedBackgroundColor: UIColor?
-    
+
     /// 当使用方法 2 显示并且打开了 automaticallyHidesWhenUserTap 时，可修改背景遮罩的颜色，默认为 UIColorMask，若非使用方法 2，或者没有打开 automaticallyHidesWhenUserTap，则背景遮罩为透明（可视为不存在背景遮罩）
     public var maskViewBackgroundColor: UIColor? {
         didSet {
@@ -123,31 +123,31 @@ class QMUIPopupContainerView: UIControl {
             }
         }
     }
-    
+
     public var shadowColor: UIColor? {
         didSet {
             backgroundLayer.shadowColor = shadowColor?.cgColor
         }
     }
-    
+
     public var borderColor: UIColor? {
         didSet {
             backgroundLayer.strokeColor = borderColor?.cgColor
         }
     }
-    
+
     public var borderWidth: CGFloat = 0 {
         didSet {
             backgroundLayer.lineWidth = borderWidth
         }
     }
-    
+
     public var cornerRadius: CGFloat = 0 {
         didSet {
             setNeedsLayout()
         }
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if let highlightedBackgroundColor = highlightedBackgroundColor {
@@ -155,53 +155,53 @@ class QMUIPopupContainerView: UIControl {
             }
         }
     }
-    
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        
+
         var _size = size
-        
+
         _size.width = min(size.width, superviewIfExist!.bounds.width - safetyMarginsOfSuperview.horizontalValue)
         _size.height = min(size.height, superviewIfExist!.bounds.height - safetyMarginsOfSuperview.verticalValue)
-        
+
         let contentLimitSize = self.contentSize(in: _size)
         let contentSize = sizeThatFitsInContentView(contentLimitSize)
         let resultSize = sizeWithContentSize(contentSize, sizeThatFits: size)
         return resultSize
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         let arrowSize = self.arrowSize
         let roundedRect = CGRect(x: borderWidth / 2.0,
                                  y: borderWidth / 2.0 + (currentLayoutDirection == .above ? 0 : arrowSize.height),
                                  width: bounds.width - borderWidth,
                                  height: bounds.height - arrowSize.height - borderWidth)
         let cornerRadius = self.cornerRadius
-        
+
         let leftTopArcCenter = CGPoint(x: roundedRect.minX + cornerRadius, y: roundedRect.minY + cornerRadius)
         let leftBottomArcCenter = CGPoint(x: leftTopArcCenter.x, y: roundedRect.maxY - cornerRadius)
         let rightTopArcCenter = CGPoint(x: roundedRect.maxX - cornerRadius, y: leftTopArcCenter.y)
         let rightBottomArcCenter = CGPoint(x: rightTopArcCenter.x, y: leftBottomArcCenter.y)
-        
+
         let path = UIBezierPath()
         path.move(to: CGPoint(x: leftTopArcCenter.x, y: roundedRect.minY))
         path.addArc(withCenter: leftTopArcCenter, radius: cornerRadius, startAngle: .pi * 1.5, endAngle: .pi, clockwise: false)
         path.addLine(to: CGPoint(x: roundedRect.minX, y: leftBottomArcCenter.y))
         path.addArc(withCenter: leftBottomArcCenter, radius: cornerRadius, startAngle: .pi, endAngle: .pi * 0.5, clockwise: false)
-        
+
         if currentLayoutDirection == .above {
             // 让开，我要开始开始画三角形了，箭头向下
             path.addLine(to: CGPoint(x: arrowMinX, y: roundedRect.maxY))
             path.addLine(to: CGPoint(x: arrowMinX + arrowSize.width / 2, y: roundedRect.maxY + arrowSize.height))
             path.addLine(to: CGPoint(x: arrowMinX + arrowSize.width, y: roundedRect.maxY))
         }
-        
+
         path.addLine(to: CGPoint(x: rightBottomArcCenter.x, y: roundedRect.maxY))
         path.addArc(withCenter: rightBottomArcCenter, radius: cornerRadius, startAngle: .pi * 0.5, endAngle: 0, clockwise: false)
         path.addLine(to: CGPoint(x: roundedRect.maxX, y: rightTopArcCenter.y))
         path.addArc(withCenter: rightTopArcCenter, radius: cornerRadius, startAngle: 0.0, endAngle: .pi * 1.5, clockwise: false)
-        
+
         if currentLayoutDirection == .below {
             // 箭头向上
             path.addLine(to: CGPoint(x: arrowMinX + arrowSize.width, y: roundedRect.minY))
@@ -209,14 +209,14 @@ class QMUIPopupContainerView: UIControl {
             path.addLine(to: CGPoint(x: arrowMinX, y: roundedRect.minY))
         }
         path.close()
-        
+
         backgroundLayer.path = path.cgPath
         backgroundLayer.shadowPath = path.cgPath
         backgroundLayer.frame = bounds
-        
+
         layoutDefaultSubviews()
     }
-    
+
     private func layoutDefaultSubviews() {
         contentView.frame = CGRect(x: borderWidth + contentEdgeInsets.left,
                                    y: (currentLayoutDirection == .above ? borderWidth : arrowSize.height + borderWidth) + contentEdgeInsets.top,
@@ -226,9 +226,7 @@ class QMUIPopupContainerView: UIControl {
         // 这么做是为了尽量去掉contentView对内容不必要的裁剪，以免有些东西被裁剪了看不到
         let contentViewCornerRadius = abs(min(contentView.frame.minX - cornerRadius, 0))
         contentView.layer.cornerRadius = contentViewCornerRadius
-        
-        
-        
+
         let isImageViewShowing = isSubviewShowing(imageView)
         let isTextLabelShowing = isSubviewShowing(textLabel)
         if isImageViewShowing {
@@ -239,23 +237,23 @@ class QMUIPopupContainerView: UIControl {
             let textLabelMinX = (isImageViewShowing ? ceil(imageView.frame.maxX + imageEdgeInsets.right) : 0) + textEdgeInsets.left
             let textLabelLimitSize = CGSize(width: ceil(contentView.bounds.width - textLabelMinX),
                                             height: ceil(contentView.bounds.height - textEdgeInsets.top - textEdgeInsets.bottom))
-            
+
             let textLabelSize = textLabel.sizeThatFits(textLabelLimitSize)
             let textLabelOrigin = CGPoint(x: textLabelMinX,
                                           y: flat(contentView.bounds.height.center(with: ceil(textLabelSize.height)) + textEdgeInsets.top))
             textLabel.frame = CGRect(x: textLabelOrigin.x, y: textLabelOrigin.y, width: textLabelLimitSize.width, height: ceil(textLabelSize.height))
         }
     }
-    
+
     // MARK: - Private Tools
-    
+
     private func isSubviewShowing(_ subview: UIView?) -> Bool {
         guard let subview = subview, !subview.isHidden, subview.superview != nil else {
             return false
         }
         return true
     }
-    
+
     private func initPopupContainerViewWindowIfNeeded() {
         if popupWindow == nil {
             self.popupWindow = QMUIPopupContainerViewWindow()
@@ -269,66 +267,66 @@ class QMUIPopupContainerView: UIControl {
                 viewController.view.backgroundColor = UIColorClear
             }
             viewController.supportedOrientationMask = QMUIHelper.visibleViewController?.supportedInterfaceOrientations
-            popupWindow?.rootViewController = viewController// 利用 rootViewController 来管理横竖屏
+            popupWindow?.rootViewController = viewController // 利用 rootViewController 来管理横竖屏
             popupWindow?.rootViewController?.view.addSubview(self)
         }
     }
-    
+
     /// 根据一个给定的大小，计算出符合这个大小的内容大小
     private func contentSize(in size: CGSize) -> CGSize {
         let contentSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue - borderWidth * 2, height: size.height - arrowSize.height - borderWidth * 2)
         return contentSize
     }
-    
+
     /// 根据内容大小和外部限制的大小，计算出合适的self size（包含箭头）
     private func sizeWithContentSize(_ contentSize: CGSize, sizeThatFits: CGSize) -> CGSize {
         var resultWidth = contentSize.width + contentEdgeInsets.horizontalValue + borderWidth * 2
-        
-        resultWidth = min(resultWidth, sizeThatFits.width)// 宽度不能超过传进来的size.width
-        resultWidth = max(fmin(resultWidth, maximumWidth), minimumWidth)// 宽度必须在最小值和最大值之间
+
+        resultWidth = min(resultWidth, sizeThatFits.width) // 宽度不能超过传进来的size.width
+        resultWidth = max(fmin(resultWidth, maximumWidth), minimumWidth) // 宽度必须在最小值和最大值之间
         resultWidth = ceil(resultWidth)
-        
+
         var resultHeight = contentSize.height + contentEdgeInsets.verticalValue + arrowSize.height + borderWidth * 2
         resultHeight = min(resultHeight, sizeThatFits.height)
         resultHeight = max(fmin(resultHeight, maximumHeight), minimumHeight)
         resultHeight = ceil(resultHeight)
-        
+
         return CGSize(width: resultWidth, height: resultHeight)
     }
-    
+
     var isShowing: Bool {
         let isShowingIfAddedToView = superview != nil && !isHidden && popupWindow == nil
         let isShowingIfInWindow = superview != nil && popupWindow != nil && !popupWindow!.isHidden
         return isShowingIfAddedToView || isShowingIfInWindow
     }
-    
+
     /**
      *  即将隐藏时的回调
      *  @argv hidesByUserTap 用于区分此次隐藏是否因为用户手动点击空白区域导致浮层被隐藏
      */
     public var willHideBlock: ((Bool) -> Void)?
-    
+
     /**
      *  已经隐藏后的回调
      *  @argv hidesByUserTap 用于区分此次隐藏是否因为用户手动点击空白区域导致浮层被隐藏
      */
     public var didHideBlock: ((Bool) -> Void)?
-    
+
     private var popupWindow: QMUIPopupContainerViewWindow?
     private weak var previousKeyWindow: UIWindow?
     fileprivate var hidesByUserTap = false
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let result = super.hitTest(point, with: event)
         if result == contentView {
@@ -336,7 +334,7 @@ class QMUIPopupContainerView: UIControl {
         }
         return result
     }
-    
+
     /**
      *  相对于某个 view 布局（布局后箭头不一定会水平居中）
      *  @param targetView 注意如果这个 targetView 自身的布局发生变化，需要重新调用 layoutWithTargetView:，否则浮层的布局不会自动更新。
@@ -350,10 +348,10 @@ class QMUIPopupContainerView: UIControl {
             let targetViewFrameInLocalWindow = targetView.convert(targetView.bounds, to: targetView.window)
             targetViewFrameInMainWindow = mainWindow!.convert(targetViewFrameInLocalWindow, to: targetView.window)
         }
-        
+
         layout(with: targetViewFrameInMainWindow, inReferenceWindow: targetView.window)
     }
-    
+
     /**
      * 相对于给定的 itemRect 布局（布局后箭头不一定会水平居中）
      * @param targetRect 注意这个 rect 应该是处于屏幕坐标系里的 rect，所以请自行做坐标系转换。
@@ -361,21 +359,21 @@ class QMUIPopupContainerView: UIControl {
     public func layoutWithTargetRectInScreenCoordinate(_ targetRect: CGRect) {
         layout(with: targetRect, inReferenceWindow: UIApplication.shared.keyWindow)
     }
-    
+
     private func layout(with targetRect: CGRect, inReferenceWindow window: UIWindow?) {
         let superview = superviewIfExist
         let isLayoutInWindowMode = !(superview != nil && popupWindow == nil)
         let superviewBoundsInWindow = isLayoutInWindowMode ? window!.bounds : superview!.convert(superview!.bounds, to: window)
-        
+
         var tipSize = sizeThatFits(CGSize(width: maximumWidth, height: maximumHeight))
         let preferredTipWidth = tipSize.width
-        
+
         // 保护tips最往左只能到达self.safetyMarginsOfSuperview.left
         let a = targetRect.midX - tipSize.width / 2
         var tipMinX = max(superviewBoundsInWindow.minX + safetyMarginsOfSuperview.left, a)
-        
+
         var tipMaxX = tipMinX + tipSize.width
-        if (tipMaxX + safetyMarginsOfSuperview.right > superviewBoundsInWindow.maxX) {
+        if tipMaxX + safetyMarginsOfSuperview.right > superviewBoundsInWindow.maxX {
             // 右边超出了
             // 先尝试把右边超出的部分往左边挪，看是否会令左边到达临界点
             let distanceCanMoveToLeft = tipMaxX - (superviewBoundsInWindow.maxX - safetyMarginsOfSuperview.right)
@@ -389,20 +387,20 @@ class QMUIPopupContainerView: UIControl {
                 tipSize.width = min(tipSize.width, tipMaxX - tipMinX)
             }
         }
-        
+
         // 经过上面一番调整，可能tipSize.width发生变化，一旦宽度变化，高度要重新计算，所以重新调用一次sizeThatFits
         let tipWidthChanged = tipSize.width != preferredTipWidth
         if tipWidthChanged {
             tipSize = sizeThatFits(tipSize)
         }
-        
+
         currentLayoutDirection = preferLayoutDirection
-        
+
         // 检查当前的最大高度是否超过任一方向的剩余空间，如果是，则强制减小最大高度，避免后面计算布局选择方向时死循环
-        
+
         let canShowAtAbove = canTipShowAtSpecifiedLayoutDirect(.above, targetRect: targetRect, tipSize: tipSize)
         let canShowAtBelow = canTipShowAtSpecifiedLayoutDirect(.below, targetRect: targetRect, tipSize: tipSize)
-        
+
         if !canShowAtAbove && !canShowAtBelow {
             // 上下都没有足够的空间，所以要调整maximumHeight
             let maximumHeightAbove = targetRect.minY - superviewBoundsInWindow.minY - distanceBetweenTargetRect - safetyMarginsOfSuperview.top
@@ -410,17 +408,17 @@ class QMUIPopupContainerView: UIControl {
             maximumHeight = max(minimumHeight, max(maximumHeightAbove, maximumHeightBelow))
             tipSize.height = maximumHeight
             currentLayoutDirection = maximumHeightAbove > maximumHeightBelow ? .above : .below
-            
+
             print("\(self), 因为上下都不够空间，所以最大高度被强制改为\(maximumHeight), 位于目标的\(maximumHeightAbove > maximumHeightBelow ? "上方" : "下方")")
-            
+
         } else if currentLayoutDirection == .above && !canShowAtAbove {
             currentLayoutDirection = .below
         } else if currentLayoutDirection == .below && !canShowAtBelow {
             currentLayoutDirection = .above
         }
-        
+
         var tipMinY = tipMinYWithTargetRect(targetRect, tipSize: tipSize, preferLayoutDirection: currentLayoutDirection)
-        
+
         // 当上下的剩余空间都比最小高度要小的时候，tip会靠在safetyMargins范围内的上（下）边缘
         if currentLayoutDirection == .above {
             let tipMinYIfAlignSafetyMarginTop = superviewBoundsInWindow.minY + safetyMarginsOfSuperview.top
@@ -429,21 +427,21 @@ class QMUIPopupContainerView: UIControl {
             let tipMinYIfAlignSafetyMarginBottom = superviewBoundsInWindow.maxY - safetyMarginsOfSuperview.bottom - tipSize.height
             tipMinY = min(tipMinY, tipMinYIfAlignSafetyMarginBottom)
         }
-        
+
         // 上面计算得出的 tipMinX、tipMinY 是处于 window 坐标系里的，而浮层可能是以 addSubview: 的方式显示在某个 superview 上，所以要做一次坐标系转换
         var origin = CGPoint(x: tipMinX, y: tipMinY)
         origin = window!.convert(origin, to: superview)
         tipMinX = origin.x
         tipMinY = origin.y
-        
+
         frame = CGRect(x: tipMinX, y: tipMinY, width: tipSize.width, height: tipSize.height).flatted
-        
+
         // 调整浮层里的箭头的位置
         let targetRectCenter = CGPoint(x: targetRect.midX, y: targetRect.midY)
         let selfMidX = targetRectCenter.x - (superviewBoundsInWindow.minX + frame.minX)
         arrowMinX = selfMidX - arrowSize.width / 2
         setNeedsLayout()
-        
+
         if debug {
             contentView.backgroundColor = UIColorTestGreen
             borderColor = UIColorRed
@@ -452,7 +450,7 @@ class QMUIPopupContainerView: UIControl {
             textLabel.backgroundColor = UIColorTestBlue
         }
     }
-    
+
     private func canTipShowAtSpecifiedLayoutDirect(_ direction: QMUIPopupContainerViewLayoutDirection, targetRect itemRect: CGRect, tipSize: CGSize) -> Bool {
         var canShow = false
         let tipMinY = tipMinYWithTargetRect(itemRect, tipSize: tipSize, preferLayoutDirection: direction)
@@ -463,7 +461,7 @@ class QMUIPopupContainerView: UIControl {
         }
         return canShow
     }
-    
+
     private func tipMinYWithTargetRect(_ itemRect: CGRect, tipSize: CGSize, preferLayoutDirection direction: QMUIPopupContainerViewLayoutDirection) -> CGFloat {
         var tipMinY: CGFloat = 0
         if direction == .above {
@@ -473,24 +471,24 @@ class QMUIPopupContainerView: UIControl {
         }
         return tipMinY
     }
-    
+
     public func show(with animated: Bool, completion: ((Bool) -> Void)? = nil) {
         var isShowingByWindowMode = false
         if superview == nil {
             initPopupContainerViewWindowIfNeeded()
-            
+
             let viewController = popupWindow?.rootViewController as? QMUICommonViewController
-            
+
             viewController?.supportedOrientationMask = QMUIHelper.visibleViewController?.supportedInterfaceOrientations
-            
+
             previousKeyWindow = UIApplication.shared.keyWindow
             popupWindow?.makeKeyAndVisible()
-            
+
             isShowingByWindowMode = true
         } else {
             isHidden = false
         }
-        
+
         if animated {
             if isShowingByWindowMode {
                 popupWindow?.alpha = 0
@@ -503,7 +501,7 @@ class QMUIPopupContainerView: UIControl {
             }, completion: {
                 completion?($0)
             })
-            
+
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveLinear, animations: {
                 if isShowingByWindowMode {
                     self.popupWindow?.alpha = 1
@@ -511,7 +509,7 @@ class QMUIPopupContainerView: UIControl {
                     self.alpha = 1
                 }
             }, completion: nil)
-            
+
         } else {
             if isShowingByWindowMode {
                 popupWindow?.alpha = 1
@@ -521,12 +519,12 @@ class QMUIPopupContainerView: UIControl {
             completion?(true)
         }
     }
-    
+
     public func hide(with animated: Bool, completion: ((Bool) -> Void)? = nil) {
         willHideBlock?(self.hidesByUserTap)
-        
+
         let isShowingByWindowMode = popupWindow != nil
-        
+
         if animated {
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveLinear, animations: {
                 if isShowingByWindowMode {
@@ -541,20 +539,20 @@ class QMUIPopupContainerView: UIControl {
             hideCompletion(with: isShowingByWindowMode, completion: completion)
         }
     }
-    
+
     private func hideCompletion(with windowMode: Bool, completion: ((Bool) -> Void)? = nil) {
         if windowMode {
             // 恢复 keyWindow 之前做一下检查，避免类似问题 https://github.com/QMUI/QMUI_iOS/issues/90
-            
+
             if UIApplication.shared.keyWindow == popupWindow {
                 previousKeyWindow?.makeKey()
             }
-            
+
             // iOS 9 下（iOS 8 和 10 都没问题）需要主动移除，才能令 rootViewController 和 popupWindow 立即释放，不影响后续的 layout 判断，如果不加这两句，虽然 popupWindow 指针被置为 nil，但其实对象还存在，View 层级关系也还在
             // https://github.com/QMUI/QMUI_iOS/issues/75
             removeFromSuperview()
             popupWindow?.rootViewController = nil
-            
+
             popupWindow?.isHidden = true
             popupWindow = nil
         } else {
@@ -564,32 +562,32 @@ class QMUIPopupContainerView: UIControl {
         didHideBlock?(hidesByUserTap)
         hidesByUserTap = false
     }
-    
+
     var superviewIfExist: UIView? {
         let isAddedToCustomView = superview != nil && popupWindow == nil
         if isAddedToCustomView {
             return superview!
         }
-        
+
         // https://github.com/QMUI/QMUI_iOS/issues/76
-        
+
         let keyWindow = UIApplication.shared.keyWindow
-        
+
         let shouldLayoutInPopupWindow = popupWindow != nil && popupWindow!.bounds.size == keyWindow?.bounds.size
-        
+
         return shouldLayoutInPopupWindow ? popupWindow : keyWindow
     }
-    
+
     // MARK: - UISubclassingHooks
 
     /// 子类重写，在初始化时做一些操作
     open func didInitialized() {
         layer.addSublayer(backgroundLayer)
-        
+
         contentView.clipsToBounds = true
         addSubview(contentView)
     }
-    
+
     /// 子类重写，告诉父类subviews的合适大小
     open func sizeThatFitsInContentView(_ size: CGSize) -> CGSize {
         // 如果没内容则返回自身大小
@@ -597,16 +595,16 @@ class QMUIPopupContainerView: UIControl {
             let selfSize = contentSize(in: bounds.size)
             return selfSize
         }
-        
+
         var resultSize = CGSize.zero
-        
+
         let isImageViewShowing = isSubviewShowing(imageView)
         if isImageViewShowing {
             let imageViewSize = imageView.sizeThatFits(size)
             resultSize.width += ceil(imageViewSize.width) + imageEdgeInsets.left
             resultSize.height += ceil(imageViewSize.height) + imageEdgeInsets.top
         }
-        
+
         let isTextLabelShowing = isSubviewShowing(textLabel)
         if isTextLabelShowing {
             let textLabelLimitSize = CGSize(width: size.width - resultSize.width - imageEdgeInsets.right, height: size.height)
@@ -640,12 +638,12 @@ class QMUIPopContainerViewController: QMUICommonViewController {
 
 class QMUIPopContainerMaskControl: UIControl {
     weak var popupContainerView: QMUIPopupContainerView?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         addTarget(self, action: #selector(handleMaskEvent), for: .touchUpInside)
     }
-    
+
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let result = super.hitTest(point, with: event)
         if result == self {
@@ -655,17 +653,17 @@ class QMUIPopContainerMaskControl: UIControl {
         }
         return result
     }
-    
+
     // 把点击遮罩的事件放在 addTarget: 里而不直接在 hitTest:withEvent: 里处理是因为 hitTest:withEvent: 总是会走两遍
     @objc
-    private func handleMaskEvent(_ sender: UIControl) {
+    private func handleMaskEvent(_: UIControl) {
         if popupContainerView!.automaticallyHidesWhenUserTap {
             popupContainerView!.hidesByUserTap = true
             popupContainerView?.hide(with: true)
         }
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

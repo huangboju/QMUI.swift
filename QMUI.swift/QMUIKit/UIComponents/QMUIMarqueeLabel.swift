@@ -13,7 +13,7 @@
  *  @warning 会忽略 numberOfLines 属性，强制以 1 来展示。
  */
 class QMUIMarqueeLabel: UILabel {
-    
+
     /// 控制滚动的速度，1 表示一帧滚动 1pt，10 表示一帧滚动 10pt，默认为 .5，与系统一致。
     public var speed: CGFloat = 0.5
 
@@ -28,7 +28,7 @@ class QMUIMarqueeLabel: UILabel {
      *  @warning 某些场景并无法触发这个自动检测（例如直接调整 label.superview 的 frame 而不是 label 自身的 frame），这种情况暂不处理。
      */
     public var automaticallyValidateVisibleFrame = true
-    
+
     /// 在文字滚动到左右边缘时，是否要显示一个阴影渐变遮罩，默认为 true。
     public var shouldFadeAtEdge = true {
         didSet {
@@ -38,55 +38,56 @@ class QMUIMarqueeLabel: UILabel {
             updateFadeLayersHidden()
         }
     }
-    
+
     /// 渐变遮罩的宽度，默认为 20。
     public var fadeWidth: CGFloat = 20
-    
+
     /// 渐变遮罩外边缘的颜色，请使用带 Alpha 通道的颜色
     public var fadeStartColor: UIColor? = UIColor(r: 255, g: 255, b: 255) {
         didSet {
             updateFadeLayerColors()
         }
     }
-    
+
     /// 渐变遮罩内边缘的颜色，一般是 fadeStartColor 的 alpha 通道为 0 的色值
     public var fadeEndColor: UIColor? = UIColor(r: 255, g: 255, b: 255, a: 1) {
         didSet {
             updateFadeLayerColors()
         }
     }
-    
+
     /// 文字是否要在渐隐区域之后显示，默认为 false，如果想避免停靠在初始位置时文字被遮罩盖住，可以把它改为 true。
     public var textStartAfterFade = false
-    
+
     private var displayLink: CADisplayLink?
     private var offsetX: CGFloat = 0 {
         didSet {
             updateFadeLayersHidden()
         }
     }
+
     private var textWidth: CGFloat = 0
-    
+
     private var fadeLeftLayer: CAGradientLayer?
     private var fadeRightLayer: CAGradientLayer?
 
     private var isFirstDisplay = true
-    
+
     /// 绘制文本时重复绘制的次数，用于实现首尾连接的滚动效果，1 表示不首尾连接，大于 1 表示首尾连接。
     private var textRepeatCount = 2
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         lineBreakMode = .byClipping
-        clipsToBounds = true// 显示非英文字符时，滚动的时候字符会稍微露出两端，所以这里直接裁剪掉
+        clipsToBounds = true // 显示非英文字符时，滚动的时候字符会稍微露出两端，所以这里直接裁剪掉
     }
 
     deinit {
         displayLink?.invalidate()
         displayLink = nil
     }
-    
+
     override func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil {
@@ -107,7 +108,7 @@ class QMUIMarqueeLabel: UILabel {
             displayLink?.isPaused = !shouldPlayDisplayLink
         }
     }
-    
+
     override var attributedText: NSAttributedString? {
         didSet {
             offsetX = 0
@@ -115,7 +116,7 @@ class QMUIMarqueeLabel: UILabel {
             displayLink?.isPaused = !shouldPlayDisplayLink
         }
     }
-    
+
     override var frame: CGRect {
         willSet {
             let isSizeChanged = newValue.size != frame.size
@@ -132,29 +133,29 @@ class QMUIMarqueeLabel: UILabel {
             textInitialX = 0
         } else if textAlignment == .center {
             textInitialX = max(0, bounds.width.center(with: textWidth))
-        } else if (self.textAlignment == .right) {
+        } else if textAlignment == .right {
             textInitialX = max(0, bounds.width - textWidth)
         }
-        
+
         // 考虑渐变遮罩的偏移
         let textOffsetXByFade = textInitialX < fadeWidth ? ((shouldFadeAtEdge && textStartAfterFade) ? fadeWidth : 0) : 0
         textInitialX += textOffsetXByFade
 
-        for  i in 0 ..< textRepeatCountConsiderTextWidth {
+        for i in 0 ..< textRepeatCountConsiderTextWidth {
             attributedText?.draw(in: CGRect(x: offsetX + (textWidth + spacingBetweenHeadToTail) * CGFloat(i) + textInitialX, y: 0, width: textWidth, height: rect.height))
         }
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         if let fadeLeftLayer = fadeLeftLayer {
             fadeLeftLayer.frame = CGSize(width: fadeWidth, height: bounds.height).rect
-            layer.qmui_bringSublayerToFront(fadeLeftLayer)// 显示非英文字符时，UILabel 内部会额外多出一层 layer 盖住了这里的 fadeLayer，所以要手动提到最前面
+            layer.qmui_bringSublayerToFront(fadeLeftLayer) // 显示非英文字符时，UILabel 内部会额外多出一层 layer 盖住了这里的 fadeLayer，所以要手动提到最前面
         }
 
         if let fadeRightLayer = fadeRightLayer {
             fadeRightLayer.frame = CGRect(x: bounds.width - fadeWidth, y: 0, width: fadeWidth, height: bounds.height)
-            layer.qmui_bringSublayerToFront(fadeRightLayer)// 显示非英文字符时，UILabel 内部会额外多出一层 layer 盖住了这里的 fadeLayer，所以要手动提到最前面
+            layer.qmui_bringSublayerToFront(fadeRightLayer) // 显示非英文字符时，UILabel 内部会额外多出一层 layer 盖住了这里的 fadeLayer，所以要手动提到最前面
         }
     }
 
@@ -164,14 +165,14 @@ class QMUIMarqueeLabel: UILabel {
         }
         return textRepeatCount
     }
-    
+
     @objc func handleDisplayLink(_ displayLink: CADisplayLink) {
         if offsetX == 0 {
             displayLink.isPaused = true
             setNeedsDisplay()
 
             let delay = (isFirstDisplay || textRepeatCount <= 1) ? pauseDurationWhenMoveToEdge : 0
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: {
                 displayLink.isPaused = !self.shouldPlayDisplayLink
                 if !displayLink.isPaused {
@@ -184,10 +185,10 @@ class QMUIMarqueeLabel: UILabel {
             }
             return
         }
-        
+
         offsetX -= speed
         setNeedsDisplay()
-        
+
         if -offsetX >= textWidth + (textRepeatCountConsiderTextWidth > 1 ? spacingBetweenHeadToTail : 0) {
             displayLink.isPaused = true
             let delay = textRepeatCount > 1 ? pauseDurationWhenMoveToEdge : 0
@@ -197,7 +198,7 @@ class QMUIMarqueeLabel: UILabel {
             })
         }
     }
-    
+
     private var shouldPlayDisplayLink: Bool {
         let result = window != nil && bounds.width > 0 && textWidth > (bounds.width - ((shouldFadeAtEdge && textStartAfterFade) ? fadeWidth : 0))
 
@@ -212,7 +213,7 @@ class QMUIMarqueeLabel: UILabel {
 
         return result
     }
-    
+
     private func updateFadeLayerColors() {
         func setColor(with layer: CAGradientLayer?) {
             guard let layer = layer else {
@@ -221,7 +222,7 @@ class QMUIMarqueeLabel: UILabel {
             if let fadeStartColor = fadeStartColor, let fadeEndColor = fadeEndColor {
                 layer.colors = [
                     fadeStartColor.cgColor,
-                    fadeEndColor.cgColor
+                    fadeEndColor.cgColor,
                 ]
             } else {
                 layer.colors = nil
@@ -231,7 +232,7 @@ class QMUIMarqueeLabel: UILabel {
         setColor(with: fadeLeftLayer)
         setColor(with: fadeRightLayer)
     }
-    
+
     private func updateFadeLayersHidden() {
         if fadeLeftLayer == nil || fadeRightLayer == nil {
             return
@@ -243,10 +244,10 @@ class QMUIMarqueeLabel: UILabel {
         let shouldShowFadeRightLayer = shouldFadeAtEdge && (textWidth > bounds.width && offsetX != textWidth - bounds.width)
         fadeRightLayer?.isHidden = !shouldShowFadeRightLayer
     }
-    
+
     private func initFadeLayersIfNeeded() {
         if fadeLeftLayer == nil {
-            fadeLeftLayer = CAGradientLayer()// 请保留自带的 hidden 动画
+            fadeLeftLayer = CAGradientLayer() // 请保留自带的 hidden 动画
             fadeLeftLayer?.startPoint = CGPoint(x: 0, y: 0.5)
             fadeLeftLayer?.endPoint = CGPoint(x: 1, y: 0.5)
             layer.addSublayer(fadeLeftLayer!)
@@ -254,7 +255,7 @@ class QMUIMarqueeLabel: UILabel {
         }
 
         if fadeRightLayer == nil {
-            fadeRightLayer = CAGradientLayer()// 请保留自带的 hidden 动画
+            fadeRightLayer = CAGradientLayer() // 请保留自带的 hidden 动画
             fadeRightLayer?.startPoint = CGPoint(x: 1, y: 0.5)
             fadeRightLayer?.endPoint = CGPoint(x: 0, y: 0.5)
             layer.addSublayer(fadeRightLayer!)
@@ -263,7 +264,7 @@ class QMUIMarqueeLabel: UILabel {
 
         updateFadeLayerColors()
     }
-    
+
     // MARK: - Superclass
     override var numberOfLines: Int {
         didSet {
@@ -271,7 +272,7 @@ class QMUIMarqueeLabel: UILabel {
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

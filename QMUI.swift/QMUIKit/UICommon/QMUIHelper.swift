@@ -114,7 +114,7 @@ extension QMUIHelper: SelfAware {
         static var LastKeyboardHeight = "LastKeyboardHeight"
         static var isKeyboardVisible = "isKeyboardVisible"
     }
-    
+
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
             NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
@@ -369,7 +369,6 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - Orientation
 extension QMUIHelper {
     /// 根据指定的旋转方向计算出对应的旋转角度
@@ -395,12 +394,11 @@ extension QMUIHelper {
 
     /// 根据指定的旋转方向计算出对应的CGAffineTransform
     public static func transformWithInterface(orientation: UIInterfaceOrientation) -> CGAffineTransform {
-        
+
         let angle = QMUIHelper.angleForTransformWithInterface(orientation: orientation)
         return CGAffineTransform(rotationAngle: angle)
     }
 }
-
 
 // MARK: - ViewController
 extension QMUIHelper {
@@ -413,7 +411,6 @@ extension QMUIHelper {
         return visibleViewController
     }
 }
-
 
 // MARK: - UIApplication
 extension QMUIHelper {
@@ -454,23 +451,21 @@ extension QMUIHelper {
     }
 }
 
-
 // MARK: - Log
 extension QMUIHelper {
     // TODO:
-    func printLogWithCalledFunction(_ function: String, log: String) {
-//        va_list args;
-//        va_start(args, log);
-//        NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
-//        if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
-//            [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
-//        } else {
-//            NSLog(@"QMUI - %@. Called By %s", logString, func);
-//        }
-//        va_end(args);
+    func printLogWithCalledFunction(_: String, log _: String) {
+        //        va_list args;
+        //        va_start(args, log);
+        //        NSString *logString = [[NSString alloc] initWithFormat:log arguments:args];
+        //        if ([self.helperDelegate respondsToSelector:@selector(QMUIHelperPrintLog:)]) {
+        //            [self.helperDelegate QMUIHelperPrintLog:[NSString stringWithFormat:@"QMUI - %@. Called By %s", logString, func]];
+        //        } else {
+        //            NSLog(@"QMUI - %@. Called By %s", logString, func);
+        //        }
+        //        va_end(args);
     }
 }
-
 
 public let QMUISpringAnimationKey = "QMUISpringAnimationKey"
 // MARK: - Animation
@@ -481,10 +476,10 @@ extension QMUIHelper {
         springAnimation.values = [0.85, 1.15, 0.9, 1.0]
         springAnimation.keyTimes = [
             (0.0 / duration),
-            (0.15 / duration) ,
+            (0.15 / duration),
             (0.3 / duration),
-            (0.45 / duration)
-            ].map { NSNumber(value: $0) }
+            (0.45 / duration),
+        ].map { NSNumber(value: $0) }
         springAnimation.duration = duration
         view.layer.add(springAnimation, forKey: QMUISpringAnimationKey)
     }

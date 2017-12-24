@@ -13,7 +13,7 @@
  */
 
 class QMUITips: QMUIToastView {
-    
+
     private var contentCustomView: UIView?
 
     /// 实例方法：需要自己addSubview，hide之后不会自动removeFromSuperView
@@ -39,7 +39,6 @@ class QMUITips: QMUIToastView {
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
-
     public func showError(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         contentCustomView = UIImageView(image: QMUIHelper.image(with: "QMUI_tips_error"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
@@ -51,22 +50,22 @@ class QMUITips: QMUIToastView {
     }
 
     private func showTip(with text: String?, detailText: String?, hideAfterDelay delay: TimeInterval) {
-        
+
         let contentView = self.contentView as? QMUIToastContentView
         contentView?.customView = contentCustomView
-    
+
         contentView?.textLabelText = text ?? ""
         contentView?.detailTextLabelText = detailText ?? ""
-        
+
         showAnimated(true)
 
         if delay > 0 {
             hideAnimated(true, afterDelay: delay)
         }
     }
-    
+
     /// 类方法：主要用在局部一次性使用的场景，hide之后会自动removeFromSuperView
-    
+
     public static func createTips(to view: UIView) -> QMUITips {
         let tips = QMUITips(view: view)
         view.addSubview(tips)

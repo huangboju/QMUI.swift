@@ -10,15 +10,13 @@
 
 // 判断当前是否debug编译模式
 #if DEBUG
-let IS_DEBUG = true
+    let IS_DEBUG = true
 #else
-let IS_DEBUG = false
+    let IS_DEBUG = false
 #endif
-
 
 // MARK: - Clang
 // TODO:
-
 
 // 设备类型
 let IS_IPAD = QMUIHelper.isIPad
@@ -35,7 +33,6 @@ let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 let IS_LANDSCAPE = UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation)
 // 无论支不支持横屏，只要设备横屏了，就会返回YES
 let IS_DEVICE_LANDSCAPE = UIDeviceOrientationIsLandscape(UIDevice.current.orientation)
-
 
 // 屏幕宽度，会根据横竖屏的变化而变化
 let SCREEN_WIDTH = UIScreen.main.bounds.width
@@ -92,7 +89,7 @@ func NavigationContentHeight(_ viewController: UIViewController) -> CGFloat {
 }
 
 // 兼容controller.view的subView的top值在不同iOS版本下的差异
-let NavigationContentTop = StatusBarHeight + NavigationBarHeight// 这是动态获取的
+let NavigationContentTop = StatusBarHeight + NavigationBarHeight // 这是动态获取的
 let NavigationContentStaticTop = 20 + NavigationBarHeight // 不动态从状态栏获取高度，避免来电模式下多算了20pt（来电模式下系统会把UIViewController.view的frame往下移动20pt）
 func NavigationContentOriginY(_ y: CGFloat) -> CGFloat {
     return NavigationContentTop + y
@@ -109,7 +106,6 @@ func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47Inch: T, _ varFor40I
 func PreferredVarForUniversalDevices<T>(varForPad: T, varFor55Inch: T, varFor47Inch: T, varFor40Inch: T, var4: T) -> T {
     return (IS_IPAD ? varForPad : (IS_55INCH_SCREEN ? varFor55Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_40INCH_SCREEN ? varFor40Inch : var4))))
 }
-
 
 // 字体相关创建器，包括动态字体的支持
 let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
@@ -132,26 +128,22 @@ let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { po
 
 let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }
 
-
 // MARK: - 动画
 extension UIViewAnimationOptions {
     static var curveOut: UIViewAnimationOptions {
-        return UIViewAnimationOptions(rawValue: 7<<16)
+        return UIViewAnimationOptions(rawValue: 7 << 16)
     }
 
     static var curveIn: UIViewAnimationOptions {
-        return UIViewAnimationOptions(rawValue: 8<<16)
+        return UIViewAnimationOptions(rawValue: 8 << 16)
     }
 }
 
-
 // MARK: - 其他
 // TODO:
-func QMUILog(_ items: Any...) {
+func QMUILog(_: Any...) {
     QMUIHelper.shared.printLogWithCalledFunction(#function, log: "")
 }
-
-
 
 /**
  *  基于指定的倍数，对传进来的 floatValue 进行像素取整。若指定倍数为0，则表示以当前设备的屏幕倍数为准。
@@ -194,26 +186,22 @@ func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelect
     let oriMethod = class_getInstanceMethod(_class, _originSelector)
     let newMethod = class_getInstanceMethod(_class, _newSelector)
     let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod!), method_getTypeEncoding(newMethod!))
-    if (isAddedMethod) {
+    if isAddedMethod {
         class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod!), method_getTypeEncoding(oriMethod!))
     } else {
         method_exchangeImplementations(oriMethod!, newMethod!)
     }
 }
 
-
 // MARK: - CGFloat
 
 /// 用于居中运算
-
 
 extension CGFloat {
     func center(with child: CGFloat) -> CGFloat {
         return flat((self - child) / 2.0)
     }
 }
-
-
 
 // MARK: - CGPoint
 
@@ -240,12 +228,12 @@ extension CGRect {
     func apply(scale: CGFloat) -> CGRect {
         return CGRect(x: minX * scale, y: minY * scale, width: width * scale, height: height * scale).flatted
     }
-    
+
     /// 计算view的水平居中，传入父view和子view的frame，返回子view在水平居中时的x值
     func minXHorizontallyCenter(in parentRect: CGRect) -> CGFloat {
         return flat((parentRect.width - width) / 2.0)
     }
-    
+
     /// 计算view的垂直居中，传入父view和子view的frame，返回子view在垂直居中时的y值
     func minYVerticallyCenter(in parentRect: CGRect) -> CGFloat {
         return flat((parentRect.height - height) / 2.0)
@@ -260,7 +248,7 @@ extension CGRect {
     func minXHorizontallyCenter(_ layoutingRect: CGRect) -> CGFloat {
         return minX + minXHorizontallyCenter(in: layoutingRect)
     }
-    
+
     /// 为给定的rect往内部缩小insets的大小
     func insetEdges(_ insets: UIEdgeInsets) -> CGRect {
         let newX = minX + insets.left
@@ -279,33 +267,33 @@ extension CGRect {
         origin.y = bottom - height
         return self
     }
-    
+
     mutating func float(right: CGFloat) -> CGRect {
         origin.x = right - width
         return self
     }
-    
+
     mutating func float(left: CGFloat) -> CGRect {
         origin.x = left
         return self
     }
-    
+
     /// 保持rect的左边缘不变，改变其宽度，使右边缘靠在right上
     mutating func limit(right: CGFloat) -> CGRect {
         size.width = right - minX
         return self
     }
-    
+
     /// 保持rect右边缘不变，改变其宽度和origin.x，使其左边缘靠在left上。只适合那种右边缘不动的view
     /// 先改变origin.x，让其靠在offset上
     /// 再改变size.width，减少同样的宽度，以抵消改变origin.x带来的view移动，从而保证view的右边缘是不动的
     mutating func limit(left: CGFloat) -> CGRect {
         let subOffset = left - minX
         origin.x = left
-        size.width -=  subOffset
+        size.width -= subOffset
         return self
     }
-    
+
     /// 限制rect的宽度，超过最大宽度则截断，否则保持rect的宽度不变
     mutating func limit(maxWidth: CGFloat) -> CGRect {
         size.width = width > maxWidth ? maxWidth : width
@@ -340,8 +328,7 @@ extension CGRect {
         size.height = flat(height)
         return self
     }
-    
-    
+
     mutating func setSize(size: CGSize) -> CGRect {
         self.size = size.flatted
         return self
@@ -385,9 +372,8 @@ extension CGSize {
 
 /// 创建一个像素对齐的CGRect
 let CGRectFlat: (CGFloat, CGFloat, CGFloat, CGFloat) -> CGRect = { x, y, w, h in
-    return CGRect(x: flat(x), y: flat(y), width: flat(w), height: flat(h))
+    CGRect(x: flat(x), y: flat(y), width: flat(w), height: flat(h))
 }
-
 
 // MARK: - UIEdgeInsets
 

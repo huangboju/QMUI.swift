@@ -7,7 +7,7 @@
 //
 
 public enum QMUITableViewCellPosition {
-    case none       // 初始化用
+    case none // 初始化用
     case firstInSection
     case middleInSection
     case lastInSection
@@ -27,7 +27,7 @@ extension UITableView {
         sectionIndexTrackingBackgroundColor = TableSectionIndexTrackingBackgroundColor
         sectionIndexBackgroundColor = TableSectionIndexBackgroundColor
     }
-    
+
     /**
      *  获取某个 view 在 tableView 里的 indexPath
      *
@@ -52,7 +52,7 @@ extension UITableView {
 
         for i in (0 ..< numberOfSections).reversed() {
 
-            var rect = rectForHeader(inSection: i)// 这个接口获取到的 rect 是在 contentSize 里的 rect，而不是实际看到的 rect，所以要自行区分 headerView 是否被停靠在顶部
+            var rect = rectForHeader(inSection: i) // 这个接口获取到的 rect 是在 contentSize 里的 rect，而不是实际看到的 rect，所以要自行区分 headerView 是否被停靠在顶部
             let isHeaderViewPinToTop = style == .plain && (rect.minY - contentOffset.y < contentInset.top)
             if isHeaderViewPinToTop {
                 rect = rect.setY(rect.minY + (contentInset.top - rect.minY + contentOffset.y))
@@ -64,7 +64,7 @@ extension UITableView {
         }
         return -1
     }
-    
+
     /**
      * 根据给定的indexPath，配合dataSource得到对应的cell在当前section中所处的位置
      * @param indexPath cell所在的indexPath
@@ -96,7 +96,7 @@ extension UITableView {
             deselectRow(at: $0, animated: true)
         }
     }
-    
+
     /**
      * 将指定的row滚到指定的位置（row的顶边缘和指定位置重叠），并对一些特殊情况做保护（例如列表内容不够一屏、要滚动的row是最后一条等）
      * @param offsetY 目标row要滚到的y值，这个y值是相对于tableView的frame而言的
@@ -140,11 +140,11 @@ extension UITableView {
         realContentSize.height = max(realContentSize.height, lastSectionRect.maxY)
         return realContentSize
     }
-    
+
     /**
      *  UITableView的tableHeaderView如果是UISearchBar的话，tableView.contentSize会强制设置为至少比bounds高（从而实现headerView的吸附效果），从而导致qmui_canScroll的判断不准确。所以为UITableView重写了qmui_canScroll方法
      */
-    override public var qmui_canScroll: Bool {
+    public override var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.height <= 0 {
             return false
@@ -158,7 +158,6 @@ extension UITableView {
         }
     }
 }
-
 
 /// ====================== 计算动态cell高度相关 =======================
 
@@ -177,7 +176,6 @@ extension UITableView {
  *
  *  使用这套方式额外的消耗是每个 identifier 都会生成一个多余的 cell 实例（专用于高度计算），但大部分情况下一个生成一个 cell 实例并不会带来过多的负担，所以一般不用担心这个问题。
  */
-
 
 // MARK: - QMUIKeyedHeightCache
 extension UITableView {
@@ -210,8 +208,6 @@ extension UITableView {
     }
 }
 
-
-
 // MARK: - QMUIIndexPathHeightCacheInvalidation
 extension UITableView: SelfAware {
     private static let _onceToken = UUID().uuidString
@@ -228,7 +224,7 @@ extension UITableView: SelfAware {
                 #selector(deleteRows(at:with:)),
                 #selector(reloadRows(at:with:)),
                 #selector(moveRow(at:to:)),
-                ]
+            ]
 
             for selector in selectors {
                 let swizzledSelector = Selector("qmui_" + selector.description)
@@ -262,7 +258,7 @@ extension UITableView {
         }
         qmui_insertSections(sections, with: rowAnimation)
     }
-    
+
     func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
@@ -274,7 +270,7 @@ extension UITableView {
             qmui_deleteSections(sections, with: rowAnimation)
         }
     }
-    
+
     func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
@@ -286,7 +282,7 @@ extension UITableView {
         }
         qmui_reloadSections(sections, with: rowAnimation)
     }
-    
+
     func qmui_moveSection(_ section: Int, toSection newSection: Int) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
@@ -296,7 +292,7 @@ extension UITableView {
         }
         qmui_moveSection(section, toSection: newSection)
     }
-    
+
     func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
@@ -308,13 +304,13 @@ extension UITableView {
         }
         qmui_insertRows(at: indexPaths, with: rowAnimation)
     }
-    
+
     func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
-            
+
             var mutableIndexSetsToRemove: [Int: IndexSet] = [:]
-            
+
             for indexPath in indexPaths {
                 var mutableIndexSet = mutableIndexSetsToRemove[indexPath.section]
                 if mutableIndexSet == nil {
@@ -333,7 +329,7 @@ extension UITableView {
             qmui_deleteRows(at: indexPaths, with: rowAnimation)
         }
     }
-    
+
     func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
@@ -362,7 +358,6 @@ extension UITableView {
     }
 }
 
-
 // MARK: - QMUILayoutCell
 extension UITableView {
     func templateCell(forReuseIdentifier identifier: String) -> UITableViewCell {
@@ -389,7 +384,7 @@ extension UITableView {
         }
         return templateCell!
     }
-    
+
     /**
      *  通过 qmui_tableView:cellWithIdentifier: 得到 identifier 对应的 cell 实例，并在 configuration 里对 cell 进行渲染后，得到 cell 的高度。
      *  @param  identifier cell 的 identifier
@@ -430,7 +425,7 @@ extension UITableView {
 
         let height = qmui_heightForCell(withIdentifier: identifier, configuration: configuration)
         qmui_indexPathHeightCache.cache(height: height, by: indexPath)
-        return height;
+        return height
     }
 
     // 通过key缓存高度
@@ -448,4 +443,3 @@ extension UITableView {
         return height
     }
 }
-

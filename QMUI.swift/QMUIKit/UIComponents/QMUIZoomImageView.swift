@@ -11,33 +11,33 @@ import Photos
 protocol QMUIZoomImageViewDelegate: class {
     func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)
     func doubleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)
-    func longPress(in zoomingImageView: QMUIZoomImageView )
+    func longPress(in zoomingImageView: QMUIZoomImageView)
     /**
      *  告知 delegate 在视频预览界面里，由于用户点击了空白区域或播放视频等导致了底部的视频工具栏被显示或隐藏
      *  @param didHide 如果为 YES 则表示工具栏被隐藏，NO 表示工具栏被显示了出来
      */
     func zoomImageView(_ imageView: QMUIZoomImageView, didHideVideoToolbar didHide: Bool)
-    
+
     /// 是否支持缩放，默认为 YES
     func enabledZoomView(in zoomImageView: QMUIZoomImageView) -> Bool
-    
+
     // 可通过此方法调整视频播放时底部 toolbar 的视觉位置，默认为 {25, 25, 25, 18}
     // 如果同时设置了 QMUIZoomImageViewVideoToolbar 实例的 contentInsets 属性，则这里设置的值将不再生效
-    func contentInsets(for videoToolbar: QMUIZoomImageViewVideoToolbar, in zoomingImageView:QMUIZoomImageView) -> UIEdgeInsets
+    func contentInsets(for videoToolbar: QMUIZoomImageViewVideoToolbar, in zoomingImageView: QMUIZoomImageView) -> UIEdgeInsets
 }
 
 extension QMUIZoomImageViewDelegate {
-    func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {}
-    func doubleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {}
-    func longPress(in zoomingImageView: QMUIZoomImageView ) {}
+    func singleTouch(in _: QMUIZoomImageView, location _: CGPoint) {}
+    func doubleTouch(in _: QMUIZoomImageView, location _: CGPoint) {}
+    func longPress(in _: QMUIZoomImageView) {}
 
-    func zoomImageView(_ imageView: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {}
+    func zoomImageView(_: QMUIZoomImageView, didHideVideoToolbar _: Bool) {}
 
-    func enabledZoomView(in zoomImageView: QMUIZoomImageView) -> Bool {
+    func enabledZoomView(in _: QMUIZoomImageView) -> Bool {
         return true
     }
 
-    func contentInsets(for videoToolbar: QMUIZoomImageViewVideoToolbar, in zoomingImageView:QMUIZoomImageView) -> UIEdgeInsets {
+    func contentInsets(for _: QMUIZoomImageViewVideoToolbar, in _: QMUIZoomImageView) -> UIEdgeInsets {
         return UIEdgeInsets(top: 25, left: 25, bottom: 25, right: 18)
     }
 }
@@ -57,7 +57,7 @@ class QMUIZoomImageView: UIView {
     public weak var delegate: QMUIZoomImageViewDelegate?
 
     /// 设置当前要显示的 Live Photo，会把 image/video 相关内容清空，因此注意不要直接通过 livePhotoView.livePhoto 来设置
-    
+
     private var livePhotoStorge: Any?
     @available(iOS 9.1, *)
     public weak var livePhoto: PHLivePhoto? {
@@ -79,7 +79,7 @@ class QMUIZoomImageView: UIView {
     public weak var image: UIImage?
 
     public let emptyView = QMUIEmptyView()
-    
+
     /// 用于显示图片的 UIImageView，注意不要通过 imageView.image 来设置图片，请使用 image 属性。
     public let imageView = UIImageView()
 
@@ -88,28 +88,24 @@ class QMUIZoomImageView: UIView {
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
      */
     public func showLoading() {
-
     }
 
     /**
      *  将 emptyView 隐藏
      */
     public func hideEmptyView() {
-
     }
-    
+
     /**
      *  重置图片或视频的大小，使用的场景例如：相册控件里放大当前图片、划到下一张、再回来，当前的图片或视频应该恢复到原来大小。
      *  注意子类重写需要调一下super。
      */
     public func revertZooming() {
+    }
 
-    }
-    
     public func endPlayingVideo() {
-        
     }
-    
+
     /**
      *  获取当前正在显示的图片/视频在整个 QMUIZoomImageView 坐标系里的 rect（会按照当前的缩放状态来计算）
      */
@@ -119,15 +115,15 @@ class QMUIZoomImageView: UIView {
     }
 
     private var currentContentView: UIView? {
-//        if (_imageView) {
-//            return _imageView;
-//        }
-//        if (_livePhotoView) {
-//            return _livePhotoView;
-//        }
-//        if (self.videoPlayerView) {
-//            return self.videoPlayerView;
-//        }
+        //        if (_imageView) {
+        //            return _imageView;
+        //        }
+        //        if (_livePhotoView) {
+        //            return _livePhotoView;
+        //        }
+        //        if (self.videoPlayerView) {
+        //            return self.videoPlayerView;
+        //        }
         return nil
     }
 }

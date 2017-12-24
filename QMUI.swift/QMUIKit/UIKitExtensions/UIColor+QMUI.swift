@@ -27,7 +27,6 @@ extension UIColor {
         return description
     }
 
-
     /**
      *  使用HEX命名方式的颜色字符串生成一个UIColor对象
      *
@@ -51,29 +50,29 @@ extension UIColor {
         switch colorString.length {
         case 3: // #RGB
             alpha = 1.0
-            
-            red   = UIColor.colorComponent(from: colorString, start: 0, length: 1)
+
+            red = UIColor.colorComponent(from: colorString, start: 0, length: 1)
             green = UIColor.colorComponent(from: colorString, start: 1, length: 1)
-            blue  = UIColor.colorComponent(from: colorString, start: 2, length: 1)
+            blue = UIColor.colorComponent(from: colorString, start: 2, length: 1)
         case 4: // #ARGB
             alpha = UIColor.colorComponent(from: colorString, start: 0, length: 1)
-            red   = UIColor.colorComponent(from: colorString, start: 1, length: 1)
+            red = UIColor.colorComponent(from: colorString, start: 1, length: 1)
             green = UIColor.colorComponent(from: colorString, start: 2, length: 1)
-            blue  = UIColor.colorComponent(from: colorString, start: 3, length: 1)
+            blue = UIColor.colorComponent(from: colorString, start: 3, length: 1)
         case 6: // #RRGGBB
             alpha = 1.0
-            red   = UIColor.colorComponent(from: colorString, start: 0, length: 1)
+            red = UIColor.colorComponent(from: colorString, start: 0, length: 1)
             green = UIColor.colorComponent(from: colorString, start: 2, length: 1)
-            blue  = UIColor.colorComponent(from: colorString, start: 4, length: 1)
+            blue = UIColor.colorComponent(from: colorString, start: 4, length: 1)
         case 8: // #AARRGGBB
             alpha = UIColor.colorComponent(from: colorString, start: 0, length: 2)
-            red   = UIColor.colorComponent(from: colorString, start: 2, length: 1)
+            red = UIColor.colorComponent(from: colorString, start: 2, length: 1)
             green = UIColor.colorComponent(from: colorString, start: 4, length: 1)
-            blue  = UIColor.colorComponent(from: colorString, start: 6, length: 1)
+            blue = UIColor.colorComponent(from: colorString, start: 6, length: 1)
         default:
 
             // TODO:
-//            [NSException raise:@"Invalid color value" format: @"Color value %@ is invalid.  It should be a hex value of the form #RBG, #ARGB, #RRGGBB, or #AARRGGBB", hexString]
+            //            [NSException raise:@"Invalid color value" format: @"Color value %@ is invalid.  It should be a hex value of the form #RBG, #ARGB, #RRGGBB, or #AARRGGBB", hexString]
             break
         }
 
@@ -98,7 +97,7 @@ extension UIColor {
 
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
-    
+
     /**
      *  将当前色值转换为hex字符串，通道排序是AARRGGBB（与Android保持一致）
      */
@@ -130,7 +129,6 @@ extension UIColor {
         return 0
     }
 
-    
     /**
      *  获取当前UIColor对象里的绿色色值
      *
@@ -144,7 +142,6 @@ extension UIColor {
         return 0
     }
 
-    
     /**
      *  获取当前UIColor对象里的蓝色色值
      *
@@ -157,8 +154,7 @@ extension UIColor {
         }
         return 0
     }
-    
-    
+
     /**
      *  获取当前UIColor对象里的透明色值
      *
@@ -171,8 +167,7 @@ extension UIColor {
         }
         return 0
     }
-    
-    
+
     /**
      *  获取当前UIColor对象里的hue（色相）
      */
@@ -183,8 +178,7 @@ extension UIColor {
         }
         return 0
     }
-    
-    
+
     /**
      *  获取当前UIColor对象里的saturation（饱和度）
      */
@@ -196,7 +190,6 @@ extension UIColor {
         return 0
     }
 
-    
     /**
      *  获取当前UIColor对象里的brightness（亮度）
      */
@@ -208,7 +201,6 @@ extension UIColor {
         return 0
     }
 
-    
     /**
      *  将当前UIColor对象剥离掉alpha通道后得到的色值。相当于把当前颜色的半透明值强制设为1.0后返回
      *
@@ -224,14 +216,13 @@ extension UIColor {
             return nil
         }
     }
-    
+
     /**
      *  计算当前color叠加了alpha之后放在指定颜色的背景上的色值
      */
     public func qmui_color(with alpha: CGFloat, backgroundColor: UIColor) -> UIColor {
         return UIColor.qmui_colorWithBackendColor(backgroundColor, frontColor: withAlphaComponent(alpha))
     }
-
 
     /**
      *  计算当前color叠加了alpha之后放在白色背景上的色值
@@ -240,7 +231,6 @@ extension UIColor {
         return qmui_color(with: alpha, backgroundColor: UIColorWhite)
     }
 
-    
     /**
      *  将自身变化到某个目标颜色，可通过参数progress控制变化的程度，最终得到一个纯色
      *  @param toColor 目标颜色
@@ -250,7 +240,6 @@ extension UIColor {
         return UIColor.qmui_color(from: self, to: color, progress: progress)
     }
 
-    
     /**
      *  计算两个颜色叠加之后的最终色（注意区分前景色后景色的顺序）<br/>
      *  @link http://stackoverflow.com/questions/10781953/determine-rgba-colour-received-by-combining-two-colours @/link
@@ -273,7 +262,6 @@ extension UIColor {
 
         return UIColor(red: resultRed, green: resultGreen, blue: resultBlue, alpha: resultAlpha)
     }
-
 
     /**
      *  将颜色A变化到颜色B，可通过progress控制变化的程度
@@ -301,20 +289,18 @@ extension UIColor {
         return UIColor(red: finalRed, green: finalGreen, blue: finalBlue, alpha: finalAlpha)
     }
 
-    
     /**
      *  产生一个随机色，大部分情况下用于测试
      */
     public static var qmui_randomColor: UIColor {
-        
-        let red = ( CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0 )
-        let green = ( CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0 )
-        let blue = ( CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0 )
+
+        let red = (CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0)
+        let green = (CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0)
+        let blue = (CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0)
 
         return UIColor(red: red, green: green, blue: blue, alpha: 1)
     }
-    
-    
+
     /**
      *  判断当前颜色是否为深色，可用于根据不同色调动态设置不同文字颜色的场景。
      *
@@ -332,7 +318,6 @@ extension UIColor {
 
         return 1.0 - colorDelta > referenceValue
     }
-    
 
     /**
      *  当前颜色的反色

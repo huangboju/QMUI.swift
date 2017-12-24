@@ -15,24 +15,24 @@ protocol QMUIImagePickerPreviewViewControllerDelegate: class {
      *  取消选择图片后被调用
      */
     func imagePickerPreviewViewControllerDidCancel(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController)
-    
+
     func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, willCheckImageAt index: Int)
-    
+
     func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, didCheckImageAt index: Int)
-    
+
     func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, willUncheckImageAt index: Int)
     func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, didUncheckImageAtIndex: Int)
 }
 
 extension QMUIImagePickerPreviewViewControllerDelegate {
-    func imagePickerPreviewViewControllerDidCancel(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController) {}
-    
-    func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, willCheckImageAt index: Int) {}
-    
-    func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, didCheckImageAt index: Int) {}
-    
-    func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, willUncheckImageAt index: Int) {}
-    func imagePickerPreviewViewController(_ imagePickerPreviewViewController: QMUIImagePickerPreviewViewController, didUncheckImageAtIndex: Int) {}
+    func imagePickerPreviewViewControllerDidCancel(_: QMUIImagePickerPreviewViewController) {}
+
+    func imagePickerPreviewViewController(_: QMUIImagePickerPreviewViewController, willCheckImageAt _: Int) {}
+
+    func imagePickerPreviewViewController(_: QMUIImagePickerPreviewViewController, didCheckImageAt _: Int) {}
+
+    func imagePickerPreviewViewController(_: QMUIImagePickerPreviewViewController, willUncheckImageAt _: Int) {}
+    func imagePickerPreviewViewController(_: QMUIImagePickerPreviewViewController, didUncheckImageAtIndex _: Int) {}
 }
 
 class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
@@ -41,6 +41,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             topToolBarView.backgroundColor = toolBarBackgroundColor
         }
     }
+
     public var toolBarTintColor = UIColorWhite {
         didSet {
             topToolBarView.tintColor = toolBarTintColor
@@ -50,7 +51,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     }
 
     public weak var delegate: QMUIImagePickerPreviewViewControllerDelegate?
-    
+
     private(set) var topToolBarView: UIView!
     private(set) var backButton: QMUIButton!
     private(set) var checkboxButton: QMUIButton!
@@ -62,7 +63,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
      */
     public var imagesAssetArray: [QMUIAsset] = []
     public var selectedImageAssetArray: [QMUIAsset] = []
-    
+
     public var downloadStatus: QMUIAssetDownloadStatus = .failed {
         didSet {
             switch downloadStatus {
@@ -87,11 +88,12 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             }
         }
     }
+
     public var maximumSelectImageCount = Int.max // 最多可以选择的图片数，默认为无穷大
     public var minimumSelectImageCount = 0 // 最少需要选择的图片数，默认为 0
     public var alertTitleWhenExceedMaxSelectImageCount: String? // 选择图片超出最大图片限制时 alertView 的标题
     public var alertButtonTitleWhenExceedMaxSelectImageCount: String? // 选择图片超出最大图片限制时 alertView 的标题
-    
+
     private var _singleCheckMode = false
     private var _usePhotoKit = true
 
@@ -103,7 +105,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         topToolBarView.backgroundColor = toolBarBackgroundColor
         topToolBarView.tintColor = toolBarTintColor
         view.addSubview(topToolBarView)
-        
+
         backButton = QMUIButton()
         backButton.adjustsImageTintColorAutomatically = true
         backButton.setImage(NavBarBackIndicatorImage, for: .normal)
@@ -125,7 +127,6 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         checkboxButton?.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)
         topToolBarView.addSubview(checkboxButton)
 
-        
         progressView = QMUIPieProgressView()
         progressView.tintColor = toolBarTintColor
         progressView.isHidden = true
@@ -139,11 +140,11 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         downloadRetryButton.isHidden = true
         topToolBarView.addSubview(downloadRetryButton)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if (!NavigationBarHiddenStateUsable) {
+        if !NavigationBarHiddenStateUsable {
             navigationController?.setNavigationBarHidden(true, animated: false)
         }
         if !_singleCheckMode {
@@ -155,19 +156,19 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if (!NavigationBarHiddenStateUsable) {
+        if !NavigationBarHiddenStateUsable {
             navigationController?.setNavigationBarHidden(false, animated: false)
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         topToolBarView.frame = CGSize(width: view.bounds.width, height: TopToolBarViewHeight).rect
 
         let topToolbarPaddingTop = UIApplication.shared.isStatusBarHidden ? 0 : StatusBarHeight
         let topToolbarContentHeight = topToolBarView.bounds.height - topToolbarPaddingTop
-        
+
         backButton.frame.setXY(8, topToolbarPaddingTop + topToolbarContentHeight.center(with: backButton.frame.height))
         if !checkboxButton.isHidden {
             checkboxButton.frame.setXY(topToolBarView.frame.width - 10 - checkboxButton.frame.width, topToolbarContentHeight.center(with: checkboxButton.frame.height))
@@ -183,7 +184,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
         progressView.frame = CGRect(x: downloadRetryButton.frame.minX, y: downloadRetryButton.frame.minY + downloadRetryButton.contentEdgeInsets.top, width: downloadRetryImageSize.width, height: downloadRetryImageSize.height).flatted
     }
-    
+
     /**
      *  更新数据并刷新 UI，手工调用
      *
@@ -192,7 +193,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
      *  @param currentImageIndex       当前展示的图片在 imageAssetArray 的索引
      *  @param singleCheckMode         是否为单选模式，如果是单选模式，则不显示 checkbox
      */
-    public func updateImagePickerPreviewView(with imagesAssetArray: [QMUIAsset], selectedImageAssetArray:[QMUIAsset], currentImageIndex: Int, singleCheckMode: Bool) {
+    public func updateImagePickerPreviewView(with imagesAssetArray: [QMUIAsset], selectedImageAssetArray: [QMUIAsset], currentImageIndex: Int, singleCheckMode: Bool) {
         self.imagesAssetArray = imagesAssetArray
         self.selectedImageAssetArray = selectedImageAssetArray
         imagePreviewView?.currentImageIndex = currentImageIndex
@@ -201,20 +202,19 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             checkboxButton.isHidden = true
         }
     }
-    
 
     // MARK: - 按钮点击回调
     @objc func handleCancelPreviewImage() {
         navigationController?.popViewController(animated: true)
         delegate?.imagePickerPreviewViewControllerDidCancel(self)
     }
-    
+
     @objc func handleCheckButtonClick(_ sender: QMUIButton) {
         QMUIImagePickerHelper.removeSpringAnimationOfImageChecked(with: sender)
 
         let index = imagePreviewView?.currentImageIndex ?? 0
         if sender.isSelected {
-            
+
             delegate?.imagePickerPreviewViewController(self, willUncheckImageAt: index)
 
             sender.isSelected = false
@@ -228,7 +228,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
                     alertTitleWhenExceedMaxSelectImageCount = "你最多只能选择\(maximumSelectImageCount)张图片"
                 }
                 if alertButtonTitleWhenExceedMaxSelectImageCount == nil {
-                    self.alertButtonTitleWhenExceedMaxSelectImageCount = "我知道了"
+                    alertButtonTitleWhenExceedMaxSelectImageCount = "我知道了"
                 }
 
                 let alertController = QMUIAlertController(title: alertTitleWhenExceedMaxSelectImageCount, preferredStyle: .alert)
@@ -243,15 +243,14 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             QMUIImagePickerHelper.springAnimationOfImageChecked(with: sender)
             let imageAsset = imagesAssetArray[index]
             selectedImageAssetArray.append(imageAsset)
-            
+
             delegate?.imagePickerPreviewViewController(self, didCheckImageAt: index)
         }
     }
-    
+
     @objc func handleDownloadRetryButtonClick() {
         requestImage(for: nil, with: imagePreviewView!.currentImageIndex)
     }
-
 
     // MARK: - Request Image
     func requestImage(for zoomImageView: QMUIZoomImageView?, with index: Int) {
@@ -261,18 +260,18 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         // 拉取图片的过程中可能会多次返回结果，且图片尺寸越来越大，因此这里调整 contentMode 以防止图片大小跳动
         imageView?.contentMode = .scaleAspectFit
         let imageAsset = imagesAssetArray[index]
-        
+
         // 获取资源图片的预览图，这是一张适合当前设备屏幕大小的图片，最终展示时把图片交给组件控制最终展示出来的大小。
         // 系统相册本质上也是这么处理的，因此无论是系统相册，还是这个系列组件，由始至终都没有显示照片原图，
         // 这也是系统相册能加载这么快的原因。
         // 另外这里采用异步请求获取图片，避免获取图片时 UI 卡顿
-        let phProgressHandler: PHAssetImageProgressHandler = { (progress, error, stop, info) in
+        let phProgressHandler: PHAssetImageProgressHandler = { progress, error, _, _ in
             imageAsset.downloadProgress = progress
             DispatchQueue.main.async {
                 if index == self.imagePreviewView?.currentImageIndex {
                     // 只有当前显示的预览图才会展示下载进度
                     print("Download iCloud image in preview, current progress is: \(progress)")
-                    
+
                     if self.downloadStatus != .downloading {
                         self.downloadStatus = .downloading
                         // 重置 progressView 的显示的进度为 0
@@ -296,7 +295,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         if #available(iOS 9.1, *) {
             if imageAsset.assetType == .livePhoto {
                 imageView?.tag = -1
-                imageAsset.requestID = imageAsset.requestLivePhoto(with: { (livePhoto, info) in
+                imageAsset.requestID = imageAsset.requestLivePhoto(with: { livePhoto, info in
                     // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
                     // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
                     let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
@@ -316,7 +315,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
                         // 资源资源已经在本地或下载成功
                         imageAsset.updateDownloadStatusWithDownloadResult(true)
                         self.downloadStatus = .succeed
-                        
+
                     } else if info?[PHLivePhotoInfoErrorKey] != nil {
                         // 下载错误
                         imageAsset.updateDownloadStatusWithDownloadResult(false)
@@ -330,13 +329,13 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
         if imageAsset.assetType == .video {
             imageView?.tag = -1
-            imageAsset.requestID = imageAsset.requestPlayerItem(with: { (playerItem, info) in
+            imageAsset.requestID = imageAsset.requestPlayerItem(with: { playerItem, info in
                 // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
                 // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
                 let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
                 let isCurrentRequest = imageView?.tag == imageAsset.requestID
                 let loadICloudImageFault = (playerItem != nil) || info?[PHImageErrorKey] != nil
-                if (!loadICloudImageFault && (isNewRequest || isCurrentRequest)) {
+                if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
                     DispatchQueue.main.async {
                         imageView?.videoPlayerItem = playerItem
                     }
@@ -345,13 +344,13 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             imageView?.tag = imageAsset.requestID
         } else {
             imageView?.tag = -1
-            imageAsset.requestID = imageAsset.requestPreviewImage(with: { (result, info) in
+            imageAsset.requestID = imageAsset.requestPreviewImage(with: { result, info in
                 // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
                 // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
                 let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
                 let isCurrentRequest = imageView?.tag == imageAsset.requestID
                 let loadICloudImageFault = result == nil || info?[PHImageErrorKey] != nil
-                if (!loadICloudImageFault && (isNewRequest || isCurrentRequest)) {
+                if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
                     DispatchQueue.main.async {
                         imageView?.image = result
                     }
@@ -359,11 +358,11 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
                 let downloadSucceed = ((result != nil) && info == nil) || (!(info?[PHImageCancelledKey] as? Bool ?? false) && info?[PHImageErrorKey] == nil && !(info?[PHImageResultIsDegradedKey] as? Bool ?? false))
 
-                if (downloadSucceed) {
+                if downloadSucceed {
                     // 资源资源已经在本地或下载成功
                     imageAsset.updateDownloadStatusWithDownloadResult(true)
                     self.downloadStatus = .succeed
-                    
+
                 } else if info?[PHImageErrorKey] != nil {
                     // 下载错误
                     imageAsset.updateDownloadStatusWithDownloadResult(false)
@@ -374,7 +373,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             imageView?.tag = imageAsset.requestID
         }
     }
-    
+
     // MARK: - QMUINavigationControllerDelegate
     override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
         return NavigationBarHiddenStateInitially
@@ -382,15 +381,15 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
-    func numberOfImages(in imagePreviewView: QMUIImagePreviewView) -> Int {
+    func numberOfImages(in _: QMUIImagePreviewView) -> Int {
         return imagesAssetArray.count
     }
 
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, renderZoomImageView zoomImageView: QMUIZoomImageView, at index: Int) {
+    func imagePreviewView(_: QMUIImagePreviewView, renderZoomImageView zoomImageView: QMUIZoomImageView, at index: Int) {
         requestImage(for: zoomImageView, with: index)
     }
 
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, assetTypeAt index: Int) -> QMUIImagePreviewMediaType {
+    func imagePreviewView(_: QMUIImagePreviewView, assetTypeAt index: Int) -> QMUIImagePreviewMediaType {
         let imageAsset = imagesAssetArray[index]
         if #available(iOS 9.1, *) {
             if imageAsset.assetType == .livePhoto {
@@ -406,7 +405,7 @@ extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
         }
     }
 
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, willScrollHalfTo index: Int) {
+    func imagePreviewView(_: QMUIImagePreviewView, willScrollHalfTo index: Int) {
         if !_singleCheckMode {
             let imageAsset = imagesAssetArray[index]
             checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
@@ -415,11 +414,11 @@ extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIZoomImageViewDelegate {
-    func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {
+    func singleTouch(in _: QMUIZoomImageView, location _: CGPoint) {
         topToolBarView.isHidden = !topToolBarView.isHidden
     }
 
-    func zoomImageView(_ imageView: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {
+    func zoomImageView(_: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {
         topToolBarView.isHidden = didHide
     }
 }

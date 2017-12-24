@@ -35,9 +35,8 @@ class QMUIToastView: UIView {
      */
     init(view: UIView) {
         super.init(frame: view.bounds)
-        self.parentView = view
-        
-        
+        parentView = view
+
         // 顺序不能乱，先添加backgroundView再添加contentView
         backgroundView = defaultBackgrondView()
         contentView = defaultContentView()
@@ -46,55 +45,54 @@ class QMUIToastView: UIView {
         alpha = 0.0
         backgroundColor = UIColorClear
         layer.allowsGroupOpacity = false
-        
+
         tintColor = UIColorWhite
-        
+
         _maskView.backgroundColor = UIColorClear
         addSubview(_maskView)
 
         NotificationCenter.default.addObserver(self, selector: #selector(statusBarOrientationDidChange), name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self, name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
     }
-    
 
     // MARK: - 横竖屏
-    
+
     @objc
-    private func statusBarOrientationDidChange(_ notification: NSNotification) {
+    private func statusBarOrientationDidChange(_: NSNotification) {
         if parentView == nil {
             return
         }
         setNeedsLayout()
         layoutIfNeeded()
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func defaultAnimator() -> QMUIToastAnimator {
         let toastAnimator = QMUIToastAnimator(toastView: self)
         return toastAnimator
     }
-    
+
     private func defaultBackgrondView() -> QMUIToastBackgroundView {
         let backgroundView = QMUIToastBackgroundView()
         return backgroundView
     }
-    
+
     private func defaultContentView() -> QMUIToastContentView {
         let contentView = QMUIToastContentView()
         return contentView
     }
-    
+
     /**
      * parentView是ToastView初始化的时候传进去的那个view。
      */
-    weak private(set) var parentView: UIView?
-    
+    private(set) weak var parentView: UIView?
+
     /**
      * 显示ToastView。
      *
@@ -109,14 +107,14 @@ class QMUIToastView: UIView {
         hideDelayTimer?.invalidate()
 
         alpha = 1.0
-        
+
         willShowBlock?(parentView, animated)
 
         if animated {
             if toastAnimator == nil {
                 toastAnimator = defaultAnimator()
             }
-            toastAnimator?.show() { [weak self] finished in
+            toastAnimator?.show() { [weak self] _ in
                 self?.didShowBlock?(self?.parentView, animated)
             }
         } else {
@@ -125,7 +123,7 @@ class QMUIToastView: UIView {
             didShowBlock?(parentView, animated)
         }
     }
-    
+
     /**
      * 隐藏ToastView。
      *
@@ -135,12 +133,12 @@ class QMUIToastView: UIView {
      */
     public func hideAnimated(_ animated: Bool) {
         willHideBlock?(parentView, animated)
-        
+
         if animated {
             if toastAnimator == nil {
                 toastAnimator = defaultAnimator()
             }
-            toastAnimator?.hide() { [weak self] finished in
+            toastAnimator?.hide() { [weak self] _ in
                 self?.didHide(with: animated)
             }
         } else {
@@ -149,7 +147,7 @@ class QMUIToastView: UIView {
             didHide(with: animated)
         }
     }
-    
+
     private func didHide(with animated: Bool) {
 
         didHideBlock?(parentView, animated)
@@ -160,7 +158,7 @@ class QMUIToastView: UIView {
             removeFromSuperview()
         }
     }
-    
+
     /**
      * 在`delay`时间后隐藏ToastView。
      *
@@ -190,42 +188,38 @@ class QMUIToastView: UIView {
      * `QMUIToastAnimator`可以让你通过实现一些协议来自定义ToastView显示和隐藏的动画。你可以继承`QMUIToastAnimator`，然后实现`QMUIToastAnimatorDelegate`中的方法，即可实现自定义的动画。如果不赋值，则会使用`QMUIToastAnimator`中的默认动画。
      */
     public var toastAnimator: QMUIToastAnimator?
-    
+
     /**
      * 决定QMUIToastView的位置，目前有上中下三个位置，默认值是center。
-     
+
      * 如果设置了top或者bottom，那么ToastView的布局规则是：顶部从marginInsets.top开始往下布局(QMUIToastViewPositionTop) 和 底部从marginInsets.bottom开始往上布局(QMUIToastViewPositionBottom)。
      */
     public var toastPosition: QMUIToastViewPosition = .center
-    
+
     /**
      * 是否在ToastView隐藏的时候顺便把它从superView移除，默认为false。
      */
     public var removeFromSuperViewWhenHide = false
-    
-    
+
     ///////////////////
 
-    
     /**
      * 会盖住整个superView，防止手指可以点击到ToastView下面的内容，默认透明。
      */
     public let _maskView = UIView()
-    
-    /**s
+
+    /** s
      * 承载Toast内容的UIView，可以自定义并赋值给contentView。如果contentView需要跟随ToastView的tintColor变化而变化，可以重写自定义view的`tintColorDidChange`来实现。默认使用`QMUIToastContentView`实现。
      */
     public var contentView: UIView?
-    
+
     /**
      * `contentView`下面的黑色背景UIView，默认使用`QMUIToastBackgroundView`实现，可以通过`QMUIToastBackgroundView`的 cornerRadius 和 styleColor 来修改圆角和背景色。
      */
     public var backgroundView: UIView?
-    
-    
+
     ///////////////////
 
-    
     /**
      * 上下左右的偏移值。
      */
@@ -264,7 +258,7 @@ extension QMUIToastView {
         }
         return returnFlag
     }
-    
+
     /**
      * 工具方法。返回`view`里面最顶级的ToastView，如果没有则返回nil。
      *
@@ -279,7 +273,7 @@ extension QMUIToastView {
         }
         return nil
     }
-    
+
     /**
      * 工具方法。返回`view`里面所有的ToastView，如果没有则返回nil。
      *

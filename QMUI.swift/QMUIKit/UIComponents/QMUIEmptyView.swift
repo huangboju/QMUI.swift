@@ -11,7 +11,6 @@ protocol QMUIEmptyViewLoadingViewProtocol: class {
 }
 
 extension UIActivityIndicatorView: QMUIEmptyViewLoadingViewProtocol {
-
 }
 
 /**
@@ -28,30 +27,32 @@ class QMUIEmptyView: UIView {
             }
             setNeedsLayout()
         }
-    }   // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
-    public lazy private(set)var imageView: UIImageView = {
+    } // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
+    public private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .center
         return imageView
     }()
-    public lazy private(set)var textLabel: UILabel = {
+
+    public private(set) lazy var textLabel: UILabel = {
         let textLabel = UILabel()
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         return textLabel
     }()
-    public private(set)var detailTextLabel: UILabel = {
+
+    public private(set) var detailTextLabel: UILabel = {
         let detailTextLabel = UILabel()
         detailTextLabel.textAlignment = .center
         detailTextLabel.numberOfLines = 0
         return detailTextLabel
     }()
-    public private(set)var actionButton: UIButton = {
+
+    public private(set) var actionButton: UIButton = {
         let actionButton = UIButton()
         actionButton.qmui_outsideEdge = UIEdgeInsets(top: -20, left: -20, bottom: -20, right: -20)
         return actionButton
     }()
-
 
     // 可通过调整这些insets来控制间距
 
@@ -92,7 +93,7 @@ class QMUIEmptyView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     // 字体
     /// 默认为15pt系统字体
     public var textLabelFont = UIFontMake(15) {
@@ -101,7 +102,7 @@ class QMUIEmptyView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /// 默认为14pt系统字体
     public var detailTextLabelFont = UIFontMake(14) {
         didSet {
@@ -117,7 +118,6 @@ class QMUIEmptyView: UIView {
         }
     }
 
-
     // 颜色
 
     /// 默认为(93, 100, 110)
@@ -126,7 +126,7 @@ class QMUIEmptyView: UIView {
             textLabel.textColor = textLabelTextColor
         }
     }
-    
+
     /// 默认为(133, 140, 150)
     public var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
         didSet {
@@ -140,16 +140,16 @@ class QMUIEmptyView: UIView {
             actionButton.setTitleColor(actionButtonTitleColor, for: .normal)
         }
     }
-    
+
     /**
      *  如果要继承QMUIEmptyView并添加新的子 view，则必须：
      *  1. 像其它自带 view 一样添加到 contentView 上
      *  2. 重写sizeThatContentViewFits
      */
-    public lazy private(set)var contentView: UIView = {
-        return UIView()
+    public private(set) lazy var contentView: UIView = {
+        UIView()
     }()
-    
+
     private lazy var scrollView: UIScrollView = { // 保证内容超出屏幕时也不至于直接被clip（比如横屏时)
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -157,7 +157,7 @@ class QMUIEmptyView: UIView {
         scrollView.scrollsToTop = false
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10) // 避免 label 直接撑满到屏幕两边，不好看
         return scrollView
-    } ()
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -168,7 +168,7 @@ class QMUIEmptyView: UIView {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     private func didInitialized() {
 
         addSubview(scrollView)
@@ -187,7 +187,7 @@ class QMUIEmptyView: UIView {
 
         contentView.addSubview(actionButton)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -215,7 +215,7 @@ class QMUIEmptyView: UIView {
         if !textLabel.isHidden {
             let labelWidth = contentView.bounds.width - textLabelInsets.horizontalValue
             let labelSize = textLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude))
-            self.textLabel.frame = CGRect(x: textLabelInsets.left, y: originY + textLabelInsets.top, width: labelWidth, height: labelSize.height).flatted
+            textLabel.frame = CGRect(x: textLabelInsets.left, y: originY + textLabelInsets.top, width: labelWidth, height: labelSize.height).flatted
             originY = textLabel.frame.maxY + textLabelInsets.bottom
         }
 
@@ -246,28 +246,28 @@ class QMUIEmptyView: UIView {
             resultHeight += imageViewHeight
         }
         if !loadingView.isHidden {
-           resultHeight += loadingViewHeight
+            resultHeight += loadingViewHeight
         }
         if !textLabel.isHidden {
-           resultHeight += textLabelHeight
+            resultHeight += textLabelHeight
         }
-        if !self.detailTextLabel.isHidden {
-           resultHeight += detailTextLabelHeight
+        if !detailTextLabel.isHidden {
+            resultHeight += detailTextLabelHeight
         }
-        if !self.actionButton.isHidden {
+        if !actionButton.isHidden {
             resultHeight += actionButtonHeight
         }
 
         return CGSize(width: resultWidth, height: resultHeight)
     }
-    
+
     func updateDetailTextLabel(with text: String?) {
         if let text = text {
             let string = NSAttributedString(string: text, attributes: [
                 NSAttributedStringKey.font: detailTextLabelFont,
                 NSAttributedStringKey.foregroundColor: detailTextLabelTextColor,
-                NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping , textAlignment: .center)
-                ])
+                NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping, textAlignment: .center),
+            ])
             detailTextLabel.attributedText = string
         }
         detailTextLabel.isHidden = text == nil

@@ -23,10 +23,10 @@ extension NSMutableParagraphStyle {
      *  @param  lineBreakMode   换行模式
      *  @return 一个NSMutableParagraphStyle对象
      */
-    convenience init(lineHeight: CGFloat,  lineBreakMode: NSLineBreakMode) {
+    convenience init(lineHeight: CGFloat, lineBreakMode: NSLineBreakMode) {
         self.init(lineHeight: lineHeight, lineBreakMode: lineBreakMode, textAlignment: .left)
     }
-    
+
     /**
      *  快速创建一个NSMutableParagraphStyle
      *  @param  lineHeight      行高

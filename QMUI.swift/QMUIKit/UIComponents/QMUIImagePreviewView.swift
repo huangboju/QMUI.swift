@@ -15,39 +15,36 @@ enum QMUIImagePreviewMediaType {
 
 protocol QMUIImagePreviewViewDelegate: QMUIZoomImageViewDelegate {
 
-func numberOfImages(in imagePreviewView: QMUIImagePreviewView) -> Int
-func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, renderZoomImageView zoomImageView:QMUIZoomImageView, at index: Int)
+    func numberOfImages(in imagePreviewView: QMUIImagePreviewView) -> Int
+    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, renderZoomImageView zoomImageView: QMUIZoomImageView, at index: Int)
 
-// 返回要展示的媒体资源的类型（图片、live photo、视频），如果不实现此方法，则 QMUIImagePreviewView 将无法选择最合适的 cell 来复用从而略微增大系统开销
+    // 返回要展示的媒体资源的类型（图片、live photo、视频），如果不实现此方法，则 QMUIImagePreviewView 将无法选择最合适的 cell 来复用从而略微增大系统开销
     func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, assetTypeAt index: Int) -> QMUIImagePreviewMediaType
 
-
-/**
- *  当左右的滚动停止时会触发这个方法
- *  @param  imagePreviewView 当前预览的 QMUIImagePreviewView
- *  @param  index 当前滚动到的图片所在的索引
- */
+    /**
+     *  当左右的滚动停止时会触发这个方法
+     *  @param  imagePreviewView 当前预览的 QMUIImagePreviewView
+     *  @param  index 当前滚动到的图片所在的索引
+     */
     func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, didScrollToIndex: Int)
 
-/**
- *  在滚动过程中，如果某一张图片的边缘（左/右）经过预览控件的中心点时，就会触发这个方法
- *  @param  imagePreviewView 当前预览的 QMUIImagePreviewView
- *  @param  index 当前滚动到的图片所在的索引
- */
+    /**
+     *  在滚动过程中，如果某一张图片的边缘（左/右）经过预览控件的中心点时，就会触发这个方法
+     *  @param  imagePreviewView 当前预览的 QMUIImagePreviewView
+     *  @param  index 当前滚动到的图片所在的索引
+     */
     func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, willScrollHalfTo index: Int)
-
 }
 
 extension QMUIImagePreviewViewDelegate {
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, assetTypeAt index: Int) -> QMUIImagePreviewMediaType {
+    func imagePreviewView(_: QMUIImagePreviewView, assetTypeAt _: Int) -> QMUIImagePreviewMediaType {
         return .others
     }
 
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, didScrollToIndex: Int) {}
+    func imagePreviewView(_: QMUIImagePreviewView, didScrollToIndex _: Int) {}
 
-    func imagePreviewView(_ imagePreviewView: QMUIImagePreviewView, willScrollHalfTo index: Int) {}
+    func imagePreviewView(_: QMUIImagePreviewView, willScrollHalfTo _: Int) {}
 }
-
 
 /**
  *  查看图片的控件，支持横向滚动、放大缩小、loading 及错误语展示，内部使用 UICollectionView 实现横向滚动及 cell 复用，因此与其他普通的 UICollectionView 一样，也可使用 reloadData、collectionViewLayout 等常用方法。
@@ -65,10 +62,10 @@ extension QMUIImagePreviewViewDelegate {
  */
 class QMUIImagePreviewView: UIView {
     public weak var delegate: QMUIImagePreviewViewDelegate?
-    
+
     public private(set) var collectionView: UICollectionView!
     public let collectionViewLayout = QMUICollectionViewPagingLayout()
-    
+
     /// 获取当前正在查看的图片 index，也可强制将图片滚动到指定的 index
     public var currentImageIndex: Int {
         set {
@@ -80,7 +77,6 @@ class QMUIImagePreviewView: UIView {
     }
 
     private var _currentImageIndex = 0
-    
 
     /// 每一页里的 loading 的颜色，默认为 UIColorWhite
     public var loadingColor: UIColor? = UIColorWhite {
@@ -91,19 +87,19 @@ class QMUIImagePreviewView: UIView {
             }
         }
     }
-    
+
     private var isChangingCollectionViewBounds = false
     private var previousIndexWhenScrolling: CGFloat = 0
-    
+
     private let kLivePhotoCellIdentifier = "livephoto"
     private let kVideoCellIdentifier = "video"
     private let kImageOrUnknownCellIdentifier = "imageorunknown"
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         didInitialized(with: frame)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized(with: .zero)
@@ -127,13 +123,13 @@ class QMUIImagePreviewView: UIView {
 
         addSubview(collectionView)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         let isCollectionViewSizeChanged = collectionView.bounds.size != bounds.size
         if isCollectionViewSizeChanged {
             isChangingCollectionViewBounds = true
-            
+
             // 必须先 invalidateLayout，再更新 collectionView.frame，否则横竖屏旋转前后的图片不一致（因为 scrollViewDidScroll: 时 contentSize、contentOffset 那些是错的）
             collectionViewLayout.invalidateLayout()
             collectionView.frame = bounds
@@ -157,10 +153,10 @@ class QMUIImagePreviewView: UIView {
 }
 
 extension QMUIImagePreviewView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return delegate?.numberOfImages(in: self) ?? 0
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var identifier = kImageOrUnknownCellIdentifier
 
@@ -175,7 +171,7 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
         let _cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
         let cell = _cell as? QMUIImagePreviewCell
         let zoomView = cell?.zoomImageView
-        
+
         zoomView?.emptyView.loadingView.color = loadingColor
 
         zoomView?.delegate = self
@@ -196,20 +192,20 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
 }
 
 extension QMUIImagePreviewView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    func collectionView(_: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt _: IndexPath) {
         let previewCell = cell as? QMUIImagePreviewCell
         previewCell?.zoomImageView.revertZooming()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+
+    func collectionView(_: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt _: IndexPath) {
         let previewCell = cell as? QMUIImagePreviewCell
         previewCell?.zoomImageView.endPlayingVideo()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+    func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt _: IndexPath) -> CGSize {
         return collectionView.bounds.size
     }
-    
+
     // MARK: - UIScrollViewDelegate
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView != collectionView {
@@ -218,12 +214,12 @@ extension QMUIImagePreviewView: UICollectionViewDelegateFlowLayout {
         // 当前滚动到的页数
         delegate?.imagePreviewView(self, didScrollToIndex: currentImageIndex)
     }
-    
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView != collectionView {
             return
         }
-        
+
         if isChangingCollectionViewBounds {
             return
         }
@@ -238,7 +234,7 @@ extension QMUIImagePreviewView: UICollectionViewDelegateFlowLayout {
         let isFirstDidScroll = previousIndexWhenScrolling == 0
         let turnPageToRight = betweenOrEqual(previousIndexWhenScrolling, floor(index) + 0.5, index)
         let turnPageToLeft = betweenOrEqual(index, floor(index) + 0.5, self.previousIndexWhenScrolling)
-        if (!isFirstDidScroll && (turnPageToRight || turnPageToLeft)) {
+        if !isFirstDidScroll && (turnPageToRight || turnPageToLeft) {
             index = round(index)
             if 0 <= index && index < CGFloat(collectionView.numberOfItems(inSection: 0)) {
 
@@ -265,7 +261,7 @@ extension QMUIImagePreviewView: QMUIZoomImageViewDelegate {
         }
         return Int.max
     }
-    
+
     /**
      *  获取某个 index 对应的 zoomImageView
      *  @return 指定的 index 所在的 zoomImageView，若该 index 对应的图片当前不可见（不处于可视区域），则返回 nil
@@ -278,39 +274,39 @@ extension QMUIImagePreviewView: QMUIZoomImageViewDelegate {
     private func checkIfDelegateMissing() {
         #if DEBUG
             // TODO:
-//            NSObject.qmui_enumerateProtocolMethods(ptc: Protocol(QMUIZoomImageViewDelegate), using: { selector in
-//                if !responds(to: selector) {
-//                    assert(false, "\(type(of: self)) 需要响应 \(QMUIZoomImageViewDelegate) 的方法 -\(selector)")
-//                }
-//            })
+            //            NSObject.qmui_enumerateProtocolMethods(ptc: Protocol(QMUIZoomImageViewDelegate), using: { selector in
+            //                if !responds(to: selector) {
+            //                    assert(false, "\(type(of: self)) 需要响应 \(QMUIZoomImageViewDelegate) 的方法 -\(selector)")
+            //                }
+            //            })
         #endif
     }
-    
+
     func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {
         checkIfDelegateMissing()
         delegate?.singleTouch(in: zoomingImageView, location: location)
     }
-    
+
     func doubleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint) {
         checkIfDelegateMissing()
         delegate?.doubleTouch(in: zoomingImageView, location: location)
     }
-    
+
     func longPress(in zoomingImageView: QMUIZoomImageView) {
         checkIfDelegateMissing()
         delegate?.longPress(in: zoomingImageView)
     }
-    
+
     func zoomImageView(_ imageView: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {
         checkIfDelegateMissing()
         delegate?.zoomImageView(imageView, didHideVideoToolbar: didHide)
     }
-    
+
     func enabledZoomView(in zoomImageView: QMUIZoomImageView) -> Bool {
         checkIfDelegateMissing()
         return delegate?.enabledZoomView(in: zoomImageView) ?? true
     }
-    
+
     func contentInsets(for videoToolbar: QMUIZoomImageViewVideoToolbar, in zoomingImageView: QMUIZoomImageView) -> UIEdgeInsets {
         checkIfDelegateMissing()
         return delegate?.contentInsets(for: videoToolbar, in: zoomingImageView) ?? videoToolbar.contentInsets
@@ -325,8 +321,8 @@ class QMUIImagePreviewCell: UICollectionViewCell {
         backgroundColor = UIColorClear
         contentView.addSubview(zoomImageView)
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

@@ -33,7 +33,7 @@ extension UIFont {
         let isLight = weight == .light
         let isBold = weight == .bold
 
-        let shouldUsingHardCode = IOS_VERSION < 10.0// 这 UIFontDescriptor 也是醉人，相同代码只有 iOS 10 能得出正确结果，7-9都无法获取到 Light + Italic 的字体，只能写死。
+        let shouldUsingHardCode = IOS_VERSION < 10.0 // 这 UIFontDescriptor 也是醉人，相同代码只有 iOS 10 能得出正确结果，7-9都无法获取到 Light + Italic 的字体，只能写死。
         if shouldUsingHardCode {
             let name = IOS_VERSION < 9.0 ? "HelveticaNeue" : ".SFUIText"
             let fontSuffix = (isLight ? "Light" : (isBold ? "Bold" : "")) + (italic ? "Italic" : "")
@@ -83,7 +83,7 @@ extension UIFont {
             15: .subheadline,
             13: .footnote,
             12: .caption1,
-            11: .caption2
+            11: .caption2,
         ]
         var textStyle: UIFontTextStyle? = dict[pointSize]
 
@@ -109,7 +109,7 @@ extension UIFont {
             textStyle = UIFontTextStyle.body
             descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: textStyle!)
             // 对于非系统默认字号的情况，用body类型去做偏移计算
-            font = UIFont.preferredFont(forTextStyle: textStyle!)// default fontSize = 17
+            font = UIFont.preferredFont(forTextStyle: textStyle!) // default fontSize = 17
             let offsetPointSize = font.pointSize - 17
             descriptor = descriptor.withSize(pointSize + offsetPointSize)
             if bold {
@@ -118,7 +118,7 @@ extension UIFont {
             font = UIFont(descriptor: descriptor, size: 0)
             if upperLimitSize > 0 && font.pointSize > upperLimitSize {
                 font = UIFont(descriptor: descriptor, size: upperLimitSize)
-            } else if (lowerLimitSize > 0 && font.pointSize < lowerLimitSize) {
+            } else if lowerLimitSize > 0 && font.pointSize < lowerLimitSize {
                 font = UIFont(descriptor: descriptor, size: lowerLimitSize)
             }
         }

@@ -20,7 +20,7 @@
  *  @see QMUIImagePreviewView
  */
 class QMUIImagePreviewViewController: QMUICommonViewController {
-    
+
     public var imagePreviewView: QMUIImagePreviewView?
 
     public var backgroundColor = UIColorBlack {
@@ -30,39 +30,39 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
             }
         }
     }
-    
+
     private var previewWindow: UIWindow?
     private var shouldStartWithFading = false
     private var previewFromRect: CGRect = .zero
     private var transitionImageView: UIImageView?
     private var backgroundColorTemporarily: UIColor?
-    
+
     override func didInitialized() {
         super.didInitialized()
         automaticallyAdjustsScrollViewInsets = false
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = backgroundColor
     }
-    
+
     override func initSubviews() {
         super.initSubviews()
         imagePreviewView = QMUIImagePreviewView(frame: view.bounds)
         view.addSubview(imagePreviewView!)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         imagePreviewView?.frame = view.bounds
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         imagePreviewView?.collectionView.reloadData()
-        
+
         if previewWindow != nil && !shouldStartWithFading {
             // 为在 viewDidAppear 做动画做准备
             imagePreviewView?.collectionView.isHidden = true
@@ -70,13 +70,13 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
             imagePreviewView?.collectionView.isHidden = false
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         // 配合 QMUIImagePreviewViewController (UIWindow) 使用的
         if previewWindow != nil {
-            
+
             if shouldStartWithFading {
                 UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
                     self.view.alpha = 1
@@ -109,7 +109,7 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
             })
         }
     }
-    
+
     // MARK: - 动画
     private func initPreviewWindowIfNeeded() {
         if previewWindow == nil {
@@ -118,27 +118,27 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
             previewWindow?.backgroundColor = UIColorClear
         }
     }
-    
+
     private func removePreviewWindow() {
         previewWindow?.isHidden = false
         previewWindow?.rootViewController = nil
         previewWindow = nil
     }
-    
+
     private func startPreviewWithFadingAnimation(_ isFading: Bool, orFromRect rect: CGRect) {
         shouldStartWithFading = isFading
-        
+
         if isFading {
             // 为动画做准备，先置为透明
             view.alpha = 0
-            
+
         } else {
             previewFromRect = rect
-            
+
             if transitionImageView == nil {
                 transitionImageView = UIImageView()
             }
-            
+
             // 为动画做准备，先置为透明
             backgroundColorTemporarily = view.backgroundColor
             view.backgroundColor = UIColorClear
@@ -149,9 +149,9 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
         previewWindow?.rootViewController = self
         previewWindow?.isHidden = false
     }
-    
+
     private func endPreviewWithFadingAnimation(_ isFading: Bool, orToRect rect: CGRect) {
-        
+
         if isFading {
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
                 self.view.alpha = 0
@@ -161,9 +161,7 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
             })
             return
         }
-        
-        
-        
+
         let zoomImageView = imagePreviewView?.zoomImageView(at: imagePreviewView!.currentImageIndex)
         let transitionFromRect = zoomImageView!.imageViewRectInZoomImageView
         let transitionToRect = rect
@@ -172,7 +170,7 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
         transitionImageView?.frame = transitionFromRect
         view.addSubview(transitionImageView!)
         imagePreviewView?.collectionView.isHidden = true
-        
+
         backgroundColorTemporarily = view.backgroundColor
 
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
@@ -197,7 +195,7 @@ extension QMUIImagePreviewViewController {
     public func startPreviewFromRectInScreen(_ rect: CGRect) {
         startPreviewWithFadingAnimation(false, orFromRect: rect)
     }
-    
+
     /**
      *  将当前图片缩放到指定 rect 的位置，然后退出预览
      *  @param rect 在当前屏幕坐标系里的 rect，注意传进来的 rect 要做坐标系转换，例如：[view.superview convertRect:view.frame toView:nil]
@@ -212,7 +210,7 @@ extension QMUIImagePreviewViewController {
     public func startPreviewFading() {
         startPreviewWithFadingAnimation(true, orFromRect: .zero)
     }
-    
+
     /**
      *  使用渐隐的动画退出图片预览
      */

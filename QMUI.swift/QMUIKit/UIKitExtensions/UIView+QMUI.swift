@@ -7,7 +7,7 @@
 //
 
 public enum QMUIBorderViewPosition: Int {
-    case none      = 0
+    case none = 0
     case top
     case left
     case bottom
@@ -15,7 +15,7 @@ public enum QMUIBorderViewPosition: Int {
 }
 
 extension UIView {
-    
+
     fileprivate struct Keys {
         static var borderPosition = "borderPosition"
     }

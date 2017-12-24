@@ -11,7 +11,7 @@ protocol SelfAware: class {
 }
 
 class NothingToSeeHere {
-    
+
     static func harmlessFunction() {
         let typeCount = Int(objc_getClassList(nil, 0))
         let types = UnsafeMutablePointer<AnyClass?>.allocate(capacity: typeCount)
@@ -28,7 +28,7 @@ extension UIApplication {
         NothingToSeeHere.harmlessFunction()
     }()
 
-    override open var next: UIResponder? {
+    open override var next: UIResponder? {
         // Called before applicationDidFinishLaunching
         UIApplication.runOnce
         return super.next

@@ -18,7 +18,7 @@ extension CALayer {
             insertSublayer(sublayer, at: 0)
         }
     }
-    
+
     /**
      *  把某个sublayer移动到当前所有sublayers的最前面
      *  @param  sublayer    要被移动的layer
@@ -30,7 +30,7 @@ extension CALayer {
             insertSublayer(sublayer, at: UInt32(sublayers?.count ?? 0))
         }
     }
-    
+
     /**
      * 移除 CALayer（包括 CAShapeLayer 和 CAGradientLayer）所有支持动画的属性的默认动画，方便需要一个不带动画的 layer 时使用。
      */
@@ -65,10 +65,10 @@ extension CALayer {
             NSStringFromSelector(#selector(getter: shadowOpacity)): NSNull(),
             NSStringFromSelector(#selector(getter: shadowOffset)): NSNull(),
             NSStringFromSelector(#selector(getter: shadowRadius)): NSNull(),
-            NSStringFromSelector(#selector(getter: shadowPath)): NSNull()
+            NSStringFromSelector(#selector(getter: shadowPath)): NSNull(),
         ]
-        
-        if self.isKind(of: CAShapeLayer.self) {
+
+        if isKind(of: CAShapeLayer.self) {
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.path))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.fillColor))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.strokeColor))] = NSNull()
@@ -78,17 +78,17 @@ extension CALayer {
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.miterLimit))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.lineDashPhase))] = NSNull()
         }
-        
-        if self.isKind(of: CAGradientLayer.self) {
+
+        if isKind(of: CAGradientLayer.self) {
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.colors))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.locations))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.startPoint))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.endPoint))] = NSNull()
         }
-        
+
         self.actions = actions
     }
-    
+
     /**
      * 产生一个适用于做通用分隔线的 layer，高度为 PixelOne，默认会移除动画，并且背景色用 UIColorSeparator
      */
@@ -99,7 +99,7 @@ extension CALayer {
         layer.frame = CGRect(x: 0, y: 0, width: 0, height: PixelOne)
         return layer
     }
-    
+
     /**
      * 产生一个适用于做列表分隔线的 layer，高度为 PixelOne，默认会移除动画，并且背景色用 TableViewSeparatorColor
      */

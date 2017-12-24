@@ -11,16 +11,16 @@ import Photos
 
 /// 相册展示内容的类型
 enum QMUIAlbumContentType: Int {
-    case all                                  // 展示所有资源（照片和视频）
-    case onlyPhoto                            // 只展示照片
-    case onlyVideo                            // 只展示视频
-    case onlyAudio                            // 只展示音频
+    case all // 展示所有资源（照片和视频）
+    case onlyPhoto // 只展示照片
+    case onlyVideo // 只展示视频
+    case onlyAudio // 只展示音频
 }
 
 /// 相册展示内容按日期排序的方式
 enum QMUIAlbumSortType {
-    case positive   // 日期最新的内容排在后面
-    case reverse    // 日期最新的内容排在前面
+    case positive // 日期最新的内容排在后面
+    case reverse // 日期最新的内容排在前面
 }
 
 class QMUIAssetsGroup {
@@ -40,7 +40,7 @@ class QMUIAssetsGroup {
     }
 
     public init(phAssetCollection: PHAssetCollection, fetchAssetsOptions: PHFetchOptions? = nil) {
-        
+
         let phFetchResult = PHAsset.fetchAssets(in: phAssetCollection, options: fetchAssetsOptions)
         self.phFetchResult = phFetchResult
         self.phAssetCollection = phAssetCollection
@@ -86,7 +86,7 @@ class QMUIAssetsGroup {
                 pHImageRequestOptions.isSynchronous = true // 同步请求
                 pHImageRequestOptions.resizeMode = .exact
                 // targetSize 中对传入的 Size 进行处理，宽高各自乘以 ScreenScale，从而得到正确的图片
-                QMUIAssetsManager.shared.phCachingImageManager.requestImage(for: asset, targetSize: CGSize(width: size.width * ScreenScale, height: size.height * ScreenScale), contentMode: .aspectFill, options: pHImageRequestOptions, resultHandler: { (result, info) in
+                QMUIAssetsManager.shared.phCachingImageManager.requestImage(for: asset, targetSize: CGSize(width: size.width * ScreenScale, height: size.height * ScreenScale), contentMode: .aspectFill, options: pHImageRequestOptions, resultHandler: { result, _ in
                     resultImage = result
                 })
             }
@@ -138,7 +138,7 @@ class QMUIAssetsGroup {
             } else {
                 enumerationOptions = .concurrent
             }
-            alAssetsGroup?.enumerateAssets(options: enumerationOptions, using: { (result, index, stop) in
+            alAssetsGroup?.enumerateAssets(options: enumerationOptions, using: { result, _, _ in
                 if let result = result {
                     let asset = QMUIAsset(alAsset: result)
                     enumerationBlock?(asset)

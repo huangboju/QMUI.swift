@@ -15,7 +15,7 @@ class QMUIToastContentView: UIView {
     /**
      * 设置一个UIView，可以是：菊花、图片等等
      */
-    var customView: UIView? = nil {
+    var customView: UIView? {
         willSet {
             guard let notNilCustomView = customView else {
                 return
@@ -31,12 +31,12 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置第一行大文字label
      */
     var textLabel: UILabel = UILabel()
-    
+
     /**
      * 通过textLabelText设置可以应用textLabelAttributes的样式，如果通过textLabel.text设置则可能导致一些样式失效。
      */
@@ -47,12 +47,12 @@ class QMUIToastContentView: UIView {
             setNeedsDisplay()
         }
     }
-    
+
     /**
      * 设置第二行小文字label
      */
     var detailTextLabel: UILabel = UILabel()
-    
+
     /**
      * 通过detailTextLabelText设置可以应用detailTextLabelAttributes的样式，如果通过detailTextLabel.text设置则可能导致一些样式失效。
      */
@@ -63,7 +63,7 @@ class QMUIToastContentView: UIView {
             setNeedsDisplay()
         }
     }
-    
+
     /**
      * 设置上下左右的padding。
      */
@@ -72,7 +72,7 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置最小size。
      */
@@ -81,7 +81,7 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置customView的marginBottom
      */
@@ -90,7 +90,7 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置textLabel的marginBottom
      */
@@ -99,7 +99,7 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置detailTextLabel的marginBottom
      */
@@ -108,7 +108,7 @@ class QMUIToastContentView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     /**
      * 设置textLabel的attributes
      */
@@ -121,7 +121,7 @@ class QMUIToastContentView: UIView {
             }
         }
     }
-    
+
     /**
      * 设置detailTextLabel的attributes
      */
@@ -134,80 +134,80 @@ class QMUIToastContentView: UIView {
             }
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         initSubviews()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         initSubviews()
     }
-    
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         let hasCustomeView = customView != nil
         let hasTextLabel = textLabel.text?.length ?? 0 > 0
         let hasDetailTextLabel = detailTextLabel.text?.length ?? 0 > 0
-        
+
         var width: CGFloat = 0
         var height: CGFloat = 0
-        
+
         let maxContentWidth = size.width - insets.horizontalValue
         let maxContentHeight = size.height - insets.verticalValue
-        
+
         if hasCustomeView {
             width = max(width, customView?.bounds.width ?? 0)
             height += (customView?.bounds.height ?? 0 + ((hasTextLabel || hasDetailTextLabel) ? customViewMarginBottom : 0))
         }
-        
+
         if hasTextLabel {
             let textLabelSize = textLabel.sizeThatFits(CGSize(width: maxContentWidth, height: maxContentHeight))
             width = max(width, textLabelSize.width)
             height += textLabelSize.height + (hasDetailTextLabel ? textLabelMarginBottom : 0)
         }
-        
+
         if hasDetailTextLabel {
             let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: maxContentHeight))
             width = max(width, detailTextLabelSize.width)
             height += (detailTextLabelSize.height + detailTextLabelMarginBottom)
         }
-        
+
         width += insets.horizontalValue
         height += insets.verticalValue
-        
+
         if minimumSize != .zero {
             width = max(width, minimumSize.width)
             height = max(height, minimumSize.height)
         }
-        
+
         return CGSize(width: min(size.width, width),
                       height: min(size.height, height))
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         let hasCustomView = customView != nil
         let hasTextLabel = textLabel.text?.length ?? 0 > 0
         let hasDetailTextLabel = detailTextLabel.text?.length ?? 0 > 0
-        
+
         let contentWidth = bounds.width
         let maxContentWidth = contentWidth - insets.horizontalValue
-        
+
         var minY = insets.top
-        
+
         if hasCustomView {
             if !hasTextLabel && !hasDetailTextLabel {
                 // 处理有minimumSize的情况
-                minY =  bounds.height.center(with: customView?.bounds.height ?? 0)
+                minY = bounds.height.center(with: customView?.bounds.height ?? 0)
             }
             customView?.frame = CGRectFlat(contentWidth.center(with: customView?.bounds.width ?? 0),
-                       minY,
-                       customView?.bounds.width ?? 0,
-                       customView?.bounds.height ?? 0)
+                                           minY,
+                                           customView?.bounds.width ?? 0,
+                                           customView?.bounds.height ?? 0)
             minY = customView?.frame.maxY ?? 0 + customViewMarginBottom
         }
 
@@ -223,7 +223,7 @@ class QMUIToastContentView: UIView {
                                          textLabelSize.height)
             minY = textLabel.frame.maxY + textLabelMarginBottom
         }
-        
+
         if hasDetailTextLabel {
             // 暂时没考虑剩余高度不够用的情况
             let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: .greatestFiniteMagnitude))
@@ -237,21 +237,21 @@ class QMUIToastContentView: UIView {
                                                detailTextLabelSize.height)
         }
     }
-    
+
     override func tintColorDidChange() {
         if customView != nil {
             updateCustomViewTintColor()
         }
-        
+
         textLabelAttributes[.foregroundColor] = tintColor
         let tmpStr = textLabelText
         textLabelText = tmpStr
-        
+
         detailTextLabelAttributes[.foregroundColor] = tintColor
         let detailTmpStr = detailTextLabelText
         detailTextLabelText = detailTmpStr
     }
-    
+
     private func initSubviews() {
         textLabel.numberOfLines = 0
         textLabel.textAlignment = .center
@@ -259,7 +259,7 @@ class QMUIToastContentView: UIView {
         textLabel.font = UIFontBoldMake(16)
         textLabel.isOpaque = false
         addSubview(textLabel)
-        
+
         detailTextLabel.numberOfLines = 0
         detailTextLabel.textAlignment = .center
         detailTextLabel.textColor = UIColorWhite
@@ -267,7 +267,7 @@ class QMUIToastContentView: UIView {
         detailTextLabel.isOpaque = false
         addSubview(detailTextLabel)
     }
-    
+
     private func updateCustomViewTintColor() {
         guard let notNilCustomView = customView else {
             return
@@ -281,5 +281,4 @@ class QMUIToastContentView: UIView {
             activityView.color = tintColor
         }
     }
-    
 }

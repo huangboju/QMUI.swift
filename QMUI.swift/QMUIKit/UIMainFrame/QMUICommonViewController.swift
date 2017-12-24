@@ -148,7 +148,7 @@ class QMUICommonViewController: UIViewController {
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return supportedOrientationMask!
     }
-    
+
     var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
         return NavigationBarHiddenStateInitially
     }
@@ -168,8 +168,8 @@ extension QMUICommonViewController: QMUINavigationControllerDelegate {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return StatusbarStyleLightInitially ? .lightContent : .default
     }
-    
-    func viewControllerKeepingAppearWhenSetViewControllers(with animated: Bool) {
+
+    func viewControllerKeepingAppearWhenSetViewControllers(with _: Bool) {
         // 通常和 viewWillAppear: 里做的事情保持一致
         setNavigationItems(isInEditMode: false, animated: false)
         setToolbarItems(isInEditMode: false, animated: false)
@@ -192,7 +192,7 @@ extension QMUICommonViewController {
      *  @param isInEditMode 是否用于编辑模式下
      *  @param animated     是否使用动画呈现
      */
-    @objc func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
+    @objc func setNavigationItems(isInEditMode _: Bool, animated _: Bool) {
         // 子类重写
         navigationItem.titleView = titleView
     }

@@ -14,15 +14,15 @@
  *  @warning 注意分隔线是占位的，把 item 隔开，而不是盖在某个 item 上。
  */
 class QMUIGridView: UIView {
-    
+
     /// 指定要显示的列数，默认为 0
     @IBInspectable
     public var columnCount = 0
-    
+
     /// 指定每一行的高度，默认为 0
     @IBInspectable
     public var rowHeight: CGFloat = 0
-    
+
     /// 指定 item 之间的分隔线宽度，默认为 0
     @IBInspectable
     public var separatorWidth: CGFloat = 0 {
@@ -43,7 +43,7 @@ class QMUIGridView: UIView {
     /// item 之间的分隔线是否要用虚线显示，默认为 false
     @IBInspectable
     public var separatorDashed = false
-    
+
     private let separatorLayer = CAShapeLayer()
 
     /// 候选的初始化方法，亦可通过 initWithFrame:、init 来初始化。
@@ -65,7 +65,7 @@ class QMUIGridView: UIView {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     // 返回最接近平均列宽的值，保证其为整数，因此所有columnWidth加起来可能比总宽度要小
     private var stretchColumnWidth: CGFloat {
         let columnCount = CGFloat(self.columnCount)
@@ -76,7 +76,7 @@ class QMUIGridView: UIView {
         let subviewCount = subviews.count
         return subviewCount / columnCount + (subviewCount % columnCount > 0 ? 1 : 0)
     }
-    
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var newSize = size
         let rowCount = CGFloat(self.rowCount)
@@ -84,12 +84,12 @@ class QMUIGridView: UIView {
         newSize.height = totalHeight
         return newSize
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         let subviewCount = subviews.count
         if subviewCount == 0 { return }
-        
+
         let size = bounds.size
         if size.isEmpty { return }
 
@@ -109,7 +109,7 @@ class QMUIGridView: UIView {
                 }
                 let isLastColumn = column == columnCount - 1
                 let isLastRow = row == self.rowCount - 1
-                
+
                 let subview = subviews[index]
                 var subviewFrame = CGRect(x: columnWidth * CGFloat(column) + separatorWidth * CGFloat(column), y: rowHeight * CGFloat(row) + separatorWidth * CGFloat(row), width: columnWidth, height: rowHeight)
 
@@ -122,10 +122,10 @@ class QMUIGridView: UIView {
                     // 最后一行的item要占满剩余空间，避免一些计算偏差
                     subviewFrame.size.height = size.height - rowHeight * (rowCount - 1) - separatorWidth * (rowCount - 1)
                 }
-                
+
                 subview.frame = subviewFrame
                 subview.setNeedsLayout()
-                
+
                 guard shouldShowSeparator else {
                     continue
                 }

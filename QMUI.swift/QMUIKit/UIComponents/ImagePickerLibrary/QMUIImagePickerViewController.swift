@@ -18,7 +18,6 @@ private let CollectionViewInsetHorizontal = PreferredVarForDevices((PixelOne * 2
 private let CollectionViewInset = UIEdgeInsets(top: CollectionViewInsetHorizontal, left: CollectionViewInsetHorizontal, bottom: CollectionViewInsetHorizontal, right: CollectionViewInsetHorizontal)
 private let CollectionViewCellMargin = CollectionViewInsetHorizontal
 
-
 protocol QMUIImagePickerViewControllerDelegate: class {
     /**
      *  创建一个 ImagePickerPreviewViewController 用于预览图片
@@ -53,7 +52,7 @@ protocol QMUIImagePickerViewControllerDelegate: class {
 
     /// 选中了 checkbox 之后调用
     func imagePickerViewController(_ imagePickerViewController: QMUIImagePickerViewController, didCheckImageAt index: Int)
-    
+
     /// 即将取消选中 checkbox 时调用
     func imagePickerViewController(_ imagePickerViewController: QMUIImagePickerViewController, willUncheckImageAt index: Int)
 
@@ -85,7 +84,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
      *  图片的最小尺寸，布局时如果有剩余空间，会将空间分配给图片大小，所以最终显示出来的大小不一定等于minimumImageWidth。默认是75。
      */
     public var minimumImageWidth: CGFloat = 75
-    
+
     public weak var imagePickerViewControllerDelegate: QMUIImagePickerViewControllerDelegate?
 
     public private(set) var collectionViewLayout: UICollectionViewFlowLayout!
@@ -97,7 +96,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
 
     public private(set) var imagesAssetArray: [QMUIAsset] = []
     public private(set) var assetsGroup: QMUIAssetsGroup?
-    public var  selectedImageAssetArray: [QMUIAsset] = [] // 当前被选择的图片对应的 QMUIAsset 对象数组
+    public var selectedImageAssetArray: [QMUIAsset] = [] // 当前被选择的图片对应的 QMUIAsset 对象数组
 
     public var allowsMultipleSelection = true // 是否允许图片多选，默认为 YES。如果为 NO，则不显示 checkbox 和底部工具栏。
     public var maximumSelectImageCount = Int.max // 最多可以选择的图片数，默认为无符号整形数的最大值，相当于没有限制
@@ -118,7 +117,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
      *  @see imagePickerViewControllerWillStartLoad: & imagePickerViewControllerWillFinishLoad:
      */
     public var shouldShowDefaultLoadingView = true
-    
+
     override func didInitialized() {
         super.didInitialized()
 
@@ -133,10 +132,10 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         collectionView?.dataSource = nil
         collectionView?.delegate = nil
     }
-    
+
     override func initSubviews() {
         super.initSubviews()
-        
+
         collectionViewLayout = UICollectionViewFlowLayout()
         collectionViewLayout.sectionInset = CollectionViewInset
         collectionViewLayout.minimumLineSpacing = CollectionViewCellMargin
@@ -189,24 +188,24 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             operationToolBarView.addSubview(imageCountLabel)
         }
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColorWhite
     }
-    
+
     override func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode: model, animated: animated)
         navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelPickerImage))
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // 由于被选中的图片 selectedImageAssetArray 是 property，所以可以由外部改变，
         // 因此 viewWillAppear 时检查一下图片被选中的情况，并刷新 collectionView
         if allowsMultipleSelection {
             // 只有允许多选，即底部工具栏显示时，需要重新设置底部工具栏的元素
-            if selectedImageAssetArray.isEmpty  {
+            if selectedImageAssetArray.isEmpty {
                 // 如果没有任何图片被选择，则预览和发送按钮不可点击，并且隐藏显示图片数量的 Label
                 previewButton.isEnabled = false
                 sendButton.isEnabled = false
@@ -226,7 +225,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         super.showEmptyView()
         emptyView?.backgroundColor = view.backgroundColor // 为了盖住背后的 collectionView，这里加个背景色（不盖住的话会看到 collectionView 先滚到列表顶部然后跳到列表底部）
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if collectionView.frame.size != view.bounds.size {
@@ -256,7 +255,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         imagesAssetArray = imagesArray
         collectionView.reloadData()
     }
-    
+
     /**
      *  也可以直接传入 QMUIAssetsGroup，然后读取其中的 QMUIAsset 并储存到 imagesAssetArray 中，传入后会赋值到 QMUIAssetsGroup，并自动刷新 UI 展示
      */
@@ -281,11 +280,11 @@ class QMUIImagePickerViewController: QMUICommonViewController {
                         self.imagesAssetArray.append(resultAsset)
                     } else { // result 为 nil，即遍历相片或视频完毕
                         self.collectionView.reloadData()
-                        self.collectionView.performBatchUpdates(nil, completion: { (finished) in
+                        self.collectionView.performBatchUpdates(nil, completion: { _ in
                             self.scrollToInitialPositionIfNeeded()
                             self.imagePickerViewControllerDelegate?.imagePickerViewControllerWillFinishLoad(self)
                             if self.shouldShowDefaultLoadingView {
-                               self.hideEmptyView()
+                                self.hideEmptyView()
                             }
                         })
                     }
@@ -293,7 +292,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             })
         }
     }
-    
+
     private func initPreviewViewControllerIfNeeded() {
         if imagePickerPreviewViewController == nil {
             imagePickerPreviewViewController = imagePickerViewControllerDelegate?.imagePickerPreviewViewController(for: self)
@@ -305,7 +304,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
     var referenceImageSize: CGSize {
         let collectionViewWidth = collectionView.bounds.width
         let collectionViewContentSpacing = collectionViewWidth - collectionView.contentInset.horizontalValue
-        var columnCount = floor(collectionViewContentSpacing / self.minimumImageWidth)
+        var columnCount = floor(collectionViewContentSpacing / minimumImageWidth)
         var referenceImageWidth = minimumImageWidth
 
         let isSpacingEnoughWhenDisplayInMinImageSize = collectionViewLayout.sectionInset.horizontalValue + (minimumImageWidth + collectionViewLayout.minimumInteritemSpacing) * columnCount - collectionViewLayout.minimumInteritemSpacing <= collectionViewContentSpacing
@@ -330,24 +329,24 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         hasScrollToInitialPosition = true
     }
 
-    func willPopInNavigationController(with animated: Bool) {
+    func willPopInNavigationController(with _: Bool) {
         hasScrollToInitialPosition = false
     }
 
     // MARK: - 按钮点击回调
-    @objc func handleSendButtonClick(_ sender: QMUIButton) {
+    @objc func handleSendButtonClick(_: QMUIButton) {
         imagePickerViewControllerDelegate?.imagePickerViewController(self, didFinishPickingImageWith: selectedImageAssetArray)
         navigationController?.dismiss(animated: true, completion: nil)
     }
 
-    @objc func handlePreviewButtonClick(_ sender: QMUIButton) {
+    @objc func handlePreviewButtonClick(_: QMUIButton) {
         initPreviewViewControllerIfNeeded()
         // 手工更新图片预览界面
         imagePickerPreviewViewController?.updateImagePickerPreviewView(with: selectedImageAssetArray, selectedImageAssetArray: selectedImageAssetArray, currentImageIndex: 0, singleCheckMode: false)
         navigationController?.pushViewController(imagePickerPreviewViewController!, animated: true)
     }
 
-    @objc func handleCancelPickerImage(_ sender: QMUIButton) {
+    @objc func handleCancelPickerImage(_: QMUIButton) {
         navigationController?.dismiss(animated: true, completion: {
             self.imagePickerViewControllerDelegate?.imagePickerViewControllerDidCancel(self)
         })
@@ -417,15 +416,15 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             imageCountLabel.isHidden = true
         }
     }
-    
+
     // MARK: - Request Image
-    
+
     func requestImage(with indexPath: IndexPath) {
         // 发出请求获取大图，如果图片在 iCloud，则会发出网络请求下载图片。这里同时保存请求 id，供取消请求使用
         let imageAsset = imagesAssetArray[indexPath.item]
-        
+
         let cell = collectionView.cellForItem(at: indexPath) as? QMUIImagePickerCollectionViewCell
-        imageAsset.requestID = imageAsset.requestPreviewImage(with: { (result, info) in
+        imageAsset.requestID = imageAsset.requestPreviewImage(with: { result, info in
             let downloadSucceed = (result != nil && info == nil) || (info?[PHImageCancelledKey] as? Bool == false && info?[PHImageErrorKey] == nil && info?[PHImageResultIsDegradedKey] as? Bool == false)
 
             if downloadSucceed {
@@ -461,7 +460,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
                 imageAsset.updateDownloadStatusWithDownloadResult(false)
                 cell?.downloadStatus = .failed
             }
-        }, with: { (progress, error, stop, info) in
+        }, with: { progress, error, _, _ in
             imageAsset.downloadProgress = progress
 
             if self.collectionView.qmui_itemVisible(at: indexPath) {
@@ -497,10 +496,10 @@ class QMUIImagePickerViewController: QMUICommonViewController {
 }
 
 extension QMUIImagePickerViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return imagesAssetArray.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var identifier = kImageOrUnknownCellIdentifier
         // 获取需要显示的资源
@@ -511,7 +510,7 @@ extension QMUIImagePickerViewController: UICollectionViewDataSource {
         let _cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath)
         let cell = _cell as? QMUIImagePickerCollectionViewCell
         // 异步请求资源对应的缩略图（因系统接口限制，iOS 8.0 以下为实际上同步请求）
-        imageAsset.requestThumbnailImage(with: referenceImageSize) { (result, info) in
+        imageAsset.requestThumbnailImage(with: referenceImageSize) { result, info in
             if info == nil || (info?[PHImageResultIsDegradedKey] as? Bool == true) {
                 // 模糊，此时为同步调用
                 cell?.contentImageView.image = result
@@ -540,7 +539,7 @@ extension QMUIImagePickerViewController: UICollectionViewDataSource {
 }
 
 extension QMUIImagePickerViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let imageAsset = imagesAssetArray[indexPath.item]
         imagePickerViewControllerDelegate?.imagePickerViewController(self, didSelectImageWith: imageAsset, afterImagePickerPreviewViewControllerUpdate: imagePickerPreviewViewController!)
 

@@ -7,7 +7,7 @@
 //
 
 class QMUIToastBackgroundView: UIView {
-    
+
     /**
      * 是否需要磨砂，默认NO。仅支持iOS8及以上版本。可以通过修改`styleColor`来控制磨砂的效果。
      */
@@ -28,7 +28,7 @@ class QMUIToastBackgroundView: UIView {
             }
         }
     }
-    
+
     /**
      * 如果不设置磨砂，则styleColor直接作为`QMUIToastBackgroundView`的backgroundColor；如果需要磨砂，则会新增加一个`UIVisualEffectView`放在`QMUIToastBackgroundView`上面
      */
@@ -37,7 +37,7 @@ class QMUIToastBackgroundView: UIView {
             backgroundColor = styleColor
         }
     }
-    
+
     /**
      * 设置圆角。
      */
@@ -49,20 +49,20 @@ class QMUIToastBackgroundView: UIView {
             }
         }
     }
-    
-    private var effectView: UIView? = nil
-    
+
+    private var effectView: UIView?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         layer.allowsGroupOpacity = false
         backgroundColor = styleColor
         layer.cornerRadius = cornerRadius
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         layer.allowsGroupOpacity = false
         backgroundColor = styleColor
         layer.cornerRadius = cornerRadius
@@ -76,5 +76,4 @@ class QMUIToastBackgroundView: UIView {
             effectView = nil
         }
     }
-    
 }

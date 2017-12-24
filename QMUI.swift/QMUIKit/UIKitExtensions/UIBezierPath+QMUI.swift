@@ -15,12 +15,12 @@ extension UIBezierPath {
         let bottomRightCornerRadius = cornerRadius[2]
         let topRightCornerRadius = cornerRadius[3]
         let lineCenter = lineWidth / 2.0
-        
+
         move(to: CGPoint(x: topLeftCornerRadius, y: lineCenter))
         addArc(withCenter: CGPoint(x: topLeftCornerRadius, y: topLeftCornerRadius), radius: topLeftCornerRadius - lineCenter, startAngle: .pi * 1.5, endAngle: .pi, clockwise: false)
         addLine(to: CGPoint(x: lineCenter, y: rect.height - bottomLeftCornerRadius))
         addArc(withCenter: CGPoint(x: bottomLeftCornerRadius, y: rect.height - bottomLeftCornerRadius), radius: bottomLeftCornerRadius - lineCenter, startAngle: .pi, endAngle: .pi * 0.5, clockwise: false)
-        addLine(to: CGPoint(x: rect.width - bottomRightCornerRadius, y:rect.height - lineCenter))
+        addLine(to: CGPoint(x: rect.width - bottomRightCornerRadius, y: rect.height - lineCenter))
         addArc(withCenter: CGPoint(x: rect.width - bottomRightCornerRadius, y: rect.height - bottomRightCornerRadius), radius: bottomRightCornerRadius - lineCenter, startAngle: 0.5 * .pi, endAngle: 0, clockwise: false)
         addLine(to: CGPoint(x: rect.width - lineCenter, y: topRightCornerRadius))
         addArc(withCenter: CGPoint(x: rect.width - topRightCornerRadius, y: topRightCornerRadius), radius: topRightCornerRadius - lineCenter, startAngle: 0, endAngle: 1.5 * .pi, clockwise: false)

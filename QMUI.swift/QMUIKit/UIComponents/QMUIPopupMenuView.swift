@@ -19,35 +19,34 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
     public var shouldShowItemSeparator = false
     public var shouldShowSectionSeparatorOnly = false
     public var separatorColor = UIColorSeparator
-    
+
     public var itemTitleFont = UIFontMake(16)
     public var itemHighlightedBackgroundColor = TableViewCellSelectedBackgroundColor
-    
+
     public var padding: UIEdgeInsets = .zero
     public var itemHeight: CGFloat = 44
     public var imageMarginRight: CGFloat = 6
     public var separatorInset: UIEdgeInsets = .zero
-    
+
     public var items: [QMUIPopupMenuItem] = [] {
         didSet {
             itemSections = [items]
         }
     }
-    
-    
+
     public var itemSections: [[QMUIPopupMenuItem]] = [] {
         didSet {
             configureItems()
         }
     }
-    
+
     private func shouldShowSeparator(at row: Int, rowCount: Int, in section: Int, sectionCount: Int) -> Bool {
         return (!shouldShowSectionSeparatorOnly && shouldShowItemSeparator && row < rowCount - 1) || (shouldShowSectionSeparatorOnly && row == rowCount - 1 && section < sectionCount - 1)
     }
-    
+
     private func configureItems() {
         var globalItemIndex = 0
-        
+
         // 移除所有 item
         scrollView.qmui_removeAllSubviews()
         let sectionCount = itemSections.count
@@ -79,12 +78,12 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
                     scrollView.layer.addSublayer(separatorLayer)
                     itemSeparatorLayers.append(separatorLayer)
                 }
-                
+
                 globalItemIndex += 1
             }
         }
     }
-    
+
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.scrollsToTop = false
@@ -92,12 +91,13 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
         scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
+
     private lazy var itemSeparatorLayers: [CALayer] = []
-    
+
     override func didInitialized() {
         super.didInitialized()
         contentEdgeInsets = .zero
-        
+
         contentView.addSubview(scrollView)
 
         padding = UIEdgeInsets(top: cornerRadius / 2.0, left: 16, bottom: cornerRadius / 2.0, right: 16)
@@ -112,12 +112,12 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
         result.height = min(height, size.height)
         return result
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         scrollView.frame = contentView.bounds
-        
+
         var minY = padding.top
         let contentWidth = scrollView.bounds.width
         var separatorIndex = 0
@@ -156,7 +156,7 @@ public class QMUIPopupMenuItem: NSObject {
             button.setImage(image, for: .normal)
         }
     }
-    
+
     public var title: String? {
         didSet {
             button.setTitle(title, for: .normal)
@@ -172,7 +172,7 @@ public class QMUIPopupMenuItem: NSObject {
         self.image = image
         self.title = title
         self.handler = handler
-        
+
         button = QMUIButton(title: title, image: image)
         button.contentHorizontalAlignment = .left
         button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
@@ -180,9 +180,7 @@ public class QMUIPopupMenuItem: NSObject {
     }
 
     @objc
-    private func handleButtonEvent(_ sender: QMUIButton) {
+    private func handleButtonEvent(_: QMUIButton) {
         handler?()
     }
 }
-
-

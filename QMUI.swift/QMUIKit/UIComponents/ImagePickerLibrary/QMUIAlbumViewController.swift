@@ -18,12 +18,12 @@ let QMUIAlbumTableViewCellDefaultAlbumNameInsets = UIEdgeInsets(top: 0, left: 8,
 protocol QMUIAlbumViewControllerDelegate: class {
     /// 点击相簿里某一行时，需要给一个 QMUIImagePickerViewController 对象用于展示九宫格图片列表
     func imagePickerViewController(for albumViewController: QMUIAlbumViewController) -> QMUIImagePickerViewController
-    
+
     /**
      *  取消查看相册列表后被调用
      */
     func albumViewControllerDidCancel(_ albumViewController: QMUIAlbumViewController)
-    
+
     /**
      *  即将需要显示 Loading 时调用
      *
@@ -40,18 +40,18 @@ protocol QMUIAlbumViewControllerDelegate: class {
 }
 
 extension QMUIAlbumViewControllerDelegate {
-    func albumViewControllerDidCancel(_ albumViewController: QMUIAlbumViewController) {}
+    func albumViewControllerDidCancel(_: QMUIAlbumViewController) {}
 
-    func albumViewControllerWillStartLoad(_ albumViewController: QMUIAlbumViewController) {}
+    func albumViewControllerWillStartLoad(_: QMUIAlbumViewController) {}
 
-    func albumViewControllerWillFinishLoad(_ albumViewController: QMUIAlbumViewController) {}
+    func albumViewControllerWillFinishLoad(_: QMUIAlbumViewController) {}
 }
 
 class QMUIAlbumTableViewCell: QMUITableViewCell {
     var albumNameFontSize = QMUIAlbumTableViewCellDefaultAlbumNameFontSize // 相册名称的字号
     var albumAssetsNumberFontSize = QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize // 相册资源数量的字号
     var albumNameInsets = QMUIAlbumTableViewCellDefaultAlbumNameInsets // 相册名称的 insets
-    
+
     private let bottomLineLayer = CALayer()
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -61,23 +61,22 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
         imageView?.clipsToBounds = true
         detailTextLabel?.textColor = UIColorGrayDarken
 
-        
         bottomLineLayer.backgroundColor = UIColorSeparator.cgColor
         // 让分隔线垫在背后
         layer.insertSublayer(bottomLineLayer, at: 0)
     }
-    
+
     override func updateCellAppearance(with indexPath: IndexPath) {
         super.updateCellAppearance(with: indexPath)
         textLabel?.font = UIFontBoldMake(albumNameFontSize)
         detailTextLabel?.font = UIFontMake(albumAssetsNumberFontSize)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         // 避免iOS7下seletedBackgroundView会往上下露出1px（以盖住系统分隔线，但我们的分隔线是自定义的）
         selectedBackgroundView?.frame = bounds
-        
+
         let contentViewPaddingRight: CGFloat = 10
         let height = contentView.bounds.height
 
@@ -106,19 +105,19 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
-class QMUIAlbumViewController : QMUICommonTableViewController {
+class QMUIAlbumViewController: QMUICommonTableViewController {
 
     public var albumTableViewCellHeight: CGFloat = QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight // 相册列表 cell 的高度，同时也是相册预览图的宽高
 
     public weak var albumViewControllerDelegate: QMUIAlbumViewControllerDelegate?
-    
+
     public var contentType = QMUIAlbumContentType.all // 相册展示内容的类型，可以控制只展示照片、视频或音频（仅 iOS 8.0 及以上版本支持）的其中一种，也可以同时展示所有类型的资源，默认展示所有类型的资源。
-    
+
     public var tipTextWhenNoPhotosAuthorization: String?
     public var tipTextWhenPhotosEmpty: String?
     /**
@@ -143,8 +142,8 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if QMUIAssetsManager.authorizationStatus ==  .notAuthorized {
+
+        if QMUIAssetsManager.authorizationStatus == .notAuthorized {
             // 如果没有获取访问授权，或者访问授权状态已经被明确禁止，则显示提示语，引导用户开启授权
             var tipString = tipTextWhenNoPhotosAuthorization
             if tipString == nil {
@@ -163,7 +162,7 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
                 showEmptyViewWithLoading()
             }
             DispatchQueue.global().async {
-                QMUIAssetsManager.shared.enumerateAllAlbumsWithAlbumContentType(self.contentType, usingBlock: { (resultAssetsGroup) in
+                QMUIAssetsManager.shared.enumerateAllAlbumsWithAlbumContentType(self.contentType, usingBlock: { resultAssetsGroup in
                     if let asset = resultAssetsGroup {
                         self._albumsArray.append(asset)
                     } else {
@@ -173,7 +172,7 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
             }
         }
     }
-    
+
     func refreshAlbumAndShowEmptyTipIfNeed() {
         if _albumsArray.isEmpty {
             let tipString = tipTextWhenPhotosEmpty ?? "空照片"
@@ -186,15 +185,15 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
             tableView.reloadData()
         }
     }
-    
+
     override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return _albumsArray.count
     }
-    
+
     override func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
         return albumTableViewCellHeight
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? QMUIAlbumTableViewCell
@@ -215,8 +214,8 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
 
         return cell!
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         if _imagePickerViewController == nil {
             _imagePickerViewController = albumViewControllerDelegate?.imagePickerViewController(for: self)
         }
@@ -230,7 +229,7 @@ class QMUIAlbumViewController : QMUICommonTableViewController {
     }
 
     @objc func handleCancelSelectAlbum() {
-        navigationController?.dismiss(animated: true, completion: { 
+        navigationController?.dismiss(animated: true, completion: {
             self.albumViewControllerDelegate?.albumViewControllerDidCancel(self)
         })
     }

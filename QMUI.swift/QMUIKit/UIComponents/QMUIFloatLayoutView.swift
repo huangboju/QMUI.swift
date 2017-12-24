@@ -16,7 +16,7 @@ class QMUIFloatLayoutView: UIView {
      *  QMUIFloatLayoutView 内部的间距，默认为 UIEdgeInsetsZero
      */
     public var padding: UIEdgeInsets = .zero
-    
+
     /**
      *  item 的最小宽高，默认为 CGSizeZero，也即不限制。
      */
@@ -35,17 +35,17 @@ class QMUIFloatLayoutView: UIView {
      *  @warning 上、下、左、右四个边缘的 item 布局时不会考虑 itemMargins.left/bottom/left/right。
      */
     public var itemMargins: UIEdgeInsets = .zero
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     private func didInitialized() {
         contentMode = .left
     }
@@ -53,12 +53,12 @@ class QMUIFloatLayoutView: UIView {
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         return layoutSubviews(with: size)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutSubviews(with: bounds.size, shouldLayout: true)
     }
-    
+
     private func ValueSwitchAlignLeftOrRight<T>(_ valueLeft: T, _ valueRight: T) -> T {
         return shouldAlignRight ? valueRight : valueLeft
     }
@@ -66,7 +66,7 @@ class QMUIFloatLayoutView: UIView {
     @discardableResult
     func layoutSubviews(with size: CGSize, shouldLayout: Bool = false) -> CGSize {
         let visibleItemViews = visibleSubviews
-        
+
         if visibleItemViews.isEmpty {
             return CGSize(width: padding.horizontalValue, height: padding.verticalValue)
         }
@@ -93,7 +93,7 @@ class QMUIFloatLayoutView: UIView {
                 itemViewOrigin.y = currentRowMaxY
             } else {
                 // 当前行放得下
-                if (shouldLayout) {
+                if shouldLayout {
                     itemView.frame = CGRect(x: ValueSwitchAlignLeftOrRight(itemViewOrigin.x + itemMargins.left, itemViewOrigin.x - itemMargins.right - itemViewSize.width), y: itemViewOrigin.y + itemMargins.top, width: itemViewSize.width, height: itemViewSize.height)
                 }
 

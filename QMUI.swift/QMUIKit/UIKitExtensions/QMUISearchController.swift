@@ -38,14 +38,13 @@ extension QMUISearchControllerDelegate {
     func search(_: QMUISearchController, willShow _: QMUIEmptyView) {}
 }
 
-
 protocol QMUISearchResultsTableViewControllerDelegate: class {
     func didLoadTableViewInSearchResultsTableViewController(_ viewController: QMUISearchResultsTableViewController)
 }
 
 class QMUISearchResultsTableViewController: QMUICommonTableViewController {
     open weak var delegate: QMUISearchResultsTableViewControllerDelegate?
-    
+
     override func initTableView() {
         super.initTableView()
         tableView.keyboardDismissMode = .onDrag
@@ -65,7 +64,7 @@ class QMUICustomSearchController: UISearchController {
             }
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addCustomDimmingView()
@@ -78,7 +77,7 @@ class QMUICustomSearchController: UISearchController {
             layoutCustomDimmingView()
         }
     }
-    
+
     func layoutCustomDimmingView() {
         var searchBarContainerView: UIView?
         for subview in view.subviews {
@@ -90,7 +89,7 @@ class QMUICustomSearchController: UISearchController {
 
         customDimmingView?.frame = customDimmingView!.superview!.bounds.insetEdges(UIEdgeInsets(top: (searchBarContainerView != nil ? searchBarContainerView!.frame.maxY : 0), left: 0, bottom: 0, right: 0))
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if customDimmingView != nil {
@@ -145,7 +144,7 @@ class QMUISearchController: QMUICommonViewController {
         }
         searchBar?.qmui_styledAsQMUISearchBar()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // 主动触发 loadView，如果不这么做，那么有可能直到 QMUISearchController 被销毁，这期间 self.searchController 都没有被触发 loadView，然后在 dealloc 时就会报错，提示尝试在释放 self.searchController 时触发了 self.searchController 的 loadView
@@ -162,7 +161,7 @@ class QMUISearchController: QMUICommonViewController {
         }
         return nil
     }
-    
+
     /// 在搜索文字为空时会展示的一个 view，通常用于实现“最近搜索”之类的功能。launchView 最终会被布局为撑满搜索框以下的所有空间。
     open var launchView: UIView? {
         didSet {
@@ -185,7 +184,7 @@ class QMUISearchController: QMUICommonViewController {
      *  @param active YES 表示进入搜索状态，NO 表示退出搜索状态
      *  @param animated 是否要以动画的形式展示状态切换
      */
-    open func setActive(_ active: Bool, animated: Bool) {
+    open func setActive(_ active: Bool, animated _: Bool) {
         searchController?.isActive = active
     }
 
@@ -198,9 +197,9 @@ class QMUISearchController: QMUICommonViewController {
             return searchController?.hidesNavigationBarDuringPresentation ?? true
         }
     }
-    
+
     // MARK: - QMUIEmptyView
-    
+
     override func showEmptyView() {
         // 搜索框文字为空时，界面会显示遮罩，此时不需要显示emptyView了
         // 为什么加这个是因为当搜索框被点击时（进入搜索状态）会触发searchController:updateResultsForSearchString:，里面如果直接根据搜索结果为空来showEmptyView的话，就会导致在遮罩层上有emptyView出现，要么在那边showEmptyView之前判断一下searchBar.text.length，要么在showEmptyView里判断，为了方便，这里选择后者。
@@ -225,7 +224,6 @@ class QMUISearchController: QMUICommonViewController {
     }
 }
 
-
 // MARK: - UISearchResultsUpdating
 extension QMUISearchController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
@@ -242,23 +240,21 @@ extension QMUISearchController: QMUISearchResultsTableViewControllerDelegate {
 
 // MARK: - UISearchControllerDelegate
 extension QMUISearchController: UISearchControllerDelegate {
-    
-    func willPresentSearchController(_ searchController: UISearchController) {
+
+    func willPresentSearchController(_: UISearchController) {
         searchResultsDelegate?.willPresent(self)
     }
 
-    func didPresentSearchController(_ searchController: UISearchController) {
+    func didPresentSearchController(_: UISearchController) {
         searchResultsDelegate?.didPresent(self)
     }
 
-    func willDismissSearchController(_ searchController: UISearchController) {
+    func willDismissSearchController(_: UISearchController) {
         searchResultsDelegate?.willDismiss(self)
     }
 
-    func didDismissSearchController(_ searchController: UISearchController) {
+    func didDismissSearchController(_: UISearchController) {
         hideEmptyView()
         searchResultsDelegate?.didDismiss(self)
     }
 }
-
-

@@ -34,17 +34,17 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-    
+
     /// checkbox 的 margin，定位从每个 cell（即每张图片）的最右边开始计算
     public var checkboxButtonMargins = QMUIImagePickerCollectionViewCellDefaultCheckboxButtonMargins
-    
+
     /// progressView tintColor
     public var progressViewTintColor = UIColorWhite {
         didSet {
             progressView.tintColor = progressViewTintColor
         }
     }
-    
+
     /// downloadRetryButton 的 icon
     public var downloadRetryImage = QMUIHelper.image(with: "QMUI_icloud_download_fault_small") {
         didSet {
@@ -53,7 +53,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-    
+
     /// videoMarkImageView 的 icon
     public var videoMarkImage = QMUIHelper.image(with: "QMUI_pickerImage_video_mark") {
         didSet {
@@ -61,7 +61,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             _videoMarkImageView?.sizeToFit()
         }
     }
-    
+
     /// videoMarkImageView 的 margin，定位从每个 cell（即每张图片）的左下角开始计算
     public var videoMarkImageViewMargins = QMUIImagePickerCollectionViewCellDefaultVideoMarkImageViewMargins
 
@@ -72,7 +72,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             _videoDurationLabel?.qmui_calculateHeightAfterSetAppearance()
         }
     }
-    
+
     /// videoDurationLabel 的字体颜色
     public var videoDurationLabelTextColor = UIColorWhite {
         didSet {
@@ -81,35 +81,37 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-    
-    
+
     /// videoDurationLabel 布局是对齐右下角再做 margins 偏移
     public var videoDurationLabelMargins = UIEdgeInsets(top: 0, left: 0, bottom: 6, right: 6)
-    
+
     public let contentImageView = UIImageView()
 
     public let checkboxButton = UIButton()
 
     public let progressView = QMUIPieProgressView()
-    
+
     public let downloadRetryButton = UIButton()
-    
+
     public var videoMarkImageView: UIImageView? {
         initVideoRelatedViewsIfNeeded()
         return _videoMarkImageView
     }
+
     private var _videoMarkImageView: UIImageView?
 
     public var videoDurationLabel: UILabel? {
         initVideoRelatedViewsIfNeeded()
         return _videoDurationLabel
     }
+
     private var _videoDurationLabel: UILabel?
-    
+
     public var videoBottomShadowLayer: CAGradientLayer? {
         initVideoRelatedViewsIfNeeded()
         return _videoBottomShadowLayer
     }
+
     private var _videoBottomShadowLayer: CAGradientLayer?
 
     public var isEditing = false {
@@ -157,43 +159,43 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         initImagePickerCollectionViewCellUI()
     }
-    
+
     private func initImagePickerCollectionViewCellUI() {
         contentImageView.contentMode = .scaleAspectFill
         contentImageView.clipsToBounds = true
         contentView.addSubview(contentImageView)
-        
+
         checkboxButton.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)
         checkboxButton.isHidden = true
         contentView.addSubview(checkboxButton)
 
         progressView.isHidden = true
         contentView.addSubview(progressView)
-        
+
         downloadRetryButton.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)
         downloadRetryButton.isHidden = true
         contentView.addSubview(downloadRetryButton)
     }
-    
+
     private func initVideoBottomShadowLayerIfNeeded() {
         if _videoBottomShadowLayer == nil {
             _videoBottomShadowLayer = CAGradientLayer()
             _videoBottomShadowLayer?.qmui_removeDefaultAnimations()
             _videoBottomShadowLayer?.colors = [
                 UIColor(r: 0, g: 0, b: 0).cgColor,
-                UIColor(r: 0, g: 0, b: 0, a: 0.6).cgColor
+                UIColor(r: 0, g: 0, b: 0, a: 0.6).cgColor,
             ]
             contentView.layer.addSublayer(_videoBottomShadowLayer!)
             setNeedsLayout()
         }
     }
-    
+
     private func initVideoMarkImageViewIfNeed() {
         if _videoMarkImageView != nil {
             return
@@ -204,7 +206,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(_videoMarkImageView!)
         setNeedsLayout()
     }
-    
+
     private func initVideoDurationLabelIfNeed() {
         if _videoDurationLabel != nil {
             return
@@ -216,20 +218,20 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
 
         setNeedsLayout()
     }
-    
+
     private func initVideoRelatedViewsIfNeeded() {
         initVideoBottomShadowLayerIfNeeded()
         initVideoMarkImageViewIfNeed()
         initVideoDurationLabelIfNeed()
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         contentImageView.frame = contentView.bounds
         if isEditing {
             checkboxButton.frame = checkboxButton.frame.setXY(contentView.bounds.width - checkboxButtonMargins.right - checkboxButton.frame.width,
-                                       checkboxButtonMargins.top).flatted
+                                                              checkboxButtonMargins.top).flatted
         }
 
         /* 理论上 downloadRetryButton 应该在 setImage 后 sizeToFit 计算大小，
@@ -247,27 +249,27 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
                                     height: downloadRetryButton.frame.height)
 
         guard let _videoBottomShadowLayer = _videoBottomShadowLayer,
-              let _videoMarkImageView = _videoMarkImageView,
-              let _videoDurationLabel = _videoDurationLabel else {
+            let _videoMarkImageView = _videoMarkImageView,
+            let _videoDurationLabel = _videoDurationLabel else {
             return
         }
 
         _videoMarkImageView.frame = _videoMarkImageView.frame.setXY(videoMarkImageViewMargins.left, contentView.bounds.height - _videoMarkImageView.frame.height - videoMarkImageViewMargins.bottom).flatted
-    
+
         _videoDurationLabel.sizeToFit()
         let minX = contentView.bounds.width - videoDurationLabelMargins.right - _videoDurationLabel.frame.width
         let minY = contentView.bounds.height - videoDurationLabelMargins.bottom - _videoDurationLabel.frame.height
 
         _videoDurationLabel.frame = _videoDurationLabel.frame.setXY(minX, minY).flatted
-        
-        let videoBottomShadowLayerHeight = contentView.bounds.height - _videoMarkImageView.frame.minY + videoMarkImageViewMargins.bottom// 背景阴影遮罩的高度取决于（视频 icon 的高度 + 上下 margin）
+
+        let videoBottomShadowLayerHeight = contentView.bounds.height - _videoMarkImageView.frame.minY + videoMarkImageViewMargins.bottom // 背景阴影遮罩的高度取决于（视频 icon 的高度 + 上下 margin）
         _videoBottomShadowLayer.frame = CGRect(x: 0,
                                                y: contentView.bounds.height - videoBottomShadowLayerHeight,
                                                width: contentView.bounds.width,
                                                height: videoBottomShadowLayerHeight)
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

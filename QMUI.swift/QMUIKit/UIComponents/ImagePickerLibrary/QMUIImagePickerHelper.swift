@@ -32,7 +32,7 @@ struct QMUIImagePickerHelper {
         }
         return false
     }
-    
+
     /**
      *  从一个由 QMUIAsset 对象组成的数组中移除特定的 QMUIAsset 对象（如果这个 QMUIAsset 对象不在该数组中，则不作处理）
      *
@@ -60,7 +60,7 @@ struct QMUIImagePickerHelper {
     public static func springAnimationOfImageSelectedCountChangeWithCountLabel(_ label: UILabel) {
         QMUIHelper.actionSpringAnimation(for: label)
     }
-    
+
     /**
      *  图片 checkBox 被选中时的动画
      *  @warning iOS6 下降级处理不调用动画效果
@@ -77,8 +77,7 @@ struct QMUIImagePickerHelper {
     public static func removeSpringAnimationOfImageChecked(with button: UIButton) {
         button.layer.removeAnimation(forKey: QMUISpringAnimationKey)
     }
-    
-    
+
     /**
      *  获取最近一次调用 updateLastAlbumWithAssetsGroup 方法调用时储存的 QMUIAssetsGroup 对象
      *
@@ -90,10 +89,10 @@ struct QMUIImagePickerHelper {
         // 获取 NSUserDefaults，里面储存了所有 updateLastestAlbumWithAssetsGroup 的结果
         let userDefaults = UserDefaults.standard
         // 使用特定的前缀和可以标记不同用户的字符串拼接成 key，用于获取当前用户最近调用 updateLastestAlbumWithAssetsGroup 储存的相册以及对于的 QMUIAlbumContentType 值
-        
+
         let lastAlbumKey = kLastAlbumKeyPrefix + userIdentify
         let contentTypeOflastAlbumKey = kContentTypeOfLastAlbumKeyPrefix + userIdentify
-        
+
         var assetsGroup: QMUIAssetsGroup?
 
         let albumContentType = QMUIAlbumContentType(rawValue: userDefaults.integer(forKey: contentTypeOflastAlbumKey))
@@ -123,7 +122,7 @@ struct QMUIImagePickerHelper {
         }
         return assetsGroup
     }
-    
+
     /**
      *  储存一个 QMUIAssetsGroup，从而储存一个对应的相册，与 assetsGroupOfLatestPickerAlbumWithUserIdentify 方法对应使用
      *
@@ -131,8 +130,8 @@ struct QMUIImagePickerHelper {
      *  @param albumContentType 相册的内容类型
      *  @param userIdentify 用户标识，由于每个用户可能需要分开储存一个最近调用过的 QMUIAssetsGroup，因此增加一个标识区分用户
      */
-    public static func updateLastestAlbum(with assetsGroup: QMUIAssetsGroup, albumContentType:QMUIAlbumContentType, userIdentify: String) {
-        let userDefaults = UserDefaults .standard
+    public static func updateLastestAlbum(with assetsGroup: QMUIAssetsGroup, albumContentType: QMUIAlbumContentType, userIdentify: String) {
+        let userDefaults = UserDefaults.standard
         // 使用特定的前缀和可以标记不同用户的字符串拼接成 key，用于为当前用户储存相册对应的 QMUIAssetsGroup 与 QMUIAlbumContentType
 
         let lastAlbumKey = kLastAlbumKeyPrefix + userIdentify
@@ -142,7 +141,7 @@ struct QMUIImagePickerHelper {
             userDefaults.set(url, forKey: lastAlbumKey)
         } else {
             // 使用 PhotoKit
-            userDefaults.setValue(assetsGroup.phAssetCollection?.localIdentifier , forKey: lastAlbumKey)
+            userDefaults.setValue(assetsGroup.phAssetCollection?.localIdentifier, forKey: lastAlbumKey)
         }
 
         userDefaults.set(albumContentType.rawValue, forKey: contentTypeOflastAlbumKey)

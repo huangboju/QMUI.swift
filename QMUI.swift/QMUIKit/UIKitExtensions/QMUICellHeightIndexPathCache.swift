@@ -14,23 +14,23 @@ class QMUICellHeightIndexPathCache {
 
     // Enable automatically if you're using index path driven height cache
     public var automaticallyInvalidateEnabled = false
-    
+
     private var heightsBySectionForCurrentOrientation: FDIndexPathHeightsBySection {
         return UIDeviceOrientationIsPortrait(UIDevice.current.orientation) ? heightsBySectionForPortrait : heightsBySectionForLandscape
     }
-    
+
     func enumerateAllOrientations(using handle: (inout FDIndexPathHeightsBySection) -> Void) {
         handle(&heightsBySectionForPortrait)
         handle(&heightsBySectionForLandscape)
     }
-    
+
     // Height cache
     func existsHeight(at indexPath: IndexPath) -> Bool {
         buildCachesAtIndexPathsIfNeeded([indexPath])
         let number = heightsBySectionForCurrentOrientation[indexPath.section][indexPath.row]
         return number != -1
     }
-    
+
     func cache(height: CGFloat, by indexPath: IndexPath) {
         automaticallyInvalidateEnabled = true
         buildCachesAtIndexPathsIfNeeded([indexPath])
@@ -40,19 +40,19 @@ class QMUICellHeightIndexPathCache {
             heightsBySectionForLandscape[indexPath.section][indexPath.row] = height
         }
     }
-    
+
     func height(for indexPath: IndexPath) -> CGFloat {
         buildCachesAtIndexPathsIfNeeded([indexPath])
         return heightsBySectionForCurrentOrientation[indexPath.section][indexPath.row]
     }
-    
+
     func invalidateHeight(at indexPath: IndexPath) {
         buildCachesAtIndexPathsIfNeeded([indexPath])
         enumerateAllOrientations { heightsBySection in
             heightsBySection[indexPath.section][indexPath.row] = -1
         }
     }
-    
+
     func buildCachesAtIndexPathsIfNeeded(_ indexPaths: [IndexPath]) {
         // Build every section array or row array which is smaller than given index path.
         for indexPath in indexPaths {
@@ -60,7 +60,7 @@ class QMUICellHeightIndexPathCache {
             buildRowsIfNeeded(targetRow: indexPath.row, inExist: indexPath.section)
         }
     }
-    
+
     func invalidateAllHeightCache() {
         enumerateAllOrientations { heightsBySection in
             heightsBySection.removeAll()

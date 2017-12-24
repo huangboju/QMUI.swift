@@ -19,7 +19,7 @@ protocol QMUINavigationControllerDelegate: class {
 
     /// 设置每个界面导航栏的显示/隐藏以及是否需要动画，为了减少对项目的侵入性，默认不开启这个接口的功能，只有当配置表中的 NavigationBarHiddenStateUsable 被设置 YES 时才会开启此功能。
     var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState { get }
-    
+
     /**
      *  在 self.navigationController 进行以下 4 个操作前，相应的 viewController 的 willPopInNavigationControllerWithAnimated: 方法会被调用：
      *  1. popViewControllerAnimated:
@@ -110,11 +110,11 @@ extension QMUINavigationControllerDelegate {
         return UIColor.blue
     }
 
-    func willPopInNavigationController(with animated: Bool) {}
+    func willPopInNavigationController(with _: Bool) {}
 
-    func didPopInNavigationController(with animated: Bool) {}
+    func didPopInNavigationController(with _: Bool) {}
 
-    func viewControllerKeepingAppearWhenSetViewControllers(with animated: Bool) {}
+    func viewControllerKeepingAppearWhenSetViewControllers(with _: Bool) {}
 
     func backBarButtonItemTitle(with _: UIViewController) -> String {
         return ""
@@ -204,7 +204,7 @@ class QMUINavigationController: UINavigationController {
         //        NSAssert(NO, @"isViewControllerTransiting = YES, %s, self.viewControllers = %@", __func__, self.viewControllers)
         //        return nil
         //    }
-        
+
         if topViewController == viewController {
             // 当要被 pop 到的 viewController 已经处于最顶层时，调用 super 默认也是什么都不做，所以直接 return 掉
             return super.popToViewController(viewController, animated: animated)
@@ -213,18 +213,18 @@ class QMUINavigationController: UINavigationController {
         if animated {
             isViewControllerTransiting = true
         }
-        
+
         viewControllerPopping = topViewController
 
         // will pop
-        
+
         for (i, viewControllerPopping) in viewControllers.reversed().enumerated() {
             if viewControllerPopping == viewController {
                 break
             }
 
             if let vc = viewControllerPopping as? QMUINavigationControllerDelegate {
-                let animatedArgument = i == viewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
                 vc.willPopInNavigationController(with: animatedArgument)
             }
         }
@@ -236,11 +236,11 @@ class QMUINavigationController: UINavigationController {
         // did pop
         for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
             if let vc = viewControllerPopped as? QMUINavigationControllerDelegate {
-                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
                 vc.didPopInNavigationController(with: animatedArgument)
             }
         }
-        
+
         return poppedViewControllers
     }
 
@@ -250,23 +250,23 @@ class QMUINavigationController: UINavigationController {
         //        NSAssert(NO, @"isViewControllerTransiting = YES, %s, self.viewControllers = %@", __func__, self.viewControllers)
         //        return nil
         //    }
-        
+
         // 在配合 tabBarItem 使用的情况下，快速重复点击相同 item 可能会重复调用 popToRootViewControllerAnimated:，而此时其实已经处于 rootViewController 了，就没必要继续走后续的流程，否则一些变量会得不到重置。
         if topViewController == qmui_rootViewController {
             return nil
         }
-        
+
         if animated {
             isViewControllerTransiting = true
         }
-        
+
         viewControllerPopping = topViewController
-        
+
         // will pop
-        
+
         for (i, viewControllerPopping) in viewControllers.reversed().enumerated() {
             if let vc = viewControllerPopping as? QMUINavigationControllerDelegate {
-                let animatedArgument = i == viewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
                 vc.willPopInNavigationController(with: animatedArgument)
             }
         }
@@ -278,7 +278,7 @@ class QMUINavigationController: UINavigationController {
         // did pop
         for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
             if let vc = viewControllerPopped as? QMUINavigationControllerDelegate {
-                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false// 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
                 vc.didPopInNavigationController(with: animatedArgument)
             }
         }

@@ -9,7 +9,7 @@
 protocol QMUINavigationTitleViewDelegate: class {
     /**
      点击 titleView 后的回调，只需设置 titleView.userInteractionEnabled = YES 后即可使用。不过一般都用于配合 QMUINavigationTitleViewAccessoryTypeDisclosureIndicator。
-     
+
      @param titleView 被点击的 titleView
      @param isActive titleView 是否处于活跃状态（所谓的活跃，对应右边的箭头而言，就是点击后箭头向上的状态）
      */
@@ -17,7 +17,7 @@ protocol QMUINavigationTitleViewDelegate: class {
 
     /**
      titleView 的活跃状态发生变化时会被调用，也即 [titleView setActive:] 被调用时。
-     
+
      @param active 是否处于活跃状态
      @param titleView 变换状态的 titleView
      */
@@ -25,20 +25,20 @@ protocol QMUINavigationTitleViewDelegate: class {
 }
 
 extension QMUINavigationTitleViewDelegate {
-    func didTouch(titleView: QMUINavigationTitleView, isActive: Bool) {}
-    func didChanged(active: Bool, for titleView: QMUINavigationTitleView) {}
+    func didTouch(titleView _: QMUINavigationTitleView, isActive _: Bool) {}
+    func didChanged(active _: Bool, for _: QMUINavigationTitleView) {}
 }
 
 /// 设置title和subTitle的布局方式，默认是水平布局。
 enum QMUINavigationTitleViewStyle {
-    case `default`                // 水平
-    case subTitleVertical        // 垂直
+    case `default` // 水平
+    case subTitleVertical // 垂直
 }
 
 /// 设置titleView的样式，默认没有任何修饰
 enum QMUINavigationTitleViewAccessoryType {
-    case none                     // 默认
-    case disclosureIndicator     // 有下拉箭头
+    case none // 默认
+    case disclosureIndicator // 有下拉箭头
 }
 
 /**
@@ -61,7 +61,7 @@ class QMUINavigationTitleView: UIControl {
             if style == .subTitleVertical {
                 titleLabel.font = verticalTitleFont
                 updateTitleLabelSize()
-                
+
                 subtitleLabel.font = verticalSubtitleFont
                 updateSubtitleLabelSize()
             } else {
@@ -74,6 +74,7 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
+
     public var isActive = false {
         didSet {
             delegate?.didChanged(active: isActive, for: self)
@@ -83,8 +84,8 @@ class QMUINavigationTitleView: UIControl {
             let angle: CGFloat = isActive ? -180 : 0.1
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseIn, animations: {
                 self.accessoryTypeView?.transform = CGAffineTransform(rotationAngle: AngleWithDegrees(angle))
-            }, completion: { (finished) in
-                self.accessoryViewAnimating  = false
+            }, completion: { _ in
+                self.accessoryViewAnimating = false
             })
         }
     }
@@ -109,7 +110,7 @@ class QMUINavigationTitleView: UIControl {
     }
 
     /// 水平布局下的标题字体，默认为 NavBarTitleFont
-    public var  horizontalTitleFont = NavBarTitleFont {
+    public var horizontalTitleFont = NavBarTitleFont {
         didSet {
             guard style == .default else { return }
             titleLabel.font = horizontalTitleFont
@@ -161,12 +162,11 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
-    
-    
+
     // MARK: - Loading
-    
+
     public private(set) var loadingView: UIActivityIndicatorView?
-    
+
     /*
      *  设置是否需要loading，只有开启了这个属性，loading才有可能显示出来。默认值为false。
      */
@@ -189,7 +189,7 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
-    
+
     /*
      *  `needsLoadingView`开启之后，通过这个属性来控制loading的显示和隐藏，默认值为YES
      *
@@ -203,7 +203,7 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
-    
+
     /*
      *  如果为true则title居中，loading放在title的左边，title右边有一个跟左边loading一样大的占位空间；如果为false，loading和title整体居中。默认值为true。
      */
@@ -212,9 +212,9 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
-    
+
     public var loadingViewSize = CGSize(width: 18, height: 18)
-    
+
     /*
      *  控制loading距离右边的距离
      */
@@ -223,8 +223,7 @@ class QMUINavigationTitleView: UIControl {
             refreshLayout()
         }
     }
-    
-    
+
     // MARK: - Accessory
 
     /*
@@ -294,20 +293,19 @@ class QMUINavigationTitleView: UIControl {
     private var subtitleLabelSize: CGSize = .zero
     private var accessoryTypeView: UIImageView?
 
-    
     convenience override init(frame: CGRect) {
-        self.init(style: .`default` , frame: frame)
+        self.init(style: .default, frame: frame)
     }
 
     convenience init(style: QMUINavigationTitleViewStyle) {
         self.init(style: style, frame: .zero)
     }
-    
+
     init(style: QMUINavigationTitleViewStyle, frame: CGRect) {
         super.init(frame: frame)
-        
+
         addTarget(self, action: #selector(handleTouchTitleViewEvent), for: .touchUpInside)
-        
+
         titleLabel = UILabel()
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -323,21 +321,21 @@ class QMUINavigationTitleView: UIControl {
         self.style = style
 
         // TODO:
-//        let appearance = QMUINavigationTitleView.appearance
-//        loadingViewSize = appearance.loadingViewSize
-//        loadingViewMarginRight = appearance.loadingViewMarginRight
-//        horizontalTitleFont = appearance.horizontalTitleFont
-//        horizontalSubtitleFont = appearance.horizontalSubtitleFont
-//        verticalTitleFont = appearance.verticalTitleFont
-//        verticalSubtitleFont = appearance.verticalSubtitleFont
-//        accessoryViewOffset = appearance.accessoryViewOffset
+        //        let appearance = QMUINavigationTitleView.appearance
+        //        loadingViewSize = appearance.loadingViewSize
+        //        loadingViewMarginRight = appearance.loadingViewMarginRight
+        //        horizontalTitleFont = appearance.horizontalTitleFont
+        //        horizontalSubtitleFont = appearance.horizontalSubtitleFont
+        //        verticalTitleFont = appearance.verticalTitleFont
+        //        verticalSubtitleFont = appearance.verticalSubtitleFont
+        //        accessoryViewOffset = appearance.accessoryViewOffset
         tintColor = NavBarTitleColor
     }
-    
+
     override var description: String {
         return "\(super.description), title = \(title ?? ""), subtitle = \(subtitle ?? "")"
     }
-    
+
     // MARK: - 布局
 
     func refreshLayout() {
@@ -362,7 +360,7 @@ class QMUINavigationTitleView: UIControl {
             subtitleLabelSize = .zero
         }
     }
-    
+
     var loadingViewSpacingSize: CGSize {
         if needsLoadingView {
             return CGSize(width: loadingViewSize.width + loadingViewMarginRight, height: loadingViewSize.height)
@@ -409,18 +407,18 @@ class QMUINavigationTitleView: UIControl {
             size.height = titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue + subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue
         } else {
             size.width = titleLabelSize.width + titleEdgeInsetsIfShowingTitleLabel.horizontalValue + self.subtitleLabelSize.width + subtitleEdgeInsetsIfShowingSubtitleLabel.horizontalValue
-            size.width += loadingViewSpacingSizeIfNeedsPlaceholder.width +  accessorySpacingSizeIfNeedesPlaceholder.width
+            size.width += loadingViewSpacingSizeIfNeedsPlaceholder.width + accessorySpacingSizeIfNeedesPlaceholder.width
             size.height = max(titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue, subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue)
             size.height = max(size.height, loadingViewSpacingSizeIfNeedsPlaceholder.height)
             size.height = max(size.height, accessorySpacingSizeIfNeedesPlaceholder.height)
         }
         return size.flatted
     }
-    
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
+
+    override func sizeThatFits(_: CGSize) -> CGSize {
         return contentSize
     }
-    
+
     override func layoutSubviews() {
         if bounds.size.isEmpty {
             print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
@@ -429,7 +427,7 @@ class QMUINavigationTitleView: UIControl {
         if accessoryViewAnimating {
             return
         }
-    
+
         super.layoutSubviews()
 
         let alignLeft = contentHorizontalAlignment == .left
@@ -465,15 +463,15 @@ class QMUINavigationTitleView: UIControl {
 
         // 计算accessoryView占的单边宽度
         let accessoryViewSpace = accessorySpacingSize.width
-        
+
         let isTitleLabelShowing = !(titleLabel.text?.isEmpty ?? false)
         let isSubtitleLabelShowing = !(subtitleLabel.text?.isEmpty ?? false)
         let titleEdgeInsets = titleEdgeInsetsIfShowingTitleLabel
         let subtitleEdgeInsets = subtitleEdgeInsetsIfShowingSubtitleLabel
-        
+
         var minX = offsetLeft + (needsAccessoryPlaceholderSpace ? accessoryViewSpace : 0)
         var maxX = maxSize.width - offsetRight - (needsLoadingPlaceholderSpace ? loadingViewSpace : 0)
-        
+
         if style == .subTitleVertical {
 
             if let loadingView = loadingView {
@@ -507,7 +505,7 @@ class QMUINavigationTitleView: UIControl {
                 accessoryView.frame.setXY(maxX - accessoryView.bounds.width, maxSize.height.center(with: accessoryView.bounds.height) + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
-            if (isSubtitleLabelShowing) {
+            if isSubtitleLabelShowing {
                 maxX -= subtitleEdgeInsets.right
                 // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
                 let shouldSubtitleLabelCenterVertically = subtitleLabelSize.height + subtitleEdgeInsets.verticalValue < contentSize.height
@@ -517,7 +515,7 @@ class QMUINavigationTitleView: UIControl {
             } else {
                 subtitleLabel.frame = .zero
             }
-            if (isTitleLabelShowing) {
+            if isTitleLabelShowing {
                 minX += titleEdgeInsets.left
                 maxX -= titleEdgeInsets.right
                 // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
@@ -529,7 +527,6 @@ class QMUINavigationTitleView: UIControl {
             }
         }
     }
-
 
     // MARK: - setter / getter
     override var contentHorizontalAlignment: UIControlContentHorizontalAlignment {
@@ -544,7 +541,6 @@ class QMUINavigationTitleView: UIControl {
         subtitleLabel.textColor = tintColor
         loadingView?.color = tintColor
     }
-
 
     // MARK: - Events
 
@@ -561,7 +557,7 @@ class QMUINavigationTitleView: UIControl {
         refreshLayout()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -587,7 +583,7 @@ extension UINavigationBar: SelfAware {
             // 当在UINavigationBar里使用自定义的titleView时，就算titleView的sizeThatFits:返回正确的高度，navigationBar也不会帮你设置高度（但会帮你设置宽度），所以我们需要自己更新高度并且修正y值
             if titleView.bounds.height != titleViewSize.height {
                 //            NSLog(@"【%@】修正布局前\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
-                let titleViewMinY = flat(titleView.frame.minY - ((titleViewSize.height - titleView.bounds.height) / 2.0))// 系统对titleView的y值布局是flat，注意，不能改，改了要测试
+                let titleViewMinY = flat(titleView.frame.minY - ((titleViewSize.height - titleView.bounds.height) / 2.0)) // 系统对titleView的y值布局是flat，注意，不能改，改了要测试
                 titleView.frame = CGRect(x: titleView.frame.minX, y: titleViewMinY, width: CGFloat(fminf(Float(titleViewMaximumWidth), Float(titleViewSize.width))), height: titleViewSize.height)
                 //            NSLog(@"【%@】修正布局后\ntitleView = %@", NSStringFromClass(titleView.class), titleView)
             }

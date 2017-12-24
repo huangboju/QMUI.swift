@@ -7,9 +7,9 @@
 //
 
 enum QMUIModalPresentationAnimationStyle {
-    case fade    // 渐现渐隐，默认
-    case popup   // 从中心点弹出
-    case slide   // 从下往上升起
+    case fade // 渐现渐隐，默认
+    case popup // 从中心点弹出
+    case slide // 从下往上升起
 }
 
 protocol QMUIModalPresentationContentViewControllerProtocol: class {
@@ -45,7 +45,6 @@ protocol QMUIModalPresentationViewControllerDelegate: class {
 
     func requestHideAllModalPresentationViewController()
 }
-
 
 /**
  *  一个提供通用的弹出浮层功能的控件，可以将任意`UIView`或`UIViewController`以浮层的形式显示出来并自动布局。
@@ -88,7 +87,7 @@ protocol QMUIModalPresentationViewControllerDelegate: class {
 class QMUIModalPresentationViewController: UIViewController {
 
     public var delegate: QMUIModalPresentationViewControllerDelegate?
-    
+
     /**
      *  要被弹出的浮层
      *  @warning 当设置了`contentView`时，不要再设置`contentViewController`
@@ -126,29 +125,29 @@ class QMUIModalPresentationViewController: UIViewController {
             addTapGestureRecognizerToDimmingViewIfNeeded()
         }
     }
-    
+
     /**
      *  由于点击遮罩导致浮层被隐藏时的回调（区分于`hideWithAnimated:completion:`里的completion，这里是特地用于点击遮罩的情况）
      */
     public var didHideByDimmingViewTappedBlock: (() -> Void)?
-    
+
     /**
      *  控制当前是否以模态的形式存在。如果以模态的形式存在，则点击空白区域不会隐藏浮层。
      *
      *  默认为false，也即点击空白区域将会自动隐藏浮层。
      */
     public var isModal = false
-    
+
     /**
      *  标志当前浮层的显示/隐藏状态，默认为false。
      */
     public var isVisible = false
-    
+
     /**
      *  修改当前界面要支持的横竖屏方向，默认为 SupportedOrientationMask。
      */
     public var supportedOrientationMask: UIInterfaceOrientationMask = SupportedOrientationMask
-    
+
     /**
      *  设置要使用的显示/隐藏动画的类型，默认为`QMUIModalPresentationAnimationStyleFade`。
      *  @warning 当使用了`showingAnimation`和`hidingAnimation`时，该属性无效
@@ -165,7 +164,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @see maximumContentViewWidth
      */
     public var layoutBlock: ((_ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ contentViewDefaultFrame: CGRect) -> Void)?
-    
+
     /**
      *  管理自定义的显示动画，需要管理的对象包括`contentView`和`dimmingView`，在`showingAnimation`被调用前，`contentView`已被添加到界面上。若使用了`layoutBlock`，则会先调用`layoutBlock`，再调用`showingAnimation`。在动画结束后，必须调用参数里的`completion` block。
      *  @arg  dimmingView         背景遮罩的View，请自行设置显示遮罩的动画
@@ -185,16 +184,15 @@ class QMUIModalPresentationViewController: UIViewController {
      */
     public var hidingAnimation: ((_ dimmingView: UIView, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) -> Void)?
 
-
     private var containerWindow: QMUIModalPresentationWindow?
     private weak var previousKeyWindow: UIWindow?
-    
+
     private var appearAnimated = false
     private var appearCompletionBlock: ((Bool) -> Void)?
-    
+
     private var disappearAnimated = false
     private var disappearCompletionBlock: ((Bool) -> Void)?
-    
+
     /// 标志是否已经走过一次viewWillAppear了，用于hideInView的情况
     private var hasAlreadyViewWillDisappear = false
 
@@ -206,22 +204,22 @@ class QMUIModalPresentationViewController: UIViewController {
         modalPresentationStyle = .custom
         initDefaultDimmingViewWithoutAddToView()
     }
-    
+
     deinit {
         containerWindow = nil
     }
-    
+
     override var shouldAutomaticallyForwardAppearanceMethods: Bool {
         return false
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if let dimmingView = dimmingView, dimmingView.superview == nil {
             view.addSubview(dimmingView)
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         dimmingView?.frame = view.bounds
@@ -233,12 +231,12 @@ class QMUIModalPresentationViewController: UIViewController {
             contentView?.frame = contentViewFrame
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         var _animated = animated
-        
+
         if containerWindow != nil {
             // 只有使用showWithAnimated:completion:显示出来的浮层，才需要修改之前就记住的animated的值
             _animated = appearAnimated
@@ -253,7 +251,7 @@ class QMUIModalPresentationViewController: UIViewController {
         }
 
         QMUIHelper.dimmedApplicationWindow()
-        
+
         let didShownCompletion: (Bool) -> Void = {
             self.contentViewController?.endAppearanceTransition()
 
@@ -312,26 +310,26 @@ class QMUIModalPresentationViewController: UIViewController {
         if dimmingView == nil {
             return
         }
-        
+
         if dimmingViewTapGestureRecognizer?.view == dimmingView {
             return
         }
-        
+
         if dimmingViewTapGestureRecognizer == nil {
             dimmingViewTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDimmingViewTapGestureRecognizer))
         }
         dimmingView?.addGestureRecognizer(dimmingViewTapGestureRecognizer!)
-        dimmingView?.isUserInteractionEnabled = true// UIImageView默认userInteractionEnabled为NO，为了兼容UIImageView，这里必须主动设置为YES
+        dimmingView?.isUserInteractionEnabled = true // UIImageView默认userInteractionEnabled为NO，为了兼容UIImageView，这里必须主动设置为YES
     }
-    
-    @objc func handleDimmingViewTapGestureRecognizer(_ tapGestureRecognizer: UITapGestureRecognizer) {
+
+    @objc func handleDimmingViewTapGestureRecognizer(_: UITapGestureRecognizer) {
         if isModal {
             return
         }
 
         if containerWindow != nil {
             // 认为是以 UIWindow 的形式显示出来
-            hide(with: true, completion: { [weak self] (finished) in
+            hide(with: true, completion: { [weak self] _ in
                 self?.didHideByDimmingViewTappedBlock?()
             })
         } else if let presentingViewController = presentingViewController, presentingViewController.presentedViewController == self {
@@ -346,9 +344,9 @@ class QMUIModalPresentationViewController: UIViewController {
             }
         }
     }
-    
+
     // MARK: - Showing and Hiding
-    
+
     func showingAnimation(with completion: ((Bool) -> Void)?) {
         if animationStyle == .fade {
             dimmingView?.alpha = 0.0
@@ -391,14 +389,14 @@ class QMUIModalPresentationViewController: UIViewController {
         if containerWindow == nil {
             containerWindow = QMUIModalPresentationWindow()
             containerWindow?.windowLevel = UIWindowLevelQMUIAlertView
-            containerWindow?.backgroundColor = UIColorClear// 避免横竖屏旋转时出现黑色
+            containerWindow?.backgroundColor = UIColorClear // 避免横竖屏旋转时出现黑色
         }
 
         supportedOrientationMask = QMUIHelper.visibleViewController?.supportedInterfaceOrientations ?? supportedOrientationMask
         containerWindow?.rootViewController = self
         containerWindow?.makeKeyAndVisible()
     }
-    
+
     private func hidingAnimation(with completion: ((Bool) -> Void)?) {
         if animationStyle == .fade {
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
@@ -409,7 +407,7 @@ class QMUIModalPresentationViewController: UIViewController {
             UIView.animate(withDuration: 0.3, delay: 0, options: .curveOut, animations: {
                 self.dimmingView?.alpha = 0.0
                 self.contentView?.transform = CGAffineTransform(scaleX: 0, y: 0)
-            }, completion: { (finished) in
+            }, completion: { finished in
                 if let completion = completion {
                     self.contentView?.transform = .identity
                     completion(finished)
@@ -437,7 +435,7 @@ class QMUIModalPresentationViewController: UIViewController {
     public func hide(with animated: Bool, completion: ((Bool) -> Void)?) {
         self.disappearAnimated = animated
         self.disappearCompletionBlock = completion
-        
+
         var shouldHide = true
         if let delegate = delegate {
             shouldHide = delegate.shouldHideModalPresentationViewController(self)
@@ -476,7 +474,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @param completion   隐藏动画结束后的回调
      *  @warning 这里的`completion`只会在你显式调用`hideInView:animated:completion:`方法来隐藏浮层时会被调用，如果你通过点击`dimmingView`来触发`hideInView:animated:completion:`，则completion是不会被调用的，那种情况下如果你要在浮层隐藏后做一些事情，请使用`delegate`提供的`didHideModalPresentationViewController:`方法。
      */
-    public func hide(in view: UIView, animated: Bool, completion: ((Bool) -> Void)?) {
+    public func hide(in _: UIView, animated: Bool, completion: ((Bool) -> Void)?) {
         disappearCompletionBlock = completion
         beginAppearanceTransition(false, animated: animated)
         hasAlreadyViewWillDisappear = true
@@ -514,7 +512,7 @@ class QMUIModalPresentationViewController: UIViewController {
         }
     }
 
-    @objc func handleKeyboardWillHide(_ notification: NSNotification) {
+    @objc func handleKeyboardWillHide(_: NSNotification) {
         keyboardHeight = 0
         view.setNeedsLayout()
     }
@@ -527,7 +525,7 @@ class QMUIModalPresentationViewController: UIViewController {
         }
         return true
     }
-    
+
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         let visibleViewController = QMUIHelper.visibleViewController
         if visibleViewController != self {
@@ -551,7 +549,7 @@ extension QMUIModalPresentationViewController {
         }
         return false
     }
-    
+
     /**
      *  把所有正在显示的并且允许被隐藏的modalViewController都隐藏掉
      *  @return 只要遇到一个正在显示的并且不能被隐藏的浮层，就会返回false，否则都返回true，表示成功隐藏掉所有可视浮层
@@ -559,17 +557,17 @@ extension QMUIModalPresentationViewController {
      */
     class var hideAllVisibleModalPresentationViewControllerIfCan: Bool {
         var hideAllFinally = true
-        
+
         for window in UIApplication.shared.windows {
             if !(window is QMUIModalPresentationWindow) {
                 continue
             }
-            
+
             // 存在modalViewController，但并没有显示出来，所以不用处理
             if window.isHidden {
                 continue
             }
-            
+
             // 存在window，但不存在modalViewController，则直接把这个window移除
             if window.rootViewController == nil {
                 window.isHidden = true
@@ -593,7 +591,7 @@ extension QMUIModalPresentationViewController {
                 hideAllFinally = false
             }
         }
-        
+
         return hideAllFinally
     }
 }

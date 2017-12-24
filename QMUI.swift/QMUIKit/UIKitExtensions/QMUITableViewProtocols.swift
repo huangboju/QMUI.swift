@@ -29,7 +29,6 @@ protocol QMUITableViewDelegate: UITableViewDelegate {
 
 protocol QMUITableViewDataSource: UITableViewDataSource, qmui_UITableViewDataSource {}
 
-
 extension QMUITableViewDelegate {
     func shouldShowSearchBar(in _: QMUITableView) -> Bool {
         return false

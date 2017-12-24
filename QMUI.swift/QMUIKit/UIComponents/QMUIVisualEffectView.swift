@@ -10,7 +10,7 @@ enum QMUIVisualEffectViewStyle {
     case extraLight
     case light
     case dark
-    
+
     var effStyle: UIBlurEffectStyle {
         let effStyle: UIBlurEffectStyle
         switch self {
@@ -27,7 +27,7 @@ enum QMUIVisualEffectViewStyle {
 
 class QMUIVisualEffectView: UIView {
     public private(set) var style: QMUIVisualEffectViewStyle = .light
-    
+
     private var effectView: UIVisualEffectView?
 
     convenience init(style: QMUIVisualEffectViewStyle) {

@@ -23,32 +23,38 @@ class QMUIDialogViewController: QMUICommonViewController {
             }
         }
     }
+
     public var contentViewMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     public var titleTintColor = UIColorBlack {
         didSet {
             titleView?.tintColor = titleTintColor
         }
     }
+
     public var titleLabelFont = UIFontMake(16) {
         didSet {
             titleView?.titleLabel.font = titleLabelFont
         }
     }
+
     public var titleLabelTextColor = UIColor(r: 53, g: 60, b: 70) {
         didSet {
             titleView?.titleLabel.textColor = titleLabelTextColor
         }
     }
+
     public var subTitleLabelFont = UIFontMake(12) {
         didSet {
             titleView?.subtitleLabel.font = subTitleLabelFont
         }
     }
+
     public var subTitleLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
         didSet {
             titleView?.subtitleLabel.textColor = subTitleLabelTextColor
         }
     }
+
     public var headerFooterSeparatorColor = UIColor(r: 222, g: 224, b: 226) {
         didSet {
             headerViewSeparatorLayer.backgroundColor = headerFooterSeparatorColor.cgColor
@@ -56,6 +62,7 @@ class QMUIDialogViewController: QMUICommonViewController {
             buttonSeparatorLayer.backgroundColor = headerFooterSeparatorColor.cgColor
         }
     }
+
     public var headerViewHeight: CGFloat = 48
     public var headerViewBackgroundColor = UIColor(r: 244, g: 245, b: 247) {
         didSet {
@@ -64,12 +71,14 @@ class QMUIDialogViewController: QMUICommonViewController {
             }
         }
     }
+
     public var footerViewHeight: CGFloat = 48
     public var footerViewBackgroundColor = UIColorWhite {
         didSet {
             footerView.backgroundColor = footerViewBackgroundColor
         }
     }
+
     public var buttonTitleAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColorBlue, .kern: 2] {
         didSet {
             if let cancelTitle = cancelButton?.attributedTitle(for: .normal)?.string {
@@ -80,6 +89,7 @@ class QMUIDialogViewController: QMUICommonViewController {
             }
         }
     }
+
     public var buttonHighlightedBackgroundColor = UIColorBlue.withAlphaComponent(0.25) {
         didSet {
             cancelButton?.highlightedBackgroundColor = buttonHighlightedBackgroundColor
@@ -108,7 +118,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 
     public let footerView = UIView()
     public let footerViewSeparatorLayer = CALayer()
-    
+
     public private(set) var cancelButton: QMUIButton?
     public private(set) var submitButton: QMUIButton?
     public let buttonSeparatorLayer = CALayer()
@@ -116,35 +126,35 @@ class QMUIDialogViewController: QMUICommonViewController {
     private var hasCustomContentView = false
     private var cancelButtonBlock: ((QMUIDialogViewController) -> Void)?
     private var submitButtonBlock: ((QMUIDialogViewController) -> Void)?
-    
-    override func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
+
+    override func setNavigationItems(isInEditMode _: Bool, animated _: Bool) {
         // 不继承父类的实现，从而避免把 titleView 放到 navigationItem 上
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // subview都在[super viewDidLoad]里添加，所以在添加完subview后再强制把headerView和footerView拉到最前面，以保证分隔线不会被subview盖住
         view.bringSubview(toFront: headerView)
         view.bringSubview(toFront: footerView)
 
-        view.backgroundColor = UIColorClear// 减少Color Blended Layers
+        view.backgroundColor = UIColorClear // 减少Color Blended Layers
         view.layer.cornerRadius = cornerRadius
         view.layer.masksToBounds = true
     }
-    
+
     override func initSubviews() {
         super.initSubviews()
-        
+
         if hasCustomContentView {
             if contentView.superview == nil {
                 view.insertSubview(contentView, at: 0)
             }
         } else {
-//            _contentView = [[UIView alloc] init]// 特地不使用setter，从而不要影响self.hasCustomContentView的默认值
+            //            _contentView = [[UIView alloc] init]// 特地不使用setter，从而不要影响self.hasCustomContentView的默认值
             contentView.backgroundColor = UIColorWhite
             view.addSubview(contentView)
         }
-        
+
         headerView.frame = CGSize(width: view.bounds.width, height: headerViewHeight).rect
         headerView.backgroundColor = headerViewBackgroundColor
 
@@ -161,13 +171,11 @@ class QMUIDialogViewController: QMUICommonViewController {
 
         initFooterViewIfNeeded()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         let isFooterViewShowing = !footerView.isHidden
-        
-        
 
         headerView.frame = CGSize(width: view.bounds.width, height: headerViewHeight).rect
         headerViewSeparatorLayer.frame = CGRect(x: 0, y: headerView.bounds.height, width: headerView.bounds.width, height: PixelOne)
@@ -234,7 +242,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 
     public func addSubmitButton(with buttonText: String, block: ((QMUIDialogViewController) -> Void)?) {
         submitButton?.removeFromSuperview()
-        
+
         submitButton = generateButton(with: buttonText)
         submitButton?.addTarget(self, action: #selector(handleSubmitButtonEvent), for: .touchUpInside)
 
@@ -254,7 +262,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         return button
     }
 
-    public func show(with animated: Bool = true, completion: ((Bool) -> Void)? = nil) {
+    public func show(with _: Bool = true, completion: ((Bool) -> Void)? = nil) {
         let modalPresentationViewController = QMUIModalPresentationViewController()
         modalPresentationViewController.contentViewMargins = contentViewMargins
         modalPresentationViewController.contentViewController = self
@@ -266,19 +274,19 @@ class QMUIDialogViewController: QMUICommonViewController {
         modalPresentedViewController?.hide(with: animated, completion: completion)
     }
 
-    @objc func handleCancelButtonEvent(_ cancelButton: QMUIButton) {
+    @objc func handleCancelButtonEvent(_: QMUIButton) {
         hide(with: true) { _ in
             self.cancelButtonBlock?(self)
         }
     }
-    
-    @objc func handleSubmitButtonEvent(_ submitButton: QMUIButton) {
+
+    @objc func handleSubmitButtonEvent(_: QMUIButton) {
         submitButtonBlock?(self)
     }
 }
 
 extension QMUIDialogViewController: QMUIModalPresentationContentViewControllerProtocol {
-    @objc func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+    @objc func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         if !hasCustomContentView {
             return limitSize
         }
@@ -310,34 +318,34 @@ class QMUIDialogSelectionViewController: QMUIDialogViewController {
             selectedItemIndexes.removeAll()
         }
     }
-    
+
     /// 表示多选模式下已选中的item序号，默认为nil。此属性与 `selectedItemIndex` 互斥。
     public var selectedItemIndexes: Set<Int> = [] {
         didSet {
             selectedItemIndex = -1
         }
     }
-    
+
     /// 控制是否允许多选，默认为false。
     public var allowsMultipleSelection = false {
         didSet {
             selectedItemIndex = -1
         }
     }
-    
+
     public var cellForItemBlock: ((QMUIDialogSelectionViewController, QMUITableViewCell, Int) -> Void)?
     public var heightForItemBlock: ((QMUIDialogSelectionViewController, Int) -> CGFloat)?
     public var canSelectItemBlock: ((QMUIDialogSelectionViewController, Int) -> Bool)?
     public var didSelectItemBlock: ((QMUIDialogSelectionViewController, Int) -> Void)?
     public var didDeselectItemBlock: ((QMUIDialogSelectionViewController, Int) -> Void)?
-    
+
     override func didInitialized() {
         super.didInitialized()
         if #available(iOS 9.0, *) {
             loadViewIfNeeded()
         }
     }
-    
+
     override func initSubviews() {
         super.initSubviews()
         tableView.delegate = self
@@ -345,30 +353,30 @@ class QMUIDialogSelectionViewController: QMUIDialogViewController {
         tableView.alwaysBounceVertical = false
         view.addSubview(tableView)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let tableViewMinY = headerView.frame.maxY
         let tableViewHeight = view.bounds.height - tableViewMinY - (!footerView.isHidden ? footerView.frame.height : 0)
         tableView.frame = CGRect(x: 0, y: tableViewMinY, width: view.bounds.width, height: tableViewHeight)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // 当前的分组不在可视区域内，则滚动到可视区域（只对单选有效）
 
         let indexPath = IndexPath(item: selectedItemIndex, section: 0)
-        if (selectedItemIndex != -1 && selectedItemIndex < items.count && !tableView.qmui_cellVisible(at: indexPath)) {
+        if selectedItemIndex != -1 && selectedItemIndex < items.count && !tableView.qmui_cellVisible(at: indexPath) {
             tableView.scrollToRow(at: indexPath, at: .middle, animated: animated)
         }
     }
 }
 
 extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return items.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "cell"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
@@ -402,17 +410,17 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
 }
 
 extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightForItemBlock?(self, indexPath.row) ?? TableViewCellNormalHeight
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 单选情况下如果重复选中已被选中的cell，则什么都不做
-        if (!allowsMultipleSelection && selectedItemIndex == indexPath.row) {
+        if !allowsMultipleSelection && selectedItemIndex == indexPath.row {
             tableView.deselectRow(at: indexPath, animated: true)
             return
         }
-        
+
         // 不允许选中当前cell，直接return
         if let block = canSelectItemBlock, !block(self, indexPath.row) {
             tableView.deselectRow(at: indexPath, animated: true)
@@ -420,7 +428,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
         }
 
         if allowsMultipleSelection {
-            
+
             if selectedItemIndexes.contains(indexPath.row) {
                 // 当前的cell已经被选中，则取消选中
                 selectedItemIndexes.remove(indexPath.row)
@@ -429,13 +437,13 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
                 selectedItemIndexes.insert(indexPath.row)
                 didSelectItemBlock?(self, indexPath.row)
             }
-            
+
             if tableView.qmui_cellVisible(at: indexPath) {
                 tableView.reloadRows(at: [indexPath], with: .fade)
             }
         } else {
             var isSelectedIndexPathBeforeVisible = false
-            
+
             // 选中新的cell时，先反选之前被选中的那个cell
             var selectedIndexPathBefore: IndexPath?
             if selectedItemIndex != -1 {
@@ -445,7 +453,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
             }
 
             selectedItemIndex = indexPath.row
-            
+
             // 如果之前被选中的那个cell也在可视区域里，则也要用动画去刷新它，否则只需要用动画刷新当前已选中的cell即可，之前被选中的那个交给cellForRow去刷新
             if isSelectedIndexPathBeforeVisible {
                 tableView.reloadRows(at: [selectedIndexPathBefore!, indexPath], with: .fade)
@@ -460,7 +468,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
 
 extension QMUIDialogSelectionViewController {
     // MARK: - QMUIModalPresentationContentViewControllerProtocol
-    override func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+    override func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         let footerViewHeight = !footerView.isHidden ? footerView.frame.height : 0
         let tableViewLimitHeight = limitSize.height - headerView.frame.height - footerViewHeight
         let tableViewSize = tableView.sizeThatFits(CGSize(width: limitSize.width, height: tableViewLimitHeight))
@@ -475,7 +483,7 @@ extension QMUIDialogSelectionViewController {
  */
 class QMUIDialogTextFieldViewController: QMUIDialogViewController {
     private let textField = QMUITextField()
-    
+
     /// 是否自动控制提交按钮的enabled状态，默认为YES，则当输入框内容为空时禁用提交按钮
     public var enablesSubmitButtonAutomatically = true {
         didSet {
@@ -487,7 +495,7 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
     }
 
     public var shouldEnableSubmitButtonBlock: ((QMUIDialogTextFieldViewController) -> Bool)?
-    
+
     override func didInitialized() {
         super.didInitialized()
         if #available(iOS 9.0, *) {
@@ -496,10 +504,10 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
             // Fallback on earlier versions
         }
     }
-    
+
     override func initSubviews() {
         super.initSubviews()
-        textField.backgroundColor = UIColorWhite;
+        textField.backgroundColor = UIColorWhite
         textField.textInsets.left = 16
         textField.textInsets.right = 16
         textField.returnKeyType = .done
@@ -522,7 +530,7 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
         super.viewDidDisappear(animated)
         textField.resignFirstResponder()
     }
-    
+
     private func updateSubmitButtonEnables() {
         submitButton?.isEnabled = shouldEnabledSubmitButton
     }
@@ -531,7 +539,7 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
         if let shouldEnableSubmitButtonBlock = shouldEnableSubmitButtonBlock {
             return shouldEnableSubmitButtonBlock(self)
         }
-        
+
         if enablesSubmitButtonAutomatically {
             let textLength = textField.text?.qmui_trim.length ?? 0
             return 0 < textLength && textLength <= textField.maximumTextLength
@@ -550,9 +558,9 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
         super.addSubmitButton(with: buttonText, block: block)
         updateSubmitButtonEnables()
     }
-    
-    override func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+
+    override func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         let textFieldHeight: CGFloat = 56
-        return CGSize(width: limitSize.width, height: headerView.frame.height + textFieldHeight + (!footerView.isHidden ?  self.footerView.frame.height : 0))
+        return CGSize(width: limitSize.width, height: headerView.frame.height + textFieldHeight + (!footerView.isHidden ? footerView.frame.height : 0))
     }
 }

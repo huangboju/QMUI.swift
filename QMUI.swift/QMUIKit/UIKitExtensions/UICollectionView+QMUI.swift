@@ -18,7 +18,7 @@ extension UICollectionView {
         }
         return false
     }
-    
+
     /**
      *  获取某个view在collectionView内对应的indexPath
      *
@@ -32,7 +32,7 @@ extension UICollectionView {
         }
         return nil
     }
-    
+
     /// 递归找到view在哪个cell里，不存在则返回nil
     private func parentCell(for view: UIView) -> UICollectionViewCell? {
         guard let cell = view.superview as? UICollectionViewCell else {

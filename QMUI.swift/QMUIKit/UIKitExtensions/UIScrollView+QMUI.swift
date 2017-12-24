@@ -7,7 +7,7 @@
 //
 
 // TODO: 这里先注释掉，保证UITableView的Swizzle成功
-//extension UIScrollView: SelfAware {
+// extension UIScrollView: SelfAware {
 //    private static let _onceToken = UUID().uuidString
 //
 //    static func awake() {
@@ -15,7 +15,7 @@
 //            ReplaceMethod(self, #selector(description), #selector(qmui_description))
 //        }
 //    }
-//}
+// }
 
 extension UIScrollView {
 
@@ -24,7 +24,7 @@ extension UIScrollView {
     }
 
     @objc func qmui_description() -> String {
-        return self.qmui_description() + ", contentInset = \(contentInset)"
+        return qmui_description() + ", contentInset = \(contentInset)"
     }
 
     /// 判断UIScrollView是否已经处于顶部（当UIScrollView内容不够多不可滚动时，也认为是在顶部）

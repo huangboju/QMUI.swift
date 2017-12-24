@@ -11,18 +11,18 @@
  */
 protocol QMUIToastAnimatorDelegate {
     func show(with completion: ((Bool) -> Void)?)
-    
+
     func hide(with completion: ((Bool) -> Void)?)
-    
+
     var isShowing: Bool { get }
-    
+
     var isAnimating: Bool { get }
 }
 
 // TODO: 实现多种animation类型
 
 enum QMUIToastAnimationType: Int {
-    case fade      = 0
+    case fade = 0
     case zoom
     case slide
 }
@@ -31,7 +31,7 @@ enum QMUIToastAnimationType: Int {
  * `QMUIToastAnimator`可以让你通过实现一些协议来自定义ToastView显示和隐藏的动画。你可以继承`QMUIToastAnimator`，然后实现`QMUIToastAnimatorDelegate`中的方法，即可实现自定义的动画。QMUIToastAnimator默认也提供了几种type的动画：1、QMUIToastAnimationTypeFade；2、QMUIToastAnimationTypeZoom；3、QMUIToastAnimationTypeSlide；
  */
 class QMUIToastAnimator: NSObject {
-    
+
     private var _isShowing = false
     private var _isAnimating = false
 
@@ -40,7 +40,7 @@ class QMUIToastAnimator: NSObject {
      *
      * @param toastView 要使用这个animator的QMUIToastView实例。
      */
-    
+
     init(toastView: QMUIToastView) {
         super.init()
         self.toastView = toastView
@@ -50,7 +50,7 @@ class QMUIToastAnimator: NSObject {
      * 获取初始化传进来的QMUIToastView。
      */
     private(set) var toastView: QMUIToastView?
-    
+
     /**
      * 指定QMUIToastAnimator做动画的类型type。此功能暂时未实现，目前所有动画类型都是QMUIToastAnimationTypeFade。
      */
@@ -91,4 +91,3 @@ extension QMUIToastAnimator: QMUIToastAnimatorDelegate {
         return _isAnimating
     }
 }
-

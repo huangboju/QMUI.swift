@@ -86,7 +86,7 @@ public class QMUIButton: UIButton {
             }
         }
     }
-    
+
     /**
      *  等价于 adjustsTitleTintColorAutomatically = YES & adjustsImageTintColorAutomatically = YES & tintColor = xxx
      *  @note 一般只使用这个属性的 setter，而 getter 永远返回 self.tintColor
@@ -98,7 +98,7 @@ public class QMUIButton: UIButton {
             adjustsTitleTintColorAutomatically = true
             adjustsImageTintColorAutomatically = true
         }
-        
+
         get {
             return tintColor
         }
@@ -158,7 +158,7 @@ public class QMUIButton: UIButton {
         setImage(image, for: .normal)
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
@@ -188,7 +188,7 @@ public class QMUIButton: UIButton {
         imagePosition = .left
     }
 
-    override public func sizeThatFits(_ size: CGSize) -> CGSize {
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
         var size = size
         // 如果调用 sizeToFit，那么传进来的 size 就是当前按钮的 size，此时的计算不要去限制宽高
         if bounds.size.equalTo(size) {
@@ -237,7 +237,7 @@ public class QMUIButton: UIButton {
         return resultSize
     }
 
-    override public func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         if bounds.isEmpty {
@@ -374,7 +374,7 @@ public class QMUIButton: UIButton {
         }
     }
 
-    override public var isHighlighted: Bool {
+    public override var isHighlighted: Bool {
         didSet {
             if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
@@ -401,7 +401,7 @@ public class QMUIButton: UIButton {
         }
     }
 
-    override public var isEnabled: Bool {
+    public override var isEnabled: Bool {
         didSet {
             if !isEnabled && adjustsButtonWhenDisabled {
                 alpha = ButtonDisabledAlpha!
@@ -414,7 +414,7 @@ public class QMUIButton: UIButton {
     }
 
     private func adjustsButtonHighlighted() {
-        guard let  highlightedBackgroundColor = highlightedBackgroundColor else { return }
+        guard let highlightedBackgroundColor = highlightedBackgroundColor else { return }
 
         // TODO: 翻译CALayer+QMUI
         // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
@@ -459,7 +459,7 @@ public class QMUIButton: UIButton {
         }
     }
 
-    override public func setImage(_ image: UIImage?, for state: UIControlState) {
+    public override func setImage(_ image: UIImage?, for state: UIControlState) {
         var tmpImage: UIImage?
         if adjustsImageTintColorAutomatically {
             tmpImage = image?.withRenderingMode(.alwaysTemplate)
@@ -467,7 +467,7 @@ public class QMUIButton: UIButton {
         super.setImage(tmpImage, for: state)
     }
 
-    override public func tintColorDidChange() {
+    public override func tintColorDidChange() {
         super.tintColorDidChange()
 
         updateTitleColorIfNeeded()
@@ -501,20 +501,20 @@ class QMUINavigationButton: UIButton {
                 // 只针对返回按钮，调整箭头和title之间的间距
                 // @warning 这些数值都是每个iOS版本核对过没问题的，如果修改则要检查要每个版本里与系统UIBarButtonItem的布局是否一致
                 if useForBarButtonItem {
-                    let titleOffsetBaseOnSystem = UIOffset(horizontal: IOS_VERSION >= 11.0 ? 6 : 7, vertical: IOS_VERSION < 8.0 ? 1 : 0)// 经过这些数值的调整后，自定义返回按钮的位置才能和系统默认返回按钮的位置对准，而配置表里设置的值是在这个调整的基础上再调整
+                    let titleOffsetBaseOnSystem = UIOffset(horizontal: IOS_VERSION >= 11.0 ? 6 : 7, vertical: IOS_VERSION < 8.0 ? 1 : 0) // 经过这些数值的调整后，自定义返回按钮的位置才能和系统默认返回按钮的位置对准，而配置表里设置的值是在这个调整的基础上再调整
                     let configurationOffset = NavBarBarBackButtonTitlePositionAdjustment
                     self.titleEdgeInsets = UIEdgeInsets(top: titleOffsetBaseOnSystem.vertical + configurationOffset.vertical, left: titleOffsetBaseOnSystem.horizontal + configurationOffset.horizontal, bottom: -titleOffsetBaseOnSystem.vertical - configurationOffset.vertical, right: -titleOffsetBaseOnSystem.horizontal - configurationOffset.horizontal)
-                    self.contentEdgeInsets = UIEdgeInsetsMake(IOS_VERSION >= 11.0 ? 0 : 1,// iOS 11 以前的自定义返回按钮要特地往下偏移一点才会和系统的一模一样
-                        IOS_VERSION >= 11.0 ? -8 : 0,// iOS 11 使用了自定义按钮后整个按钮都会强制被往右边挪 8pt，所以这里要通过 contentEdgeInsets.left 偏移回来
-                        0,
-                        self.titleEdgeInsets.left);// 保证 button 有足够的宽度
+                    self.contentEdgeInsets = UIEdgeInsetsMake(IOS_VERSION >= 11.0 ? 0 : 1, // iOS 11 以前的自定义返回按钮要特地往下偏移一点才会和系统的一模一样
+                                                              IOS_VERSION >= 11.0 ? -8 : 0, // iOS 11 使用了自定义按钮后整个按钮都会强制被往右边挪 8pt，所以这里要通过 contentEdgeInsets.left 偏移回来
+                                                              0,
+                                                              self.titleEdgeInsets.left) // 保证 button 有足够的宽度
                 }
                 // 由于contentEdgeInsets会影响frame的大小，所以更新数值后需要重新计算size
                 self.sizeToFit()
             }
         }
     }
-    
+
     convenience init() {
         self.init(with: .normal)
     }
@@ -557,25 +557,25 @@ class QMUINavigationButton: UIButton {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     // 修复系统的UIBarButtonItem里的图片无法跟着tintColor走
     override func setImage(_ image: UIImage?, for state: UIControlState) {
         if var image = image {
             image = image.withRenderingMode(.alwaysTemplate)
         }
-        
+
         super.setImage(image, for: state)
     }
-    
+
     // 自定义nav按钮，需要根据这个来修改title的三态颜色
     override func tintColorDidChange() {
         super.tintColorDidChange()
-        
+
         self.setTitleColor(self.tintColor, for: .normal)
         self.setTitleColor(self.tintColor.withAlphaComponent(NavBarHighlightedAlpha), for: .highlighted)
         self.setTitleColor(self.tintColor.withAlphaComponent(NavBarDisabledAlpha), for: .disabled)
     }
-    
+
     override var alignmentRectInsets: UIEdgeInsets {
         var insets = super.alignmentRectInsets
 
@@ -598,7 +598,7 @@ class QMUINavigationButton: UIButton {
                 insets.setRight(8)
             }
         }
-        
+
         let isBackOrImageType = self.type == .back || self.type == .image
         if isBackOrImageType {
             insets.setTop(PixelOne)
@@ -608,7 +608,7 @@ class QMUINavigationButton: UIButton {
 
         return insets
     }
-    
+
     private func renderButtonStyle() {
         let font = NavBarButtonFont
 
@@ -620,7 +620,7 @@ class QMUINavigationButton: UIButton {
         self.contentVerticalAlignment = .center
         self.adjustsImageWhenHighlighted = false
         self.adjustsImageWhenDisabled = false
-        
+
         switch self.type {
         case .normal, .image:
             return
@@ -686,7 +686,7 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    
+
     class func barButtonItem(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
         fatalError()
     }
@@ -797,7 +797,7 @@ class QMUIToolbarButton: UIButton {
      *  @param image 按钮的image
      */
     convenience init(with image: UIImage) {
-        
+
         self.init(with: .image)
         self.setImage(image, for: .normal)
         self.setImage(image.qmui_imageWith(alpha: ToolBarHighlightedAlpha), for: .highlighted)
@@ -850,7 +850,7 @@ class QMUILinkButton: QMUIButton {
 
     /// 下划线的位置是基于 titleLabel 的位置来计算的，默认x、width均和titleLabel一致，而可以通过这个属性来调整下划线的偏移值。默认为UIEdgeInsetsZero。
     @IBInspectable var underlineInsets: UIEdgeInsets = .zero
-    
+
     private var underlineLayer: CALayer = CALayer()
 
     override init(frame: CGRect) {
@@ -863,7 +863,7 @@ class QMUILinkButton: QMUIButton {
     }
 
     func didInitialized() {
-        // TODO
+        // TODO:
     }
 }
 
@@ -889,12 +889,13 @@ class QMUIGhostButton: QMUIButton {
             }
         }
     }
-    
+
     @IBInspectable var borderWidth: CGFloat = 1 { // 默认为 1pt
         didSet {
             self.layer.borderWidth = borderWidth
         }
     }
+
     @IBInspectable var cornerRadius: CGFloat = QMUIGhostButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIGhostButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
             self.setNeedsLayout()
@@ -952,7 +953,7 @@ class QMUIGhostButton: QMUIButton {
     private func initialize(with ghostColor: UIColor) {
         self.ghostColor = ghostColor
     }
-    
+
     private func updateImageColor() {
         self.imageView?.tintColor = adjustsImageWithGhostColor ? self.ghostColor : nil
         if self.currentImage != nil {
@@ -970,7 +971,7 @@ class QMUIGhostButton: QMUIButton {
             }
         }
     }
-    
+
     override func setImage(_ image: UIImage?, for state: UIControlState) {
         var image = image
         if self.adjustsImageWithGhostColor {
@@ -978,7 +979,7 @@ class QMUIGhostButton: QMUIButton {
         }
         super.setImage(image, for: state)
     }
-    
+
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         if self.cornerRadius != QMUIGhostButtonCornerRadiusAdjustsBounds {
@@ -989,8 +990,7 @@ class QMUIGhostButton: QMUIButton {
     }
 }
 
-// TODO @implementation QMUIGhostButton (UIAppearance)
-
+// TODO: @implementation QMUIGhostButton (UIAppearance)
 
 /**
  *  用于 `QMUIFillButton.cornerRadius` 属性，当 `cornerRadius` 为 `QMUIFillButtonCornerRadiusAdjustsBounds` 时，`QMUIFillButton` 会在高度变化时自动调整 `cornerRadius`，使其始终保持为高度的 1/2。
@@ -1003,23 +1003,26 @@ public let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
  */
 
 class QMUIFillButton: QMUIButton {
-    @IBInspectable var fillColor: UIColor = .blue {               // 默认为 FillButtonColorBlue
+    @IBInspectable var fillColor: UIColor = .blue { // 默认为 FillButtonColorBlue
         didSet {
             self.backgroundColor = fillColor
         }
     }
-    @IBInspectable var titleTextColor: UIColor = UIColorWhite {        // 默认为 UIColorWhite
+
+    @IBInspectable var titleTextColor: UIColor = UIColorWhite { // 默认为 UIColorWhite
         didSet {
             if adjustsImageWithTitleTextColor {
                 self.updateImageColor()
             }
         }
     }
-    @IBInspectable var cornerRadius: CGFloat = QMUIFillButtonCornerRadiusAdjustsBounds / 2 {            // 默认为 QMUIFillButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
+
+    @IBInspectable var cornerRadius: CGFloat = QMUIFillButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIFillButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
             self.setNeedsLayout()
         }
     }
+
     /**
      *  控制按钮里面的图片是否也要跟随 `titleTextColor` 一起变化，默认为 `NO`
      */
@@ -1030,19 +1033,19 @@ class QMUIFillButton: QMUIButton {
             }
         }
     }
-    
+
     convenience init() {
         self.init(with: .blue)
     }
-    
-    override convenience init(frame: CGRect) {
+
+    convenience override init(frame: CGRect) {
         self.init(with: .blue, frame: frame)
     }
-    
-    convenience init(with fillType: QMUIFillButtonColor) {
+
+    convenience init(with _: QMUIFillButtonColor) {
         self.init(with: .blue, frame: .zero)
     }
-    
+
     convenience init(with fillType: QMUIFillButtonColor, frame: CGRect) {
         var fillColor = FillButtonColorBlue
         let textColor = UIColorWhite
@@ -1059,26 +1062,26 @@ class QMUIFillButton: QMUIButton {
             fillColor = FillButtonColorWhite
         }
 
-        self.init(with: fillColor ?? .blue,titleTextColor: textColor, frame: frame)
+        self.init(with: fillColor ?? .blue, titleTextColor: textColor, frame: frame)
     }
-    
+
     convenience init(with fillColor: UIColor, titleTextColor: UIColor) {
-        self.init(with: fillColor,titleTextColor: titleTextColor, frame: .zero)
+        self.init(with: fillColor, titleTextColor: titleTextColor, frame: .zero)
     }
-    
+
     init(with fillColor: UIColor, titleTextColor: UIColor, frame: CGRect) {
         super.init(frame: frame)
-        
+
         self.fillColor = fillColor
         self.titleTextColor = titleTextColor
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.fillColor = FillButtonColorBlue ?? .blue
         self.titleTextColor = UIColorWhite
     }
-    
+
     override func setImage(_ image: UIImage?, for state: UIControlState) {
         var image = image
         if adjustsImageWithTitleTextColor {
@@ -1086,9 +1089,7 @@ class QMUIFillButton: QMUIButton {
         }
         super.setImage(image, for: state)
     }
-    
-    
-    
+
     private func updateImageColor() {
         self.imageView?.tintColor = adjustsImageWithTitleTextColor ? self.titleTextColor : nil
         if self.currentImage != nil {
@@ -1106,7 +1107,7 @@ class QMUIFillButton: QMUIButton {
             }
         }
     }
-    
+
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
         if self.cornerRadius != QMUIGhostButtonCornerRadiusAdjustsBounds {
@@ -1116,4 +1117,3 @@ class QMUIFillButton: QMUIButton {
         }
     }
 }
-

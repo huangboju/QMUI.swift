@@ -12,7 +12,7 @@ class QMUITableViewCell: UITableViewCell {
 
     /// 保存对tableView的弱引用，在布局时可能会使用到tableView的一些属性例如separatorColor等。只有使用下面两个 initForTableView: 的接口初始化时这个属性才有值，否则就只能自己初始化后赋值
     public weak var parentTableView: UITableView?
-    
+
     /**
      *  cell 处于 section 中的位置，要求：
      *  1. cell 使用 initForTableViewXxx 方法初始化，或者初始化完后为 parentTableView 属性赋值。
@@ -36,7 +36,6 @@ class QMUITableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
 }
 
 extension QMUITableViewCell {
