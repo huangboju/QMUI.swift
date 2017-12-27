@@ -6,7 +6,95 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+extension UISearchBar: SelfAware {
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake() {
+        DispatchQueue.once(token: _onceToken) {
+            let selectors = [
+                #selector(setter: placeholder)
+            ]
+            selectors.forEach({
+                print("qmui_" + $0.description)
+                ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
+            })
+        }
+    }
+    
+    open func qmui_setPlaceholder(_ newPlaceholder: String?) {
+        guard let holder = newPlaceholder else {
+            return
+        }
+        
+        if (qmui_placeholderColor != nil || qmui_font != nil) {
+            var attributes[String: String] = []
+        }
+        
+        qmui_setPlaceholder(holder)
+        
+        
+    }
+}
+
 extension UISearchBar {
+    
+    private struct AssociatedKeys {
+        static var kUsedAsTableHeaderView = "kUsedAsTableHeaderView"
+        static var kPlaceholderColor = "kPlaceholderColor"
+        static var kFont = "kFont"
+    }
+
+    /// 当以 tableHeaderView 的方式使用 UISearchBar 时，建议将这个属性置为 YES，从而可以帮你处理 https://github.com/QMUI/QMUI_iOS/issues/233 里列出的问题（抖动、iPhone X 适配等）
+    /// 默认值为 NO
+    public var qmui_usedAsTableHeaderView: Bool? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView) as? Bool ?? false
+        }
+        set {
+            if let value = newValue {
+                objc_setAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView, value, .OBJC_ASSOCIATION_ASSIGN)
+            }
+        }
+    }
+    
+    public var qmui_placeholderColor: UIColor? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.kPlaceholderColor) as? UIColor
+        }
+        set {
+            if let value = newValue {
+                objc_setAssociatedObject(self, &AssociatedKeys.kPlaceholderColor, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                if (placeholder != nil) {
+                    // 触发 setPlaceholder 里更新 placeholder 样式的逻辑
+//                    self.placeholder = self.placeholder
+                }
+            }
+        }
+    }
+    
+    public var qmui_font: UIFont? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.kFont) as? UIFont
+        }
+        set {
+            if let value = newValue {
+                objc_setAssociatedObject(self, &AssociatedKeys.kFont, value, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                if (placeholder != nil) {
+                    // 触发 setPlaceholder 里更新 placeholder 样式的逻辑
+                    //                    self.placeholder = self.placeholder
+                }
+                
+                // 更新输入框的文字样式
+                self.qmui_textField().font = value;
+            }
+        }
+    }
+    
+    public func qmui_textField() -> UITextField {
+        let textField = value(forKey: "searchField") as! UITextField
+        return textField
+    }
+
     func qmui_styledAsQMUISearchBar() {
         //        self.qmui_textColor = SearchBarTextColor;
         //        self.qmui_placeholderColor = SearchBarPlaceholderColor;
