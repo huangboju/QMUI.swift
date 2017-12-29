@@ -106,17 +106,19 @@ extension UISearchBar: SelfAware {
         if !qmui_usedAsTableHeaderView {
             return
         }
-        if #available(iOS 11.0, *) {
-            if qmui_isActive() && IS_LANDSCAPE {
-                // 11.0 及以上的版本，横屏时，searchBar 内部的内容布局会偏上，所以这里强制居中一下
-                qmui_textField()?.frame.setY(qmui_textField()?.qmui_minYWhenCenterInSuperview ?? 0)
-                qmui_cancelButton()?.frame.setY(qmui_cancelButton()?.qmui_minYWhenCenterInSuperview ?? 0)
-                if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
-                    if superView.frame.minY < bottom { // scopeBar 显示在搜索框右边
-                        let y = superView.bounds.height.center(with: superView.frame.height)
-                        superView.frame.setY(y)
-                    }
-                }
+        guard #available(iOS 11.0, *) else {
+            return
+        }
+        guard qmui_isActive() && IS_LANDSCAPE else {
+            return
+        }
+        // 11.0 及以上的版本，横屏时，searchBar 内部的内容布局会偏上，所以这里强制居中一下
+        qmui_textField()?.frame.setY(qmui_textField()?.qmui_minYWhenCenterInSuperview ?? 0)
+        qmui_cancelButton()?.frame.setY(qmui_cancelButton()?.qmui_minYWhenCenterInSuperview ?? 0)
+        if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
+            if superView.frame.minY < bottom { // scopeBar 显示在搜索框右边
+                let y = superView.bounds.height.center(with: superView.frame.height)
+                superView.frame.setY(y)
             }
         }
     }
@@ -125,56 +127,57 @@ extension UISearchBar: SelfAware {
         if !qmui_usedAsTableHeaderView {
             return
         }
-        if #available(iOS 11.0, *) {
-            // [11.0, 11.1) 这个范围内的 iOS 版本在以 tableHeaderView 的方式使用 searchBar 时，不会根据 safeAreaInsets 自动调整输入框的布局，所以手动处理一下
-            if IOS_VERSION >= 11.1 {
-                return
+        guard #available(iOS 11.0, *) else {
+            return
+        }
+        // [11.0, 11.1) 这个范围内的 iOS 版本在以 tableHeaderView 的方式使用 searchBar 时，不会根据 safeAreaInsets 自动调整输入框的布局，所以手动处理一下
+        if IOS_VERSION >= 11.1 {
+            return
+        }
+        if var newframe = qmui_cancelButton()?.frame {
+            _ = newframe.setX(newframe.minX - safeAreaInsets.left)
+        }
+        
+        var isBelow = false
+        if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
+            if superView.frame.minY < bottom {
+                isBelow = true
             }
-            if var newframe = qmui_cancelButton()?.frame {
-                _ = newframe.setX(newframe.minX - safeAreaInsets.left)
-            }
-
-            var isBelow = false
-            if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
-                if superView.frame.minY < bottom {
-                    isBelow = true
-                }
-            }
-            let isScopeBarShowingAtRightOfTextField = IS_LANDSCAPE && qmui_isActive() && showsScopeBar && isBelow
-
-            let newLeft = qmui_textField()?.frame.minX ?? 0 + safeAreaInsets.left
-            _ = qmui_textField()?.frame.setX(newLeft)
-
-            if isScopeBarShowingAtRightOfTextField {
-                // 如果 scopeBar 显示在搜索框右边，则搜索框右边不用调整
-                let scopeBarHorizontalMargin: CGFloat = 16
-
-                let newLeft = fmax(qmui_textField()?.frame.maxX ?? 0 + scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.minX ?? 0)
-                var newWidth = qmui_segmentedControl()?.superview?.frame.maxX ?? 0 - newLeft
-                _ = qmui_segmentedControl()?.superview?.frame.setX(newLeft)
-                _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
-
-                let newRight = fmin(qmui_cancelButton()?.frame.minX ?? 0 - scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.maxX ?? 0)
-                newWidth = newRight - (qmui_segmentedControl()?.superview?.frame.minX ?? 0)
-                _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
-            } else {
-                // 如果 scopeBar 显示在搜索框下方，则搜索框右边要调整到不与 safeAreaInsets 重叠
-                let newRight = qmui_textField()?.frame.maxX ?? 0 - safeAreaInsets.right
-                let newWidth = newRight - (qmui_textField()?.frame.minX ?? 0)
-                qmui_textField()?.frame.setWidth(newWidth)
-            }
-
-            // 如果是没进入搜索状态就已经显示了 scopeBar，则此时的 scopeBar 一定是在搜索框下方的
-            if !qmui_isActive() && showsScopeBar {
-                let newLeft = qmui_segmentedControl()?.frame.minX ?? 0 + safeAreaInsets.left
-                var newWidth = qmui_segmentedControl()?.frame.maxX ?? 0 - newLeft
-                _ = qmui_segmentedControl()?.frame.setX(newLeft)
-                _ = qmui_segmentedControl()?.frame.setWidth(newWidth)
-
-                let newRight = qmui_segmentedControl()?.frame.maxX ?? 0 - safeAreaInsets.right
-                newWidth = newRight - (qmui_segmentedControl()?.frame.minX ?? 0)
-                qmui_segmentedControl()?.frame.setWidth(newWidth)
-            }
+        }
+        let isScopeBarShowingAtRightOfTextField = IS_LANDSCAPE && qmui_isActive() && showsScopeBar && isBelow
+        
+        let newLeft = qmui_textField()?.frame.minX ?? 0 + safeAreaInsets.left
+        _ = qmui_textField()?.frame.setX(newLeft)
+        
+        if isScopeBarShowingAtRightOfTextField {
+            // 如果 scopeBar 显示在搜索框右边，则搜索框右边不用调整
+            let scopeBarHorizontalMargin: CGFloat = 16
+            
+            let newLeft = max(qmui_textField()?.frame.maxX ?? 0 + scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.minX ?? 0)
+            var newWidth = qmui_segmentedControl()?.superview?.frame.maxX ?? 0 - newLeft
+            _ = qmui_segmentedControl()?.superview?.frame.setX(newLeft)
+            _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
+            
+            let newRight = min(qmui_cancelButton()?.frame.minX ?? 0 - scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.maxX ?? 0)
+            newWidth = newRight - (qmui_segmentedControl()?.superview?.frame.minX ?? 0)
+            _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
+        } else {
+            // 如果 scopeBar 显示在搜索框下方，则搜索框右边要调整到不与 safeAreaInsets 重叠
+            let newRight = qmui_textField()?.frame.maxX ?? 0 - safeAreaInsets.right
+            let newWidth = newRight - (qmui_textField()?.frame.minX ?? 0)
+            qmui_textField()?.frame.setWidth(newWidth)
+        }
+        
+        // 如果是没进入搜索状态就已经显示了 scopeBar，则此时的 scopeBar 一定是在搜索框下方的
+        if !qmui_isActive() && showsScopeBar {
+            let newLeft = qmui_segmentedControl()?.frame.minX ?? 0 + safeAreaInsets.left
+            var newWidth = qmui_segmentedControl()?.frame.maxX ?? 0 - newLeft
+            _ = qmui_segmentedControl()?.frame.setX(newLeft)
+            _ = qmui_segmentedControl()?.frame.setWidth(newWidth)
+            
+            let newRight = qmui_segmentedControl()?.frame.maxX ?? 0 - safeAreaInsets.right
+            newWidth = newRight - (qmui_segmentedControl()?.frame.minX ?? 0)
+            qmui_segmentedControl()?.frame.setWidth(newWidth)
         }
     }
 
@@ -183,36 +186,38 @@ extension UISearchBar: SelfAware {
             return
         }
 
-        if #available(iOS 11.0, *) {
-            // [11.0, 11.1) 范围内的 iOS 版本才会有问题 https://github.com/QMUI/QMUI_iOS/issues/233
-            if IOS_VERSION >= 11.1 {
-                return
-            }
-            if !IS_58INCH_SCREEN {
-                return
-            }
-
-            guard let backgroundView = qmui_backgroundView() else {
-                return
-            }
-
-            let isActive = backgroundView.superview?.clipsToBounds ?? false
-            let isFrameError = backgroundView.safeAreaInsets.top > 0 && (backgroundView.frame.minY == 0)
-            if isActive && isFrameError {
-                // 修改 backgroundView.frame 会导致 searchBar 在进入搜索状态后背景色变成系统默认的（不知道为什么），所以先取出背景图存起来再设置回去
-                if let originImage = backgroundView.layer.contents {
-                    backgroundView.frame.setY(-backgroundView.safeAreaInsets.top)
-                    let newHeight = backgroundView.frame.maxY - (-backgroundView.safeAreaInsets.top)
-                    _ = backgroundView.frame.setHeight(newHeight)
-                    backgroundView.layer.contents = originImage
-                }
-            }
+        guard #available(iOS 11.0, *) else {
+            return
+        }
+        // [11.0, 11.1) 范围内的 iOS 版本才会有问题 https://github.com/QMUI/QMUI_iOS/issues/233
+        if IOS_VERSION >= 11.1 {
+            return
+        }
+        if !IS_58INCH_SCREEN {
+            return
+        }
+        
+        guard let backgroundView = qmui_backgroundView() else {
+            return
+        }
+        
+        let isActive = backgroundView.superview?.clipsToBounds ?? false
+        let isFrameError = backgroundView.safeAreaInsets.top > 0 && (backgroundView.frame.minY == 0)
+        guard isActive && isFrameError else {
+            return
+        }
+        // 修改 backgroundView.frame 会导致 searchBar 在进入搜索状态后背景色变成系统默认的（不知道为什么），所以先取出背景图存起来再设置回去
+        if let originImage = backgroundView.layer.contents {
+            backgroundView.frame.setY(-backgroundView.safeAreaInsets.top)
+            let newHeight = backgroundView.frame.maxY - (-backgroundView.safeAreaInsets.top)
+            _ = backgroundView.frame.setHeight(newHeight)
+            backgroundView.layer.contents = originImage
         }
     }
 
     private func qmui_isActive() -> Bool {
         // 某些情况下 scopeBar 是显示在搜索框右边的，所以要区分判断
-        var scopeBarHeight: CGFloat = qmui_segmentedControl()?.superview?.frame.height ?? 0
+        var scopeBarHeight = qmui_segmentedControl()?.superview?.frame.height ?? 0
 
         if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
             if superView.frame.minY < bottom {
