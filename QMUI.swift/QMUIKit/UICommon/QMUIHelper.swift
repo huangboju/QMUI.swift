@@ -329,6 +329,10 @@ extension QMUIHelper {
             return false
         #endif
     }
+    
+    public static var is58InchScreen: Bool {
+        return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor58Inch
+    }
 
     public static var is55InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor55Inch
@@ -344,6 +348,10 @@ extension QMUIHelper {
 
     public static var is35InchScreen: Bool {
         return CGSize(width: DEVICE_WIDTH, height: DEVICE_HEIGHT) == screenSizeFor35Inch
+    }
+    
+    public static var screenSizeFor58Inch: CGSize {
+        return CGSize(width: 375, height: 812)
     }
 
     public static var screenSizeFor55Inch: CGSize {

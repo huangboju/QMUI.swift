@@ -139,6 +139,7 @@ let SearchBarBarTintColor = QMUICMI.searchBarBarTintColor
 let SearchBarTintColor = QMUICMI.searchBarTintColor
 let SearchBarTextColor = QMUICMI.searchBarTextColor
 let SearchBarPlaceholderColor = QMUICMI.searchBarPlaceholderColor
+let SearchBarFont = QMUICMI.searchBarFont
 let SearchBarSearchIconImage = QMUICMI.searchBarSearchIconImage
 let SearchBarClearIconImage = QMUICMI.searchBarClearIconImage
 let SearchBarTextFieldCornerRadius = QMUICMI.searchBarTextFieldCornerRadius

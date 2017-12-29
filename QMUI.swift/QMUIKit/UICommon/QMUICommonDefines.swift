@@ -47,6 +47,7 @@ let DEVICE_WIDTH = IS_LANDSCAPE ? UIScreen.main.bounds.height : UIScreen.main.bo
 let DEVICE_HEIGHT = IS_LANDSCAPE ? UIScreen.main.bounds.width : UIScreen.main.bounds.height
 
 // 设备屏幕尺寸
+let IS_58INCH_SCREEN = QMUIHelper.is58InchScreen
 let IS_55INCH_SCREEN = QMUIHelper.is55InchScreen
 let IS_47INCH_SCREEN = QMUIHelper.is47InchScreen
 let IS_40INCH_SCREEN = QMUIHelper.is40InchScreen
