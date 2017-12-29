@@ -207,6 +207,7 @@ class QMUIConfigurationManager {
     public var searchBarTintColor: UIColor!
     public var searchBarTextColor: UIColor!
     public var searchBarPlaceholderColor: UIColor!
+    public var searchBarFont: UIFont?
     public var searchBarSearchIconImage: UIImage?
     public var searchBarClearIconImage: UIImage?
     public var searchBarTextFieldCornerRadius: CGFloat = 2.0
