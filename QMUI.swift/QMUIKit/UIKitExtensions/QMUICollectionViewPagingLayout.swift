@@ -55,12 +55,13 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
      *  rotationRadius表示旋转的半径
      *  @warning 仅当 style 为 QMUICollectionViewPagingLayoutStyleRotation 时才生效
      */
+    private var _rotationRatio: CGFloat = 0
     public var rotationRatio: CGFloat {
         get {
-            return validated(rotationRatio: self.rotationRatio)
+            return validated(rotationRatio: _rotationRatio)
         }
         set {
-            self.rotationRatio = newValue
+            _rotationRatio = newValue
         }
     }
 
@@ -102,7 +103,10 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
             return true
         }
 
-        return !(collectionView?.bounds.size.equalTo(newBounds.size) ?? false)
+        guard let notNilCollectionView = collectionView else {
+            return true
+        }
+        return !notNilCollectionView.bounds.size.equalTo(newBounds.size)
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -151,7 +155,8 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
                     attribute.center.x
                 let degress = -90 * self.rotationRatio * (distance / (self.collectionView?.bounds.width ?? 1))
 
-                let cosValue = CGFloat(fabs(cosf(Float(AngleWithDegrees(degress)))))
+                
+                let cosValue = abs(cos(AngleWithDegrees(degress)))                
                 let translateY = self.rotationRadius - self.rotationRadius * cosValue
                 var transform = CGAffineTransform(translationX: 0, y: translateY)
                 transform = transform.rotated(by: AngleWithDegrees(degress))
