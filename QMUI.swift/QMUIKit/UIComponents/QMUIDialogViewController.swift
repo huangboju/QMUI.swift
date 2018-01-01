@@ -381,7 +381,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
         let identifier = "cell"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = QMUITableViewCell(tableView: tableView, withStyle: .subtitle, reuseIdentifier: identifier)
+            cell = QMUITableViewCell(for: tableView, withStyle: .subtitle, reuseIdentifier: identifier)
         }
         cell?.textLabel?.text = items[indexPath.row]
 
@@ -467,7 +467,9 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
 }
 
 extension QMUIDialogSelectionViewController {
+
     // MARK: - QMUIModalPresentationContentViewControllerProtocol
+
     override func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         let footerViewHeight = !footerView.isHidden ? footerView.frame.height : 0
         let tableViewLimitHeight = limitSize.height - headerView.frame.height - footerViewHeight

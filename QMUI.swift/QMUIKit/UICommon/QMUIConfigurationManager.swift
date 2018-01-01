@@ -9,6 +9,7 @@
 class QMUIConfigurationManager {
 
     // MARK: - Global Color
+
     public var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
     public var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
     public var black = UIColor(red: 0, green: 0, blue: 0, alpha: 0)
@@ -34,12 +35,14 @@ class QMUIConfigurationManager {
     public var testColorBlue = UIColor(r: 0, g: 0, b: 255, a: 0.3)
 
     // MARK: - UIWindowLevel
+
     public var windowLevelQMUIAlertView = UIWindowLevelAlert - 4.0
     public var windowLevelQMUIActionSheet = UIWindowLevelAlert - 4.0
     public var windowLevelQMUIMoreOperationController = UIWindowLevelStatusBar + 1
     public var windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1
 
     // MARK: - UIControl
+
     public var controlHighlightedAlpha: CGFloat = 0.5
     public var controlDisabledAlpha: CGFloat = 0.5
 
@@ -48,6 +51,7 @@ class QMUIConfigurationManager {
     public var segmentFontSize = UIFontMake(13)
 
     // MARK: - UIButton
+
     public var buttonHighlightedAlpha: CGFloat!
     public var buttonDisabledAlpha: CGFloat!
     public var buttonTintColor: UIColor!
@@ -65,10 +69,12 @@ class QMUIConfigurationManager {
     public var fillButtonColorWhite: UIColor!
 
     // MARK: - UITextField & UITextView
+
     public var textFieldTintColor: UIColor!
     public var textFieldTextInsets = UIEdgeInsetsMake(0, 7, 0, 7)
 
     // MARK: - ActionSheet
+
     public var actionSheetButtonTintColor: UIColor!
     public var actionSheetButtonBackgroundColor = UIColor(r: 255, g: 255, b: 255)
     public var actionSheetButtonBackgroundColorHighlighted = UIColor(r: 235, g: 235, b: 235)
@@ -76,6 +82,7 @@ class QMUIConfigurationManager {
     public var actionSheetButtonFontBold = UIFontBoldMake(21)
 
     // MARK: - NavigationBar
+
     public var navBarHighlightedAlpha: CGFloat = 0.2
     public var navBarDisabledAlpha: CGFloat = 0.2
     public var navBarButtonFont = UIFontMake(17)
@@ -131,6 +138,7 @@ class QMUIConfigurationManager {
     public var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage!
 
     // MARK: - TabBar
+
     public var tabBarBackgroundImage: UIImage? {
         didSet {
             UITabBar.appearance().backgroundImage = tabBarBackgroundImage
@@ -164,6 +172,7 @@ class QMUIConfigurationManager {
     }
 
     // MARK: - Toolbar
+
     public var toolBarHighlightedAlpha: CGFloat = 0.4
     public var toolBarDisabledAlpha: CGFloat = 0.4
     public var toolBarTintColor: UIColor!
@@ -200,6 +209,7 @@ class QMUIConfigurationManager {
     }
 
     // MARK: - SearchBar
+
     public var searchBarTextFieldBackground: UIColor!
     public var searchBarTextFieldBorderColor = UIColor(r: 205, g: 208, b: 210)
     public var searchBarBottomBorderColor = UIColor(r: 205, g: 208, b: 210)
@@ -213,6 +223,7 @@ class QMUIConfigurationManager {
     public var searchBarTextFieldCornerRadius: CGFloat = 2.0
 
     // MARK: - TableView / TableViewCell
+
     public var tableViewBackgroundColor: UIColor!
     public var tableViewGroupedBackgroundColor: UIColor!
     public var tableSectionIndexColor: UIColor!
@@ -225,6 +236,8 @@ class QMUIConfigurationManager {
     public var tableViewCellNormalHeight: CGFloat = 44
     public var tableViewCellDisclosureIndicatorImage: UIImage!
     public var tableViewCellCheckmarkImage: UIImage!
+    public var tableViewCellDetailButtonImage: UIImage!
+    public var tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator: CGFloat = 12
     public var tableViewSectionHeaderBackgroundColor = UIColor(r: 244, g: 244, b: 244)
     public var tableViewSectionFooterBackgroundColor = UIColor(r: 244, g: 244, b: 244)
     public var tableViewSectionHeaderFont = UIFontBoldMake(12)
@@ -249,6 +262,7 @@ class QMUIConfigurationManager {
     public var tableViewCellContentDefaultPaddingRight: CGFloat = 10
 
     // MARK: - Others
+
     public var supportedOrientationMask = UIInterfaceOrientationMask.portrait
     public var statusbarStyleLightInitially = false
     public var needsBackBarButtonItemTitle = false
@@ -261,14 +275,18 @@ class QMUIConfigurationManager {
     private init() {}
 
     func initDefaultConfiguration() {
+
         // MARK: - Global Color
+
         disabled = gray
 
         // MARK: - UIControl
+
         segmentTextTintColor = blue
         segmentTextSelectedTintColor = white
 
         // MARK: - UIButton
+
         buttonHighlightedAlpha = controlHighlightedAlpha
         buttonDisabledAlpha = controlDisabledAlpha
         buttonTintColor = blue
@@ -286,12 +304,15 @@ class QMUIConfigurationManager {
         fillButtonColorWhite = white
 
         // MARK: - UITextField & UITextView
+
         textFieldTintColor = blue
 
         // MARK: - ActionSheet
+
         actionSheetButtonTintColor = blue
 
         // MARK: - NavigationBar
+
         navBarTintColor = black
 
         navBarTintColorHighlighted = navBarBarTintColor?.withAlphaComponent(navBarHighlightedAlpha)
@@ -301,9 +322,11 @@ class QMUIConfigurationManager {
         navBarAccessoryViewTypeDisclosureIndicatorImage = UIImage.qmui_image(with: .triangle, size: CGSize(width: 8, height: 5), tintColor: white)?.qmui_image(with: .down)
 
         // MARK: - TabBar
+
         tabBarItemTitleColorSelected = tabBarTintColor
 
         // MARK: - Toolbar
+
         toolBarTintColor = blue
         toolBarTintColorHighlighted = toolBarTintColor.withAlphaComponent(toolBarHighlightedAlpha)
         toolBarTintColorDisabled = toolBarTintColor.withAlphaComponent(toolBarDisabledAlpha)
@@ -311,12 +334,14 @@ class QMUIConfigurationManager {
         toolBarBarTintColor = nil
 
         // MARK: - SearchBar
+
         searchBarTextFieldBackground = white
         searchBarTintColor = blue
         searchBarTextColor = black
         searchBarPlaceholderColor = placeholder
 
         // MARK: - TableView / TableViewCell
+
         tableViewBackgroundColor = white
         tableViewGroupedBackgroundColor = background
         tableSectionIndexColor = grayDarken
@@ -339,5 +364,6 @@ class QMUIConfigurationManager {
         tableViewCellDetailLabelColor = gray
 
         // MARK: - Others
+
     }
 }

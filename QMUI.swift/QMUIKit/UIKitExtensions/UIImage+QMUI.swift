@@ -15,6 +15,7 @@ public enum QMUIImageShape {
     case triangle // 三角形
     case disclosureIndicator // 列表cell右边的箭头
     case checkmark // 列表cell右边的checkmark
+    case detailButtonImage // 列表 cell 右边的 i 按钮图片
     case navBack // 返回按钮的箭头
     case navClose // 导航栏的关闭icon
 }
@@ -598,6 +599,8 @@ extension UIImage {
             lineWidth = 1.5
         case .checkmark:
             lineWidth = 1.5
+        case .detailButtonImage:
+            lineWidth = 1.0
         case .navClose:
             lineWidth = 1.2 // 取消icon默认的lineWidth
         default:
@@ -660,6 +663,10 @@ extension UIImage {
             path.addLine(to: CGPoint(x: size.width / 3, y: size.height - lineWidth / sin(lineAngle)))
             path.addLine(to: CGPoint(x: lineWidth * sin(lineAngle), y: size.height / 2 - lineWidth * sin(lineAngle)))
             path.close()
+        case .detailButtonImage:
+            drawByStroke = true
+            path = UIBezierPath(ovalIn: size.rect.insetBy(dx: drawOffset, dy: drawOffset))
+            path.lineWidth = lineWidth
         case .navClose:
             drawByStroke = true
             path = UIBezierPath()
@@ -679,6 +686,16 @@ extension UIImage {
         } else {
             context.setFillColor(tintColor.cgColor)
             path.fill()
+        }
+
+        if shape == .detailButtonImage {
+            let fontPointSize = flat(size.height * 0.8)
+            let font = UIFont(name: "Georgia", size: fontPointSize) ?? .systemFont(ofSize: fontPointSize)
+
+            let string = NSAttributedString(string: "i", attributes: [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: tintColor])
+            let stringSize = string.boundingRect(with: size, options: .usesFontLeading, context: nil)
+
+            string.draw(at: CGPoint(x: size.width.center(with: stringSize.width), y: size.height.center(with: stringSize.height)))
         }
 
         resultImage = UIGraphicsGetImageFromCurrentImageContext()
