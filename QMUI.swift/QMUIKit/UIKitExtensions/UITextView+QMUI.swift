@@ -36,7 +36,7 @@ extension UITextView {
     }
     
     /**
-     *  [UITextView scrollRangeToVisible:] 并不会考虑 textContainerInset.bottom，所以使用这个方法来代替
+     *  UITextView.scrollRangeToVisible() 并不会考虑 textContainerInset.bottom，所以使用这个方法来代替
      */
     public func qmui_scrollCaretVisibleAnimated(_ animated: Bool) -> Void {
         if bounds.isEmpty {
