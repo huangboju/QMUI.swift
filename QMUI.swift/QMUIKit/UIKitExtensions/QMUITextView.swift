@@ -253,17 +253,8 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     }
 
     override var delegate: UITextViewDelegate? {
-        get {
-            return super.delegate
-        }
-        set {
-            let notEqualSelf = delegate as! QMUITextView != self
-            originalDelegate = notEqualSelf ? delegate as? QMUITextViewDelegate : nil
-            if delegate != nil {
-                super.delegate = nil
-            } else {
-                super.delegate = delegate!
-            }
+        didSet {
+            originalDelegate = delegate as? QMUITextViewDelegate
         }
     }
 
@@ -513,12 +504,6 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             originalDelegate?.textViewDidChange!(textView)
         }
     }
-
-    // MARK: - Delegate Proxy
-
-    //    override func responds(to aSelector: Selector!) -> Bool {
-    //
-    //    }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if originalDelegate?.responds(to: #function) ?? false {
