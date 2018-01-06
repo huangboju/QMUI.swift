@@ -398,165 +398,167 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     }
 
 	// MARK: - UIResponderStandardEditActions
-	override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-		let superReturnValue = super.canPerformAction(action, withSender: sender)
-		if action == #selector(paste(_:)) && canPerformPasteActionBlock != nil {
-			return canPerformPasteActionBlock!(sender, superReturnValue)
-		}
-		return superReturnValue
-	}
-	
-	override func paste(_ sender: Any?) {
-		var shouldCallSuper = true
-		if let pasteBlock = self.pasteBlock {
-			shouldCallSuper = pasteBlock(sender)
-		}
-		if shouldCallSuper {
-			super.paste(sender)
-		}
-	}
-	
-	// MARK: - QMUITextViewDelegate
-	func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-		if debug {
-			print("textView.text(\(textView.text.length) | \(textView.text.qmui_lengthWhenCountingNonASCIICharacterAsTwo) = \(textView.text)\nmarkedTextRange = \(String(describing: textView.markedTextRange))\nrange = \(NSStringFromRange(range))\ntext = \(text)")
-		}
-		
-		if text.isEqual("\n") && delegate?.responds(to: #selector(QMUITextViewDelegate.textViewShouldReturn(_:))) ?? false {
-			let shouldReturn = (delegate as? QMUITextViewDelegate)?.textViewShouldReturn!(self) ?? false
-			if shouldReturn {
-				return false
-			}
-		}
-		
-		if let textView = textView as? QMUITextView {
-			if (textView.maximumTextLength < Int.max) {
-				// 如果是中文输入法正在输入拼音的过程中（markedTextRange 不为 nil），是不应该限制字数的（例如输入“huang”这5个字符，其实只是为了输入“黄”这一个字符），所以在 shouldChange 这里不会限制，而是放在 didChange 那里限制。
-				let isDeleting = range.length > 0 && text.length <= 0
-				if isDeleting || (textView.markedTextRange != nil) {
-					if textView.originalDelegate?.responds(to: #function) ?? false {
-						return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-					}
-					
-					return true
-				}
-				
-				let valueIfTrue = textView.text.substring(with: range).qmui_lengthWhenCountingNonASCIICharacterAsTwo
-				let rangeLength = UInt(shouldCountingNonASCIICharacterAsTwo ? valueIfTrue : range.length)
-				let textWillOutofMaximumTextLength = lengthWithString(textView.text) - rangeLength + lengthWithString(text) > textView.maximumTextLength
-				if textWillOutofMaximumTextLength {
-					// 当输入的文本达到最大长度限制后，此时继续点击 return 按钮（相当于尝试插入“\n”），就会认为总文字长度已经超过最大长度限制，所以此次 return 按钮的点击被拦截，外界无法感知到有这个 return 事件发生，所以这里为这种情况做了特殊保护
-					if lengthWithString(textView.text) - rangeLength == textView.maximumTextLength && text.isEqual("\n") {
-						if textView.originalDelegate?.responds(to: #function) ?? false {
-							// 不管外面 return YES 或 NO，都不允许输入了，否则会超出 maximumTextLength。
-							let _ = textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-							return false
-						}
-					}
-					
-					// 将要插入的文字裁剪成多长，就可以让它插入了
-					let substringLength = textView.maximumTextLength - lengthWithString(textView.text) + rangeLength
-					if substringLength > 0 && lengthWithString(text) > substringLength {
-						let nsRange = NSMakeRange(0, Int(substringLength))
-						let swiftRange = Range(nsRange, in: text)
-						let allowedText = text.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
-						if lengthWithString(allowedText) <= substringLength {
-							textView.text = (textView.text as NSString).replacingCharacters(in: range, with: allowedText) as String
-							let location = range.location + Int(substringLength)
-							textView.selectedRange = NSMakeRange(location, 0)
-							
-							if !textView.shouldResponseToProgrammaticallyTextChanges {
-								textView.originalDelegate?.textViewDidChange!(textView)
-							}
-						}
-					}
-					
-					if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
-						originalDelegate!.textView!(textView, didPreventTextChangeInRange: range, replacementText: text)
-					}
-					return false
-				}
-			}
-			
-			if textView.originalDelegate?.responds(to: #function) ?? false {
-				return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-			}
-		}
-		
-		return true
-	}
-	
-	func textViewDidChange(_ textView: UITextView) {
-		// 1、iOS 10 以下的版本，从中文输入法的候选词里选词输入，是不会走到 textView:shouldChangeTextInRange:replacementText: 的，所以要在这里截断文字
-		// 2、如果是中文输入法正在输入拼音的过程中（markedTextRange 不为 nil），是不应该限制字数的（例如输入“huang”这5个字符，其实只是为了输入“黄”这一个字符），所以在 shouldChange 那边不会限制，而是放在 didChange 这里限制。
-		if let textView = textView as? QMUITextView {
-			if textView.markedTextRange == nil && lengthWithString(textView.text) > textView.maximumTextLength {
-				
-				let nsRange = NSMakeRange(0, Int(textView.maximumTextLength))
-				let swiftRange = Range(nsRange, in: textView.text)
-				textView.text = textView.text.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
-				
-				if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
-					// 如果是在这里被截断，是无法得知截断前光标所处的位置及要输入的文本的，所以只能将当前的 selectedRange 传过去，而 replacementText 为 nil
-					originalDelegate?.textView!(textView, didPreventTextChangeInRange: textView.selectedRange, replacementText: nil)
-				}
-				
-				if textView.shouldResponseToProgrammaticallyTextChanges {
-					return
-				}
-			}
-		}
-		
-		if originalDelegate?.responds(to: #function) ?? false {
-			originalDelegate?.textViewDidChange!(textView)
-		}
-	}
-	
-	// MARK: - Delegate Proxy
-	//	override func responds(to aSelector: Selector!) -> Bool {
-	//
-	//	}
-	
-	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-		if originalDelegate?.responds(to: #function) ?? false {
-			originalDelegate!.scrollViewDidScroll!(scrollView)
-		}
-	}
-	
-	override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
-		if !shouldRejectSystemScroll! {
-			super.setContentOffset(contentOffset, animated: animated)
-			if debug {
-				print("\(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
-			}
-		} else {
-			if debug {
-				print("被屏蔽的 \(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
-			}
-		}
-	}
-	
-	override var contentOffset: CGPoint {
-		get {
-			return super.contentOffset
-		}
-		set {
-			if !shouldRejectSystemScroll! {
-				super.contentOffset = contentOffset
-				if debug {
-					print("\(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
-				}
-			} else {
-				if debug {
-					print("被屏蔽的 \(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
-				}
-			}
-		}
-	}
-	
-	func scrollViewDidZoom(_ scrollView: UIScrollView) {
-		if originalDelegate?.responds(to: #function) ?? false {
-			originalDelegate!.scrollViewDidZoom!(scrollView)
-		}
-	}
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        let superReturnValue = super.canPerformAction(action, withSender: sender)
+        if action == #selector(paste(_:)) && canPerformPasteActionBlock != nil {
+            return canPerformPasteActionBlock!(sender, superReturnValue)
+        }
+        return superReturnValue
+    }
+    
+    override func paste(_ sender: Any?) {
+        var shouldCallSuper = true
+        if let pasteBlock = self.pasteBlock {
+            shouldCallSuper = pasteBlock(sender)
+        }
+        if shouldCallSuper {
+            super.paste(sender)
+        }
+    }
+    
+    // MARK: - QMUITextViewDelegate
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if debug {
+            print("textView.text(\(textView.text.length) | \(textView.text.qmui_lengthWhenCountingNonASCIICharacterAsTwo) = \(textView.text)\nmarkedTextRange = \(String(describing: textView.markedTextRange))\nrange = \(NSStringFromRange(range))\ntext = \(text)")
+        }
+        
+        if text.isEqual("\n") && delegate?.responds(to: #selector(QMUITextViewDelegate.textViewShouldReturn(_:))) ?? false {
+            let shouldReturn = (delegate as? QMUITextViewDelegate)?.textViewShouldReturn!(self) ?? false
+            if shouldReturn {
+                return false
+            }
+        }
+        
+        if let textView = textView as? QMUITextView {
+            if (textView.maximumTextLength < Int.max) {
+                // 如果是中文输入法正在输入拼音的过程中（markedTextRange 不为 nil），是不应该限制字数的（例如输入“huang”这5个字符，其实只是为了输入“黄”这一个字符），所以在 shouldChange 这里不会限制，而是放在 didChange 那里限制。
+                let isDeleting = range.length > 0 && text.length <= 0
+                if isDeleting || (textView.markedTextRange != nil) {
+                    if textView.originalDelegate?.responds(to: #function) ?? false {
+                        return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
+                    }
+                    
+                    return true
+                }
+                
+                let valueIfTrue = textView.text.substring(with: range).qmui_lengthWhenCountingNonASCIICharacterAsTwo
+                let rangeLength = UInt(shouldCountingNonASCIICharacterAsTwo ? valueIfTrue : range.length)
+                let textWillOutofMaximumTextLength = lengthWithString(textView.text) - rangeLength + lengthWithString(text) > textView.maximumTextLength
+                if textWillOutofMaximumTextLength {
+                    // 当输入的文本达到最大长度限制后，此时继续点击 return 按钮（相当于尝试插入“\n”），就会认为总文字长度已经超过最大长度限制，所以此次 return 按钮的点击被拦截，外界无法感知到有这个 return 事件发生，所以这里为这种情况做了特殊保护
+                    if lengthWithString(textView.text) - rangeLength == textView.maximumTextLength && text.isEqual("\n") {
+                        if textView.originalDelegate?.responds(to: #function) ?? false {
+                            // 不管外面 return YES 或 NO，都不允许输入了，否则会超出 maximumTextLength。
+                            let _ = textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
+                            return false
+                        }
+                    }
+                    
+                    // 将要插入的文字裁剪成多长，就可以让它插入了
+                    let substringLength = textView.maximumTextLength - lengthWithString(textView.text) + rangeLength
+                    if substringLength > 0 && lengthWithString(text) > substringLength {
+                        let nsRange = NSMakeRange(0, Int(substringLength))
+                        let swiftRange = Range(nsRange, in: text)
+                        let allowedText = text.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
+                        if lengthWithString(allowedText) <= substringLength {
+                            textView.text = (textView.text as NSString).replacingCharacters(in: range, with: allowedText) as String
+                            let location = range.location + Int(substringLength)
+                            textView.selectedRange = NSMakeRange(location, 0)
+                            
+                            if !textView.shouldResponseToProgrammaticallyTextChanges {
+                                textView.originalDelegate?.textViewDidChange!(textView)
+                            }
+                        }
+                    }
+                    
+                    if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
+                        originalDelegate!.textView!(textView, didPreventTextChangeInRange: range, replacementText: text)
+                    }
+                    return false
+                }
+            }
+            
+            if textView.originalDelegate?.responds(to: #function) ?? false {
+                return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
+            }
+        }
+        
+        return true
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        // 1、iOS 10 以下的版本，从中文输入法的候选词里选词输入，是不会走到 textView:shouldChangeTextInRange:replacementText: 的，所以要在这里截断文字
+        // 2、如果是中文输入法正在输入拼音的过程中（markedTextRange 不为 nil），是不应该限制字数的（例如输入“huang”这5个字符，其实只是为了输入“黄”这一个字符），所以在 shouldChange 那边不会限制，而是放在 didChange 这里限制。
+        if let textView = textView as? QMUITextView {
+            if textView.markedTextRange == nil && lengthWithString(textView.text) > textView.maximumTextLength {
+                
+                let nsRange = NSMakeRange(0, Int(textView.maximumTextLength))
+                let swiftRange = Range(nsRange, in: textView.text)
+                textView.text = textView.text.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
+                
+                if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
+                    // 如果是在这里被截断，是无法得知截断前光标所处的位置及要输入的文本的，所以只能将当前的 selectedRange 传过去，而 replacementText 为 nil
+                    originalDelegate?.textView!(textView, didPreventTextChangeInRange: textView.selectedRange, replacementText: nil)
+                }
+                
+                if textView.shouldResponseToProgrammaticallyTextChanges {
+                    return
+                }
+            }
+        }
+        
+        if originalDelegate?.responds(to: #function) ?? false {
+            originalDelegate?.textViewDidChange!(textView)
+        }
+    }
+    
+    // MARK: - Delegate Proxy
+    //    override func responds(to aSelector: Selector!) -> Bool {
+    //
+    //    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if originalDelegate?.responds(to: #function) ?? false {
+            originalDelegate!.scrollViewDidScroll!(scrollView)
+        }
+    }
+    
+    override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+        if !shouldRejectSystemScroll! {
+            super.setContentOffset(contentOffset, animated: animated)
+            if debug {
+                print("\(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
+            }
+        } else {
+            if debug {
+                print("被屏蔽的 \(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
+            }
+        }
+    }
+    
+    override var contentOffset: CGPoint {
+        get {
+            return super.contentOffset
+        }
+        set {
+            if !shouldRejectSystemScroll! {
+                super.contentOffset = contentOffset
+                if debug {
+                    print("\(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
+                }
+            } else {
+                if debug {
+                    print("被屏蔽的 \(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
+                }
+            }
+        }
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        if originalDelegate?.responds(to: #function) ?? false {
+            originalDelegate!.scrollViewDidZoom!(scrollView)
+        }
+    }
 }
