@@ -72,7 +72,7 @@ class QMUIZoomImageView: UIView {
     public weak var image: UIImage? {
         didSet {
             // 释放以节省资源
-            livePhotoView.removeFromSuperview()
+            livePhotoView?.removeFromSuperview()
             livePhotoView = nil
             destroyVideoRelatedObjectsIfNeeded()
             
@@ -87,7 +87,7 @@ class QMUIZoomImageView: UIView {
             imageView.frame = image.size.rect.applying(imageView.transform)
 
             hideViews()
-            self.imageView.hidden = false
+            imageView.isHidden = false
             
             revertZooming()
         }
@@ -278,9 +278,9 @@ class QMUIZoomImageView: UIView {
         emptyView.frame = bounds
         
         let viewportRect = finalViewportRect
-        videoCenteredPlayButton.center = CGPoint(x: viewportRect.midX, y: viewportRect.midY)
+        videoCenteredPlayButton?.center = CGPoint(x: viewportRect.midX, y: viewportRect.midY)
 
-        let height = videoToolbar.sizeThatFits(CGSize.max).height
+        let height = videoToolbar?.sizeThatFits(CGSize.max).height ?? 0
         videoToolbar.frame = CGRect(x: 0, y: bounds.height - height, width: bounds.width, height: height)
     }
 
@@ -315,28 +315,30 @@ class QMUIZoomImageView: UIView {
         let gesturePoint =  gestureRecognizer.location(in: gestureRecognizer.view)
         delegate?.doubleTouch(in: self, location: gesturePoint)
         
-        if enabledZoomImageView {
-            // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
-            if scrollView.zoomScale >= scrollView.maximumZoomScale {
-                setZoomScale(scrollView.minimumZoomScale, animated: true)
+        guard enabledZoomImageView else {
+            return
+        }
+
+        // 如果图片被压缩了，则第一次放大到原图大小，第二次放大到最大倍数
+        if scrollView.zoomScale >= scrollView.maximumZoomScale {
+            setZoomScale(scrollView.minimumZoomScale, animated: true)
+        } else {
+            var newZoomScale: CGFloat = 0
+            if scrollView.zoomScale < 1 {
+                // 如果目前显示的大小比原图小，则放大到原图
+                newZoomScale = 1
             } else {
-                var newZoomScale: CGFloat = 0
-                if scrollView.zoomScale < 1 {
-                    // 如果目前显示的大小比原图小，则放大到原图
-                    newZoomScale = 1
-                } else {
-                    // 如果当前显示原图，则放大到最大的大小
-                    newZoomScale = scrollView.maximumZoomScale
-                }
-                
-                var zoomRect = CGRect.zero
-                let tapPoint = currentContentView?.convert(gesturePoint, to: gestureRecognizer.view) ?? .zero
-                zoomRect.size.width = bounds.width / newZoomScale
-                zoomRect.size.height = bounds.height / newZoomScale
-                zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
-                zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
-                zoom(to: zoomRect, animated: true)
+                // 如果当前显示原图，则放大到最大的大小
+                newZoomScale = scrollView.maximumZoomScale
             }
+            
+            var zoomRect = CGRect.zero
+            let tapPoint = currentContentView?.convert(gesturePoint, to: gestureRecognizer.view) ?? .zero
+            zoomRect.size.width = bounds.width / newZoomScale
+            zoomRect.size.height = bounds.height / newZoomScale
+            zoomRect.origin.x = tapPoint.x - zoomRect.width / 2
+            zoomRect.origin.y = tapPoint.y - zoomRect.height / 2
+            zoom(to: zoomRect, animated: true)
         }
     }
     
@@ -360,6 +362,19 @@ class QMUIZoomImageView: UIView {
             rect = scrollView.bounds.size.rect
         }
         return rect
+    }
+    
+    private func hideViews() {
+        if #available(iOS 9.1, *) {
+            livePhotoView?.isHidden = true
+        }
+        imageView.isHidden = true
+        videoCenteredPlayButton?.isHidden = true
+        videoPlayerLayer.isHidden = true
+        videoToolbar?.isHidden = true
+        videoToolbar?.pauseButton.isHidden = true
+        videoToolbar?.playButton.isHidden = true
+        videoCenteredPlayButton?.isHidden = true
     }
     
     var enabledZoomImageView: Bool {
@@ -401,15 +416,15 @@ class QMUIZoomImageView: UIView {
     }
 
     private var currentContentView: UIView? {
-        //        if (_imageView) {
-        //            return _imageView
-        //        }
-        //        if (_livePhotoView) {
-        //            return _livePhotoView
-        //        }
-        //        if (self.videoPlayerView) {
-        //            return self.videoPlayerView
-        //        }
+        if let imageView = imageView {
+            return imageView
+        }
+        if let livePhotoView = livePhotoView {
+            return livePhotoView
+        }
+        if let videoPlayerView = videoPlayerView {
+            return videoPlayerView
+        }
         return nil
     }
 }
