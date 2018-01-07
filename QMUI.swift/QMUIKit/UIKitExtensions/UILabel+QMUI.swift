@@ -16,4 +16,13 @@ extension UILabel {
         sizeToFit()
         text = nil
     }
+    
+    public func qmui_setTheSameAppearance(as label: UILabel) {
+        font = label.font
+        textColor = label.textColor
+        backgroundColor = label.backgroundColor
+        lineBreakMode = label.lineBreakMode
+        textAlignment = label.textAlignment
+        (self as? QMUILabel)?.contentEdgeInsets = (label as? QMUILabel)?.contentEdgeInsets ?? .zero
+    }
 }

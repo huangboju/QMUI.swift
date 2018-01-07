@@ -337,6 +337,11 @@ extension CGRect {
 }
 
 extension CGSize {
+    
+//    static var max: CGSize {
+//        return CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
+//    }
+
     /// 返回一个x/y为0的CGRect
     var rect: CGRect {
         return CGRect(origin: .zero, size: self)
