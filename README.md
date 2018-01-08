@@ -23,5 +23,6 @@ QQ: 529940945
 * [haungboju](https://github.com/huangboju)
 * [lixin](https://github.com/lixin147741)
 * [xnxin](https://github.com/xnxin)
+* [lettleprince](https://github.com/lettleprince)
 
 # [进度](https://github.com/huangboju/QMUI.swift/blob/master/progress.md)
