@@ -46,6 +46,7 @@ let UIColorTestGreen = QMUICMI.testColorGreen
 let UIColorTestBlue = QMUICMI.testColorBlue
 
 // 可操作的控件
+
 // MARK: - UIControl
 
 let UIControlHighlightedAlpha = QMUICMI.controlHighlightedAlpha // 一般control的Highlighted透明值
@@ -56,7 +57,9 @@ let SegmentTextSelectedTintColor = QMUICMI.segmentTextSelectedTintColor // segme
 let SegmentFontSize = QMUICMI.segmentFontSize // segment的字体大小
 
 // 按钮
+
 // MARK: - UIButton
+
 let ButtonHighlightedAlpha = QMUICMI.buttonHighlightedAlpha // 按钮Highlighted状态的透明度
 let ButtonDisabledAlpha = QMUICMI.buttonDisabledAlpha // 按钮Disabled状态的透明度
 let ButtonTintColor = QMUICMI.buttonTintColor // 普通按钮的颜色
@@ -74,7 +77,9 @@ let FillButtonColorGray = QMUICMI.fillButtonColorGray // QMUIFillButtonColorGray
 let FillButtonColorWhite = QMUICMI.fillButtonColorWhite // QMUIFillButtonColorWhite的颜色
 
 // 输入框
+
 // MARK: - TextField & TextView
+
 let TextFieldTintColor = QMUICMI.textFieldTintColor // 全局UITextField、UITextView的tintColor
 let TextFieldTextInsets = QMUICMI.textFieldTextInsets // QMUITextField的内边距
 
@@ -159,6 +164,8 @@ let TableViewCellNormalHeight = QMUICMI.tableViewCellNormalHeight // 默认cell�
 
 let TableViewCellDisclosureIndicatorImage = QMUICMI.tableViewCellDisclosureIndicatorImage // 列表cell右边的箭头图片
 let TableViewCellCheckmarkImage = QMUICMI.tableViewCellCheckmarkImage // 列表cell右边的打钩checkmark
+let TableViewCellDetailButtonImage = QMUICMI.tableViewCellDetailButtonImage // 列表 cell 右边的 i 按钮
+let TableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator = QMUICMI.tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator // 列表 cell 右边的 i 按钮和向右箭头之间的间距（仅当两者都使用了自定义图片并且同时显示时才生效）
 
 let TableViewSectionHeaderBackgroundColor = QMUICMI.tableViewSectionHeaderBackgroundColor
 let TableViewSectionFooterBackgroundColor = QMUICMI.tableViewSectionFooterBackgroundColor
@@ -186,6 +193,7 @@ let TableViewCellContentDefaultPaddingLeft = QMUICMI.tableViewCellContentDefault
 let TableViewCellContentDefaultPaddingRight = QMUICMI.tableViewCellContentDefaultPaddingRight // Cell默认右边缘的间距
 
 // MARK: - UIWindowLevel
+
 let UIWindowLevelQMUIAlertView = QMUICMI.windowLevelQMUIAlertView
 let UIWindowLevelQMUIActionSheet = QMUICMI.windowLevelQMUIActionSheet
 let UIWindowLevelQMUIMoreOperationController = QMUICMI.windowLevelQMUIMoreOperationController
