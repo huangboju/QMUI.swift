@@ -302,14 +302,32 @@ class QMUIZoomImageView: UIView {
 
     /// 暂停视频播放
     public func pauseVideo() {
-        
+        if videoPlayer == nil {
+            return
+        }
+        handlePauseButton()
+        removePlayerTimeObserver()
+    }
+    
+    
+    private func handlePauseButton() {
+        videoPlayer?.pause()
+        videoToolbar?.playButton.isHidden = false
+        videoToolbar?.pauseButton.isHidden = true
     }
 
     /// 停止视频播放，将播放状态重置到初始状态
     public func endPlayingVideo() {
-        
+        if videoPlayer == nil {
+            return
+        }
+        videoPlayer?.seek(to: CMTimeMake(0, 1))
+        pauseVideo()
+        syncVideoProgressSlider()
+        videoToolbar?.isHidden = true
+        videoCenteredPlayButton?.isHidden = false
     }
-    
+
     /**
      *  获取当前正在显示的图片/视频在整个 QMUIZoomImageView 坐标系里的 rect（会按照当前的缩放状态来计算）
      */
@@ -333,6 +351,13 @@ class QMUIZoomImageView: UIView {
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
      */
     public func showLoading() {
+        // 挪到最前面
+        insertSubview(emptyView, at: subviews.count - 1)
+        emptyView.setLoadingViewHidden(false)
+        emptyView.setTextLabelText(nil)
+        emptyView.setDetailTextLabelText(nil)
+        emptyView.setActionButtonTitle(nil)
+        emptyView.isHidden = false
     }
     
     /**
@@ -340,13 +365,19 @@ class QMUIZoomImageView: UIView {
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
      */
     public func showEmptyView(with text: String) {
-    
+        insertSubview(emptyView, at: subviews.count - 1)
+        emptyView.setLoadingViewHidden(true)
+        emptyView.setTextLabelText(text)
+        emptyView.setDetailTextLabelText(nil)
+        emptyView.setActionButtonTitle(nil)
+        emptyView.isHidden = false
     }
-    
+
     /**
      *  将 emptyView 隐藏
      */
     public func hideEmptyView() {
+        emptyView.isHidden = true
     }
     
     override func didMoveToWindow() {
