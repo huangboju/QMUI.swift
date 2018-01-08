@@ -9,6 +9,8 @@
 import Photos
 import PhotosUI
 
+private let kTagForCenteredPlayButton = 1
+
 protocol QMUIZoomImageViewDelegate: class {
     func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)
     func doubleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)
@@ -72,22 +74,24 @@ class QMUIZoomImageView: UIView {
     public weak var image: UIImage? {
         didSet {
             // 释放以节省资源
-            livePhotoView?.removeFromSuperview()
-            livePhotoView = nil
+            if #available(iOS 9.1, *) {
+                livePhotoView?.removeFromSuperview()
+                livePhotoView = nil
+            }
             destroyVideoRelatedObjectsIfNeeded()
             
             guard let image = image else {
-                imageView.image = nil
+                imageView?.image = nil
                 return
             }
             initImageViewIfNeeded()
-            imageView.image = image
+            imageView?.image = image
             
             // 更新 imageView 的大小时，imageView 可能已经被缩放过，所以要应用当前的缩放
-            imageView.frame = image.size.rect.applying(imageView.transform)
+            imageView?.frame = image.size.rect.applying(imageView!.transform)
 
             hideViews()
-            imageView.isHidden = false
+            imageView?.isHidden = false
             
             revertZooming()
         }
@@ -122,54 +126,177 @@ class QMUIZoomImageView: UIView {
         videoPlayer?.removeTimeObserver(videoTimeObserver)
         self.videoTimeObserver = nil
     }
-    
-    func initImageViewIfNeeded() {
-        
-    }
-    
+
     /// 用于显示图片的 UIImageView，注意不要通过 imageView.image 来设置图片，请使用 image 属性。
-    public let imageView = UIImageView()
-    
+    public private(set) var imageView: UIImageView? {
+        set {
+            _imageView = newValue
+        }
+        get {
+            initImageViewIfNeeded()
+            return _imageView
+        }
+    }
+    private var _imageView: UIImageView?
+
+    private func initImageViewIfNeeded() {
+        if imageView != nil {
+            return
+        }
+        imageView = UIImageView()
+        scrollView.addSubview(imageView!)
+    }
+
     /// 设置当前要显示的 Live Photo，会把 image/video 相关内容清空，因此注意不要直接通过 livePhotoView.livePhoto 来设置
     private var livePhotoStorge: Any?
     @available(iOS 9.1, *)
     public weak var livePhoto: PHLivePhoto? {
         get {
-            guard let photo = self.livePhotoStorge as? PHLivePhoto else {
-                return nil
-            }
-            return photo
+            return livePhotoStorge as? PHLivePhoto
         }
         set {
             livePhotoStorge = newValue
+            
+            imageView?.removeFromSuperview()
+            imageView = nil
+            destroyVideoRelatedObjectsIfNeeded()
+            
+            if newValue == nil {
+                livePhotoView?.livePhoto = nil
+                return
+            }
+            
+            initLivePhotoViewIfNeeded()
+            livePhotoView?.livePhoto = newValue
+            livePhotoView?.isHidden = false
+
+            // 更新 livePhotoView 的大小时，livePhotoView 可能已经被缩放过，所以要应用当前的缩放
+            livePhotoView?.frame = livePhoto?.size.rect.applying(livePhotoView!.transform) ?? .zero
+            revertZooming()
         }
     }
 
     /// 用于显示 Live Photo 的 view，仅在 iOS 9.1 及以后才有效
     @available(iOS 9.1, *)
     public var livePhotoView: PHLivePhotoView? {
-        return
+        set {
+            _livePhotoView = newValue
+        }
+        get {
+            initLivePhotoViewIfNeeded()
+            return _livePhotoView as? PHLivePhotoView
+        }
     }
-    
+    private var _livePhotoView: Any?
+
+    private func initLivePhotoViewIfNeeded() {
+        if #available(iOS 9.1, *), livePhotoView == nil  {
+            livePhotoView = PHLivePhotoView()
+            scrollView.addSubview(livePhotoView!)
+        }
+    }
+
     /// 设置当前要显示的 video ，会把 image/livePhoto 相关内容清空，因此注意不要直接通过 videoPlayerLayer 来设置
     public weak var videoPlayerItem: AVPlayerItem?
     
     /// 用于显示 video 的 layer
-    public weak var videoPlayerLayer: AVPlayerLayer {
-        return
+    public weak var videoPlayerLayer: AVPlayerLayer? {
+        set {
+            _videoPlayerLayer = newValue
+        }
+        get {
+            initVideoPlayerLayerIfNeeded()
+            return _videoPlayerLayer
+        }
     }
+    private var _videoPlayerLayer: AVPlayerLayer?
     
+    private func initVideoPlayerLayerIfNeeded() {
+        if videoPlayerView != nil {
+            return
+        }
+        videoPlayerView = QMUIZoomImageVideoPlayerView()
+        videoPlayerLayer = videoPlayerView?.layer as? AVPlayerLayer
+        videoPlayerView?.isHidden = true
+        scrollView.addSubview(videoPlayerView!)
+    }
+
     // 播放 video 时底部的工具栏，你可通过此属性来拿到并修改上面的播放/暂停按钮、进度条、Label 等的样式
     // @see QMUIZoomImageViewVideoToolbar
-    public weak var videoToolbar: QMUIZoomImageViewVideoToolbar? {
-        return
-    }
+    public weak private(set) var videoToolbar: QMUIZoomImageViewVideoToolbar?
     
     // 播放 video 时屏幕中央的播放按钮
     public var videoCenteredPlayButton: QMUIButton? {
-        return
+        set {
+            _videoCenteredPlayButton = newValue
+        }
+        get {
+            initVideoCenteredPlayButtonIfNeeded()
+            return _videoCenteredPlayButton
+        }
+    }
+    private var _videoCenteredPlayButton: QMUIButton?
+    
+    private func initVideoCenteredPlayButtonIfNeeded() {
+        if videoCenteredPlayButton != nil {
+            return
+        }
+        
+        videoCenteredPlayButton = {
+            let b = QMUIButton()
+            b.qmui_outsideEdge = UIEdgeInsets(top: -60, left: -60, bottom: -60, right: -60)
+            b.tag = kTagForCenteredPlayButton
+            b.setImage(videoCenteredPlayButtonImage, for: .normal)
+            b.sizeToFit()
+            b.addTarget(self, action: #selector(handlePlayButton), for: .touchUpInside)
+            b.isHidden = true
+            insertSubview(b, belowSubview: emptyView)
+            return b
+        }()
     }
     
+    @objc
+    private func handlePlayButton(_ button: UIButton) {
+        addPlayerTimeObserver()
+        videoPlayer?.play()
+        videoCenteredPlayButton?.isHidden = true
+        videoToolbar?.playButton.isHidden = true
+        videoToolbar?.pauseButton.isHidden = false
+        if button.tag == kTagForCenteredPlayButton {
+            videoToolbar?.isHidden = true
+            delegate?.zoomImageView(self, didHideVideoToolbar: true)
+        }
+    }
+    
+    private func addPlayerTimeObserver() {
+        if videoTimeObserver != nil {
+            return
+        }
+        let interval = 0.1
+        videoPlayer?.addPeriodicTimeObserver(forInterval: CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: nil, using: { [weak self] (time) in
+            self?.syncVideoProgressSlider()
+        })
+    }
+
+    private func syncVideoProgressSlider() {
+        let currentSeconds = CMTimeGetSeconds(videoPlayer!.currentTime())
+        videoToolbar?.slider.value = Float(currentSeconds)
+        updateVideoSliderLeftLabel()
+    }
+    
+    
+    private func updateVideoSliderLeftLabel() {
+        let currentSeconds = CMTimeGetSeconds(videoPlayer!.currentTime())
+        videoToolbar?.sliderLeftLabel.text = timeString(from: Int(currentSeconds))
+    }
+
+    // convert "100" to "01:40"
+    private func timeString(from seconds: Int) -> String {
+        let min = seconds / 60
+        let sec = seconds - min * 60
+        return "\(min):\(sec)"
+    }
+
     // 可通过此属性修改 video 播放时屏幕中央的播放按钮图片
     public var videoCenteredPlayButtonImage = QMUIZoomImageViewImageGenerator.largePlayImage
 
@@ -281,7 +408,7 @@ class QMUIZoomImageView: UIView {
         videoCenteredPlayButton?.center = CGPoint(x: viewportRect.midX, y: viewportRect.midY)
 
         let height = videoToolbar?.sizeThatFits(CGSize.max).height ?? 0
-        videoToolbar.frame = CGRect(x: 0, y: bounds.height - height, width: bounds.width, height: height)
+        videoToolbar?.frame = CGRect(x: 0, y: bounds.height - height, width: bounds.width, height: height)
     }
 
     override var frame: CGRect {
@@ -305,8 +432,8 @@ class QMUIZoomImageView: UIView {
         let gesturePoint = gestureRecognizer.location(in: gestureRecognizer.view)
         delegate?.singleTouch(in: self, location: gesturePoint)
         if videoPlayerItem != nil {
-            videoToolbar.isHidden = !videoToolbar.isHidden
-            delegate?.zoomImageView(self, didHideVideoToolbar: videoToolbar.isHidden)
+            videoToolbar?.isHidden = !videoToolbar!.isHidden
+            delegate?.zoomImageView(self, didHideVideoToolbar: videoToolbar?.isHidden ?? true)
         }
     }
     
@@ -348,34 +475,6 @@ class QMUIZoomImageView: UIView {
             delegate?.longPress(in: self)
         }
     }
-
-    
-    // MARK: - 工具方法
-    var finalViewportRect: CGRect {
-        var rect = viewportRect
-        if rect.isEmpty && !bounds.isEmpty {
-            // 有可能此时还没有走到过 layoutSubviews 因此拿不到正确的 scrollView 的 size，因此这里要强制 layout 一下
-            if scrollView.bounds.size != bounds.size {
-                setNeedsLayout()
-                layoutIfNeeded()
-            }
-            rect = scrollView.bounds.size.rect
-        }
-        return rect
-    }
-    
-    private func hideViews() {
-        if #available(iOS 9.1, *) {
-            livePhotoView?.isHidden = true
-        }
-        imageView.isHidden = true
-        videoCenteredPlayButton?.isHidden = true
-        videoPlayerLayer.isHidden = true
-        videoToolbar?.isHidden = true
-        videoToolbar?.pauseButton.isHidden = true
-        videoToolbar?.playButton.isHidden = true
-        videoCenteredPlayButton?.isHidden = true
-    }
     
     var enabledZoomImageView: Bool {
         var enabledZoom = true
@@ -415,12 +514,41 @@ class QMUIZoomImageView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - 工具方法
+    private var finalViewportRect: CGRect {
+        var rect = viewportRect
+        if rect.isEmpty && !bounds.isEmpty {
+            // 有可能此时还没有走到过 layoutSubviews 因此拿不到正确的 scrollView 的 size，因此这里要强制 layout 一下
+            if scrollView.bounds.size != bounds.size {
+                setNeedsLayout()
+                layoutIfNeeded()
+            }
+            rect = scrollView.bounds.size.rect
+        }
+        return rect
+    }
+
+    private func hideViews() {
+        if #available(iOS 9.1, *) {
+            livePhotoView?.isHidden = true
+        }
+        imageView?.isHidden = true
+        videoCenteredPlayButton?.isHidden = true
+        videoPlayerLayer?.isHidden = true
+        videoToolbar?.isHidden = true
+        videoToolbar?.pauseButton.isHidden = true
+        videoToolbar?.playButton.isHidden = true
+        videoCenteredPlayButton?.isHidden = true
+    }
+
     private var currentContentView: UIView? {
         if let imageView = imageView {
             return imageView
         }
-        if let livePhotoView = livePhotoView {
-            return livePhotoView
+        if #available(iOS 9.1, *) {
+            if let livePhotoView = livePhotoView {
+                return livePhotoView
+            }
         }
         if let videoPlayerView = videoPlayerView {
             return videoPlayerView

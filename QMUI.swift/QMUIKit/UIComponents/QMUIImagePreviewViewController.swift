@@ -94,8 +94,8 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
 
             let transitionToRect = view.convert(zoomImageView.imageViewRectInZoomImageView, from: zoomImageView.superview)
 
-            transitionImageView?.contentMode = zoomImageView.imageView.contentMode
-            transitionImageView?.image = zoomImageView.imageView.image
+            transitionImageView?.contentMode = zoomImageView.imageView!.contentMode
+            transitionImageView?.image = zoomImageView.imageView?.image
             transitionImageView?.frame = transitionFromRect
             view.addSubview(transitionImageView!)
 
