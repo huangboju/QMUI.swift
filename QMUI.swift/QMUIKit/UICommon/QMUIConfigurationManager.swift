@@ -270,7 +270,7 @@ class QMUIConfigurationManager {
     public var navigationBarHiddenStateUsable = false
     public var navigationBarHiddenStateInitially: QMUINavigationBarHiddenState = .showWithAnimated
     public var shouldFixTabBarTransitionBugInIPhoneX = false
-    
+
     static let shared = QMUIConfigurationManager()
 
     private init() {}

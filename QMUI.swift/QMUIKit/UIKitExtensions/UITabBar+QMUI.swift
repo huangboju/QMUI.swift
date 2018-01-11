@@ -10,7 +10,7 @@ import Foundation
 
 extension UITabBar: SelfAware {
 
-    static let kLastTouchedTabBarItemIndexNone = -1
+    private static let kLastTouchedTabBarItemIndexNone = -1
 
     private static let _onceToken = UUID().uuidString
 
