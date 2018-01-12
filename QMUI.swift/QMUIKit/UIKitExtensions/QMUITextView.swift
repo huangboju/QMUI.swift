@@ -529,7 +529,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             return super.contentOffset
         }
         set {
-            if !shouldRejectSystemScroll! {
+            if shouldRejectSystemScroll != nil && !shouldRejectSystemScroll! {
                 super.contentOffset = contentOffset
                 if debug {
                     print("\(NSStringFromSelector(#function)), contentOffset.y = \(String(format: "%.2f", contentOffset.y))")
