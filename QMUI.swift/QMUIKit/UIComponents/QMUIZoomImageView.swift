@@ -335,6 +335,50 @@ class QMUIZoomImageView: UIView {
         let imageView = currentContentView
         return convert(imageView?.frame ?? .zero, from: imageView?.superview)
     }
+    
+    
+    private var videoSize: CGSize = .zero
+
+    private var minimumZoomScale: CGFloat {
+        if image == nil && videoPlayerItem == nil {
+            if #available(iOS 9.1, *) {
+                if livePhoto == nil {
+                    return 1
+                }
+            } else {
+                return 1
+            }
+        }
+
+        let viewport = finalViewportRect
+        var mediaSize: CGSize = .zero
+        if let image = image {
+            mediaSize = image.size
+        } else if videoPlayerItem != nil {
+            mediaSize = videoSize
+        }
+        if #available(iOS 9.1, *) {
+            if let livePhoto = livePhoto {
+                mediaSize = livePhoto.size
+            }
+        }
+
+        var minScale: CGFloat = 1
+        let scaleX = viewport.width / mediaSize.width
+        let scaleY = viewport.height / mediaSize.height
+        if contentMode == .scaleAspectFit {
+            minScale = min(scaleX, scaleY)
+        } else if contentMode == .scaleAspectFill {
+            minScale = max(scaleX, scaleY)
+        } else if contentMode == .center {
+            if scaleX >= 1 && scaleY >= 1 {
+                minScale = 1
+            } else {
+                minScale = min(scaleX, scaleY)
+            }
+        }
+        return minScale
+    }
 
     /**
      *  重置图片或视频的大小，使用的场景例如：相册控件里放大当前图片、划到下一张、再回来，当前的图片或视频应该恢复到原来大小。
@@ -347,12 +391,12 @@ class QMUIZoomImageView: UIView {
         
         let enabledZoomImageView = self.enabledZoomImageView
         let minimumZoomScale = self.minimumZoomScale
-        let maximumZoomScale = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
+        var maximumZoomScale = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
         maximumZoomScale = max(minimumZoomScale, maximumZoomScale)// 可能外部通过 contentMode = UIViewContentModeScaleAspectFit 的方式来让小图片撑满当前的 zoomImageView，所以算出来 minimumZoomScale 会很大（至少比 maximumZoomScale 大），所以这里要做一个保护
         let zoomScale = minimumZoomScale
-        let shouldFireDidZoomingManual = zoomScale == self.scrollView.zoomScale
-        scrollView.panGestureRecognizer.enabled = enabledZoomImageView
-        scrollView.pinchGestureRecognizer.enabled = enabledZoomImageView
+        let shouldFireDidZoomingManual = zoomScale == scrollView.zoomScale
+        scrollView.panGestureRecognizer.isEnabled = enabledZoomImageView
+        scrollView.pinchGestureRecognizer?.isEnabled = enabledZoomImageView
         scrollView.minimumZoomScale = minimumZoomScale
         scrollView.maximumZoomScale = maximumZoomScale
         setZoomScale(zoomScale, animated: false)
@@ -361,7 +405,7 @@ class QMUIZoomImageView: UIView {
         if shouldFireDidZoomingManual {
             handleDidEndZooming()
         }
-        
+    
         // 当内容比 viewport 的区域更大时，要把内容放在 viewport 正中间
         scrollView.contentOffset = {
             var x = scrollView.contentOffset.x
@@ -380,6 +424,37 @@ class QMUIZoomImageView: UIView {
             }
             return CGPoint(x: x, y: y)
         }()
+    }
+    
+    private func handleDidEndZooming() {
+        let viewport = finalViewportRect
+
+        let contentView = currentContentView
+        // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
+        layoutIfNeeded()
+        let contentViewFrame = contentView != nil ? convert(contentView!.frame, to: contentView!.superview) : CGRect.zero
+        var contentInset = UIEdgeInsets.zero
+
+        contentInset.top = viewport.minY
+        contentInset.left = viewport.minX
+        contentInset.right = bounds.width - viewport.maxX
+        contentInset.bottom = bounds.height - viewport.maxY
+
+        // 图片 height 比选图框(viewport)的 height 小，这时应该把图片纵向摆放在选图框中间，且不允许上下移动
+        if viewport.height > contentViewFrame.height {
+            // 用 floor 而不是 flat，是因为 flat 本质上是向上取整，会导致 top + bottom 比实际的大，然后 scrollView 就认为可滚动了
+            contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
+            contentInset.bottom = floor(bounds.height - viewport.midY - contentViewFrame.height / 2.0)
+        }
+
+        // 图片 width 比选图框的 width 小，这时应该把图片横向摆放在选图框中间，且不允许左右移动
+        if viewport.width > contentViewFrame.width {
+            contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
+            contentInset.right = floor(bounds.width - viewport.midX - contentViewFrame.width / 2.0)
+        }
+
+        scrollView.contentInset = contentInset
+        scrollView.contentSize = contentView?.frame.size ?? .zero
     }
 
     public let emptyView = QMUIEmptyView()
