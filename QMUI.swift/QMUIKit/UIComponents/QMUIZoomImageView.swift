@@ -341,7 +341,45 @@ class QMUIZoomImageView: UIView {
      *  注意子类重写需要调一下super。
      */
     public func revertZooming() {
+        if bounds.isEmpty {
+            return
+        }
         
+        let enabledZoomImageView = self.enabledZoomImageView
+        let minimumZoomScale = self.minimumZoomScale
+        let maximumZoomScale = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
+        maximumZoomScale = max(minimumZoomScale, maximumZoomScale)// 可能外部通过 contentMode = UIViewContentModeScaleAspectFit 的方式来让小图片撑满当前的 zoomImageView，所以算出来 minimumZoomScale 会很大（至少比 maximumZoomScale 大），所以这里要做一个保护
+        let zoomScale = minimumZoomScale
+        let shouldFireDidZoomingManual = zoomScale == self.scrollView.zoomScale
+        scrollView.panGestureRecognizer.enabled = enabledZoomImageView
+        scrollView.pinchGestureRecognizer.enabled = enabledZoomImageView
+        scrollView.minimumZoomScale = minimumZoomScale
+        scrollView.maximumZoomScale = maximumZoomScale
+        setZoomScale(zoomScale, animated: false)
+
+        // 只有前后的 zoomScale 不相等，才会触发 UIScrollViewDelegate scrollViewDidZoom:，因此对于相等的情况要自己手动触发
+        if shouldFireDidZoomingManual {
+            handleDidEndZooming()
+        }
+        
+        // 当内容比 viewport 的区域更大时，要把内容放在 viewport 正中间
+        scrollView.contentOffset = {
+            var x = scrollView.contentOffset.x
+            var y = scrollView.contentOffset.y
+            let viewport = finalViewportRect
+            if !viewport.isEmpty {
+                let contentViewFrame = currentContentView?.frame ?? .zero
+                let width = viewport.width
+                if width < contentViewFrame.width {
+                    x = (contentViewFrame.width - width) / 2 - viewport.minX
+                }
+                let height = viewport.height
+                if height < contentViewFrame.height {
+                    y = (contentViewFrame.height - height) / 2 - viewport.minY
+                }
+            }
+            return CGPoint(x: x, y: y)
+        }()
     }
 
     public let emptyView = QMUIEmptyView()
