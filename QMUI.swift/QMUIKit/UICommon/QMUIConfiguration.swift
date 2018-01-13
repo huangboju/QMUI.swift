@@ -208,3 +208,5 @@ let HidesBottomBarWhenPushedInitially = QMUICMI.hidesBottomBarWhenPushedInitiall
 let NavigationBarHiddenStateUsable = QMUICMI.navigationBarHiddenStateUsable
 
 let NavigationBarHiddenStateInitially = QMUICMI.navigationBarHiddenStateInitially // NavigationBarHiddenStateInitially : preferredNavigationBarHiddenState 的初始值，默认为QMUINavigationBarHiddenStateShowWithAnimated
+
+let ShouldFixTabBarTransitionBugInIPhoneX = QMUICMI.shouldFixTabBarTransitionBugInIPhoneX // 是否需要自动修复 iOS 11 下，iPhone X 的设备在 push 界面时，tabBar 会瞬间往上跳的 bug

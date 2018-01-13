@@ -17,7 +17,7 @@ extension UISearchBar: SelfAware {
                 #selector(setter: frame),
             ]
             selectors.forEach({
-                print("qmui_" + $0.description)
+//                print("qmui_" + $0.description)
                 ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
             })
         }
