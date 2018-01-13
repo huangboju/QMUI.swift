@@ -155,8 +155,7 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
                     attribute.center.x
                 let degress = -90 * self.rotationRatio * (distance / (self.collectionView?.bounds.width ?? 1))
 
-                
-                let cosValue = abs(cos(AngleWithDegrees(degress)))                
+                let cosValue = abs(cos(AngleWithDegrees(degress)))
                 let translateY = self.rotationRadius - self.rotationRadius * cosValue
                 var transform = CGAffineTransform(translationX: 0, y: translateY)
                 transform = transform.rotated(by: AngleWithDegrees(degress))
@@ -188,7 +187,7 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
             if fabs(velocity.x) > velocityForEnsurePageDown {
                 // 为了更容易触发翻页，这里主动增加滚动位置
                 let scrollingToRight = proposedContentOffset.x < contentOffset.x
-                proposedContentOffset = CGPoint(x: contentOffset.x + (itemSpacing / 2) * (scrollingToRight ? -1 : 1), y:  contentOffset.y)
+                proposedContentOffset = CGPoint(x: contentOffset.x + (itemSpacing / 2) * (scrollingToRight ? -1 : 1), y: contentOffset.y)
             } else {
                 proposedContentOffset = contentOffset
             }

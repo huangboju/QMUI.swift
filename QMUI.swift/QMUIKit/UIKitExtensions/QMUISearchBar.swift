@@ -9,17 +9,17 @@
 import UIKit
 
 class QMUISearchBar: UISearchBar {
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         didInitialized()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
-    
+
     private func didInitialized() {
         qmui_styledAsQMUISearchBar()
     }

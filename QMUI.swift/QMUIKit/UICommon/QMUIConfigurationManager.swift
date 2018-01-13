@@ -365,6 +365,5 @@ class QMUIConfigurationManager {
         tableViewCellDetailLabelColor = gray
 
         // MARK: - Others
-
     }
 }

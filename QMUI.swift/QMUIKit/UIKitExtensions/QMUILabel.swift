@@ -31,14 +31,14 @@ class QMUILabel: UILabel {
             tempBackgroundColor = backgroundColor
         }
     }
-    
+
     private var tempBackgroundColor: UIColor?
     private var longGestureRecognizer: UILongPressGestureRecognizer?
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         let targetSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue,
                                 height: size.height - contentEdgeInsets.verticalValue)
@@ -51,7 +51,7 @@ class QMUILabel: UILabel {
     override func drawText(in rect: CGRect) {
         super.drawText(in: UIEdgeInsetsInsetRect(rect, contentEdgeInsets))
     }
-    
+
     override var isHighlighted: Bool {
         didSet {
             if let highlightedBackgroundColor = highlightedBackgroundColor {
@@ -59,7 +59,7 @@ class QMUILabel: UILabel {
             }
         }
     }
-    
+
     // MARK: - 长按复制功能
     private func setCanPerformCopyAction() {
         if canPerformCopyAction && longGestureRecognizer == nil {
@@ -80,12 +80,12 @@ class QMUILabel: UILabel {
             NotificationCenter.default.removeObserver(self)
         }
     }
-    
+
     override var canBecomeFirstResponder: Bool {
         return canPerformCopyAction
     }
-    
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+
+    override func canPerformAction(_ action: Selector, withSender _: Any?) -> Bool {
         if canBecomeFirstResponder {
             return action == #selector(copyString)
         }
@@ -101,7 +101,7 @@ class QMUILabel: UILabel {
             }
         }
     }
-    
+
     @objc
     private func handleLongPressGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
         if !canPerformCopyAction {
@@ -122,7 +122,7 @@ class QMUILabel: UILabel {
     }
 
     @objc
-    private func handleMenuWillHideNotification(_ notification: NSNotification) {
+    private func handleMenuWillHideNotification(_: NSNotification) {
         if !canPerformCopyAction {
             return
         }

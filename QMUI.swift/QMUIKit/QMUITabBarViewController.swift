@@ -30,6 +30,6 @@ class QMUITabBarViewController: UITabBarController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         guard let selectedViewController = selectedViewController else { return .portrait }
-        return selectedViewController.responds(to: #selector(getter: self.supportedInterfaceOrientations)) ? selectedViewController.supportedInterfaceOrientations : .portrait
+        return selectedViewController.responds(to: #selector(getter: supportedInterfaceOrientations)) ? selectedViewController.supportedInterfaceOrientations : .portrait
     }
 }

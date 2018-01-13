@@ -66,14 +66,14 @@ class QMUIZoomImageView: UIView {
      * 如果设置为 CGRectZero 则表示使用默认值，默认值为和整个 zoomImageView 一样大
      */
     public var viewportRect: CGRect = .zero
-    
+
     // Default 2
     public var maximumZoomScale: CGFloat = 2 {
         didSet {
             scrollView.maximumZoomScale = maximumZoomScale
         }
     }
-    
+
     /// 设置当前要显示的图片，会把 livePhoto/video 相关内容清空，因此注意不要直接通过 imageView.image 来设置图片。
     public weak var image: UIImage? {
         didSet {
@@ -83,24 +83,24 @@ class QMUIZoomImageView: UIView {
                 livePhotoView = nil
             }
             destroyVideoRelatedObjectsIfNeeded()
-            
+
             guard let image = image else {
                 imageView?.image = nil
                 return
             }
             initImageViewIfNeeded()
             imageView?.image = image
-            
+
             // 更新 imageView 的大小时，imageView 可能已经被缩放过，所以要应用当前的缩放
             imageView?.frame = image.size.rect.applying(imageView!.transform)
 
             hideViews()
             imageView?.isHidden = false
-            
+
             revertZooming()
         }
     }
-    
+
     private var videoPlayerView: QMUIZoomImageVideoPlayerView?
     private var videoPlayer: AVPlayer?
     private var videoTimeObserver: Any?
@@ -115,6 +115,7 @@ class QMUIZoomImageView: UIView {
             return _imageView
         }
     }
+
     private var _imageView: UIImageView?
 
     private func initImageViewIfNeeded() {
@@ -134,16 +135,16 @@ class QMUIZoomImageView: UIView {
         }
         set {
             livePhotoStorge = newValue
-            
+
             imageView?.removeFromSuperview()
             imageView = nil
             destroyVideoRelatedObjectsIfNeeded()
-            
+
             if newValue == nil {
                 livePhotoView?.livePhoto = nil
                 return
             }
-            
+
             initLivePhotoViewIfNeeded()
             livePhotoView?.livePhoto = newValue
             livePhotoView?.isHidden = false
@@ -165,10 +166,11 @@ class QMUIZoomImageView: UIView {
             return _livePhotoView as? PHLivePhotoView
         }
     }
+
     private var _livePhotoView: Any?
 
     private func initLivePhotoViewIfNeeded() {
-        if #available(iOS 9.1, *), livePhotoView == nil  {
+        if #available(iOS 9.1, *), livePhotoView == nil {
             livePhotoView = PHLivePhotoView()
             scrollView.addSubview(livePhotoView!)
         }
@@ -184,8 +186,9 @@ class QMUIZoomImageView: UIView {
             return _videoPlayerLayer
         }
     }
+
     private var _videoPlayerLayer: AVPlayerLayer?
-    
+
     private func initVideoPlayerLayerIfNeeded() {
         if videoPlayerView != nil {
             return
@@ -198,8 +201,8 @@ class QMUIZoomImageView: UIView {
 
     // 播放 video 时底部的工具栏，你可通过此属性来拿到并修改上面的播放/暂停按钮、进度条、Label 等的样式
     // @see QMUIZoomImageViewVideoToolbar
-    public weak private(set) var videoToolbar: QMUIZoomImageViewVideoToolbar?
-    
+    public private(set) weak var videoToolbar: QMUIZoomImageViewVideoToolbar?
+
     // 播放 video 时屏幕中央的播放按钮
     public var videoCenteredPlayButton: QMUIButton? {
         set {
@@ -210,6 +213,7 @@ class QMUIZoomImageView: UIView {
             return _videoCenteredPlayButton
         }
     }
+
     private var _videoCenteredPlayButton: QMUIButton?
 
     // 可通过此属性修改 video 播放时屏幕中央的播放按钮图片
@@ -222,9 +226,9 @@ class QMUIZoomImageView: UIView {
             setNeedsLayout()
         }
     }
-    
+
     // MARK: - private
-    
+
     private var videoSize: CGSize = .zero
 
     private let scrollView = UIScrollView()
@@ -232,7 +236,7 @@ class QMUIZoomImageView: UIView {
     private var isSeekingVideo = false
 
     public let emptyView = QMUIEmptyView()
-    
+
     override func didMoveToWindow() {
         // 当 self.window 为 nil 时说明此 view 被移出了可视区域（比如所在的 controller 被 pop 了），此时应该停止视频播放
         if window == nil {
@@ -266,8 +270,7 @@ class QMUIZoomImageView: UIView {
         doubleTapGesture.numberOfTapsRequired = 2
         doubleTapGesture.numberOfTouchesRequired = 1
         addGestureRecognizer(doubleTapGesture)
-        
-        
+
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture))
         addGestureRecognizer(longPressGesture)
 
@@ -275,17 +278,16 @@ class QMUIZoomImageView: UIView {
         singleTapGesture.require(toFail: doubleTapGesture)
     }
 
-    
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         if bounds.isEmpty {
             return
         }
-        
+
         scrollView.frame = bounds
         emptyView.frame = bounds
-        
+
         let viewportRect = finalViewportRect
         videoCenteredPlayButton?.center = CGPoint(x: viewportRect.midX, y: viewportRect.midY)
 
@@ -301,7 +303,7 @@ class QMUIZoomImageView: UIView {
             }
         }
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -313,7 +315,7 @@ class QMUIZoomImageView: UIView {
             }
         }
     }
-    
+
     private var minimumZoomScale: CGFloat {
         if image == nil && videoPlayerItem == nil {
             if #available(iOS 9.1, *) {
@@ -324,7 +326,7 @@ class QMUIZoomImageView: UIView {
                 return 1
             }
         }
-        
+
         let viewport = finalViewportRect
         var mediaSize: CGSize = .zero
         if let image = image {
@@ -337,7 +339,7 @@ class QMUIZoomImageView: UIView {
                 mediaSize = livePhoto.size
             }
         }
-        
+
         var minScale: CGFloat = 1
         let scaleX = viewport.width / mediaSize.width
         let scaleY = viewport.height / mediaSize.height
@@ -354,7 +356,7 @@ class QMUIZoomImageView: UIView {
         }
         return minScale
     }
-    
+
     /**
      *  重置图片或视频的大小，使用的场景例如：相册控件里放大当前图片、划到下一张、再回来，当前的图片或视频应该恢复到原来大小。
      *  注意子类重写需要调一下super。
@@ -363,11 +365,11 @@ class QMUIZoomImageView: UIView {
         if bounds.isEmpty {
             return
         }
-        
+
         let enabledZoomImageView = self.enabledZoomImageView
         let minimumZoomScale = self.minimumZoomScale
         var maximumZoomScale = enabledZoomImageView ? self.maximumZoomScale : minimumZoomScale
-        maximumZoomScale = max(minimumZoomScale, maximumZoomScale)// 可能外部通过 contentMode = UIViewContentModeScaleAspectFit 的方式来让小图片撑满当前的 zoomImageView，所以算出来 minimumZoomScale 会很大（至少比 maximumZoomScale 大），所以这里要做一个保护
+        maximumZoomScale = max(minimumZoomScale, maximumZoomScale) // 可能外部通过 contentMode = UIViewContentModeScaleAspectFit 的方式来让小图片撑满当前的 zoomImageView，所以算出来 minimumZoomScale 会很大（至少比 maximumZoomScale 大），所以这里要做一个保护
         let zoomScale = minimumZoomScale
         let shouldFireDidZoomingManual = zoomScale == scrollView.zoomScale
         scrollView.panGestureRecognizer.isEnabled = enabledZoomImageView
@@ -375,12 +377,12 @@ class QMUIZoomImageView: UIView {
         scrollView.minimumZoomScale = minimumZoomScale
         scrollView.maximumZoomScale = maximumZoomScale
         setZoomScale(zoomScale, animated: false)
-        
+
         // 只有前后的 zoomScale 不相等，才会触发 UIScrollViewDelegate scrollViewDidZoom:，因此对于相等的情况要自己手动触发
         if shouldFireDidZoomingManual {
             handleDidEndZooming()
         }
-        
+
         // 当内容比 viewport 的区域更大时，要把内容放在 viewport 正中间
         scrollView.contentOffset = {
             var x = scrollView.contentOffset.x
@@ -400,7 +402,7 @@ class QMUIZoomImageView: UIView {
             return CGPoint(x: x, y: y)
         }()
     }
-    
+
     private func setZoomScale(_ zoomScale: CGFloat, animated: Bool) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
@@ -410,7 +412,7 @@ class QMUIZoomImageView: UIView {
             scrollView.zoomScale = zoomScale
         }
     }
-    
+
     private func zoom(to rect: CGRect, animated: Bool) {
         if animated {
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
@@ -420,7 +422,7 @@ class QMUIZoomImageView: UIView {
             scrollView.zoom(to: rect, animated: false)
         }
     }
-    
+
     /**
      *  获取当前正在显示的图片/视频在整个 QMUIZoomImageView 坐标系里的 rect（会按照当前的缩放状态来计算）
      */
@@ -428,34 +430,34 @@ class QMUIZoomImageView: UIView {
         let imageView = currentContentView
         return convert(imageView?.frame ?? .zero, from: imageView?.superview)
     }
-    
+
     private func handleDidEndZooming() {
         let viewport = finalViewportRect
-        
+
         let contentView = currentContentView
         // 强制 layout 以确保下面的一堆计算依赖的都是最新的 frame 的值
         layoutIfNeeded()
         let contentViewFrame = contentView != nil ? convert(contentView!.frame, to: contentView!.superview) : CGRect.zero
         var contentInset = UIEdgeInsets.zero
-        
+
         contentInset.top = viewport.minY
         contentInset.left = viewport.minX
         contentInset.right = bounds.width - viewport.maxX
         contentInset.bottom = bounds.height - viewport.maxY
-        
+
         // 图片 height 比选图框(viewport)的 height 小，这时应该把图片纵向摆放在选图框中间，且不允许上下移动
         if viewport.height > contentViewFrame.height {
             // 用 floor 而不是 flat，是因为 flat 本质上是向上取整，会导致 top + bottom 比实际的大，然后 scrollView 就认为可滚动了
             contentInset.top = floor(viewport.midY - contentViewFrame.height / 2.0)
             contentInset.bottom = floor(bounds.height - viewport.midY - contentViewFrame.height / 2.0)
         }
-        
+
         // 图片 width 比选图框的 width 小，这时应该把图片横向摆放在选图框中间，且不允许左右移动
         if viewport.width > contentViewFrame.width {
             contentInset.left = floor(viewport.midX - contentViewFrame.width / 2.0)
             contentInset.right = floor(bounds.width - viewport.midX - contentViewFrame.width / 2.0)
         }
-        
+
         scrollView.contentInset = contentInset
         scrollView.contentSize = contentView?.frame.size ?? .zero
     }
@@ -473,7 +475,7 @@ class QMUIZoomImageView: UIView {
         }
         return enabledZoom
     }
-    
+
     /// 设置当前要显示的 video ，会把 image/livePhoto 相关内容清空，因此注意不要直接通过 videoPlayerLayer 来设置
     public weak var videoPlayerItem: AVPlayerItem? {
         didSet {
@@ -483,12 +485,12 @@ class QMUIZoomImageView: UIView {
             }
             imageView?.removeFromSuperview()
             imageView = nil
-            
+
             if videoPlayerItem == nil {
                 hideViews()
                 return
             }
-            
+
             // 获取视频尺寸
             if let tracksArray = videoPlayerItem?.asset.tracks {
                 for track in tracksArray where track.mediaType == .video {
@@ -497,13 +499,13 @@ class QMUIZoomImageView: UIView {
                     break
                 }
             }
-            
+
             videoPlayer = AVPlayer(playerItem: videoPlayerItem)
             initVideoRelatedViewsIfNeeded()
             videoPlayerLayer?.player = videoPlayer
             // 更新 videoPlayerView 的大小时，videoView 可能已经被缩放过，所以要应用当前的缩放
             videoPlayerView?.frame = videoSize.rect.applying(videoPlayerView!.transform)
-            
+
             NotificationCenter.default.addObserver(self, selector: #selector(handleVideoPlayToEndEvent), name: .AVPlayerItemDidPlayToEndTime, object: videoPlayerItem)
             NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: .UIApplicationDidEnterBackground, object: nil)
 
@@ -513,7 +515,7 @@ class QMUIZoomImageView: UIView {
             videoPlayerLayer?.isHidden = false
             videoCenteredPlayButton?.isHidden = false
             videoToolbar?.playButton.isHidden = false
-            
+
             revertZooming()
         }
     }
@@ -530,14 +532,14 @@ class QMUIZoomImageView: UIView {
             delegate?.zoomImageView(self, didHideVideoToolbar: true)
         }
     }
-    
+
     @objc
     private func handlePauseButton() {
         videoPlayer?.pause()
         videoToolbar?.playButton.isHidden = false
         videoToolbar?.pauseButton.isHidden = true
     }
-    
+
     @objc
     private func handleVideoPlayToEndEvent() {
         videoPlayer?.seek(to: CMTimeMake(0, 1))
@@ -547,20 +549,20 @@ class QMUIZoomImageView: UIView {
     }
 
     @objc
-    private func handleStartDragVideoSlider(_ slider: UISlider) {
+    private func handleStartDragVideoSlider(_: UISlider) {
         videoPlayer?.pause()
         removePlayerTimeObserver()
     }
-    
+
     @objc
     private func handleDraggingVideoSlider(_ slider: UISlider) {
         if !isSeekingVideo {
             isSeekingVideo = true
             updateVideoSliderLeftLabel()
-            
+
             let currentValue = slider.value
-            
-            videoPlayer?.seek(to: CMTimeMakeWithSeconds(Float64(currentValue), Int32(NSEC_PER_SEC)), completionHandler: { (flag) in
+
+            videoPlayer?.seek(to: CMTimeMakeWithSeconds(Float64(currentValue), Int32(NSEC_PER_SEC)), completionHandler: { _ in
                 DispatchQueue.main.async {
                     self.isSeekingVideo = false
                 }
@@ -569,12 +571,12 @@ class QMUIZoomImageView: UIView {
     }
 
     @objc
-    private func handleFinishDragVideoSlider(_ slider: UISlider) {
+    private func handleFinishDragVideoSlider(_: UISlider) {
         videoPlayer?.play()
         videoCenteredPlayButton?.isHidden = true
         videoToolbar?.playButton.isHidden = true
         videoToolbar?.pauseButton.isHidden = false
-        
+
         addPlayerTimeObserver()
     }
 
@@ -583,33 +585,33 @@ class QMUIZoomImageView: UIView {
         videoToolbar?.slider.value = Float(currentSeconds)
         updateVideoSliderLeftLabel()
     }
-    
+
     private func configVideoProgressSlider() {
-        
+
         videoToolbar?.sliderLeftLabel.text = timeString(from: 0)
         let duration = CMTimeGetSeconds(videoPlayerItem!.asset.duration)
         videoToolbar?.sliderRightLabel.text = timeString(from: Int(duration))
-        
+
         videoToolbar?.slider.minimumValue = 0.0
         videoToolbar?.slider.maximumValue = Float(duration)
         videoToolbar?.slider.value = 0
         videoToolbar?.slider.addTarget(self, action: #selector(handleStartDragVideoSlider), for: .touchDown)
         videoToolbar?.slider.addTarget(self, action: #selector(handleDraggingVideoSlider), for: .valueChanged)
         videoToolbar?.slider.addTarget(self, action: #selector(handleFinishDragVideoSlider), for: .touchUpInside)
-        
+
         addPlayerTimeObserver()
     }
-    
+
     private func addPlayerTimeObserver() {
         if videoTimeObserver != nil {
             return
         }
         let interval = 0.1
-        videoPlayer?.addPeriodicTimeObserver(forInterval: CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: nil, using: { [weak self] (time) in
+        videoPlayer?.addPeriodicTimeObserver(forInterval: CMTime(seconds: interval, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: nil, using: { [weak self] _ in
             self?.syncVideoProgressSlider()
         })
     }
-    
+
     private func removePlayerTimeObserver() {
         guard let videoTimeObserver = videoTimeObserver else {
             return
@@ -617,7 +619,7 @@ class QMUIZoomImageView: UIView {
         videoPlayer?.removeTimeObserver(videoTimeObserver)
         self.videoTimeObserver = nil
     }
-    
+
     private func updateVideoSliderLeftLabel() {
         let currentSeconds = CMTimeGetSeconds(videoPlayer!.currentTime())
         videoToolbar?.sliderLeftLabel.text = timeString(from: Int(currentSeconds))
@@ -629,7 +631,7 @@ class QMUIZoomImageView: UIView {
         let sec = seconds - min * 60
         return "\(min):\(sec)"
     }
-    
+
     /// 暂停视频播放
     public func pauseVideo() {
         if videoPlayer == nil {
@@ -650,14 +652,14 @@ class QMUIZoomImageView: UIView {
         videoToolbar?.isHidden = true
         videoCenteredPlayButton?.isHidden = false
     }
-    
+
     private func initVideoRelatedViewsIfNeeded() {
         initVideoPlayerLayerIfNeeded()
         initVideoToolbarIfNeeded()
         initVideoCenteredPlayButtonIfNeeded()
         setNeedsLayout()
     }
-    
+
     private func initVideoToolbarIfNeeded() {
         if videoToolbar != nil {
             return
@@ -674,12 +676,12 @@ class QMUIZoomImageView: UIView {
             return b
         }()
     }
-    
+
     private func initVideoCenteredPlayButtonIfNeeded() {
         if videoCenteredPlayButton != nil {
             return
         }
-        
+
         videoCenteredPlayButton = {
             let b = QMUIButton()
             b.qmui_outsideEdge = UIEdgeInsets(top: -60, left: -60, bottom: -60, right: -60)
@@ -692,32 +694,32 @@ class QMUIZoomImageView: UIView {
             return b
         }()
     }
-    
+
     private func destroyVideoRelatedObjectsIfNeeded() {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        
+
         NotificationCenter.default.removeObserver(self, name: .UIApplicationDidEnterBackground, object: nil)
         removePlayerTimeObserver()
-        
+
         videoPlayerView?.removeFromSuperview()
         videoPlayerView = nil
-        
+
         videoToolbar?.removeFromSuperview()
         videoToolbar = nil
-        
+
         videoCenteredPlayButton?.removeFromSuperview()
         videoCenteredPlayButton = nil
-        
+
         videoPlayer = nil
     }
-    
+
     @objc
     private func applicationDidEnterBackground() {
         pauseVideo()
     }
-    
+
     // MARK: - GestureRecognizers
-    
+
     @objc
     private func handleSingleTapGestureWithPoint(_ gestureRecognizer: UITapGestureRecognizer) {
         let gesturePoint = gestureRecognizer.location(in: gestureRecognizer.view)
@@ -727,12 +729,12 @@ class QMUIZoomImageView: UIView {
             delegate?.zoomImageView(self, didHideVideoToolbar: videoToolbar?.isHidden ?? true)
         }
     }
-    
+
     @objc
     private func handleDoubleTapGestureWithPoint(_ gestureRecognizer: UITapGestureRecognizer) {
-        let gesturePoint =  gestureRecognizer.location(in: gestureRecognizer.view)
+        let gesturePoint = gestureRecognizer.location(in: gestureRecognizer.view)
         delegate?.doubleTouch(in: self, location: gesturePoint)
-        
+
         guard enabledZoomImageView else {
             return
         }
@@ -749,7 +751,7 @@ class QMUIZoomImageView: UIView {
                 // 如果当前显示原图，则放大到最大的大小
                 newZoomScale = scrollView.maximumZoomScale
             }
-            
+
             var zoomRect = CGRect.zero
             let tapPoint = currentContentView?.convert(gesturePoint, to: gestureRecognizer.view) ?? .zero
             zoomRect.size.width = bounds.width / newZoomScale
@@ -759,17 +761,16 @@ class QMUIZoomImageView: UIView {
             zoom(to: zoomRect, animated: true)
         }
     }
-    
+
     @objc
     private func handleLongPressGesture(_ longPressGestureRecognizer: UILongPressGestureRecognizer) {
         if enabledZoomImageView && longPressGestureRecognizer.state == .began {
             delegate?.longPress(in: self)
         }
     }
-    
-    
+
     // MARK: - EmptyView
-    
+
     /**
      *  显示一个 loading
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
@@ -783,7 +784,7 @@ class QMUIZoomImageView: UIView {
         emptyView.setActionButtonTitle(nil)
         emptyView.isHidden = false
     }
-    
+
     /**
      *  显示一句提示语
      *  @info 注意 cell 复用可能导致当前页面显示一张错误的旧图片/视频，所以一般情况下需要视情况同时将 image/livePhoto/videoPlayerItem 等属性置为 nil 以清除图片/视频的显示
@@ -796,7 +797,7 @@ class QMUIZoomImageView: UIView {
         emptyView.setActionButtonTitle(nil)
         emptyView.isHidden = false
     }
-    
+
     /**
      *  将 emptyView 隐藏
      */
@@ -804,10 +805,9 @@ class QMUIZoomImageView: UIView {
         emptyView.isHidden = true
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 
     // MARK: - 工具方法
     private var finalViewportRect: CGRect {
@@ -852,10 +852,9 @@ class QMUIZoomImageView: UIView {
     }
 }
 
-
 // MARK: - UIGestureRecognizerDelegate
 extension QMUIZoomImageView: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view is UISlider {
             return false
         }
@@ -864,11 +863,11 @@ extension QMUIZoomImageView: UIGestureRecognizerDelegate {
 }
 
 extension QMUIZoomImageView: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in _: UIScrollView) -> UIView? {
         return currentContentView
     }
-    
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+
+    func scrollViewDidZoom(_: UIScrollView) {
         handleDidEndZooming()
     }
 }
@@ -902,12 +901,12 @@ class QMUIZoomImageViewVideoToolbar: UIView {
             setNeedsLayout()
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = UIColor(r: 0.5, g: 255, b: 0, a: 0)
-        
+
         playButton.qmui_outsideEdge = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         playButton.setImage(playButtonImage, for: .normal)
         addSubview(playButton)
@@ -915,7 +914,7 @@ class QMUIZoomImageViewVideoToolbar: UIView {
         pauseButton.qmui_outsideEdge = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         pauseButton.setImage(pauseButtonImage, for: .normal)
         addSubview(pauseButton)
-        
+
         slider.minimumTrackTintColor = UIColor(r: 195, g: 195, b: 195)
         slider.maximumTrackTintColor = UIColor(r: 95, g: 95, b: 95)
         slider.thumbSize = CGSize(width: 12, height: 12)
@@ -929,17 +928,17 @@ class QMUIZoomImageViewVideoToolbar: UIView {
 
         sliderRightLabel.qmui_setTheSameAppearance(as: sliderLeftLabel)
         addSubview(sliderRightLabel)
-        
+
         layer.shadowColor = UIColorBlack.cgColor
         layer.shadowOpacity = 0.5
         layer.shadowOffset = .zero
         layer.shadowRadius = 10
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        let contentHeight =  maxHeightAmongViews([playButton, pauseButton, sliderLeftLabel, sliderRightLabel, slider])
+
+        let contentHeight = maxHeightAmongViews([playButton, pauseButton, sliderLeftLabel, sliderRightLabel, slider])
 
         let playButtonSize = playButton.sizeThatFits(CGSize.max)
         playButton.frame = CGRect(origin: CGPoint(x: contentInsets.left, y: contentHeight / 2 - playButtonSize.height / 2 + contentInsets.top), size: playButtonSize).flatted
@@ -957,7 +956,7 @@ class QMUIZoomImageViewVideoToolbar: UIView {
         let x = sliderLeftLabel.frame.maxX + marginToLabel
         slider.frame = CGRect(x: x, y: contentInsets.top, width: sliderRightLabel.frame.minX - marginToLabel - x, height: contentHeight).flatted
     }
-    
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var result = size
         let contentHeight = maxHeightAmongViews([playButton, pauseButton, sliderLeftLabel, sliderRightLabel, slider])
@@ -968,19 +967,18 @@ class QMUIZoomImageViewVideoToolbar: UIView {
     // 返回一堆 view 中高度最大的那个的高度
     func maxHeightAmongViews(_ views: [UIView]) -> CGFloat {
         var maxValue: CGFloat = 0
-        
+
         for view in views {
             let height = view.sizeThatFits(CGSize.max).height
             maxValue = max(height, maxValue)
         }
         return maxValue
     }
-    
-    required init?(coder aDecoder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
 
 // MARK: - QMUIZoomImageVideoPlayerView
 class QMUIZoomImageVideoPlayerView: UIView {
@@ -989,16 +987,15 @@ class QMUIZoomImageVideoPlayerView: UIView {
     }
 }
 
-
 // MARK: - QMUIZoomImageViewImageGenerator
 
 class QMUIZoomImageViewImageGenerator {
-    
+
     private static let iconsColor = UIColor(r: 0, g: 0, b: 0, a: 0.25)
-    
+
     static var largePlayImage: UIImage? {
         let width: CGFloat = 60
-        
+
         UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: width), false, 0)
         guard let context = UIGraphicsGetCurrentContext() else {
             return nil
@@ -1017,7 +1014,7 @@ class QMUIZoomImageViewImageGenerator {
         circle.lineWidth = circleLineWidth
         circle.stroke()
         circle.fill()
-        
+
         // triangle inside
         context.setFillColor(iconsColor.cgColor)
         let triangleLength: CGFloat = width / 2.5
@@ -1030,7 +1027,7 @@ class QMUIZoomImageViewImageGenerator {
         UIGraphicsEndImageContext()
         return image
     }
-    
+
     // @param length of the triangle side
     private static func trianglePath(with length: CGFloat) -> UIBezierPath {
         let path = UIBezierPath()
@@ -1044,7 +1041,7 @@ class QMUIZoomImageViewImageGenerator {
     static var smallPlayImage: UIImage? {
         // width and height are equal
         let width: CGFloat = 17
-        
+
         UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: width), false, 0)
         guard let context = UIGraphicsGetCurrentContext() else {
             return nil
@@ -1061,7 +1058,7 @@ class QMUIZoomImageViewImageGenerator {
 
     static var pauseImage: UIImage? {
         let size = CGSize(width: 12, height: 18)
-        
+
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         guard let context = UIGraphicsGetCurrentContext() else {
             return nil

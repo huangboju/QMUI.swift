@@ -17,7 +17,7 @@ extension UISearchBar: SelfAware {
                 #selector(setter: frame),
             ]
             selectors.forEach({
-//                print("qmui_" + $0.description)
+                //                print("qmui_" + $0.description)
                 ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
             })
         }
@@ -137,7 +137,7 @@ extension UISearchBar: SelfAware {
         if var newframe = qmui_cancelButton()?.frame {
             _ = newframe.setX(newframe.minX - safeAreaInsets.left)
         }
-        
+
         var isBelow = false
         if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
             if superView.frame.minY < bottom {
@@ -145,19 +145,19 @@ extension UISearchBar: SelfAware {
             }
         }
         let isScopeBarShowingAtRightOfTextField = IS_LANDSCAPE && qmui_isActive() && showsScopeBar && isBelow
-        
+
         let newLeft = qmui_textField()?.frame.minX ?? 0 + safeAreaInsets.left
         _ = qmui_textField()?.frame.setX(newLeft)
-        
+
         if isScopeBarShowingAtRightOfTextField {
             // 如果 scopeBar 显示在搜索框右边，则搜索框右边不用调整
             let scopeBarHorizontalMargin: CGFloat = 16
-            
+
             let newLeft = max(qmui_textField()?.frame.maxX ?? 0 + scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.minX ?? 0)
             var newWidth = qmui_segmentedControl()?.superview?.frame.maxX ?? 0 - newLeft
             _ = qmui_segmentedControl()?.superview?.frame.setX(newLeft)
             _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
-            
+
             let newRight = min(qmui_cancelButton()?.frame.minX ?? 0 - scopeBarHorizontalMargin, qmui_segmentedControl()?.superview?.frame.maxX ?? 0)
             newWidth = newRight - (qmui_segmentedControl()?.superview?.frame.minX ?? 0)
             _ = qmui_segmentedControl()?.superview?.frame.setWidth(newWidth)
@@ -167,14 +167,14 @@ extension UISearchBar: SelfAware {
             let newWidth = newRight - (qmui_textField()?.frame.minX ?? 0)
             qmui_textField()?.frame.setWidth(newWidth)
         }
-        
+
         // 如果是没进入搜索状态就已经显示了 scopeBar，则此时的 scopeBar 一定是在搜索框下方的
         if !qmui_isActive() && showsScopeBar {
             let newLeft = qmui_segmentedControl()?.frame.minX ?? 0 + safeAreaInsets.left
             var newWidth = qmui_segmentedControl()?.frame.maxX ?? 0 - newLeft
             _ = qmui_segmentedControl()?.frame.setX(newLeft)
             _ = qmui_segmentedControl()?.frame.setWidth(newWidth)
-            
+
             let newRight = qmui_segmentedControl()?.frame.maxX ?? 0 - safeAreaInsets.right
             newWidth = newRight - (qmui_segmentedControl()?.frame.minX ?? 0)
             qmui_segmentedControl()?.frame.setWidth(newWidth)
@@ -196,11 +196,11 @@ extension UISearchBar: SelfAware {
         if !IS_58INCH_SCREEN {
             return
         }
-        
+
         guard let backgroundView = qmui_backgroundView() else {
             return
         }
-        
+
         let isActive = backgroundView.superview?.clipsToBounds ?? false
         let isFrameError = backgroundView.safeAreaInsets.top > 0 && (backgroundView.frame.minY == 0)
         guard isActive && isFrameError else {
