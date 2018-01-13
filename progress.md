@@ -52,7 +52,7 @@ Tips
 * UITextField+QMUI  👷
 * UITextView+QMUI  👷
 * UIView+QMUI  👷
-* UIViewController+QMUI  👷
+* UIViewController+QMUI  ✅
 * UIWindow+QMUI  👷
 
 
