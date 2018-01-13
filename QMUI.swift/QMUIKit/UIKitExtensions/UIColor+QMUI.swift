@@ -11,7 +11,7 @@ extension UIColor: SelfAware {
 
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
-            ReplaceMethod(NSClassFromString("UIDeviceRGBColor")!, #selector(description), #selector(getter: qmui_description))
+            ReplaceMethod(self, #selector(description), #selector(getter: qmui_description))
         }
     }
 }
