@@ -51,8 +51,8 @@ Tips
 * UITableView+QMUI  ✅
 * UITextField+QMUI  👷
 * UITextView+QMUI  👷
-* UIView+QMUI  👷
-* UIViewController+QMUI  👷
+* UIView+QMUI  ✅
+* UIViewController+QMUI  ✅
 * UIWindow+QMUI  👷
 
 
