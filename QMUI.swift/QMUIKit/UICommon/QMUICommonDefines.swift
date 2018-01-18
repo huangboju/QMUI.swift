@@ -80,6 +80,9 @@ let ToolBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 
 
 let TabBarHeight: CGFloat = 49
 
+// 保护 iPhoneX 安全区域的 insets
+let IPhoneXSafeAreaInsets: UIEdgeInsets = QMUIHelper.safeAreaInsetsForIPhoneX
+
 // 除去navigationBar和toolbar后的中间内容区域
 func NavigationContentHeight(_ viewController: UIViewController) -> CGFloat {
     guard let nav = viewController.navigationController else {
@@ -325,6 +328,7 @@ extension CGRect {
         return self
     }
 
+    @discardableResult
     mutating func setHeight(_ height: CGFloat) -> CGRect {
         size.height = flat(height)
         return self
