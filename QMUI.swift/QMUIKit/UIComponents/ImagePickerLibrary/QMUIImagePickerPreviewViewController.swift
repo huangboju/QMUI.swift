@@ -232,8 +232,8 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
                 }
 
                 let alertController = QMUIAlertController(title: alertTitleWhenExceedMaxSelectImageCount, preferredStyle: .alert)
-                alertController.addAction(QMUIAlertAction(title: alertButtonTitleWhenExceedMaxSelectImageCount, style: .cancel))
-                alertController.showWithAnimated()
+                alertController.add(action: QMUIAlertAction(title: alertButtonTitleWhenExceedMaxSelectImageCount, style: .cancel))
+                alertController.show()
                 return
             }
 
