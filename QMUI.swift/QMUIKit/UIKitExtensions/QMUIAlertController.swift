@@ -36,8 +36,7 @@ enum QMUIAlertActionStyle: Int {
  *  `QMUIAlertController`是模仿系统`UIAlertController`的控件，所以系统有的功能在QMUIAlertController里面基本都有。同时`QMUIAlertController`还提供了一些扩展功能，例如：它的每个 button 都是开放出来的，可以对默认的按钮进行二次处理（比如加一个图片）；可以通过 QMUIAlertController.appearance() 在 app 启动的时候修改整个`QMUIAlertController`的主题样式。
  */
 class QMUIAlertController: UIViewController, QMUIModalPresentationViewControllerDelegate, QMUIAlertActionDelegate {
-    
-    
+
     /// alert距离屏幕四边的间距，默认UIEdgeInsetsMake(0, 0, 0, 0)。alert的宽度最终是通过屏幕宽度减去水平的 alertContentMargin 和 alertContentMaximumWidth 决定的。
     @objc public dynamic var alertContentMargin: UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
 
@@ -224,19 +223,15 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
 
     /// sheet头部title和message之间的间距，默认8pt
     @objc public dynamic var sheetTitleMessageSpacing: CGFloat = 8
-    
+
     /// 所有`QMUIAlertAction`对象
     public var actions: [QMUIAlertAction] {
-        get {
-            return self.alertActions
-        }
+        return alertActions
     }
 
     /// 当前所有通过`addTextFieldWithConfigurationHandler:`接口添加的输入框
     public var textFields: [UITextField] {
-        get {
-            return self.alertTextFields
-        }
+        return alertTextFields
     }
 
     /// 设置自定义view。通过`addCustomView:`方法添加一个自定义的view，`QMUIAlertController`会在布局的时候去掉用这个view的`sizeThatFits:`方法来获取size，至于x和y坐标则由控件自己控制。
@@ -276,7 +271,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     /// 当前信息message
-    public var message: String?  {
+    public var message: String? {
         didSet {
             if messageLabel == nil {
                 let label = UILabel()
@@ -389,7 +384,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     private var _needsUpdateTitle: Bool = false
 
     private var _needsUpdateMessage: Bool = false
-    
+
     private var delegate: QMUIAlertControllerDelegate?
 
     static var alertControllerCount: UInt = 0
@@ -723,27 +718,27 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         }
         return newActions
     }
-    
+
     private func initModalPresentationController() {
         let modalController = QMUIModalPresentationViewController()
         modalController.delegate = self
-        modalController.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude;
-        modalController.contentViewMargins = UIEdgeInsets.zero;
-        modalController.dimmingView = nil;
-        modalController.contentViewController = self as? (UIViewController & QMUIModalPresentationContentViewControllerProtocol);
+        modalController.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
+        modalController.contentViewMargins = UIEdgeInsets.zero
+        modalController.dimmingView = nil
+        modalController.contentViewController = self as? (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
         customModalPresentationControllerAnimation()
         modalPresentationViewController = modalController
     }
-    
+
     private func customModalPresentationControllerAnimation() {
-        
-        modalPresentationViewController?.layoutBlock = { [weak self] (_ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ contentViewDefaultFrame: CGRect) in
+
+        modalPresentationViewController?.layoutBlock = { [weak self] (_ containerBounds: CGRect, _ keyboardHeight: CGFloat, _: CGRect) in
             self?.view.frame = CGRect(x: 0, y: 0, width: containerBounds.width, height: containerBounds.height)
             self?.keyboardHeight = keyboardHeight
             self?.view.setNeedsLayout()
         }
-        
-        modalPresentationViewController?.showingAnimation = { [weak self] (_ dimmingView: UIView, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ contentViewFrame: CGRect, _ completion: ((Bool) -> Void)?) in
+
+        modalPresentationViewController?.showingAnimation = { [weak self] (_: UIView, _: CGRect, _: CGFloat, _: CGRect, _ completion: ((Bool) -> Void)?) in
             if self?.preferredStyle == .alert {
                 self!.containerView.alpha = 0
                 self!.containerView.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1.0)
@@ -756,7 +751,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                         completion!($0)
                     }
                 })
-            } else if (self?.preferredStyle == .sheet) {
+            } else if self?.preferredStyle == .sheet {
                 self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0)
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
                     self!.maskView.alpha = 1
@@ -768,22 +763,22 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                 })
             }
         }
-        
-        modalPresentationViewController?.hidingAnimation = { [weak self] (_ dimmingView: UIView, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) in
+
+        modalPresentationViewController?.hidingAnimation = { [weak self] (_: UIView, _: CGRect, _: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) in
             if self?.preferredStyle == .alert {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
                     self!.maskView.alpha = 0
                     self!.containerView.alpha = 0
                 }, completion: {
-                    self!.containerView.alpha = 1;
+                    self!.containerView.alpha = 1
                     if completion != nil {
                         completion!($0)
                     }
                 })
-            } else if (self?.preferredStyle == .sheet) {
+            } else if self?.preferredStyle == .sheet {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
                     self!.maskView.alpha = 0
-                    self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0);
+                    self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0)
                 }, completion: {
                     if completion != nil {
                         completion!($0)
@@ -792,7 +787,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             }
         }
     }
-    
+
     /// 显示`QMUIAlertController`
     ///
     /// - Parameter animated: animated
@@ -812,14 +807,14 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         if _needsUpdateMessage {
             updateMessageLabel()
         }
-        
+
         initModalPresentationController()
-        
+
         if delegate?.responds(to: #selector(QMUIAlertControllerDelegate.willShow(_:))) ?? false {
             delegate!.willShow(self)
         }
-        
-        modalPresentationViewController?.show(with: animated, completion: { [weak self] (Bool) in
+
+        modalPresentationViewController?.show(with: animated, completion: { [weak self] _ in
             self?.maskView.alpha = 1
             self?.isShowing = true
             if self?.isNeedsHideAfterAlertShowed ?? false {
@@ -831,18 +826,18 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                 self!.delegate!.didShow(self!)
             }
         })
-        
+
         // 增加alertController计数
         QMUIAlertController.alertControllerCount += 1
     }
-    
+
     /// 隐藏`QMUIAlertController`
     ///
     /// - Parameter animated: animated
     public func hide(with animated: Bool) {
         hide(with: animated, completion: nil)
     }
-    
+
     private func hide(with animated: Bool, completion: (() -> Void)?) {
         if !isShowing {
             isNeedsHideAfterAlertShowed = true
@@ -850,14 +845,14 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         if delegate?.responds(to: #selector(QMUIAlertControllerDelegate.willHide(_:))) ?? false {
             delegate!.willHide(self)
         }
-        
-        modalPresentationViewController?.hide(with: animated, completion: { [weak self] (Bool) in
+
+        modalPresentationViewController?.hide(with: animated, completion: { [weak self] _ in
             self?.modalPresentationViewController = nil
             self?.isShowing = false
             self?.maskView.alpha = 0
             if self?.preferredStyle == .alert {
                 self!.containerView.alpha = 0
-            } else if (self?.preferredStyle == .sheet) {
+            } else if self?.preferredStyle == .sheet {
                 self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0)
             }
             if self?.delegate?.responds(to: #selector(QMUIAlertControllerDelegate.didHide(_:))) ?? false {
@@ -867,7 +862,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                 completion!()
             }
         })
-        
+
         // 减少alertController计数
         QMUIAlertController.alertControllerCount -= 1
     }
@@ -881,7 +876,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// - Parameter action: 按钮
     public func add(action: QMUIAlertAction) {
         if action.style == .cancel && cancelAction != nil {
-            NSException(name:NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason:"同一个alertController不可以同时添加两个cancel按钮", userInfo:nil).raise()
+            NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "同一个alertController不可以同时添加两个cancel按钮", userInfo: nil).raise()
         }
         if action.style == .cancel {
             cancelAction = action
@@ -901,22 +896,22 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         action.delegate = self
         alertActions.append(action)
     }
-    
+
     /// 增加一个“取消”按钮，点击后 alertController 会被 hide
     public func addCancelAction() {
         let action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
         add(action: action)
     }
-    
+
     /// 增加一个输入框
     ///
     /// - Parameter configurationHandler: 回调
-    public func addTextField(with configurationHandler: ((_ textField: UITextField) -> ())?) {
+    public func addTextField(with configurationHandler: ((_ textField: UITextField) -> Void)?) {
         if customView != nil {
-            NSException(name:NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason:"UITextField和CustomView不能共存", userInfo:nil).raise()
+            NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
         if preferredStyle == .sheet {
-            NSException(name:NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason:"Sheet类型不运行添加UITextField", userInfo:nil).raise()
+            NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "Sheet类型不运行添加UITextField", userInfo: nil).raise()
         }
         let textField = QMUITextField()
         textField.borderStyle = .none
@@ -934,18 +929,18 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             configurationHandler!(textField)
         }
     }
-    
+
     /// 增加一个自定义的view作为`QMUIAlertController`的customView
     ///
     /// - Parameter view: 自定义的view
     public func addCustomView(_ view: UIView) {
         if alertTextFields.count > 0 {
-            NSException(name:NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason:"UITextField和CustomView不能共存", userInfo:nil).raise()
+            NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
         customView = view
         headerScrollView.addSubview(customView!)
     }
-    
+
     private func updateAction() {
         alertActions.forEach {
             let backgroundColor = preferredStyle == .alert ? alertButtonBackgroundColor : sheetButtonBackgroundColor
@@ -953,10 +948,10 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             $0.buttonWrapView.clipsToBounds = $0.style == .cancel
             $0.button.backgroundColor = backgroundColor
             $0.button.highlightedBackgroundColor = highlightBackgroundColor
-            
-            var attributeString: NSAttributedString? = nil
+
+            var attributeString: NSAttributedString?
             if $0.style == .cancel {
-                
+
                 var attributes = preferredStyle == .alert ? alertCancelButtonAttributes : sheetCancelButtonAttributes
                 if $0.buttonAttributes != nil {
                     attributes = $0.buttonAttributes!
@@ -965,7 +960,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                     attributeString = NSAttributedString(string: title, attributes: attributes)
                 }
             } else if $0.style == .destructive {
-                
+
                 var attributes = preferredStyle == .alert ? alertDestructiveButtonAttributes : sheetDestructiveButtonAttributes
                 if $0.buttonAttributes != nil {
                     attributes = $0.buttonAttributes!
@@ -974,7 +969,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                     attributeString = NSAttributedString(string: title, attributes: attributes)
                 }
             } else {
-                
+
                 var attributes = preferredStyle == .alert ? alertButtonAttributes : sheetButtonAttributes
                 if $0.buttonAttributes != nil {
                     attributes = $0.buttonAttributes!
@@ -994,7 +989,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
                 attributeString = NSAttributedString(string: title, attributes: attributes)
             }
             $0.button.setAttributedTitle(attributeString, for: .disabled)
-            
+
             if let image = $0.button.image(for: .normal), let attributeStr = attributeString {
                 var range = NSRange(location: 0, length: attributeStr.length)
                 let disabledColor = attributeString?.attribute(NSAttributedStringKey.foregroundColor, at: 0, effectiveRange: &range)
@@ -1002,13 +997,13 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             }
         }
     }
-    
+
     @objc private func handleMaskViewEvent(_: AnyObject) {
         if shouldRespondMaskViewTouch {
             hide(with: true, completion: nil)
         }
     }
-    
+
     private func updateMessageLabel() {
         if let messageLabel = self.messageLabel, let message = self.message {
             if !messageLabel.isHidden {
@@ -1020,13 +1015,13 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     // MARK: QMUIModalPresentationViewControllerDelegate
-    
+
     func requestHideAllModalPresentationViewController() {
         hide(with: true, completion: nil)
     }
-    
+
     // MARK: QMUIAlertActionDelegate
-    
+
     func didClick(_ alertAction: QMUIAlertAction) {
         hide(with: true) {
             if alertAction.handler != nil {
@@ -1038,7 +1033,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
 }
 
 extension QMUIAlertController {
-    
+
     /// 可方便地判断是否有 alertController 正在显示，全局生效
     ///
     /// - Returns: 是否 alertController 正在显示
