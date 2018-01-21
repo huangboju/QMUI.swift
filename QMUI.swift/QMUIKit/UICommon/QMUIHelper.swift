@@ -370,6 +370,30 @@ extension QMUIHelper {
         return CGSize(width: 320, height: 480)
     }
 
+    public static var safeAreaInsetsForIPhoneX: UIEdgeInsets {
+        if !is58InchScreen {
+            return UIEdgeInsets.zero
+        }
+        
+        let orientation = UIApplication.shared.statusBarOrientation
+        
+        switch orientation {
+        case .portrait:
+            return UIEdgeInsetsMake(44, 0, 34, 0)
+            
+        case .portraitUpsideDown:
+            UIEdgeInsetsMake(34, 0, 44, 0)
+            
+        case .landscapeLeft, .landscapeRight:
+            return UIEdgeInsetsMake(0, 44, 21, 44);
+            
+        case .unknown:
+            return UIEdgeInsetsMake(44, 0, 34, 0)
+        }
+        
+        return UIEdgeInsets.zero
+    }
+
     /// 判断当前设备是否高性能设备，只会判断一次，以后都直接读取结果，所以没有性能问题
     public static var isHighPerformanceDevice: Bool {
         // TODO:

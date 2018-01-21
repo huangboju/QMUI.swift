@@ -22,28 +22,28 @@ protocol QMUIModalPresentationContentViewControllerProtocol: class {
     func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
 }
 
-protocol QMUIModalPresentationViewControllerDelegate: class {
+@objc protocol QMUIModalPresentationViewControllerDelegate: NSObjectProtocol {
     /**
      *  是否应该隐藏浮层，会在调用`hideWithAnimated:completion:`时，以及点击背景遮罩时被调用。默认为YES。
      *  @param  controller  当前的modalController
      *  @return 是否允许隐藏，YES表示允许隐藏，NO表示不允许隐藏
      */
-    func shouldHideModalPresentationViewController(_ controller: QMUIModalPresentationViewController) -> Bool
+    @objc optional func shouldHide(modalPresentationViewController controller: QMUIModalPresentationViewController) -> Bool
 
     /**
      *  modalController 即将隐藏时的回调方法，在调用完这个方法后才开始做一些隐藏前的准备工作，例如恢复 window 的 dimmed 状态等。
      *  @param  controller  当前的modalController
      */
-    func willHideModalPresentationViewController(_ controller: QMUIModalPresentationViewController)
+    @objc optional func willHide(modalPresentationViewController controller: QMUIModalPresentationViewController)
 
     /**
      *  modalController隐藏后的回调方法，不管是直接调用`hideWithAnimated:completion:`，还是通过点击遮罩触发的隐藏，都会调用这个方法。
      *  如果你想区分这两种方式的隐藏回调，请直接使用hideWithAnimated方法的completion参数，以及`didHideByDimmingViewTappedBlock`属性。
      *  @param  controller  当前的modalController
      */
-    func didHideModalPresentationViewController(_ controller: QMUIModalPresentationViewController)
+    @objc optional func didHide(modalPresentationViewController controller: QMUIModalPresentationViewController)
 
-    func requestHideAllModalPresentationViewController()
+    @objc optional func requestHideAllModalPresentationViewController()
 }
 
 /**
@@ -438,7 +438,9 @@ class QMUIModalPresentationViewController: UIViewController {
 
         var shouldHide = true
         if let delegate = delegate {
-            shouldHide = delegate.shouldHideModalPresentationViewController(self)
+            if delegate.responds(to: #selector(QMUIModalPresentationViewControllerDelegate.shouldHide(modalPresentationViewController:))) {
+                shouldHide = delegate.shouldHide!(modalPresentationViewController: self)
+            }
         }
         if !shouldHide {
             return
@@ -578,11 +580,15 @@ extension QMUIModalPresentationViewController {
             var canHide = true
 
             if let delegate = modalViewController?.delegate {
-                canHide = delegate.shouldHideModalPresentationViewController(modalViewController!)
+                if delegate.responds(to: #selector(QMUIModalPresentationViewControllerDelegate.shouldHide(modalPresentationViewController:))) {
+                    canHide = delegate.shouldHide!(modalPresentationViewController: modalViewController!)
+                }
             }
             if canHide {
                 if modalViewController?.delegate != nil {
-                    modalViewController?.delegate?.requestHideAllModalPresentationViewController()
+                    if modalViewController!.delegate!.responds(to: #selector(QMUIModalPresentationViewControllerDelegate.requestHideAllModalPresentationViewController)) {
+                        modalViewController!.delegate!.requestHideAllModalPresentationViewController!()
+                    }
                 } else {
                     modalViewController?.hide(with: false, completion: nil)
                 }
