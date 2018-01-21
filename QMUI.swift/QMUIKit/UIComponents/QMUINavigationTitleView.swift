@@ -568,6 +568,11 @@ extension UINavigationBar: SelfAware {
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(self, #selector(layoutSubviews), #selector(qmui_navigationBarLayoutSubviews))
+
+            // UINavigationBar+Transition
+            ReplaceMethod(self, #selector(setter: shadowImage), #selector(NavigationBarTransition_setShadowImage))
+            ReplaceMethod(self, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
+            ReplaceMethod(self, #selector(setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
         }
     }
 

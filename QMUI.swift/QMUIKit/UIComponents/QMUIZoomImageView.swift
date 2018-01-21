@@ -926,7 +926,7 @@ class QMUIZoomImageViewVideoToolbar: UIView {
         sliderLeftLabel.textAlignment = .center
         addSubview(sliderLeftLabel)
 
-        sliderRightLabel.qmui_setTheSameAppearanceAsLabel(sliderLeftLabel)
+        sliderRightLabel.qmui_setTheSameAppearance(as: sliderLeftLabel)
         addSubview(sliderRightLabel)
 
         layer.shadowColor = UIColorBlack.cgColor
