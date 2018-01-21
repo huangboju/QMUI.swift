@@ -147,7 +147,7 @@ extension UILabel {
      * 将会复制的样式属性包括：font、textColor、backgroundColor
      * @param label 要从哪个目标UILabel上复制样式
      */
-    public func qmui_setTheSameAppearanceAsLabel(_ label: UILabel) {
+    public func qmui_setTheSameAppearance(as label: UILabel) {
         font = label.font
         textColor = label.textColor
         backgroundColor = label.backgroundColor
