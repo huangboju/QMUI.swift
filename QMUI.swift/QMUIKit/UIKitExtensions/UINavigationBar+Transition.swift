@@ -10,6 +10,7 @@ extension UINavigationBar {
     private struct Keys {
         static var transitionNavigationBarKey = "transitionNavigationBarKey"
     }
+
     /// 用来模仿真的navBar，配合 UINavigationController+NavigationBarTransition 在转场过程中存在的一条假navBar
     public var transitionNavigationBar: UINavigationBar? {
         set {
@@ -28,7 +29,7 @@ extension UINavigationBar {
         NavigationBarTransition_setShadowImage(image)
         transitionNavigationBar?.shadowImage = image
     }
-    
+
     @objc
     func NavigationBarTransition_setBarTintColor(_ tintColor: UIColor) {
         NavigationBarTransition_setBarTintColor(tintColor)

@@ -374,23 +374,23 @@ extension QMUIHelper {
         if !is58InchScreen {
             return UIEdgeInsets.zero
         }
-        
+
         let orientation = UIApplication.shared.statusBarOrientation
-        
+
         switch orientation {
         case .portrait:
             return UIEdgeInsetsMake(44, 0, 34, 0)
-            
+
         case .portraitUpsideDown:
             UIEdgeInsetsMake(34, 0, 44, 0)
-            
+
         case .landscapeLeft, .landscapeRight:
-            return UIEdgeInsetsMake(0, 44, 21, 44);
-            
+            return UIEdgeInsetsMake(0, 44, 21, 44)
+
         case .unknown:
             return UIEdgeInsetsMake(44, 0, 34, 0)
         }
-        
+
         return UIEdgeInsets.zero
     }
 

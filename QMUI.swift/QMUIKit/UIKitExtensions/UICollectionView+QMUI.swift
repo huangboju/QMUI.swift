@@ -17,7 +17,7 @@ extension UICollectionView {
             deselectItem(at: indexPath, animated: true)
         }
     }
-    
+
     /// 重新`reloadData`，同时保持`reloadData`前item的选中状态
     public func qmui_reloadDataKeepingSelection() {
         guard let selectedIndexPaths = indexPathsForSelectedItems else {
@@ -36,7 +36,7 @@ extension UICollectionView {
         }
         return cell
     }
-    
+
     /**
      *  获取某个view在collectionView内对应的indexPath
      *
@@ -50,7 +50,7 @@ extension UICollectionView {
         }
         return nil
     }
-    
+
     /// 判断当前 indexPath 的 item 是否为可视的 item
     public func qmui_itemVisible(at indexPath: IndexPath) -> Bool {
         for visibleIndexPath in indexPathsForVisibleItems {
@@ -60,7 +60,7 @@ extension UICollectionView {
         }
         return false
     }
-    
+
     /**
      *  获取可视区域内第一个cell的indexPath。
      *
@@ -81,7 +81,7 @@ extension UICollectionView {
                 minimumIndexPath = indexPath
                 continue
             }
-    
+
             if indexPath.section < minimumIndexPath?.section ?? 0 {
                 minimumIndexPath = indexPath
                 continue
@@ -105,7 +105,7 @@ extension UICollectionView {
         static var qmui_indexPathHeightCache = "qmui_indexPathHeightCache"
         static var qmui_templateCell = "qmui_templateCell"
     }
-    
+
     var qmui_keyedHeightCache: QMUICellHeightKeyCache? {
         var cache = objc_getAssociatedObject(self, &Keys.qmui_keyedHeightCache) as? QMUICellHeightKeyCache
         if cache == nil {
@@ -132,7 +132,7 @@ extension UICollectionView {
 /// QMUIIndexPathHeightCacheInvalidation
 extension UICollectionView: SelfAware {
     private static let _onceToken = UUID().uuidString
-    
+
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
             let selectors = [
@@ -144,7 +144,7 @@ extension UICollectionView: SelfAware {
                 #selector(insertItems(at:)),
                 #selector(deleteItems(at:)),
                 #selector(reloadItems(at:)),
-                #selector(moveItem(at:to:))
+                #selector(moveItem(at:to:)),
             ]
 
             for selector in selectors {
@@ -157,30 +157,30 @@ extension UICollectionView: SelfAware {
     func qmui_reloadDataWithoutInvalidateIndexPathHeightCache() {
         qmui_reloadData()
     }
-    
+
     @objc
     func qmui_reloadData() {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                 heightsBySection.removeAll()
             })
         }
         qmui_reloadData()
     }
-    
+
     @objc
     func qmui_insertSections(_ sections: IndexSet) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             for section in sections {
                 qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                     heightsBySection.insert([], at: section)
                 })
             }
         }
         qmui_insertSections(sections)
     }
-    
+
     @objc
     func qmui_deleteSections(_ sections: IndexSet) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
@@ -193,7 +193,7 @@ extension UICollectionView: SelfAware {
         }
         qmui_deleteSections(sections)
     }
-    
+
     @objc
     func qmui_reloadSections(_ sections: IndexSet) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
@@ -206,17 +206,17 @@ extension UICollectionView: SelfAware {
         }
         qmui_reloadSections(sections)
     }
-    
+
     @objc
     func qmui_moveSection(_ section: Int, toSection newSection: Int) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
             qmui_indexPathHeightCache?.buildSectionsIfNeeded(newSection)
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                 heightsBySection.swapAt(section, newSection)
             })
         }
-        qmui_moveSection(section, toSection:newSection)
+        qmui_moveSection(section, toSection: newSection)
     }
 
     @objc
@@ -233,7 +233,7 @@ extension UICollectionView: SelfAware {
         }
         qmui_insertItems(at: indexPaths)
     }
-    
+
     @objc
     func qmui_deleteItems(at indexPaths: [IndexPath]) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
@@ -249,7 +249,7 @@ extension UICollectionView: SelfAware {
             }
 
             for dict in mutableIndexSetsToRemove {
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                     var rows = heightsBySection[dict.key]
                     rows.remove(at: dict.value)
                     heightsBySection[dict.key] = rows
@@ -258,13 +258,13 @@ extension UICollectionView: SelfAware {
         }
         qmui_deleteItems(at: indexPaths)
     }
-    
+
     @objc
     func qmui_reloadItems(at indexPaths: [IndexPath]) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                     heightsBySection[indexPath.section][indexPath.item] = -1
                 })
             }
@@ -276,7 +276,7 @@ extension UICollectionView: SelfAware {
     func qmui_moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { (heightsBySection) in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
                 if heightsBySection.count > 0 && heightsBySection.count > indexPath.section && heightsBySection.count > newIndexPath.section {
                     let sourceValue = heightsBySection[indexPath.section][indexPath.item]
                     let destinationValue = heightsBySection[newIndexPath.section][newIndexPath.item]
@@ -321,11 +321,11 @@ extension UICollectionView {
         configuration?(cell)
         var fitSize = CGSize.zero
         if cell != nil && itemWidth > 0 {
-//            let selector = #selector(sizeThatFits)
-//            let overrided = [cell.class instanceMethodForSelector:selector] != [UICollectionViewCell instanceMethodForSelector:selector]
-//            if (inherited && !overrided) {
-//                NSAssert(NO, @"Customized cell must override '-sizeThatFits:' method if not using auto layout.")
-//            }
+            //            let selector = #selector(sizeThatFits)
+            //            let overrided = [cell.class instanceMethodForSelector:selector] != [UICollectionViewCell instanceMethodForSelector:selector]
+            //            if (inherited && !overrided) {
+            //                NSAssert(NO, @"Customized cell must override '-sizeThatFits:' method if not using auto layout.")
+            //            }
             fitSize = cell?.sizeThatFits(CGSize(width: itemWidth, height: CGFloat.infinity)) ?? .zero
         }
         return ceil(fitSize.height)
