@@ -17,11 +17,7 @@ import UIKit
 class QMUISlider: UISlider {
 
     /// 背后导轨的高度，默认为 0，表示使用系统默认的高度。
-    @IBInspectable public var trackHeight: CGFloat = 0 {
-        didSet {
-            setNeedsLayout()
-        }
-    }
+    @IBInspectable public var trackHeight: CGFloat = 0
 
     /// 中间圆球的大小，默认为 .zero
     /// @warning 注意若设置了 thumbSize 但没设置 thumbColor，则圆点的颜色会使用 self.tintColor 的颜色（但系统 UISlider 默认的圆点颜色是白色带阴影）
@@ -45,7 +41,6 @@ class QMUISlider: UISlider {
             if let thumbView = thumbViewIfExist() {
                 thumbView.layer.shadowColor = thumbShadowColor?.cgColor
                 thumbView.layer.shadowOpacity = (thumbShadowColor != nil) ? 1 : 0
-                setNeedsLayout()
             }
         }
     }
@@ -55,7 +50,6 @@ class QMUISlider: UISlider {
         didSet {
             if let thumbView = thumbViewIfExist() {
                 thumbView.layer.shadowOffset = thumbShadowOffset
-                setNeedsLayout()
             }
         }
     }
@@ -65,7 +59,6 @@ class QMUISlider: UISlider {
         didSet {
             if let thumbView = thumbViewIfExist() {
                 thumbView.layer.shadowRadius = thumbShadowRadius
-                setNeedsLayout()
             }
         }
     }

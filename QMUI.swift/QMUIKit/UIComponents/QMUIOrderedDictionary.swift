@@ -6,6 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+// 使用： let od = QMUIOrderedDictionary(dictionaryLiteral: ("3", "q"), ("2", "w"))
 public struct QMUIOrderedDictionary<Key: Hashable, Value> {
     public var allKeys = [Key]()
     private var dict = [Key: Value]()

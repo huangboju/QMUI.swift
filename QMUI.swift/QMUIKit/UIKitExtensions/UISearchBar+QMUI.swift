@@ -313,6 +313,7 @@ extension UISearchBar {
         }
     }
 
+    /// 获取 searchBar 内的取消按钮
     public func qmui_cancelButton() -> UIButton? {
         if let button = value(forKey: "cancelButton") {
             return button as? UIButton
@@ -320,6 +321,7 @@ extension UISearchBar {
         return nil
     }
 
+    /// 获取 scopeBar 里的 UISegmentedControl
     public func qmui_segmentedControl() -> UISegmentedControl? {
         // 注意，segmentedControl 只是整条 scopeBar 里的一部分，虽然它的 key 叫做“scopeBar”
         if let segmentedControl = value(forKey: "scopeBar") {

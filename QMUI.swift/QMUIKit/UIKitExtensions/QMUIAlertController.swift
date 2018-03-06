@@ -906,7 +906,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 增加一个输入框
     ///
     /// - Parameter configurationHandler: 回调
-    public func addTextField(with configurationHandler: ((_ textField: UITextField) -> Void)?) {
+    public func addTextField(with configurationHandler: ((_ textField: QMUITextField) -> Void)?) {
         if customView != nil {
             NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
