@@ -14,8 +14,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        createTabBarController()
+        
         return true
+    }
+    
+    private func createTabBarController() {
+        let tabBarViewController = QDTabBarViewController()
+        
+        // QMUIKit
+        let uikitViewController = QDUIKitViewController()
+        uikitViewController.hidesBottomBarWhenPushed = false
+        let uikitNavController = QDNavigationController(rootViewController: uikitViewController)
+        let image = UIImage(named: "icon_tabbar_uikit")?.withRenderingMode(.alwaysOriginal)
+        let selectedImage = UIImage(named: "icon_tabbar_uikit_selected")
+        uikitNavController.tabBarItem = QDUIHelper.tabBarItem(title: "QMUIKit", image: image, selectedImage: nil, tag: 0)
+        
+        // window root controller
+        tabBarViewController.viewControllers = [uikitNavController]
+        window?.rootViewController = tabBarViewController
+        window?.makeKeyAndVisible()
     }
 
     func applicationWillResignActive(_: UIApplication) {

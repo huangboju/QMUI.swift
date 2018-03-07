@@ -161,6 +161,10 @@ class QMUINavigationController: UINavigationController {
         super.init(coder: aDecoder)
         didInitialized()
     }
+    
+    override init(rootViewController: UIViewController) {
+        super.init(rootViewController: rootViewController)
+    }
 
     func didInitialized() {
         // UIView.tintColor 并不支持 UIAppearance 协议，所以不能通过 appearance 来设置，只能在实例里设置

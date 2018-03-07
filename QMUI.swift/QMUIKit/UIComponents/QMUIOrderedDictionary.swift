@@ -7,15 +7,15 @@
 //
 
 // 使用： let od = QMUIOrderedDictionary(dictionaryLiteral: ("3", "q"), ("2", "w"))
-public struct QMUIOrderedDictionary<Key: Hashable, Value> {
-    public var allKeys = [Key]()
-    private var dict = [Key: Value]()
+public struct QMUIOrderedDictionary<K: Hashable, V> {
+    public var allKeys = [K]()
+    private var dict = [K: V]()
 
     public var count: Int {
         return allKeys.count
     }
 
-    public subscript(key: Key) -> Value? {
+    public subscript(key: K) -> V? {
         get {
             return dict[key]
         }
@@ -62,7 +62,7 @@ extension QMUIOrderedDictionary: CustomStringConvertible {
 }
 
 extension QMUIOrderedDictionary: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (Key, Value)...) {
+    public init(dictionaryLiteral elements: (K, V)...) {
         self.init()
         for (key, value) in elements {
             self[key] = value
