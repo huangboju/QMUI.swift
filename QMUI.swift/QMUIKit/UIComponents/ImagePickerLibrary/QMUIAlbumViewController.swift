@@ -129,8 +129,8 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
     private var _albumsArray: [QMUIAssetsGroup] = []
     private var _imagePickerViewController: QMUIImagePickerViewController?
 
-    override func setNavigationItems(isInEditMode model: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode: model, animated: animated)
+    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
+        super.setNavigationItems(isInEditMode, animated: animated)
         title = title ?? "照片"
         navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelSelectAlbum))
     }

@@ -111,6 +111,16 @@ func PreferredVarForUniversalDevices<T>(varForPad: T, varFor55Inch: T, varFor47I
     return (IS_IPAD ? varForPad : (IS_55INCH_SCREEN ? varFor55Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_40INCH_SCREEN ? varFor40Inch : var4))))
 }
 
+// 使用文件名(不带后缀名)创建一个UIImage对象，会被系统缓存，适用于大量复用的小资源图
+// 使用这个 API 而不是 imageNamed: 是因为后者在 iOS 8 下反而存在性能问题（by molice 不确定 iOS 9 及以后的版本是否还有这个问题）
+let UIImageMake: (String) -> UIImage? = { UIImage(named: $0, in: nil, compatibleWith: nil) }
+//#define UIImageMake(img) [UIImage imageNamed:img inBundle:nil compatibleWithTraitCollection:nil]
+
+// 使用文件名(不带后缀名，仅限png)创建一个UIImage对象，不会被系统缓存，用于不被复用的图片，特别是大图
+let UIImageMakeWithFile: (String) -> UIImage? = { UIImageMakeWithFileAndSuffix($0, "png") }
+let UIImageMakeWithFileAndSuffix: (String, String) -> UIImage? = { UIImage(contentsOfFile: "\(Bundle.main.resourcePath ?? "")/\($0).\($1)") }
+
+
 // 字体相关创建器，包括动态字体的支持
 let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
 // 斜体只对数字和字母有效，中文无效

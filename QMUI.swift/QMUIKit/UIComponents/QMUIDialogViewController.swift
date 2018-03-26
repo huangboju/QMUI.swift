@@ -127,7 +127,7 @@ class QMUIDialogViewController: QMUICommonViewController {
     private var cancelButtonBlock: ((QMUIDialogViewController) -> Void)?
     private var submitButtonBlock: ((QMUIDialogViewController) -> Void)?
 
-    override func setNavigationItems(isInEditMode _: Bool, animated _: Bool) {
+    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         // 不继承父类的实现，从而避免把 titleView 放到 navigationItem 上
     }
 
