@@ -392,7 +392,7 @@ public class QMUIButton: UIButton {
             // 自定义highlighted样式
             guard adjustsButtonWhenHighlighted else { return }
             if isHighlighted {
-                alpha = ButtonHighlightedAlpha!
+                alpha = ButtonHighlightedAlpha
             } else {
                 UIView.animate(withDuration: 0.25) {
                     self.alpha = 1
@@ -404,7 +404,7 @@ public class QMUIButton: UIButton {
     public override var isEnabled: Bool {
         didSet {
             if !isEnabled && adjustsButtonWhenDisabled {
-                alpha = ButtonDisabledAlpha!
+                alpha = ButtonDisabledAlpha
             } else {
                 UIView.animate(withDuration: 0.25) {
                     self.alpha = 1

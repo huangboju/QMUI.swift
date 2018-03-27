@@ -239,7 +239,7 @@ extension QMUIEmotionView: UICollectionViewDataSource {
         pageView?.emotionSelectedBackgroundExtension = emotionSelectedBackgroundExtension
         pageView?.minimumEmotionHorizontalSpacing = minimumEmotionHorizontalSpacing
         pageView?.deleteButton.setImage(deleteButtonImage, for: .normal)
-        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_imageWith(alpha: ButtonHighlightedAlpha!), for: .highlighted)
+        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_imageWith(alpha: ButtonHighlightedAlpha), for: .highlighted)
         pageView?.isDebug = isDebug
         pageView?.setNeedsDisplay()
         return cell

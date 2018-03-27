@@ -105,6 +105,7 @@
 		D845BA5A204E981400103B62 /* QDCommonGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845BA59204E981400103B62 /* QDCommonGridViewController.swift */; };
 		D845BA5D204E988D00103B62 /* QDSliderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845BA5C204E988D00103B62 /* QDSliderViewController.swift */; };
 		D845BA5F204EA07D00103B62 /* QDCommonUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845BA5E204EA07D00103B62 /* QDCommonUI.swift */; };
+		D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */; };
 		D864A5F3204E52200036C164 /* QDCommonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D864A5F1204E52200036C164 /* QDCommonViewController.swift */; };
 		D864A5F5204E72F10036C164 /* QDThemeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D864A5F4204E72F10036C164 /* QDThemeProtocol.swift */; };
 		D8F01FB3204F882F003BCC8A /* QDTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB2204F882F003BCC8A /* QDTabBarViewController.swift */; };
@@ -230,6 +231,7 @@
 		D845BA59204E981400103B62 /* QDCommonGridViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDCommonGridViewController.swift; sourceTree = "<group>"; };
 		D845BA5C204E988D00103B62 /* QDSliderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSliderViewController.swift; sourceTree = "<group>"; };
 		D845BA5E204EA07D00103B62 /* QDCommonUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDCommonUI.swift; sourceTree = "<group>"; };
+		D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationMacros.swift; sourceTree = "<group>"; };
 		D864A5F1204E52200036C164 /* QDCommonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QDCommonViewController.swift; sourceTree = "<group>"; };
 		D864A5F4204E72F10036C164 /* QDThemeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDThemeProtocol.swift; sourceTree = "<group>"; };
 		D8F01FB2204F882F003BCC8A /* QDTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDTabBarViewController.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */,
 				D831FC3B1E2E06C2009CFB28 /* QMUIConfigurationManager.swift */,
 				D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */,
+				D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */,
 			);
 			path = UICommon;
 			sourceTree = "<group>";
@@ -709,6 +712,7 @@
 				BEB72CD01F13A878006426D3 /* QMUIDialogViewController.swift in Sources */,
 				3E6BE4F01F13C5270089DC6D /* UITextField+QMUI.swift in Sources */,
 				3E6BE4D11F13C5270089DC6D /* QMUICellHeightKeyCache.swift in Sources */,
+				D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
 				BEB72CF21F13AA6F006426D3 /* QMUIToastContentView.swift in Sources */,
 				3E6BE4DB1F13C5270089DC6D /* QMUITextField.swift in Sources */,

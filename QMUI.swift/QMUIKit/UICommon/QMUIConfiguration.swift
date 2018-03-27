@@ -6,207 +6,408 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-/*
- * 定义宏，宏的值是通过QMUIConfigurationManager的单例来获取属性的值。
- * 如果项目需要修改根据项目来修改某些宏的名字，请通过QMUIConfigurationManager来修改相应的属性，然后在项目启动的地方调用。
- * @waining 如果需要增加一个宏，则需要定义一个新的QMUIConfigurationManager属性。(具体请联系zhoonchen/molicechen)
+/// 所有配置表都应该实现的 protocol
+@objc protocol QMUIConfigurationTemplateProtocol {
+    
+    /// 应用配置表的设置
+    @objc func applyConfigurationTemplate()
+    
+    /// 当返回 YES 时，启动 App 的时候 QMUIConfiguration 会自动应用这份配置表。但启动 App 时自动应用的配置表最多只允许一份，如果有多份则其他的会被忽略，需要在某些时机手动应用
+    @objc optional func shouldApplyTemplateAutomatically() -> Bool
+    
+}
+
+/**
+ *  维护项目全局 UI 配置的单例，通过业务项目自己的 QMUIConfigurationTemplate 来为这个单例赋值，而业务代码里则通过 QMUIConfigurationMacros.swift 文件里的宏来使用这些值。
  */
+class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
+    
+    // MARK: Global Color
+    public var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
+    public var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+    public var black = UIColor(red: 0, green: 0, blue: 0, alpha: 0)
+    public var gray = UIColor(r: 179, g: 179, b: 179)
+    public var grayDarken = UIColor(r: 163, g: 163, b: 163)
+    public var grayLighten = UIColor(r: 198, g: 198, b: 198)
+    public var red = UIColor(r: 227, g: 40, b: 40)
+    public var green = UIColor(r: 79, g: 214, b: 79)
+    public var blue = UIColor(r: 43, g: 133, b: 208)
+    public var yellow = UIColor(r: 255, g: 252, b: 233)
+    
+    public var linkColor = UIColor(r: 56, g: 116, b: 171)
+    public var disabledColor: UIColor?
+    public var backgroundColor = UIColor(r: 246, g: 246, b: 246)
+    public var maskDarkColor = UIColor(r: 0, g: 0, b: 0, a: 0.35)
+    public var maskLightColor = UIColor(r: 255, g: 255, b: 255, a: 0.5)
+    public var separatorColor = UIColor(r: 200, g: 199, b: 204)
+    public var separatorDashedColor = UIColor(r: 17, g: 17, b: 17)
+    public var placeholderColor = UIColor(r: 187, g: 187, b: 187)
+    
+    public var testColorRed = UIColor(r: 255, g: 0, b: 0, a: 0.3)
+    public var testColorGreen = UIColor(r: 0, g: 255, b: 0, a: 0.3)
+    public var testColorBlue = UIColor(r: 0, g: 0, b: 255, a: 0.3)
 
-// 单例的宏
+    // MARK: UIControl
+    public var controlHighlightedAlpha: CGFloat = 0.5
+    public var controlDisabledAlpha: CGFloat = 0.5
+    
+    // MARK: UIButton
+    public var buttonHighlightedAlpha: CGFloat { get { return controlHighlightedAlpha } }
+    public var buttonDisabledAlpha: CGFloat { get { return controlDisabledAlpha } }
+    public var buttonTintColor: UIColor { get { return blue } }
+    
+    public var ghostButtonColorBlue: UIColor { get { return blue } }
+    public var ghostButtonColorRed: UIColor { get { return red } }
+    public var ghostButtonColorGreen: UIColor { get { return green } }
+    public var ghostButtonColorGray: UIColor { get { return gray } }
+    public var ghostButtonColorWhite: UIColor { get { return white } }
+    public var fillButtonColorBlue: UIColor { get { return blue } }
+    public var fillButtonColorRed: UIColor { get { return red } }
+    public var fillButtonColorGreen: UIColor { get { return green } }
+    public var fillButtonColorGray: UIColor { get { return white } }
+    public var fillButtonColorWhite: UIColor { get { return white } }
+    
+    // MARK: UITextField & UITextView
+    public var textFieldTintColor: UIColor?
+    public var textFieldTextInsets = UIEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)
+    
+    // MARK: NavigationBar
+    public var navBarHighlightedAlpha: CGFloat = 0.2
+    public var navBarDisabledAlpha: CGFloat = 0.2
+    public var navBarButtonFont: UIFont? {
+        didSet {
+            // by molice 2017-08-04 只要用 appearence 的方式修改 UIBarButtonItem 的 font，就会导致界面切换时 UIBarButtonItem 抖动，系统的问题，所以暂时不修改 appearance。
+        }
+    }
+    public var navBarButtonFontBold: UIFont?
+    public var navBarBackgroundImage: UIImage? {
+        didSet {
+            guard let navBarBackgroundImage = navBarBackgroundImage else { return }
+            let appearance = UINavigationBar.appearance()
+            appearance.setBackgroundImage(navBarBackgroundImage, for: .default)
+            QMUIHelper.visibleViewController?.navigationController?
+                .navigationBar.setBackgroundImage(navBarBackgroundImage, for: .default)
+        }
+    }
+    public var navBarShadowImage: UIImage? {
+        didSet {
+            guard let navBarShadowImage = navBarShadowImage else { return }
+            UINavigationBar.appearance().shadowImage = navBarShadowImage
+            QMUIHelper.visibleViewController?.navigationController?.navigationBar.shadowImage = navBarShadowImage
+        }
+    }
+    public var navBarBarTintColor: UIColor? {
+        didSet {
+            guard let navBarBarTintColor = navBarBarTintColor else { return }
+            UINavigationBar.appearance().barTintColor = navBarBarTintColor
+            QMUIHelper.visibleViewController?.navigationController?.navigationBar.barTintColor = navBarBarTintColor
+        }
+    }
+    public var navBarTintColor: UIColor? {
+        didSet {
+            guard let navBarTintColor = navBarTintColor else { return }
+            print(QMUIHelper.visibleViewController ?? "")
+            QMUIHelper.visibleViewController?.navigationController?.navigationBar.tintColor = navBarTintColor
+        }
+    }
+    public var navBarTitleColor: UIColor? {
+        didSet {
+            updateNavigationBarTitleAttributesIfNeeded()
+        }
+    }
+    public var navBarTitleFont: UIFont? {
+        didSet {
+            updateNavigationBarTitleAttributesIfNeeded()
+        }
+    }
+    public var navBarLargeTitleColor: UIColor? {
+        didSet {
+            updateNavigationBarLargeTitleTextAttributesIfNeeded()
+        }
+    }
+    public var navBarLargeTitleFont: UIFont? {
+        didSet {
+            updateNavigationBarLargeTitleTextAttributesIfNeeded()
+        }
+    }
+    public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero {
+        didSet {
+            if !UIOffsetEqualToOffset(UIOffset.zero, navBarBackButtonTitlePositionAdjustment) {
+                let backBarButtonItem = UIBarButtonItem.appearance()
+                backBarButtonItem
+                    .setBackButtonTitlePositionAdjustment(navBarBackButtonTitlePositionAdjustment,
+                                                                       for: .default)
+                QMUIHelper.visibleViewController?.navigationController?
+                    .navigationItem.backBarButtonItem?.setBackButtonTitlePositionAdjustment(navBarBackButtonTitlePositionAdjustment, for: .default)
+            }
+        }
+    }
+    public var navBarBackIndicatorImage: UIImage? {
+        didSet {
+            if navBarBackIndicatorImage != nil {
+                let navBarAppearance = UINavigationBar.appearance()
+                let navigationBar = QMUIHelper.visibleViewController?.navigationController?.navigationBar
+                // 返回按钮的图片frame是和系统默认的返回图片的大小一致的（13, 21），所以用自定义返回箭头时要保证图片大小与系统的箭头大小一样，否则无法对齐
+                let systemBackIndicatorImageSize = CGSize(width: 13, height: 31)
+                let customBackIndicatorImageSize = navBarBackIndicatorImage!.size
+                if !(customBackIndicatorImageSize == systemBackIndicatorImageSize) {
+                    let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(with: customBackIndicatorImageSize.height)
+                    self.navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_imageWithSpacingExtensionInsets(UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
+                }
+                
+                navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage;
+                navBarAppearance.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage;
+                navigationBar?.backIndicatorImage = self.navBarBackIndicatorImage;
+                navigationBar?.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage;
+            }
+        }
+    }
+    public var navBarCloseButtonImage: UIImage? {
+        get {
+            return UIImage.qmui_image(with: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
+        }
+    }
+    
+    public var navBarLoadingMarginRight: CGFloat = 3
+    public var navBarAccessoryViewMarginLeft: CGFloat = 5
+    public var navBarActivityIndicatorViewStyle: UIActivityIndicatorViewStyle = .gray
+    public var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage? {
+        get {
+            return UIImage.qmui_image(with: .triangle, size: CGSize(width: 8, height: 5), tintColor: navBarTintColor)?.qmui_image(with: .down)
+        }
+    }
 
-let QMUICMI = QMUIConfigurationManager.shared
+    // MARK: TabBar
+    public var tabBarBackgroundImage: UIImage? {
+        didSet {
+            guard let tabBarBackgroundImage = tabBarBackgroundImage else { return }
+            UITabBar.appearance().backgroundImage = tabBarBackgroundImage
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.backgroundImage = tabBarBackgroundImage
+        }
+    }
+    public var tabBarBarTintColor: UIColor? {
+        didSet {
+            guard let tabBarBarTintColor = tabBarBarTintColor else { return }
+            UITabBar.appearance().barTintColor = tabBarBarTintColor
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.barTintColor = tabBarBarTintColor
+        }
+    }
+    public var tabBarShadowImageColor: UIColor? {
+        didSet {
+            guard let tabBarShadowImageColor = tabBarShadowImageColor else { return }
+            let shadowImage = UIImage.qmui_image(withColor: tabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            UITabBar.appearance().shadowImage = shadowImage
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.shadowImage = shadowImage
+        }
+    }
+    public var tabBarTintColor: UIColor? {
+        didSet {
+            guard let tabBarTintColor = tabBarTintColor else { return }
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.tintColor = tabBarTintColor
+        }
+    }
+    public var tabBarItemTitleColor: UIColor? {
+        didSet {
+            guard let tabBarItemTitleColor = tabBarItemTitleColor else { return }
+            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
+            textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColor
+            UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
+                $0.setTitleTextAttributes(textAttributes, for: .normal)
+            }
+        }
+    }
+    public var tabBarItemTitleColorSelected: UIColor? {
+        get {
+            return tabBarTintColor
+        }
+        set {
+            guard let tabBarItemTitleColorSelected = self.tabBarItemTitleColorSelected else { return }
+            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
+            textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColorSelected
+            UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
+                $0.setTitleTextAttributes(textAttributes, for: .selected)
+            }
+        }
+    }
+    public var tabBarItemTitleFont: UIFont? {
+        didSet {
+            guard let tabBarItemTitleFont = tabBarItemTitleFont else { return }
+            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
+            textAttributes[NSAttributedStringKey.font] = tabBarItemTitleFont
+            UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
+            QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
+                $0.setTitleTextAttributes(textAttributes, for: .normal)
+            }
+        }
+    }
 
-// MARK: - Global Color
+    // MARK: Toolbar
+    public var toolBarHighlightedAlpha: CGFloat = 0.4
+    public var toolBarDisabledAlpha: CGFloat = 0.4
+    public var toolBarTintColor: UIColor? {
+        didSet {
+            guard let toolBarTintColor = toolBarTintColor else { return }
+            QMUIHelper.visibleViewController?.navigationController?.toolbar.tintColor = toolBarTintColor
+        }
+    }
+    public var toolBarTintColorHighlighted: UIColor? {
+        get {
+            return toolBarTintColor?.withAlphaComponent(toolBarHighlightedAlpha)
+        }
+    }
+    public var toolBarTintColorDisabled: UIColor? {
+        get {
+            return toolBarTintColor?.withAlphaComponent(toolBarDisabledAlpha)
+        }
+    }
+    public var toolBarBackgroundImage: UIImage? {
+        didSet {
+            guard let toolBarBackgroundImage = toolBarBackgroundImage else { return }
+            UIToolbar.appearance().setBackgroundImage(toolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
+            QMUIHelper.visibleViewController?.navigationController?.toolbar
+                .setBackgroundImage(toolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
+        }
+    }
+    public var toolBarBarTintColor: UIColor? {
+        didSet {
+            guard let toolBarBarTintColor = toolBarBarTintColor else { return }
+            UIToolbar.appearance().barTintColor = toolBarBarTintColor
+            QMUIHelper.visibleViewController?.navigationController?.toolbar.barTintColor = toolBarBarTintColor
+        }
+    }
+    public var toolBarShadowImageColor: UIColor? {
+        didSet {
+            guard let toolBarShadowImageColor = toolBarShadowImageColor else { return }
+            let shadowImage = UIImage.qmui_image(withColor: toolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            UIToolbar.appearance().setShadowImage(shadowImage, forToolbarPosition: .any)
+            QMUIHelper.visibleViewController?.navigationController?.toolbar.setShadowImage(shadowImage, forToolbarPosition: .any)
+        }
+    }
+    public var toolBarButtonFont: UIFont?
 
-// 基础颜色
-let UIColorClear = QMUICMI.clear
-let UIColorWhite = QMUICMI.white
-let UIColorBlack = QMUICMI.black
-let UIColorGray = QMUICMI.gray
-let UIColorGrayDarken = QMUICMI.grayDarken
-let UIColorGrayLighten = QMUICMI.grayLighten
-let UIColorRed = QMUICMI.red
-let UIColorGreen = QMUICMI.green
-let UIColorBlue = QMUICMI.blue
-let UIColorYellow = QMUICMI.yellow
+    // MARK: SearchBar
+    public var searchBarTextFieldBackground: UIColor?
+    public var searchBarTextFieldBorderColor: UIColor?
+    public var searchBarBottomBorderColor: UIColor?
+    public var searchBarBarTintColor: UIColor?
+    public var searchBarTintColor: UIColor?
+    public var searchBarTextColor: UIColor?
+    public var searchBarPlaceholderColor: UIColor { get { return placeholderColor } }
+    public var searchBarFont: UIFont?
+    /// 搜索框放大镜icon的图片，大小必须为13x13pt，否则会失真（系统的限制）
+    public var searchBarSearchIconImage: UIImage?
+    public var searchBarClearIconImage: UIImage?
+    public var searchBarTextFieldCornerRadius: CGFloat = 2
 
-// 功能颜色
-let UIColorLink = QMUICMI.link // 全局统一文字链接颜色
-let UIColorDisabled = QMUICMI.disabled // 全局统一文字disabled颜色
-let UIColorForBackground = QMUICMI.background // 全局统一的背景色
-let UIColorMask = QMUICMI.maskDark // 全局统一的mask背景色
-let UIColorMaskWhite = QMUICMI.maskLight // 全局统一的mask背景色，白色
-let UIColorSeparator = QMUICMI.separator // 全局分隔线颜色
-let UIColorSeparatorDashed = QMUICMI.separatorDashed // 全局分隔线颜色（虚线）
-let UIColorPlaceholder = QMUICMI.placeholder // 全局的输入框的placeholder颜色
+    // MARK: TableView / TableViewCell
+    public var tableViewEstimatedHeightEnabled = true
+    public var tableViewBackgroundColor: UIColor?
+    public var tableViewGroupedBackgroundColor: UIColor?
+    public var tableSectionIndexColor: UIColor?
+    public var tableSectionIndexBackgroundColor: UIColor?
+    public var tableSectionIndexTrackingBackgroundColor: UIColor?
+    public var tableViewSeparatorColor: UIColor { get { return separatorColor } }
 
-// 测试用的颜色
-let UIColorTestRed = QMUICMI.testColorRed
-let UIColorTestGreen = QMUICMI.testColorGreen
-let UIColorTestBlue = QMUICMI.testColorBlue
+    public var tableViewCellNormalHeight: CGFloat = 44
+    public var tableViewCellTitleLabelColor: UIColor?
+    public var tableViewCellDetailLabelColor: UIColor?
+    public var tableViewCellBackgroundColor: UIColor { get { return white } }
+    public var tableViewCellSelectedBackgroundColor = UIColor(r: 238, g: 239, b: 241)
+    public var tableViewCellWarningBackgroundColor: UIColor { get { return yellow } }
+    public var tableViewCellDisclosureIndicatorImage: UIImage?
+    public var tableViewCellCheckmarkImage: UIImage?
+    public var tableViewCellDetailButtonImage: UIImage?
+    public var tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator: CGFloat = 12
 
-// 可操作的控件
+    public var tableViewSectionHeaderBackgroundColor = UIColor(r: 244, g: 244, b: 244)
+    public var tableViewSectionFooterBackgroundColor = UIColor(r: 244, g: 244, b: 244)
+    public var tableViewSectionHeaderFont = UIFontBoldMake(12)
+    public var tableViewSectionFooterFont = UIFontBoldMake(12)
+    public var tableViewSectionHeaderTextColor: UIColor { get { return grayDarken } }
+    public var tableViewSectionFooterTextColor: UIColor { get { return gray } }
+    public var tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    public var tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    public var tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
+    public var tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
 
-// MARK: - UIControl
+    public var tableViewGroupedSectionHeaderFont = UIFontMake(12)
+    public var tableViewGroupedSectionFooterFont = UIFontMake(12)
+    public var tableViewGroupedSectionHeaderTextColor: UIColor { get { return grayDarken } }
+    public var tableViewGroupedSectionFooterTextColor: UIColor { get { return gray } }
+    public var tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    public var tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    public var tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension
+    public var tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension
+    public var tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, 15, 8, 15)
+    public var tableViewGroupedSectionFooterContentInset = UIEdgeInsetsMake(8, 15, 2, 15)
 
-let UIControlHighlightedAlpha = QMUICMI.controlHighlightedAlpha // 一般control的Highlighted透明值
-let UIControlDisabledAlpha = QMUICMI.controlDisabledAlpha // 一般control的Disable透明值
+    // MARK: UIWindowLevel
+    public var windowLevelQMUIAlertView: CGFloat = UIWindowLevelAlert - 4
+    public var windowLevelQMUIImagePreviewView: CGFloat = UIWindowLevelStatusBar + 1
 
-let SegmentTextTintColor = QMUICMI.segmentTextTintColor // segment的tintColor
-let SegmentTextSelectedTintColor = QMUICMI.segmentTextSelectedTintColor // segment选中态的tintColor
-let SegmentFontSize = QMUICMI.segmentFontSize // segment的字体大小
+    // MARK: QMUILog
+//    public var shouldPrintDefaultLog: Bool
+//    public var shouldPrintInfoLog: Bool
+//    public var shouldPrintWarnLog: Bool
 
-// 按钮
-
-// MARK: - UIButton
-
-let ButtonHighlightedAlpha = QMUICMI.buttonHighlightedAlpha // 按钮Highlighted状态的透明度
-let ButtonDisabledAlpha = QMUICMI.buttonDisabledAlpha // 按钮Disabled状态的透明度
-let ButtonTintColor = QMUICMI.buttonTintColor // 普通按钮的颜色
-
-let GhostButtonColorBlue = QMUICMI.ghostButtonColorBlue // QMUIGhostButtonColorBlue的颜色
-let GhostButtonColorRed = QMUICMI.ghostButtonColorRed // QMUIGhostButtonColorRed的颜色
-let GhostButtonColorGreen = QMUICMI.ghostButtonColorGreen // QMUIGhostButtonColorGreen的颜色
-let GhostButtonColorGray = QMUICMI.ghostButtonColorGray // QMUIGhostButtonColorGray的颜色
-let GhostButtonColorWhite = QMUICMI.ghostButtonColorWhite // QMUIGhostButtonColorWhite的颜色
-
-let FillButtonColorBlue = QMUICMI.fillButtonColorBlue // QMUIFillButtonColorBlue的颜色
-let FillButtonColorRed = QMUICMI.fillButtonColorRed // QMUIFillButtonColorRed的颜色
-let FillButtonColorGreen = QMUICMI.fillButtonColorGreen // QMUIFillButtonColorGreen的颜色
-let FillButtonColorGray = QMUICMI.fillButtonColorGray // QMUIFillButtonColorGray的颜色
-let FillButtonColorWhite = QMUICMI.fillButtonColorWhite // QMUIFillButtonColorWhite的颜色
-
-// 输入框
-
-// MARK: - TextField & TextView
-
-let TextFieldTintColor = QMUICMI.textFieldTintColor // 全局UITextField、UITextView的tintColor
-let TextFieldTextInsets = QMUICMI.textFieldTextInsets // QMUITextField的内边距
-
-// MARK: - ActionSheet
-
-let ActionSheetButtonTintColor = QMUICMI.actionSheetButtonTintColor
-let ActionSheetButtonBackgroundColor = QMUICMI.actionSheetButtonBackgroundColor
-let ActionSheetButtonBackgroundColorHighlighted = QMUICMI.actionSheetButtonBackgroundColorHighlighted
-let ActionSheetButtonFont = QMUICMI.actionSheetButtonFont
-let ActionSheetButtonFontBold = QMUICMI.actionSheetButtonFontBold
-
-// MARK: - NavigationBar
-
-let NavBarHighlightedAlpha = QMUICMI.navBarHighlightedAlpha
-let NavBarDisabledAlpha = QMUICMI.navBarDisabledAlpha
-let NavBarButtonFont = QMUICMI.navBarButtonFont
-let NavBarButtonFontBold = QMUICMI.navBarButtonFontBold
-let NavBarBackgroundImage = QMUICMI.navBarBackgroundImage
-let NavBarShadowImage = QMUICMI.navBarShadowImage
-let NavBarBarTintColor = QMUICMI.navBarBarTintColor
-let NavBarTintColor = QMUICMI.navBarTintColor
-let NavBarTintColorHighlighted = QMUICMI.navBarTintColorHighlighted
-let NavBarTintColorDisabled = QMUICMI.navBarTintColorDisabled
-let NavBarTitleColor = QMUICMI.navBarTitleColor
-let NavBarTitleFont = QMUICMI.navBarTitleFont
-let NavBarBarBackButtonTitlePositionAdjustment = QMUICMI.navBarBackButtonTitlePositionAdjustment
-let NavBarBackIndicatorImage = QMUICMI.navBarBackIndicatorImage // 自定义的返回按钮，尺寸建议与系统的返回按钮尺寸一致（iOS8下实测系统大小是(13, 21)），可提高性能
-let NavBarCloseButtonImage = QMUICMI.navBarCloseButtonImage
-
-let NavBarLoadingMarginRight = QMUICMI.navBarLoadingMarginRight // titleView里左边的loading的右边距
-let NavBarAccessoryViewMarginLeft = QMUICMI.navBarAccessoryViewMarginLeft // titleView里的accessoryView的左边距
-let NavBarActivityIndicatorViewStyle = QMUICMI.navBarActivityIndicatorViewStyle // titleView loading 的style
-let NavBarAccessoryViewTypeDisclosureIndicatorImage = QMUICMI.navBarAccessoryViewTypeDisclosureIndicatorImage // titleView上倒三角的默认图片
-
-// MARK: - TabBar
-
-let TabBarBackgroundImage = QMUICMI.tabBarBackgroundImage
-let TabBarBarTintColor = QMUICMI.tabBarBarTintColor
-let TabBarShadowImageColor = QMUICMI.tabBarShadowImageColor
-let TabBarTintColor = QMUICMI.tabBarTintColor
-let TabBarItemTitleColor = QMUICMI.tabBarItemTitleColor
-let TabBarItemTitleColorSelected = QMUICMI.tabBarItemTitleColorSelected
-
-// MARK: - Toolbar
-
-let ToolBarHighlightedAlpha = QMUICMI.toolBarHighlightedAlpha
-let ToolBarDisabledAlpha = QMUICMI.toolBarDisabledAlpha
-let ToolBarTintColor = QMUICMI.toolBarTintColor
-let ToolBarTintColorHighlighted = QMUICMI.toolBarTintColorHighlighted
-let ToolBarTintColorDisabled = QMUICMI.toolBarTintColorDisabled
-let ToolBarBackgroundImage = QMUICMI.toolBarBackgroundImage
-let ToolBarBarTintColor = QMUICMI.toolBarBarTintColor
-let ToolBarShadowImageColor = QMUICMI.toolBarShadowImageColor
-let ToolBarButtonFont = QMUICMI.toolBarButtonFont
-
-// MARK: - SearchBar
-
-let SearchBarTextFieldBackground = QMUICMI.searchBarTextFieldBackground
-let SearchBarTextFieldBorderColor = QMUICMI.searchBarTextFieldBorderColor
-let SearchBarBottomBorderColor = QMUICMI.searchBarBottomBorderColor
-let SearchBarBarTintColor = QMUICMI.searchBarBarTintColor
-let SearchBarTintColor = QMUICMI.searchBarTintColor
-let SearchBarTextColor = QMUICMI.searchBarTextColor
-let SearchBarPlaceholderColor = QMUICMI.searchBarPlaceholderColor
-let SearchBarFont = QMUICMI.searchBarFont
-let SearchBarSearchIconImage = QMUICMI.searchBarSearchIconImage
-let SearchBarClearIconImage = QMUICMI.searchBarClearIconImage
-let SearchBarTextFieldCornerRadius = QMUICMI.searchBarTextFieldCornerRadius
-
-// MARK: - TableView / TableViewCell
-
-let TableViewBackgroundColor = QMUICMI.tableViewBackgroundColor // 普通列表的背景色
-let TableViewGroupedBackgroundColor = QMUICMI.tableViewGroupedBackgroundColor // Grouped类型的列表的背景色
-let TableSectionIndexColor = QMUICMI.tableSectionIndexColor // 列表右边索引条的文字颜色，iOS6及以后生效
-let TableSectionIndexBackgroundColor = QMUICMI.tableSectionIndexBackgroundColor // 列表右边索引条的背景色，iOS7及以后生效
-let TableSectionIndexTrackingBackgroundColor = QMUICMI.tableSectionIndexTrackingBackgroundColor // 列表右边索引条按下时的背景色，iOS6及以后生效
-let TableViewSeparatorColor = QMUICMI.tableViewSeparatorColor // 列表分隔线颜色
-let TableViewCellBackgroundColor = QMUICMI.tableViewCellBackgroundColor // 列表cel的背景色
-let TableViewCellSelectedBackgroundColor = QMUICMI.tableViewCellSelectedBackgroundColor // 列表cell按下时的背景色
-let TableViewCellWarningBackgroundColor = QMUICMI.tableViewCellWarningBackgroundColor // 列表cell在未读状态下的背景色
-let TableViewCellNormalHeight = QMUICMI.tableViewCellNormalHeight // 默认cell的高度
-
-let TableViewCellDisclosureIndicatorImage = QMUICMI.tableViewCellDisclosureIndicatorImage // 列表cell右边的箭头图片
-let TableViewCellCheckmarkImage = QMUICMI.tableViewCellCheckmarkImage // 列表cell右边的打钩checkmark
-let TableViewCellDetailButtonImage = QMUICMI.tableViewCellDetailButtonImage // 列表 cell 右边的 i 按钮
-let TableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator = QMUICMI.tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator // 列表 cell 右边的 i 按钮和向右箭头之间的间距（仅当两者都使用了自定义图片并且同时显示时才生效）
-
-let TableViewSectionHeaderBackgroundColor = QMUICMI.tableViewSectionHeaderBackgroundColor
-let TableViewSectionFooterBackgroundColor = QMUICMI.tableViewSectionFooterBackgroundColor
-let TableViewSectionHeaderFont = QMUICMI.tableViewSectionHeaderFont
-let TableViewSectionFooterFont = QMUICMI.tableViewSectionFooterFont
-let TableViewSectionHeaderTextColor = QMUICMI.tableViewSectionHeaderTextColor
-let TableViewSectionFooterTextColor = QMUICMI.tableViewSectionFooterTextColor
-let TableViewSectionHeaderHeight = QMUICMI.tableViewSectionHeaderHeight // 列表sectionheader的高度
-let TableViewSectionFooterHeight = QMUICMI.tableViewSectionFooterHeight // 列表sectionheader的高度
-let TableViewSectionHeaderContentInset = QMUICMI.tableViewSectionHeaderContentInset
-let TableViewSectionFooterContentInset = QMUICMI.tableViewSectionFooterContentInset
-
-let TableViewGroupedSectionHeaderFont = QMUICMI.tableViewGroupedSectionHeaderFont
-let TableViewGroupedSectionFooterFont = QMUICMI.tableViewGroupedSectionFooterFont
-let TableViewGroupedSectionHeaderTextColor = QMUICMI.tableViewGroupedSectionHeaderTextColor
-let TableViewGroupedSectionFooterTextColor = QMUICMI.tableViewGroupedSectionFooterTextColor
-let TableViewGroupedSectionHeaderHeight = QMUICMI.tableViewGroupedSectionHeaderHeight
-let TableViewGroupedSectionFooterHeight = QMUICMI.tableViewGroupedSectionFooterHeight
-let TableViewGroupedSectionHeaderContentInset = QMUICMI.tableViewGroupedSectionHeaderContentInset
-let TableViewGroupedSectionFooterContentInset = QMUICMI.tableViewGroupedSectionFooterContentInset
-
-let TableViewCellTitleLabelColor = QMUICMI.tableViewCellTitleLabelColor // cell的title颜色
-let TableViewCellDetailLabelColor = QMUICMI.tableViewCellDetailLabelColor // cell的detailTitle颜色
-let TableViewCellContentDefaultPaddingLeft = QMUICMI.tableViewCellContentDefaultPaddingLeft // Cell默认左边缘的间距
-let TableViewCellContentDefaultPaddingRight = QMUICMI.tableViewCellContentDefaultPaddingRight // Cell默认右边缘的间距
-
-// MARK: - UIWindowLevel
-
-let UIWindowLevelQMUIAlertView = QMUICMI.windowLevelQMUIAlertView
-let UIWindowLevelQMUIActionSheet = QMUICMI.windowLevelQMUIActionSheet
-let UIWindowLevelQMUIMoreOperationController = QMUICMI.windowLevelQMUIMoreOperationController
-let UIWindowLevelQMUIImagePreviewView = QMUICMI.windowLevelQMUIImagePreviewView
-
-// MARK: - Others
-
-let SupportedOrientationMask = QMUICMI.supportedOrientationMask // 默认支持的横竖屏方向
-let StatusbarStyleLightInitially = QMUICMI.statusbarStyleLightInitially // 默认的状态栏内容是否使用白色，默认为NO，也即黑色
-let NeedsBackBarButtonItemTitle = QMUICMI.needsBackBarButtonItemTitle // 全局是否需要返回按钮的title，不需要则只显示一个返回image
-let HidesBottomBarWhenPushedInitially = QMUICMI.hidesBottomBarWhenPushedInitially // QMUICommonViewController.hidesBottomBarWhenPushed的初始值，默认为YES
-let NavigationBarHiddenStateUsable = QMUICMI.navigationBarHiddenStateUsable
-
-let NavigationBarHiddenStateInitially = QMUICMI.navigationBarHiddenStateInitially // NavigationBarHiddenStateInitially : preferredNavigationBarHiddenState 的初始值，默认为QMUINavigationBarHiddenStateShowWithAnimated
-
-let ShouldFixTabBarTransitionBugInIPhoneX = QMUICMI.shouldFixTabBarTransitionBugInIPhoneX // 是否需要自动修复 iOS 11 下，iPhone X 的设备在 push 界面时，tabBar 会瞬间往上跳的 bug
+    // MARK: Others
+    public var supportedOrientationMask: UIInterfaceOrientationMask = .portrait
+    public var automaticallyRotateDeviceOrientation: Bool = false
+    public var statusbarStyleLightInitially: Bool = false
+    public var needsBackBarButtonItemTitle: Bool = false
+    public var hidesBottomBarWhenPushedInitially: Bool = false
+    public var preventConcurrentNavigationControllerTransitions: Bool = true
+    public var navigationBarHiddenInitially: Bool = false
+    public var shouldFixTabBarTransitionBugInIPhoneX: Bool = false
+    
+    static let shared = QMUIConfiguration()
+    
+    private init() {
+    }
+    
+    private func updateNavigationBarTitleAttributesIfNeeded() {
+        if navBarTitleFont != nil || navBarTitleColor != nil {
+            var titleTextAttributes = [NSAttributedStringKey: NSObject]()
+            if let navBarTitleFont = navBarTitleFont {
+                titleTextAttributes[NSAttributedStringKey.font] = navBarTitleFont
+            }
+            if let navBarTitleColor = navBarTitleColor {
+                titleTextAttributes[NSAttributedStringKey.foregroundColor] = navBarTitleColor
+            }
+            UINavigationBar.appearance().titleTextAttributes = titleTextAttributes
+            QMUIHelper.visibleViewController?.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes;
+        }
+    }
+    
+    func updateNavigationBarLargeTitleTextAttributesIfNeeded() {
+        if #available(iOS 11, *) {
+            if navBarLargeTitleFont != nil || navBarLargeTitleColor != nil {
+                var largeTitleTextAttributes = [NSAttributedStringKey: NSObject]()
+                if let navBarLargeTitleFont = navBarLargeTitleFont {
+                    largeTitleTextAttributes[NSAttributedStringKey.font] = navBarLargeTitleFont
+                }
+                if let navBarLargeTitleColor = navBarLargeTitleColor {
+                    largeTitleTextAttributes[NSAttributedStringKey.foregroundColor] = navBarLargeTitleColor
+                }
+                UINavigationBar.appearance().largeTitleTextAttributes = largeTitleTextAttributes
+                QMUIHelper.visibleViewController?.navigationController?
+                    .navigationBar.largeTitleTextAttributes = largeTitleTextAttributes;
+            }
+        }
+    }
+    
+    func applyInitialTemplate() -> QMUIConfiguration {
+        
+        return self
+    }
+    
+    func applyConfigurationTemplate() {
+        
+    }
+    
+}

@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol QDThemeProtocol {
+protocol QDThemeProtocol: QMUIConfigurationTemplateProtocol {
     
 }
 

@@ -1,5 +1,5 @@
 //
-//  QDCommonGridViewController.swift
+//  QMUICommonTableViewController.swift
 //  QMUI.swift
 //
 //  Created by 伯驹 黄 on 2017/2/9.
@@ -11,6 +11,9 @@
  *  @see tableViewInitialContentInset
  */
 let QMUICommonTableViewControllerInitialContentInsetNotSet = UIEdgeInsets(top: -1, left: -1, bottom: -1, right: -1)
+
+let QMUICommonTableViewControllerSectionHeaderIdentifier = "QMUISectionHeaderView"
+let QMUICommonTableViewControllerSectionFooterIdentifier = "QMUISectionFooterView"
 
 let kSectionHeaderFooterLabelTag = 1024
 
@@ -255,17 +258,17 @@ extension QMUICommonTableViewController: QMUITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard let headerView = tableView.delegate?.tableView?(tableView, viewForHeaderInSection: section) else {
             // 默认 plain 类型直接设置为 0，TableViewSectionHeaderHeight 是在需要重写 headerHeight 的时候才用的
-            return tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderHeight
+            return tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderDefaultHeight
         }
-        return max(headerView.bounds.height, tableView.style == .plain ? TableViewSectionHeaderHeight : TableViewGroupedSectionHeaderHeight)
+        return max(headerView.bounds.height, tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderDefaultHeight)
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         guard let footerView = tableView.delegate?.tableView?(tableView, viewForFooterInSection: section) else {
             // 默认 plain 类型直接设置为 0，TableViewSectionFooterHeight 是在需要重写 footerHeight 的时候才用的
-            return tableView.style == .plain ? 0 : TableViewGroupedSectionFooterHeight
+            return tableView.style == .plain ? 0 : TableViewGroupedSectionFooterDefaultHeight
         }
-        return max(footerView.bounds.height, tableView.style == .plain ? TableViewSectionFooterHeight : TableViewGroupedSectionFooterHeight)
+        return max(footerView.bounds.height, tableView.style == .plain ? 0 : TableViewGroupedSectionFooterDefaultHeight)
     }
 
     // 是否有定义某个section的header title

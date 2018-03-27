@@ -151,7 +151,7 @@ class QMUICommonViewController: UIViewController {
     }
 
     var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
-        return NavigationBarHiddenStateInitially
+        return .showWithAnimated
     }
 
     override func didReceiveMemoryWarning() {

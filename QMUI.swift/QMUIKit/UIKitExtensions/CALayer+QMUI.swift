@@ -105,7 +105,7 @@ extension CALayer {
      */
     public static func qmui_separatorLayerForTableView() -> CALayer {
         let layer = qmui_separatorLayer()
-        layer.backgroundColor = TableViewSeparatorColor?.cgColor
+        layer.backgroundColor = TableViewSeparatorColor.cgColor
         return layer
     }
 }

@@ -23,6 +23,11 @@ public let QDThemeAfterChangedName = "QDThemeAfterChangedName"
 
 class QDThemeManager {
     
+    static let shared: QDThemeManager = {
+        let instance = QDThemeManager()
+        return instance
+    } ()
+    
     public var currentTheme: QDThemeProtocol? {
         willSet {
             
@@ -31,11 +36,6 @@ class QDThemeManager {
             
         }
     }
-    
-    static let sharedInstance: QDThemeManager = {
-        let instance = QDThemeManager()
-        return instance
-    } ()
     
     private init() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChanged(_:)), name: Notification.QD.ThemeChanged, object: nil)
@@ -46,7 +46,7 @@ class QDThemeManager {
             return
         }
         if let themeBeforeChanged = userInfo[QDThemeBeforeChangedName] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeAfterChangedName] as? QDThemeProtocol {
-            //            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
+//            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
         }
         
     }

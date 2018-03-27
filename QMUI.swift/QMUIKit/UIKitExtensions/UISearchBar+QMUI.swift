@@ -349,9 +349,7 @@ extension UISearchBar {
         }
 
         // placeholder 的文字颜色
-        if let placeholderColor = SearchBarPlaceholderColor {
-            qmui_placeholderColor = placeholderColor
-        }
+        qmui_placeholderColor = SearchBarPlaceholderColor
 
         placeholder = "搜索"
         autocorrectionType = .no
@@ -384,12 +382,17 @@ extension UISearchBar {
 
         // 整条bar的背景
         // 为了让 searchBar 底部的边框颜色支持修改，背景色不使用 barTintColor 的方式去改，而是用 backgroundImage
-        var backgroundImage = UIImage.qmui_image(withColor: SearchBarBarTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
-
-        if backgroundImage == nil {
-            backgroundImage = UIImage.qmui_image(withColor: .white, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+        var backgroundImage: UIImage? = nil
+        if let barTintColor = SearchBarBarTintColor {
+            backgroundImage = UIImage.qmui_image(withColor: barTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
         }
-        backgroundImage = backgroundImage?.qmui_image(withBorderColor: SearchBarBottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
+        
+        if let bottomBorderColor = SearchBarBottomBorderColor {
+            if backgroundImage != nil {
+                backgroundImage = UIImage.qmui_image(withColor: UIColorWhite, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+            }
+            backgroundImage = backgroundImage?.qmui_image(withBorderColor: bottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
+        }
 
         if backgroundImage != nil {
             backgroundImage = backgroundImage?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1))

@@ -263,7 +263,7 @@ class QMUIConfigurationManager {
 
     // MARK: - Others
 
-    public var supportedOrientationMask = UIInterfaceOrientationMask.portrait
+    public var supportedOrientationMask: UIInterfaceOrientationMask = .portrait
     public var statusbarStyleLightInitially = false
     public var needsBackBarButtonItemTitle = false
     public var hidesBottomBarWhenPushedInitially = true

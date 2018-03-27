@@ -50,7 +50,7 @@ class QMUIMoreOperationItemView: QMUIButton {
 
     override var isHighlighted: Bool {
         didSet {
-            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha! : 1
+            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha : 1
         }
     }
 
@@ -96,7 +96,7 @@ class QMUIMoreOperationController: UIViewController {
     public var cancelButtonTitleColor = UIColorBlue {
         didSet {
             cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
-            cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha!), for: .highlighted)
+            cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
         }
     }
 
@@ -236,7 +236,7 @@ class QMUIMoreOperationController: UIViewController {
         cancelButton.backgroundColor = cancelButtonBackgroundColor
         cancelButton.setTitle("取消", for: .normal)
         cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
-        cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha!), for: .highlighted)
+        cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
         cancelButton.addTarget(self, action: #selector(handleCancelButtonEvent), for: .touchUpInside)
 
         cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor

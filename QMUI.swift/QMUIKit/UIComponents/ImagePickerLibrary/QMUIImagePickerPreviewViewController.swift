@@ -144,9 +144,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if !NavigationBarHiddenStateUsable {
-            navigationController?.setNavigationBarHidden(true, animated: false)
-        }
+        navigationController?.setNavigationBarHidden(true, animated: false)
         if !_singleCheckMode {
             let imageAsset = imagesAssetArray[imagePreviewView!.currentImageIndex]
             checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
@@ -156,9 +154,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if !NavigationBarHiddenStateUsable {
-            navigationController?.setNavigationBarHidden(false, animated: false)
-        }
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     override func viewDidLayoutSubviews() {
@@ -375,9 +371,9 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     }
 
     // MARK: - QMUINavigationControllerDelegate
-    override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
-        return NavigationBarHiddenStateInitially
-    }
+//    override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
+//        return NavigationBarHiddenInitially
+//    }
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {

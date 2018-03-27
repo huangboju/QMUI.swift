@@ -590,7 +590,7 @@ extension UIImage {
      *  @param size 图片大小
      *  @param tintColor 图片颜色
      */
-    public static func qmui_image(with shape: QMUIImageShape, size: CGSize, tintColor: UIColor) -> UIImage? {
+    public static func qmui_image(with shape: QMUIImageShape, size: CGSize, tintColor: UIColor?) -> UIImage? {
         var lineWidth: CGFloat = 0
         switch shape {
         case .navBack:
@@ -606,7 +606,7 @@ extension UIImage {
         default:
             break
         }
-        return qmui_image(withShape: shape, size: size, lineWidth: lineWidth, tintColor: tintColor)
+        return qmui_image(with: shape, size: size, lineWidth: lineWidth, tintColor: tintColor)
     }
 
     /**
@@ -616,7 +616,7 @@ extension UIImage {
      *  @param lineWidth 路径大小，不会影响最终size
      *  @param tintColor 图片颜色
      */
-    public static func qmui_image(withShape shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor?) -> UIImage? {
+    public static func qmui_image(with shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor?) -> UIImage? {
         let size = size.flatted
         CGContextInspectSize(size)
 
