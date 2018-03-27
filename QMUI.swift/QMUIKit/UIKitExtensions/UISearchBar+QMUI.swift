@@ -6,10 +6,10 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UISearchBar: SelfAware {
+extension UISearchBar: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             let selectors = [
                 #selector(setter: placeholder),
@@ -246,7 +246,7 @@ extension UISearchBar {
             return objc_getAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 

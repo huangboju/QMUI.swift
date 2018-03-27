@@ -82,7 +82,7 @@ extension UINavigationController {
     @objc public func qmui_viewDidLoad() {
         self.qmui_viewDidLoad()
 
-        objc_setAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey, interactivePopGestureRecognizer, .OBJC_ASSOCIATION_ASSIGN)
+        objc_setAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey, interactivePopGestureRecognizer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         interactivePopGestureRecognizer?.delegate = self
     }
 

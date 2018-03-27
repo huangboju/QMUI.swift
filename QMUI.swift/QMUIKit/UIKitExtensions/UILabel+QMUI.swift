@@ -6,10 +6,10 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UILabel: SelfAware {
+extension UILabel: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(self, #selector(setter: text), #selector(qmui_setText))
             ReplaceMethod(self, #selector(setter: attributedText), #selector(qmui_setAttributedText))

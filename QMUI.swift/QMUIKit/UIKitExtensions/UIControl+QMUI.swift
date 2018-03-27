@@ -6,22 +6,29 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UIControl: SelfAware {
+extension UIControl: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             let selectors = [
-                #selector(touchesBegan),
-                #selector(touchesMoved),
-                #selector(touchesEnded),
-                #selector(touchesCancelled),
-                #selector(point),
+                #selector(UIControl.touchesBegan(_:with:)),
+                #selector(UIControl.touchesMoved(_:with:)),
+                #selector(UIControl.touchesEnded(_:with:)),
+                #selector(UIControl.touchesCancelled(_:with:)),
+                #selector(UIControl.point(inside:with:)),
             ]
+            
+            let qmui_selectors = [
+                #selector(UIControl.qmui_touchesBegan(_:with:)),
+                #selector(UIControl.qmui_touchesMoved(_:with:)),
+                #selector(UIControl.qmui_touchesEnded(_:with:)),
+                #selector(UIControl.qmui_touchesCancelled(_:with:)),
+                #selector(UIControl.qmui_point(inside:with:)),
+                ]
 
-            selectors.forEach {
-                let selector = $0
-                ReplaceMethod(self, selector, Selector("qmui_" + selector.description))
+            for index in 0..<selectors.count {
+                ReplaceMethod(self, selectors[index], qmui_selectors[index])
             }
         }
     }
@@ -84,7 +91,7 @@ extension UIControl {
         }
     }
 
-    open func qmui_touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    @objc open func qmui_touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         touchEndCount = 0
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = true
@@ -100,14 +107,14 @@ extension UIControl {
         }
     }
 
-    open func qmui_touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+    @objc open func qmui_touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = false
         }
         qmui_touchesMoved(touches, with: event)
     }
 
-    open func qmui_touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+    @objc open func qmui_touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = false
             guard isTouchInside else {
@@ -129,7 +136,7 @@ extension UIControl {
         }
     }
 
-    open func qmui_touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+    @objc open func qmui_touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if qmui_needsTakeOverTouchEvent {
             canSetHighlighted = false
             qmui_touchesCancelled(touches, with: event)
@@ -141,7 +148,7 @@ extension UIControl {
         }
     }
 
-    open func qmui_point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    @objc open func qmui_point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         if event?.type != .touches {
             return qmui_point(inside: point, with: event)
         }

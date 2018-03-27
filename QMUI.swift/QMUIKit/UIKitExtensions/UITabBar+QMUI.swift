@@ -8,13 +8,13 @@
 
 import Foundation
 
-extension UITabBar: SelfAware {
+extension UITabBar: SelfAware2 {
 
     private static let kLastTouchedTabBarItemIndexNone = -1
 
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             let selectors = [
                 #selector(setItems(_:animated:)),
@@ -112,7 +112,7 @@ extension UITabBar: SelfAware {
             return canItemRespondDoubleTouch as! Bool
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.kCanItemRespondDoubleTouch, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.kCanItemRespondDoubleTouch, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -124,7 +124,7 @@ extension UITabBar: SelfAware {
             return lastTouchedTabBarItemViewIndex as! Int
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.kLastTouchedTabBarItemViewIndex, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.kLastTouchedTabBarItemViewIndex, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -136,7 +136,7 @@ extension UITabBar: SelfAware {
             return tabBarItemViewTouchCount as! Int
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.kTabBarItemViewTouchCount, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.kTabBarItemViewTouchCount, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 }

@@ -614,7 +614,7 @@ extension UIViewController {
     var modalPresentedViewController: QMUIModalPresentationViewController? {
         set {
             if let vc = newValue {
-                objc_setAssociatedObject(self, &Keys.modalPresentationViewController, vc, .OBJC_ASSOCIATION_ASSIGN)
+                objc_setAssociatedObject(self, &Keys.modalPresentationViewController, vc, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
         get {

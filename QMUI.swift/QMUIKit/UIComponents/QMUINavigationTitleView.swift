@@ -562,10 +562,10 @@ class QMUINavigationTitleView: UIControl {
     }
 }
 
-extension UINavigationBar: SelfAware {
+extension UINavigationBar: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(self, #selector(layoutSubviews), #selector(qmui_navigationBarLayoutSubviews))
 
