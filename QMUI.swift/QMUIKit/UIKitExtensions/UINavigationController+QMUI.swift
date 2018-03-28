@@ -7,10 +7,10 @@
 //
 import UIKit
 
-extension UINavigationController: SelfAware {
+extension UINavigationController: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(self, #selector(viewDidLoad), #selector(qmui_viewDidLoad))
             // TODO: 这里UINavigationController没有显示的该方法，所以Swift类型推不出来

@@ -779,8 +779,8 @@ class QMUIZoomImageView: UIView {
         // 挪到最前面
         insertSubview(emptyView, at: subviews.count - 1)
         emptyView.setLoadingViewHidden(false)
-        emptyView.setTextLabelText(nil)
-        emptyView.setDetailTextLabelText(nil)
+        emptyView.setTextLabel(nil)
+        emptyView.setDetailTextLabel(nil)
         emptyView.setActionButtonTitle(nil)
         emptyView.isHidden = false
     }
@@ -792,8 +792,8 @@ class QMUIZoomImageView: UIView {
     public func showEmptyView(with text: String) {
         insertSubview(emptyView, at: subviews.count - 1)
         emptyView.setLoadingViewHidden(true)
-        emptyView.setTextLabelText(text)
-        emptyView.setDetailTextLabelText(nil)
+        emptyView.setTextLabel(text)
+        emptyView.setDetailTextLabel(nil)
         emptyView.setActionButtonTitle(nil)
         emptyView.isHidden = false
     }

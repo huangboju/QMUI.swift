@@ -112,7 +112,7 @@ class QMUIKeyboardManager {
         let userInfo = newUserInfoWithNotification(notification)
         userInfo.targetResponder = kCurrentResponder
 
-        delegate?.keyBoardWillShow(with: userInfo)
+        delegate?.keyBoardWillShow!(userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {
@@ -131,7 +131,7 @@ class QMUIKeyboardManager {
         let shouldReceiveDidShowNotification = targetResponderValues.count <= 0 || firstResponder == kCurrentResponder
 
         if shouldReceiveDidShowNotification {
-            delegate?.keyBoardDidShow(with: nil)
+            delegate?.keyBoardDidShow!(nil)
 
             // 额外处理iPad浮动键盘
             if IS_IPAD {
@@ -151,7 +151,7 @@ class QMUIKeyboardManager {
         let userInfo = newUserInfoWithNotification(notification)
         userInfo.targetResponder = kCurrentResponder
 
-        delegate?.keyboardWillHide(with: userInfo)
+        delegate?.keyboardWillHide!(userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {
@@ -167,7 +167,7 @@ class QMUIKeyboardManager {
         userInfo.targetResponder = kCurrentResponder
 
         if shouldReceiveHideNotification() {
-            delegate?.keyboardDidHide(with: userInfo)
+            delegate?.keyboardDidHide!(userInfo)
         }
 
         if kCurrentResponder?.isFirstResponder ?? false && !IS_IPAD {
@@ -194,7 +194,7 @@ class QMUIKeyboardManager {
             return
         }
 
-        delegate?.keyboardWillChangeFrame(with: userInfo)
+        delegate?.keyboardWillChangeFrame!(with: userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {
@@ -215,7 +215,7 @@ class QMUIKeyboardManager {
             return
         }
 
-        delegate?.keyboardDidChangeFrame(with: userInfo)
+        delegate?.keyboardDidChangeFrame!(with: userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {
@@ -312,7 +312,7 @@ class QMUIKeyboardManager {
 
         print("keyboardDidMoveNotification - \(self)")
 
-        delegate?.keyboardWillChangeFrame(with: aKeyboardMoveUserInfo)
+        delegate?.keyboardWillChangeFrame!(with: aKeyboardMoveUserInfo)
         keyboardMoveBeginRect = endFrame
 
         if let notNilCurrentResponder = kCurrentResponder {
@@ -640,9 +640,9 @@ extension UIViewAnimationCurve {
     }
 }
 
-class QMUIKeyboardUserInfo {
+class QMUIKeyboardUserInfo: NSObject {
 
-    init() {
+    override init() {
     }
 
     fileprivate var isTargetResponderFocused: Bool = false
@@ -747,35 +747,35 @@ class QMUIKeyboardUserInfo {
     }
 }
 
-protocol QMUIKeyboardManagerDelegate: class {
+@objc protocol QMUIKeyboardManagerDelegate: NSObjectProtocol {
     /**
      *  键盘即将显示
      */
-    func keyBoardWillShow(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyBoardWillShow(_ userInfo: QMUIKeyboardUserInfo?)
 
     /**
      *  键盘即将隐藏
      */
-    func keyboardWillHide(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyboardWillHide(_ userInfo: QMUIKeyboardUserInfo?)
 
     /**
      *  键盘已经显示
      */
-    func keyBoardDidShow(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyBoardDidShow(_ userInfo: QMUIKeyboardUserInfo?)
 
     /**
      *  键盘已经隐藏
      */
-    func keyboardDidHide(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyboardDidHide(_ userInfo: QMUIKeyboardUserInfo?)
 
     /**
      *  键盘frame即将发生变化。
      *  这个delegate除了对应系统的willChangeFrame通知外，在iPad下还增加了监听键盘frame变化的KVO来处理浮动键盘，所以调用次数会比系统默认多。需要让界面或者某个view跟随键盘运动，建议在这个通知delegate里面实现，因为willShow和willHide在手机上是准确的，但是在iPad的浮动键盘下是不准确的。另外，如果不需要跟随浮动键盘运动，那么在逻辑代码里面可以通过判断键盘的位置来过滤这种浮动的情况。
      */
-    func keyboardWillChangeFrame(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyboardWillChangeFrame(with userInfo: QMUIKeyboardUserInfo?)
 
     /**
      *  键盘frame已经发生变化。
      */
-    func keyboardDidChangeFrame(with userInfo: QMUIKeyboardUserInfo?)
+    @objc optional func keyboardDidChangeFrame(with userInfo: QMUIKeyboardUserInfo?)
 }

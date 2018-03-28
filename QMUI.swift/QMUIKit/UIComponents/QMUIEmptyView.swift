@@ -297,7 +297,7 @@ class QMUIEmptyView: UIView {
      * 设置提示语
      * @param text 提示语文本，若为nil则隐藏textLabel
      */
-    func setTextLabelText(_ text: String?) {
+    func setTextLabel(_ text: String?) {
         textLabel.text = text
         textLabel.isHidden = text == nil
         setNeedsLayout()
@@ -307,7 +307,7 @@ class QMUIEmptyView: UIView {
      * 设置详细提示语的文本
      * @param text 详细提示语文本，若为nil则隐藏detailTextLabel
      */
-    func setDetailTextLabelText(_ text: String?) {
+    func setDetailTextLabel(_ text: String?) {
         updateDetailTextLabel(with: text)
     }
 
