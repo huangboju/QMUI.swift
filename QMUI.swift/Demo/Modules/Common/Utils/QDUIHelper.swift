@@ -40,7 +40,7 @@ extension QDUIHelper {
     static func customEmotionViewAppearance() {
         QMUIEmotionView.appearance().emotionSize = CGSize(width: 24, height: 24)
         QMUIEmotionView.appearance().minimumEmotionHorizontalSpacing = 14
-        QMUIEmotionView.appearance().sendButtonBackgroundColor = QDThemeManager.shared.currentTheme.themeTintColor
+        QMUIEmotionView.appearance().sendButtonBackgroundColor = QDThemeManager.shared.currentTheme!.themeTintColor
     }
 }
 
@@ -57,7 +57,7 @@ extension QDUIHelper {
 // MARK: - Button
 extension QDUIHelper {
     static func generateDarkFilledButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.adjustsButtonWhenHighlighted = true
         button.titleLabel?.font = UIFontBoldMake(14)
@@ -69,7 +69,7 @@ extension QDUIHelper {
     }
     
     static func generateLightBorderedButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.titleLabel?.font = UIFontBoldMake(14)
         button.setTitleColor(themeTintColor, for: .normal)
@@ -105,7 +105,7 @@ extension QDUIHelper {
         DispatchQueue.global().async {
             DispatchQueue.main.async {
                 emotions.forEach { (emotion) in
-//                    emotion.image = UIImageMake(emotion.identifier).qmui_imblen
+//                    emotion.image = UIImageMake(emotion.identifier)?.qmui_imblen
                 }
             }
         }

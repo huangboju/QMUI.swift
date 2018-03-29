@@ -13,7 +13,7 @@ protocol QDThemeProtocol: QMUIConfigurationTemplateProtocol {
     var themeTintColor: UIColor { get }
     var themeListTextColor: UIColor { get }
     var themeCodeColor: UIColor { get }
-    var themeGridItemTintColor: UIColor { get }
+    var themeGridItemTintColor: UIColor? { get }
     
     var themeName: String { get }
     
@@ -22,6 +22,5 @@ protocol QDThemeProtocol: QMUIConfigurationTemplateProtocol {
 /// 所有能响应主题变化的对象均应实现这个协议，目前主要用于 QDCommonViewController 及 QDCommonTableViewController
 protocol QDChangingThemeDelegate: class {
     
-    func themeBeforeChanged<T>(_ themeBeforeChanged: T, afterChanged: T) where T : QDThemeProtocol
-    
+    func themeBeforeChanged(_ beforeChanged: QDThemeProtocol, afterChanged: QDThemeProtocol)
 }

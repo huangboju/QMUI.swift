@@ -26,19 +26,20 @@ struct QDThemeNameKey {
  *  QMUI Demo 的皮肤管理器，当需要换肤时，请为 currentTheme 赋值；当需要获取当前皮肤时，可访问 currentTheme 属性。
  *  可通过监听 QDThemeChangedNotification 通知来捕获换肤事件，默认地，QDCommonViewController 及 QDCommonTableViewController 均已支持响应换肤，其响应方法是通过 QDChangingThemeDelegate 接口来实现的。
  */
-class QDThemeManager {
+class QDThemeManager: QDChangingThemeDelegate {
     
     static let shared: QDThemeManager = {
         let instance = QDThemeManager()
         return instance
     } ()
     
-    public var currentTheme: QDThemeProtocol! {
-        willSet {
-            
-        }
+    var currentTheme: QDThemeProtocol? = nil {
         didSet {
-            
+            if currentTheme != nil && oldValue != nil && oldValue!.isEqual(currentTheme) {
+                // 从 nil 变成某个 theme 就不发通知了，初始化时会自动 apply，这里只需要处理在 QD 里手动更改 theme 的场景就行
+                currentTheme!.applyConfigurationTemplate()
+                NotificationCenter.default.post(name: Notification.QD.ThemeChanged, object: self, userInfo: [QDThemeNameKey.beforeChanged: oldValue!, QDThemeNameKey.afterChanged: currentTheme!])
+            }
         }
     }
     
@@ -50,8 +51,8 @@ class QDThemeManager {
         guard let userInfo = notification.userInfo else {
             return
         }
-        if let themeBeforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
-//            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
+        if let beforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let afterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
+            themeBeforeChanged(beforeChanged, afterChanged: afterChanged)
         }
         
     }
@@ -59,13 +60,14 @@ class QDThemeManager {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-}
-
-extension QDThemeManager: QDChangingThemeDelegate {
     
-    func themeBeforeChanged<T>(_ themeBeforeChanged: T, afterChanged: T) where T : QDThemeProtocol {
+    // MARK: QDChangingThemeDelegate
+    func themeBeforeChanged(_ beforeChanged: QDThemeProtocol, afterChanged: QDThemeProtocol) {
         // 主题发生变化，在这里更新全局 UI 控件的 appearance
-//        QDCommonUI
+        QDCommonUI.renderGlobalAppearances()
+        
+        // 更新表情 icon 的颜色
+        QDUIHelper.updateEmotionImages()
     }
 }
 

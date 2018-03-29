@@ -23,6 +23,10 @@ class QDCommonGridViewController: QDCommonViewController {
         
     }
     
+    open func didSelectCell(_ title: String) {
+        
+    }
+    
     override func didInitialized() {
         super.didInitialized()
         initDataSource()
@@ -47,25 +51,87 @@ class QDCommonGridViewController: QDCommonViewController {
         
         let gridViewWidth = scrollView.bounds.width - scrollView.qmui_safeAreaInsets.horizontalValue
         
+        if view.bounds.width <= QMUIHelper.screenSizeFor55Inch.width {
+            gridView.columnCount = 3
+            let itemWidth = flat(gridViewWidth / CGFloat(gridView.columnCount))
+            gridView.rowHeight = itemWidth
+        } else {
+            let minimumItemWidth = flat(QMUIHelper.screenSizeFor55Inch.width / 3)
+            let maximumItemWidth = flat(gridViewWidth / 5.0)
+            let freeSpacingWhenDisplayingMinimumCount = gridViewWidth / maximumItemWidth - floor(gridViewWidth / maximumItemWidth)
+            let freeSpacingWhenDisplayingMaximumCount = gridViewWidth / minimumItemWidth - floor(gridViewWidth / minimumItemWidth)
+            if freeSpacingWhenDisplayingMinimumCount < freeSpacingWhenDisplayingMaximumCount {
+                // 按每行最少item的情况来布局的话，空间利用率会更高，所以按最少item来
+                gridView.columnCount = Int(floor(gridViewWidth / maximumItemWidth))
+                let itemWidth = floor(gridViewWidth / CGFloat(gridView.columnCount))
+                gridView.rowHeight = itemWidth
+            } else {
+                gridView.columnCount = Int(floor(gridViewWidth / minimumItemWidth))
+                let itemWidth = floor(gridViewWidth / CGFloat(gridView.columnCount))
+                gridView.rowHeight = itemWidth
+            }
+        }
+        
+        for (index, item) in gridView.subviews.enumerated() {
+            item.qmui_borderPosition = [.left, .top]
+            if (index % gridView.columnCount == gridView.columnCount - 1) || (index == gridView.subviews.count - 1) {
+                // 每行最后一个，或者所有的最后一个（因为它可能不是所在行的最后一个）
+                item.qmui_borderPosition = [.left, .top, .right]
+            }
+            if (index + gridView.columnCount >= gridView.subviews.count) {
+                // 那些下方没有其他 item 的 item，底部都加个边框
+                item.qmui_borderPosition = [.left, .top, .bottom]
+            }
+        }
+        
+        let gridViewHeight = gridView.sizeThatFits(CGSize(width: gridViewWidth, height: CGFloat.greatestFiniteMagnitude)).height
+        gridView.frame = CGRect(x: scrollView.qmui_safeAreaInsets.left, y: 0, width: gridViewWidth, height: gridViewHeight)
+        scrollView.contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)
     }
     
     // MARK: private
     private func generateButton(_ index: Int) -> QDCommonGridButton {
         let keyName = dataSource.allKeys[index]
         let attributes = [NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.font: UIFontMake(11), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 12, lineBreakMode: .byTruncatingTail, textAlignment: .center)]
-        var attributedString = NSAttributedString(string: keyName, attributes: attributes)
+        let attributedString = NSAttributedString(string: keyName, attributes: attributes)
         let image = dataSource[keyName]
         
         let button = QDCommonGridButton()
         
-//        if let tintColor = QDThemeManager.shared.currentTheme.themeGridItemTintColor {
-//            button.tintColor = tintColor as! UIColor
-//            button.adjustsImageTintColorAutomatically = true
-//        }
-        
+        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
+            button.tintColor = tintColor
+            button.adjustsImageTintColorAutomatically = true
+        } else {
+            button.tintColor = nil
+            button.adjustsImageTintColorAutomatically = false
+        }
+        button.setAttributedTitle(attributedString, for: .normal)
+        button.setImage(image, for: .normal)
+        button.tag = index
+        button.addTarget(self, action: #selector(handleGirdButtonEvent(_:)), for: .touchUpInside)
         return button
     }
+    
+    @objc private func handleGirdButtonEvent(_ button: QDCommonGridButton) {
+        let keyName = dataSource.allKeys[button.tag]
+        didSelectCell(keyName)
+    }
+    
+    override func themeBeforeChanged(_ beforeChanged: QDThemeProtocol, afterChanged: QDThemeProtocol) {
+        super.themeBeforeChanged(beforeChanged, afterChanged: afterChanged)
+        gridView.subviews.forEach {
+            let button = $0 as! QDCommonGridButton
+            if let tintColor = afterChanged.themeGridItemTintColor {
+                button.tintColor = tintColor
+                button.adjustsImageTintColorAutomatically = true
+            } else {
+                button.tintColor = nil
+                button.adjustsImageTintColorAutomatically = false
+            }
+        }
+    }
 }
+
 
 class QDCommonGridButton: QMUIButton {
     

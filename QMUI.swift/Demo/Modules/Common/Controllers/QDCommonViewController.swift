@@ -6,7 +6,7 @@
 //  Copyright © 2018年 伯驹 黄. All rights reserved.
 //
 
-class QDCommonViewController: QMUICommonViewController {
+class QDCommonViewController: QMUICommonViewController, QDChangingThemeDelegate {
 
     override func didInitialized() {
         super.didInitialized()
@@ -18,15 +18,11 @@ class QDCommonViewController: QMUICommonViewController {
         guard let userInfo = notification.userInfo else {
             return
         }
-        if let themeBeforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
-//            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
+        if let beforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let afterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
+            themeBeforeChanged(beforeChanged, afterChanged: afterChanged)
         }
-        
     }
     
-    // MARK: QDChangingThemeDelegate
-    func themeBeforeChanged <T:QDThemeProtocol> (_ beforeChanged: T, afterChanged: T) {
-        
+    func themeBeforeChanged(_ beforeChanged: QDThemeProtocol, afterChanged: QDThemeProtocol) {
     }
-
 }

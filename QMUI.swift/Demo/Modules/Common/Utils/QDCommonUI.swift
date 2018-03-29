@@ -6,6 +6,9 @@
 //  Copyright © 2018年 伯驹 黄. All rights reserved.
 //
 
+
+let QDSelectedThemeClassName = "selectedThemeClassName"
+
 // MARK: Colors
 let UIColorGray1 = UIColor(r: 53, g: 60, b: 70)
 let UIColorGray2 = UIColor(r: 73, g: 80, b: 90)

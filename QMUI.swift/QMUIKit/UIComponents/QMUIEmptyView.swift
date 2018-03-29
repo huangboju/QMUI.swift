@@ -134,8 +134,8 @@ class QMUIEmptyView: UIView {
         }
     }
 
-    /// 默认为QMUICMI.buttonTintColor
-    public var actionButtonTitleColor = QMUICMI.buttonTintColor {
+    /// 默认为QMUICMI().buttonTintColor
+    public var actionButtonTitleColor = QMUICMI().buttonTintColor {
         didSet {
             actionButton.setTitleColor(actionButtonTitleColor, for: .normal)
         }

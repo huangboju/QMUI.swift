@@ -7,7 +7,9 @@
 //
 
 /// 所有配置表都应该实现的 protocol
-@objc protocol QMUIConfigurationTemplateProtocol {
+@objc protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
+    
+    @objc init()
     
     /// 应用配置表的设置
     @objc func applyConfigurationTemplate()
@@ -20,12 +22,12 @@
 /**
  *  维护项目全局 UI 配置的单例，通过业务项目自己的 QMUIConfigurationTemplate 来为这个单例赋值，而业务代码里则通过 QMUIConfigurationMacros.swift 文件里的宏来使用这些值。
  */
-class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
+class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
     
     // MARK: Global Color
     public var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
     public var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
-    public var black = UIColor(red: 0, green: 0, blue: 0, alpha: 0)
+    public var black = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
     public var gray = UIColor(r: 179, g: 179, b: 179)
     public var grayDarken = UIColor(r: 163, g: 163, b: 163)
     public var grayLighten = UIColor(r: 198, g: 198, b: 198)
@@ -367,7 +369,8 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     
     static let shared = QMUIConfiguration()
     
-    private init() {
+    override required init() {
+        
     }
     
     private func updateNavigationBarTitleAttributesIfNeeded() {
@@ -401,9 +404,30 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
         }
     }
     
-    func applyInitialTemplate() -> QMUIConfiguration {
+    func applyInitialTemplate() {
+        if QMUI_hasAppliedInitialTemplate {
+            return
+        }
+        // 自动寻找并应用模板的解释参照这里 https://github.com/QMUI/QMUI_iOS/issues/264
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer<AnyClass>.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer<AnyClass>(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
         
-        return self
+        for i in 0 ..< actualClassCount {
+            let currentClass: AnyClass = allClasses[Int(i)]
+            
+            if String(describing: currentClass).hasSuffix("QMUIConfigurationTemplate"), let clazz = currentClass.self as? QMUIConfigurationTemplateProtocol.Type, currentClass.instancesRespond(to: #selector(QMUIConfigurationTemplateProtocol.shouldApplyTemplateAutomatically)) {
+                let template = clazz.init()
+                if template.shouldApplyTemplateAutomatically!() {
+                    QMUI_hasAppliedInitialTemplate = true
+                    template.applyConfigurationTemplate()
+                    // 只应用第一个 shouldApplyTemplateAutomatically 的主题
+                    break
+                }
+            }
+        }
+        allClasses.deallocate(capacity: Int(expectedClassCount))
     }
     
     func applyConfigurationTemplate() {
@@ -411,3 +435,5 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     }
     
 }
+
+fileprivate var QMUI_hasAppliedInitialTemplate: Bool = false

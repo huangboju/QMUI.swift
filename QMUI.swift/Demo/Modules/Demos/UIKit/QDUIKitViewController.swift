@@ -27,7 +27,7 @@ class QDUIKitViewController: QDCommonGridViewController {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "QMUIKit"
         if let image = UIImageMake("icon_nav_about") {
-//            navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(with: image, position: .right, target: self, action: #selector(handleAboutItemEvent))
+            navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(with: image, position: .right, target: self, action: #selector(handleAboutItemEvent))
         }
     }
     
