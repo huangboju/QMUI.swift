@@ -76,8 +76,8 @@ class QMUICommonViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if view.backgroundColor != nil {
+
+        if view.backgroundColor == nil {
             view.backgroundColor = UIColorForBackground
         }
         
