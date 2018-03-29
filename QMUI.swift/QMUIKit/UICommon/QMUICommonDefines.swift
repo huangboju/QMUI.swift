@@ -156,7 +156,7 @@ extension UIViewAnimationOptions {
 // MARK: - 其他
 // TODO:
 func QMUILog(_: Any...) {
-    QMUIHelper.shared.printLogWithCalledFunction(#function, log: "")
+//    QMUIHelper.shared.printLogWithCalledFunction(#function, log: "")
 }
 
 /**

@@ -507,7 +507,7 @@ class QMUIModalPresentationViewController: UIViewController {
     // MARK: - Keyboard
 
     @objc func handleKeyboardWillShow(_ notification: Notification) {
-        let keyboardHeight = QMUIHelper.keyboardHeight(with: notification, in: view)
+        let keyboardHeight = QMUIHelper.keyboardHeight(notification, in: view)
         if keyboardHeight > 0 {
             self.keyboardHeight = keyboardHeight
             view.setNeedsLayout()

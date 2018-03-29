@@ -8,19 +8,24 @@
 
 import Foundation
 
-public extension Notification {
+extension Notification {
     public class QD {
         /// 当主题发生变化时，会发送这个通知
         public static let ThemeChanged = Notification.Name("Notification.QD.ThemeChanged")
     }
 }
 
-/// 主题发生改变前的值，类型为 NSObject<QDThemeProtocol>，可能为 NSNull
-public let QDThemeBeforeChangedName = "QDThemeBeforeChangedName"
+struct QDThemeNameKey {
+    /// 主题发生改变前的值，类型为 NSObject<QDThemeProtocol>，可能为 NSNull
+    static var beforeChanged = "QDThemeBeforeChangedName"
+    /// 主题发生改变后的值，类型为 NSObject<QDThemeProtocol>，可能为 NSNull
+    static var afterChanged  = "QDThemeAfterChangedName"
+}
 
-/// 主题发生改变后的值，类型为 NSObject<QDThemeProtocol>，可能为 NSNull
-public let QDThemeAfterChangedName = "QDThemeAfterChangedName"
-
+/**
+ *  QMUI Demo 的皮肤管理器，当需要换肤时，请为 currentTheme 赋值；当需要获取当前皮肤时，可访问 currentTheme 属性。
+ *  可通过监听 QDThemeChangedNotification 通知来捕获换肤事件，默认地，QDCommonViewController 及 QDCommonTableViewController 均已支持响应换肤，其响应方法是通过 QDChangingThemeDelegate 接口来实现的。
+ */
 class QDThemeManager {
     
     static let shared: QDThemeManager = {
@@ -28,7 +33,7 @@ class QDThemeManager {
         return instance
     } ()
     
-    public var currentTheme: QDThemeProtocol? {
+    public var currentTheme: QDThemeProtocol! {
         willSet {
             
         }
@@ -45,14 +50,9 @@ class QDThemeManager {
         guard let userInfo = notification.userInfo else {
             return
         }
-        if let themeBeforeChanged = userInfo[QDThemeBeforeChangedName] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeAfterChangedName] as? QDThemeProtocol {
+        if let themeBeforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
 //            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
         }
-        
-    }
-    
-    // MARK: QDChangingThemeDelegate
-    func themeBeforeChanged <T:QDThemeProtocol> (_ beforeChanged: T, afterChanged: T) {
         
     }
     
@@ -60,3 +60,13 @@ class QDThemeManager {
         NotificationCenter.default.removeObserver(self)
     }
 }
+
+extension QDThemeManager: QDChangingThemeDelegate {
+    
+    func themeBeforeChanged<T>(_ themeBeforeChanged: T, afterChanged: T) where T : QDThemeProtocol {
+        // 主题发生变化，在这里更新全局 UI 控件的 appearance
+//        QDCommonUI
+    }
+}
+
+

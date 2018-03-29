@@ -36,7 +36,7 @@ class QDCommonGridViewController: QDCommonViewController {
         gridView = QMUIGridView()
         for index in 0..<dataSource.count {
             let subview = generateButton(index)
-//            gridView.addSubview(<#T##view: UIView##UIView#>)
+            gridView.addSubview(subview)
         }
         view.addSubview(gridView)
     }
@@ -56,9 +56,14 @@ class QDCommonGridViewController: QDCommonViewController {
         var attributedString = NSAttributedString(string: keyName, attributes: attributes)
         let image = dataSource[keyName]
         
-        let tintColor = QDThemeManager.shared.currentTheme
+        let button = QDCommonGridButton()
         
-        return QDCommonGridButton()
+//        if let tintColor = QDThemeManager.shared.currentTheme.themeGridItemTintColor {
+//            button.tintColor = tintColor as! UIColor
+//            button.adjustsImageTintColorAutomatically = true
+//        }
+        
+        return button
     }
 }
 

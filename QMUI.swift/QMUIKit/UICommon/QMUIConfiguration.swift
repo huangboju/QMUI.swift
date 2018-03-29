@@ -152,7 +152,7 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
                 let customBackIndicatorImageSize = navBarBackIndicatorImage!.size
                 if !(customBackIndicatorImageSize == systemBackIndicatorImageSize) {
                     let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(with: customBackIndicatorImageSize.height)
-                    self.navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_imageWithSpacingExtensionInsets(UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
+                    self.navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_image(spacingExtensionInsets: UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
                 }
                 
                 navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage;
@@ -164,7 +164,7 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     }
     public var navBarCloseButtonImage: UIImage? {
         get {
-            return UIImage.qmui_image(with: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
+            return UIImage.qmui_image(shape: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
         }
     }
     
@@ -173,7 +173,7 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     public var navBarActivityIndicatorViewStyle: UIActivityIndicatorViewStyle = .gray
     public var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage? {
         get {
-            return UIImage.qmui_image(with: .triangle, size: CGSize(width: 8, height: 5), tintColor: navBarTintColor)?.qmui_image(with: .down)
+            return UIImage.qmui_image(shape: .triangle, size: CGSize(width: 8, height: 5), tintColor: navBarTintColor)?.qmui_image(orientation: .down)
         }
     }
 
@@ -195,7 +195,7 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     public var tabBarShadowImageColor: UIColor? {
         didSet {
             guard let tabBarShadowImageColor = tabBarShadowImageColor else { return }
-            let shadowImage = UIImage.qmui_image(withColor: tabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            let shadowImage = UIImage.qmui_image(color: tabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
             UITabBar.appearance().shadowImage = shadowImage
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.shadowImage = shadowImage
         }
@@ -283,7 +283,7 @@ class QMUIConfiguration: QMUIConfigurationTemplateProtocol {
     public var toolBarShadowImageColor: UIColor? {
         didSet {
             guard let toolBarShadowImageColor = toolBarShadowImageColor else { return }
-            let shadowImage = UIImage.qmui_image(withColor: toolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
+            let shadowImage = UIImage.qmui_image(color: toolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
             UIToolbar.appearance().setShadowImage(shadowImage, forToolbarPosition: .any)
             QMUIHelper.visibleViewController?.navigationController?.toolbar.setShadowImage(shadowImage, forToolbarPosition: .any)
         }

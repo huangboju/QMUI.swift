@@ -95,7 +95,7 @@ extension UIView {
     /**
      *  相当于 initWithFrame:CGRectMake(0, 0, size.width, size.height)
      */
-    public convenience init(with size: CGSize) {
+    convenience init(size: CGSize) {
         self.init(frame: size.rect)
     }
     
@@ -460,10 +460,10 @@ extension UIView {
  */
 extension UIView {
     public var qmui_snapshotLayerImage: UIImage? {
-        return UIImage.qmui_image(withView: self)
+        return UIImage.qmui_image(view: self)
     }
 
     public func qmui_snapshotImage(_ afterScreenUpdates: Bool) -> UIImage? {
-        return UIImage.qmui_image(withView: self, afterScreenUpdates: afterScreenUpdates)
+        return UIImage.qmui_image(view: self, afterScreenUpdates: afterScreenUpdates)
     }
 }

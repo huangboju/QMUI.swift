@@ -630,8 +630,8 @@ class QMUINavigationButton: UIButton {
             self.contentHorizontalAlignment = .left
             let backIndicatorImage = NavBarBackIndicatorImage
             self.setImage(backIndicatorImage, for: .normal)
-            self.setImage(backIndicatorImage?.qmui_imageWith(alpha: NavBarHighlightedAlpha), for: .highlighted)
-            self.setImage(backIndicatorImage?.qmui_imageWith(alpha: NavBarDisabledAlpha), for: .disabled)
+            self.setImage(backIndicatorImage?.qmui_image(alpha: NavBarHighlightedAlpha), for: .highlighted)
+            self.setImage(backIndicatorImage?.qmui_image(alpha: NavBarDisabledAlpha), for: .disabled)
         default:
             break
         }
@@ -800,8 +800,8 @@ class QMUIToolbarButton: UIButton {
 
         self.init(with: .image)
         self.setImage(image, for: .normal)
-        self.setImage(image.qmui_imageWith(alpha: ToolBarHighlightedAlpha), for: .highlighted)
-        self.setImage(image.qmui_imageWith(alpha: ToolBarDisabledAlpha), for: .disabled)
+        self.setImage(image.qmui_image(alpha: ToolBarHighlightedAlpha), for: .highlighted)
+        self.setImage(image.qmui_image(alpha: ToolBarDisabledAlpha), for: .disabled)
         self.sizeToFit()
     }
 

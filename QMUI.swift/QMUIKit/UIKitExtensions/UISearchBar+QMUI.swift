@@ -374,8 +374,8 @@ extension UISearchBar {
 
         // 输入框背景图
         if let textFieldBackgroundColor = SearchBarTextFieldBackground {
-            var image = UIImage.qmui_image(withColor: textFieldBackgroundColor, size: CGSize(width: 60, height: 28), cornerRadius: SearchBarTextFieldCornerRadius)
-            image = image?.qmui_image(withBorderColor: textFieldBackgroundColor, borderWidth: PixelOne, cornerRadius: SearchBarTextFieldCornerRadius)
+            var image = UIImage.qmui_image(color: textFieldBackgroundColor, size: CGSize(width: 60, height: 28), cornerRadius: SearchBarTextFieldCornerRadius)
+            image = image?.qmui_image(borderColor: textFieldBackgroundColor, borderWidth: PixelOne, cornerRadius: SearchBarTextFieldCornerRadius)
             image?.resizableImage(withCapInsets: UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14))
             setSearchFieldBackgroundImage(image, for: .normal)
         }
@@ -384,14 +384,14 @@ extension UISearchBar {
         // 为了让 searchBar 底部的边框颜色支持修改，背景色不使用 barTintColor 的方式去改，而是用 backgroundImage
         var backgroundImage: UIImage? = nil
         if let barTintColor = SearchBarBarTintColor {
-            backgroundImage = UIImage.qmui_image(withColor: barTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+            backgroundImage = UIImage.qmui_image(color: barTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
         }
         
         if let bottomBorderColor = SearchBarBottomBorderColor {
             if backgroundImage != nil {
-                backgroundImage = UIImage.qmui_image(withColor: UIColorWhite, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+                backgroundImage = UIImage.qmui_image(color: UIColorWhite, size: CGSize(width: 10, height: 10), cornerRadius: 0)
             }
-            backgroundImage = backgroundImage?.qmui_image(withBorderColor: bottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
+            backgroundImage = backgroundImage?.qmui_image(borderColor: bottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
         }
 
         if backgroundImage != nil {

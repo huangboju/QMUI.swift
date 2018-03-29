@@ -15,7 +15,7 @@ let QMUIImagePickerCollectionViewCellDefaultVideoMarkImageViewMargins = UIEdgeIn
  */
 class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
     /// checkbox 未被选中时显示的图片
-    public var checkboxImage = QMUIHelper.image(with: "QMUI_pickerImage_checkbox") {
+    public var checkboxImage = QMUIHelper.image(name: "QMUI_pickerImage_checkbox") {
         didSet {
             if checkboxImage != oldValue {
                 checkboxButton.setImage(checkboxImage, for: .normal)
@@ -25,7 +25,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
     }
 
     /// checkbox 被选中时显示的图片
-    public var checkboxCheckedImage = QMUIHelper.image(with: "QMUI_pickerImage_checkbox_checked") {
+    public var checkboxCheckedImage = QMUIHelper.image(name: "QMUI_pickerImage_checkbox_checked") {
         didSet {
             if checkboxCheckedImage != oldValue {
                 checkboxButton.setImage(checkboxCheckedImage, for: .selected)
@@ -46,7 +46,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
     }
 
     /// downloadRetryButton 的 icon
-    public var downloadRetryImage = QMUIHelper.image(with: "QMUI_icloud_download_fault_small") {
+    public var downloadRetryImage = QMUIHelper.image(name: "QMUI_icloud_download_fault_small") {
         didSet {
             if downloadRetryImage != oldValue {
                 downloadRetryButton.setImage(downloadRetryImage, for: .normal)
@@ -55,7 +55,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
     }
 
     /// videoMarkImageView 的 icon
-    public var videoMarkImage = QMUIHelper.image(with: "QMUI_pickerImage_video_mark") {
+    public var videoMarkImage = QMUIHelper.image(name: "QMUI_pickerImage_video_mark") {
         didSet {
             _videoMarkImageView?.image = videoMarkImage
             _videoMarkImageView?.sizeToFit()

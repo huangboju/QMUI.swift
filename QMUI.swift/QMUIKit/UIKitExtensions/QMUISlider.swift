@@ -66,7 +66,7 @@ class QMUISlider: UISlider {
     private func updateThumbImage() {
         if thumbSize.isEmpty { return }
         if let thumbColor = self.thumbColor ?? tintColor {
-            let thumbImage = UIImage.qmui_image(with: .oval, size: thumbSize, tintColor: thumbColor)
+            let thumbImage = UIImage.qmui_image(shape: .oval, size: thumbSize, tintColor: thumbColor)
             setThumbImage(thumbImage, for: .normal)
             setThumbImage(thumbImage, for: .highlighted)
         }

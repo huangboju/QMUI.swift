@@ -993,7 +993,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             if let image = $0.button.image(for: .normal), let attributeStr = attributeString {
                 var range = NSRange(location: 0, length: attributeStr.length)
                 let disabledColor = attributeString?.attribute(NSAttributedStringKey.foregroundColor, at: 0, effectiveRange: &range)
-                $0.button.setImage(image.qmui_imageWith(tintColor: disabledColor as! UIColor), for: .disabled)
+                $0.button.setImage(image.qmui_image(tintColor: disabledColor as! UIColor), for: .disabled)
             }
         }
     }

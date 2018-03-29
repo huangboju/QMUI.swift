@@ -261,7 +261,7 @@ class QMUINavigationTitleView: UIControl {
 
             var accessoryImage: UIImage?
             if accessoryType == .disclosureIndicator {
-                accessoryImage = NavBarAccessoryViewTypeDisclosureIndicatorImage?.qmui_image(with: .up)
+                accessoryImage = NavBarAccessoryViewTypeDisclosureIndicatorImage?.qmui_image(orientation: .up)
             }
 
             accessoryTypeView?.image = accessoryImage

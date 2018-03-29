@@ -18,7 +18,7 @@ class QDCommonViewController: QMUICommonViewController {
         guard let userInfo = notification.userInfo else {
             return
         }
-        if let themeBeforeChanged = userInfo[QDThemeBeforeChangedName] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeAfterChangedName] as? QDThemeProtocol {
+        if let themeBeforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let themeAfterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
 //            themeBeforeChanged(themeBeforeChanged, afterChanged: themeAfterChanged)
         }
         

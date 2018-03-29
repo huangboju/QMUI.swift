@@ -92,8 +92,8 @@ class QMUIEmotionView: UIView {
     /// 表情与表情之间的最小水平间距，默认为10
     public var minimumEmotionHorizontalSpacing: CGFloat = 10
 
-    /// 表情面板右下角的删除按钮的图片，默认为`QMUIHelper.image(with: "QMUI_emotion_delete")`
-    public var deleteButtonImage = QMUIHelper.image(with: "QMUI_emotion_delete")
+    /// 表情面板右下角的删除按钮的图片，默认为`QMUIHelper.image(name: "QMUI_emotion_delete")`
+    public var deleteButtonImage = QMUIHelper.image(name: "QMUI_emotion_delete")
 
     /// 发送按钮的文字样式，默认为{NSFontAttributeName: UIFontMake(15), NSForegroundColorAttributeName: UIColorWhite}
     public var sendButtonTitleAttributes: [NSAttributedStringKey: Any] = [:] {
@@ -239,7 +239,7 @@ extension QMUIEmotionView: UICollectionViewDataSource {
         pageView?.emotionSelectedBackgroundExtension = emotionSelectedBackgroundExtension
         pageView?.minimumEmotionHorizontalSpacing = minimumEmotionHorizontalSpacing
         pageView?.deleteButton.setImage(deleteButtonImage, for: .normal)
-        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_imageWith(alpha: ButtonHighlightedAlpha), for: .highlighted)
+        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_image(alpha: ButtonHighlightedAlpha), for: .highlighted)
         pageView?.isDebug = isDebug
         pageView?.setNeedsDisplay()
         return cell

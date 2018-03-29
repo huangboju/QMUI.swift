@@ -117,10 +117,10 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
         checkboxButton = QMUIButton()
         checkboxButton?.adjustsImageTintColorAutomatically = true
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox"), for: .normal)
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: .selected)
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox"), for: .normal)
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: .selected)
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
         checkboxButton?.tintColor = topToolBarView.tintColor
         checkboxButton?.sizeToFit()
         checkboxButton?.addTarget(self, action: #selector(handleCheckButtonClick), for: .touchUpInside)
@@ -133,7 +133,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         topToolBarView.addSubview(progressView)
 
         downloadRetryButton = UIButton()
-        downloadRetryButton.setImage(QMUIHelper.image(with: "QMUI_icloud_download_fault"), for: .normal)
+        downloadRetryButton.setImage(QMUIHelper.image(name: "QMUI_icloud_download_fault"), for: .normal)
         downloadRetryButton.sizeToFit()
         downloadRetryButton.addTarget(self, action: #selector(handleDownloadRetryButtonClick), for: .touchUpInside)
         downloadRetryButton.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)

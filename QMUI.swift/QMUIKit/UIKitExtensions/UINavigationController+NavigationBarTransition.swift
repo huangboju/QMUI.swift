@@ -103,7 +103,7 @@ extension UIViewController {
 
         if var backgroundImage = originBar.backgroundImage(for: .default) {
             if backgroundImage.size == .zero {
-                backgroundImage = UIImage.qmui_image(withColor: UIColorClear) ?? UIImage()
+                backgroundImage = UIImage.qmui_image(color: UIColorClear) ?? UIImage()
             }
 
             customBar.setBackgroundImage(backgroundImage, for: .default)
