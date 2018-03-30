@@ -1199,6 +1199,11 @@ class QMUIGhostButton: QMUIButton {
         super.init(coder: aDecoder)
         self.ghostColor = GhostButtonColorBlue
     }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.ghostColor = GhostButtonColorBlue
+    }
 
     private func updateImageColor() {
         imageView?.tintColor = adjustsImageWithGhostColor ? ghostColor : nil
@@ -1237,9 +1242,12 @@ class QMUIGhostButton: QMUIButton {
 
 extension QMUIGhostButton {
     
-//    public static func appearance() -> Self
+    public override static func appearance() -> QMUIGhostButton {
+        
+        return QMUIGhostButton(ghostType: .blue)
+    }
     
-    func setGlobalAppearance() {
+    static func setDefaultAppearance() {
         let appearance = QMUIGhostButton.appearance()
         appearance.borderWidth = 1
         appearance.cornerRadius = QMUIGhostButtonCornerRadiusAdjustsBounds
@@ -1247,12 +1255,10 @@ extension QMUIGhostButton {
     }
 }
 
-// TODO: @implementation QMUIGhostButton (UIAppearance)
-
 /**
  *  用于 `QMUIFillButton.cornerRadius` 属性，当 `cornerRadius` 为 `QMUIFillButtonCornerRadiusAdjustsBounds` 时，`QMUIFillButton` 会在高度变化时自动调整 `cornerRadius`，使其始终保持为高度的 1/2。
  */
-let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
+fileprivate let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
 
 /**
  *  QMUIFillButton
@@ -1262,21 +1268,21 @@ let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
 class QMUIFillButton: QMUIButton {
     @IBInspectable var fillColor: UIColor = .blue { // 默认为 FillButtonColorBlue
         didSet {
-            self.backgroundColor = fillColor
+            backgroundColor = fillColor
         }
     }
 
     @IBInspectable var titleTextColor: UIColor = UIColorWhite { // 默认为 UIColorWhite
         didSet {
             if adjustsImageWithTitleTextColor {
-                self.updateImageColor()
+                updateImageColor()
             }
         }
     }
 
     @IBInspectable var cornerRadius: CGFloat = QMUIFillButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIFillButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
-            self.setNeedsLayout()
+            setNeedsLayout()
         }
     }
 
