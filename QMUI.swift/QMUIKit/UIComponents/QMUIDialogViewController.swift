@@ -37,7 +37,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         }
     }
 
-    public var titleLabelTextColor = UIColor(r: 53, g: 60, b: 70) {
+    public var titleLabelTextColor = UIColorMake(53, 60, 70) {
         didSet {
             titleView?.titleLabel.textColor = titleLabelTextColor
         }
@@ -49,13 +49,13 @@ class QMUIDialogViewController: QMUICommonViewController {
         }
     }
 
-    public var subTitleLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
+    public var subTitleLabelTextColor = UIColorMake(133, 140, 150) {
         didSet {
             titleView?.subtitleLabel.textColor = subTitleLabelTextColor
         }
     }
 
-    public var headerFooterSeparatorColor = UIColor(r: 222, g: 224, b: 226) {
+    public var headerFooterSeparatorColor = UIColorMake(222, 224, 226) {
         didSet {
             headerViewSeparatorLayer.backgroundColor = headerFooterSeparatorColor.cgColor
             footerViewSeparatorLayer.backgroundColor = headerFooterSeparatorColor.cgColor
@@ -64,7 +64,7 @@ class QMUIDialogViewController: QMUICommonViewController {
     }
 
     public var headerViewHeight: CGFloat = 48
-    public var headerViewBackgroundColor = UIColor(r: 244, g: 245, b: 247) {
+    public var headerViewBackgroundColor = UIColorMake(244, 245, 247) {
         didSet {
             if isViewLoaded {
                 headerView.backgroundColor = headerViewBackgroundColor
@@ -183,7 +183,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         let headerViewContentWidth = headerView.bounds.width - headerViewPaddingHorizontal * 2
         let titleViewSize = titleView?.sizeThatFits(CGSize(width: headerViewContentWidth, height: .greatestFiniteMagnitude)) ?? .zero
         let titleViewWidth = min(titleViewSize.width, headerViewContentWidth)
-        titleView?.frame = CGRect(x: headerView.bounds.width.center(with: titleViewWidth), y: headerView.bounds.height.center(with: titleViewSize.height), width: titleViewWidth, height: titleViewSize.height)
+        titleView?.frame = CGRect(x: headerView.bounds.width.center(titleViewWidth), y: headerView.bounds.height.center(titleViewSize.height), width: titleViewWidth, height: titleViewSize.height)
 
         if isFooterViewShowing {
             footerView.frame = CGRect(x: 0, y: view.bounds.height - footerViewHeight, width: view.bounds.width, height: footerViewHeight)

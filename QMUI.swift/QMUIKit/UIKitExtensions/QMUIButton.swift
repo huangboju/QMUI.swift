@@ -54,35 +54,34 @@ enum QMUINavigationButtonPosition: Int {
 }
 
 /**
- * 提供以下功能：
- * <ol>
- * <li>highlighted、disabled状态均通过改变整个按钮的alpha来表现，无需分别设置不同state下的titleColor、image</li>
- * <li>支持点击时改变背景色颜色（<i>highlightedBackgroundColor</i>）</li>
- * <li>支持点击时改变边框颜色（<i>highlightedBorderColor</i>）</li>
- * <li>支持设置图片在按钮内的位置，无需自行调整imageEdgeInsets（<i>imagePosition</i>）</li>
- * </ol>
+ *  提供以下功能：
+ *  1. highlighted、disabled 状态均通过改变整个按钮的alpha来表现，无需分别设置不同 state 下的 titleColor、image。alpha 的值可在配置表里修改 ButtonHighlightedAlpha、ButtonDisabledAlpha。
+ *  2. 支持点击时改变背景色颜色（highlightedBackgroundColor）
+ *  3. 支持点击时改变边框颜色（highlightedBorderColor）
+ *  4. 支持设置图片相对于 titleLabel 的位置（imagePosition）
+ *  5. 支持设置图片和 titleLabel 之间的间距，无需自行调整 titleEdgeInests、imageEdgeInsets（spacingBetweenImageAndTitle）
+ *  @warning QMUIButton 重新定义了 UIButton.titleEdgeInests、imageEdgeInsets、contentEdgeInsets 这三者的布局逻辑，sizeThatFits: 里会把 titleEdgeInests 和 imageEdgeInsets 也考虑在内（UIButton 不会），以使这三个接口的使用更符合直觉。
  */
-
-public class QMUIButton: UIButton {
+class QMUIButton: UIButton {
     /**
      * 让按钮的文字颜色自动跟随tintColor调整（系统默认titleColor是不跟随的）<br/>
-     * 默认为NO
+     * 默认为 false
      */
     @IBInspectable var adjustsTitleTintColorAutomatically: Bool = false {
         didSet {
-            self.updateTitleColorIfNeeded()
+            updateTitleColorIfNeeded()
         }
     }
 
     /**
      * 让按钮的图片颜色自动跟随tintColor调整（系统默认image是需要更改renderingMode才可以达到这种效果）<br/>
-     * 默认为NO
+     * 默认为 false
      */
     @IBInspectable var adjustsImageTintColorAutomatically: Bool = false {
         didSet {
             let valueDifference = adjustsImageTintColorAutomatically != oldValue
             if valueDifference {
-                self.updateImageRenderingModeIfNeeded()
+                updateImageRenderingModeIfNeeded()
             }
         }
     }
@@ -92,7 +91,7 @@ public class QMUIButton: UIButton {
      *  @note 一般只使用这个属性的 setter，而 getter 永远返回 self.tintColor
      *  @warning 不支持传 nil
      */
-    @IBInspectable var tintColorAdjustsTitleAndImage: UIColor {
+    @IBInspectable var tintColorAdjustsTitleAndImage: UIColor! {
         set {
             tintColor = tintColorAdjustsTitleAndImage
             adjustsTitleTintColorAutomatically = true
@@ -121,7 +120,14 @@ public class QMUIButton: UIButton {
      * @warning 不支持带透明度的背景颜色。当设置<i>highlightedBackgroundColor</i>时，会强制把<i>adjustsButtonWhenHighlighted</i>设为NO，避免两者效果冲突。
      * @see adjustsButtonWhenHighlighted
      */
-    @IBInspectable var highlightedBackgroundColor: UIColor?
+    @IBInspectable var highlightedBackgroundColor: UIColor? {
+        didSet {
+            if highlightedBackgroundColor != nil {
+                // 只要开启了highlightedBackgroundColor，就默认不需要alpha的高亮
+                adjustsButtonWhenHighlighted = false
+            }
+        }
+    }
 
     /**
      * 设置按钮点击时的边框颜色，默认为nil。
@@ -143,22 +149,42 @@ public class QMUIButton: UIButton {
      */
     var imagePosition: QMUIButtonImagePosition = .left {
         didSet {
-            self.setNeedsLayout()
+            setNeedsLayout()
+        }
+    }
+    
+    /**
+     * 设置按钮里图标和文字之间的间隔，会自动响应 imagePosition 的变化而变化，默认为0。<br/>
+     * 系统默认实现需要同时设置 titleEdgeInsets 和 imageEdgeInsets，同时还需考虑 contentEdgeInsets 的增加（否则不会影响布局，可能会让图标或文字溢出或挤压），使用该属性可以避免以上情况。<br/>
+     * @warning 会与 imageEdgeInsets、 imageEdgeInsets、 contentEdgeInsets 共同作用。
+     */
+    @IBInspectable var spacingBetweenImageAndTitle: CGFloat = 0 {
+        didSet {
+            setNeedsLayout()
         }
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         didInitialized()
+        
+        tintColor = ButtonTintColor
+        if !adjustsTitleTintColorAutomatically {
+            setTitleColor(ButtonTintColor, for: .normal)
+        }
+        
+        // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
+        // 不能设为0，否则无效；也不能设置为小数点，否则无法像素对齐
+        contentEdgeInsets = UIEdgeInsets(top: CGFloat.leastNormalMagnitude, left: 0, bottom: CGFloat.leastNormalMagnitude, right: 0)
     }
 
-    init(title: String?, image: UIImage?) {
+    convenience init(title: String?, image: UIImage?) {
         self.init()
-        setTitle(title, for: .normal)
         setImage(image, for: .normal)
+        setTitle(title, for: .normal)
     }
 
-    public required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         didInitialized()
     }
@@ -166,215 +192,309 @@ public class QMUIButton: UIButton {
     private var highlightedBackgroundLayer = CALayer()
     private var originBorderColor: UIColor?
 
-    private func didInitialized() {
-        adjustsTitleTintColorAutomatically = false
-        adjustsImageTintColorAutomatically = false
-        tintColor = ButtonTintColor
-        if !adjustsTitleTintColorAutomatically {
-            setTitleColor(ButtonTintColor, for: .normal)
-        }
-
+    fileprivate func didInitialized() {
+        
         // 默认接管highlighted和disabled的表现，去掉系统默认的表现
         adjustsImageWhenHighlighted = false
         adjustsImageWhenDisabled = false
-        adjustsButtonWhenHighlighted = true
-        adjustsButtonWhenDisabled = true
-
-        // iOS7以后的button，sizeToFit后默认会自带一个上下的contentInsets，为了保证按钮大小即为内容大小，这里直接去掉，改为一个最小的值。
-        // 不能设为0，否则无效；也不能设置为小数点，否则无法像素对齐
-        contentEdgeInsets = UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0)
-
-        // 图片默认在按钮左边，与系统UIButton保持一致
-        imagePosition = .left
     }
 
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
         var size = size
         // 如果调用 sizeToFit，那么传进来的 size 就是当前按钮的 size，此时的计算不要去限制宽高
-        if bounds.size.equalTo(size) {
+        if bounds.size == size {
             size = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         }
 
+        let isImageViewShowing = imageView != nil && !imageView!.isHidden
+        let isTitleLabelShowing = titleLabel != nil && !titleLabel!.isHidden
+        var imageTotalSize = CGSize.zero // 包含 imageEdgeInsets 那些空间
+        var titleTotalSize = CGSize.zero // 包含 titleEdgeInsets 那些空间
+        let spacingBetweenImageAndTitle = flat((isImageViewShowing && isTitleLabelShowing) ? self.spacingBetweenImageAndTitle : 0) // 如果图片或文字某一者没显示，则这个 spacing 不考虑进布局
+        let contentEdgeInsets = self.contentEdgeInsets.removeFloatMin()
         var resultSize = CGSize.zero
         let contentLimitSize = CGSize(width: size.width - contentEdgeInsets.horizontalValue, height: size.height - contentEdgeInsets.verticalValue)
+        
         switch imagePosition {
         case .bottom, .top:
             // 图片和文字上下排版时，宽度以文字或图片的最大宽度为最终宽度
-            let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
-            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: .greatestFiniteMagnitude)) ?? .zero // 假设图片高度必定完整显示
-
-            let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue, height: contentLimitSize.height - imageEdgeInsets.verticalValue - imageSize.height - titleEdgeInsets.verticalValue)
-            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
-            titleSize.height = min(titleSize.height, titleLimitSize.height)
+            if isImageViewShowing {
+                let imageLimitWidth = contentLimitSize.width - imageEdgeInsets.horizontalValue
+                var imageSize = imageView!.sizeThatFits(CGSize(width: imageLimitWidth, height: .greatestFiniteMagnitude)) // 假设图片高度必定完整显示
+                imageSize.width = fmin(imageSize.width, imageLimitWidth)
+                imageTotalSize = CGSize(width: imageSize.width + imageEdgeInsets.horizontalValue, height: imageSize.height + imageEdgeInsets.verticalValue)
+            }
+            
+            if isTitleLabelShowing {
+                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue, height: contentLimitSize.height - imageTotalSize.height - spacingBetweenImageAndTitle - titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel!.sizeThatFits(titleLimitSize)
+                titleSize.height = fmin(titleSize.height, titleLimitSize.height)
+                titleTotalSize = CGSize(width: titleSize.width + titleEdgeInsets.horizontalValue, height: titleSize.height + titleEdgeInsets.verticalValue)
+            }
 
             resultSize.width = contentEdgeInsets.horizontalValue
-            resultSize.width += max(imageEdgeInsets.horizontalValue + imageSize.width, titleEdgeInsets.horizontalValue + titleSize.width)
-            resultSize.height = contentEdgeInsets.verticalValue + imageEdgeInsets.verticalValue + imageSize.height + titleEdgeInsets.verticalValue + titleSize.height
+            resultSize.width += fmax(imageTotalSize.width, titleTotalSize.width)
+            resultSize.height = contentEdgeInsets.verticalValue + imageTotalSize.height + spacingBetweenImageAndTitle + titleTotalSize.height
 
         case .right, .left:
-            if imagePosition == .left && titleLabel?.numberOfLines == 1 {
-
-                // QMUIButtonImagePositionLeft使用系统默认布局
-                resultSize = super.sizeThatFits(size)
-
-            } else {
-                // 图片和文字水平排版时，高度以文字或图片的最大高度为最终高度
-                // titleLabel为多行时，系统的sizeThatFits计算结果依然为单行的，所以当QMUIButtonImagePositionLeft并且titleLabel多行的情况下，使用自己计算的结果
-
+            // 图片和文字水平排版时，高度以文字或图片的最大高度为最终高度
+            // 注意这里有一个和系统不一致的行为：当 titleLabel 为多行时，系统的 sizeThatFits: 计算结果固定是单行的，所以当 QMUIButtonImagePositionLeft 并且titleLabel 多行的情况下，QMUIButton 计算的结果与系统不一致
+            if isImageViewShowing {
                 let imageLimitHeight = contentLimitSize.height - imageEdgeInsets.verticalValue
-                let imageSize = imageView?.sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: imageLimitHeight)) ?? .zero // 假设图片宽度必定完整显示，高度不超过按钮内容
-
-                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue - imageSize.width - imageEdgeInsets.horizontalValue, height: contentLimitSize.height - titleEdgeInsets.verticalValue)
-                var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
-                titleSize.height = min(titleSize.height, titleLimitSize.height)
-
-                let v1 = contentEdgeInsets.horizontalValue + imageEdgeInsets.horizontalValue
-                resultSize.width = v1 + imageSize.width + titleEdgeInsets.horizontalValue + titleSize.width
-                resultSize.height = contentEdgeInsets.verticalValue
-                resultSize.height += max(imageEdgeInsets.verticalValue + imageSize.height, titleEdgeInsets.verticalValue + titleSize.height)
+                var imageSize = imageView!.sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: imageLimitHeight)) // 假设图片高度必定完整显示
+                imageSize.height = fmin(imageSize.height, imageLimitHeight)
+                imageTotalSize = CGSize(width: imageSize.width + imageEdgeInsets.horizontalValue, height: imageSize.height + imageEdgeInsets.verticalValue)
             }
+            
+            if isTitleLabelShowing {
+                let titleLimitSize = CGSize(width: contentLimitSize.width - titleEdgeInsets.horizontalValue - imageTotalSize.width - spacingBetweenImageAndTitle, height: contentLimitSize.height -  titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel!.sizeThatFits(titleLimitSize)
+                titleSize.height = fmin(titleSize.height, titleLimitSize.height)
+                titleTotalSize = CGSize(width: titleSize.width + titleEdgeInsets.horizontalValue, height: titleSize.height + titleEdgeInsets.verticalValue)
+            }
+            
+            resultSize.width = contentEdgeInsets.horizontalValue + imageTotalSize.width + spacingBetweenImageAndTitle + titleTotalSize.width
+            resultSize.height = contentEdgeInsets.verticalValue
+            resultSize.height += fmax(imageTotalSize.height, titleTotalSize.height)
+            
         }
         return resultSize
     }
 
-    public override func layoutSubviews() {
+    override var intrinsicContentSize: CGSize {
+        return sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude))
+    }
+    
+    override func layoutSubviews() {
         super.layoutSubviews()
 
         if bounds.isEmpty {
             return
         }
-
-        if imagePosition == .left {
-            return
-        }
-
+        
+        let isImageViewShowing = imageView != nil && !imageView!.isHidden
+        let isTitleLabelShowing = titleLabel != nil && !titleLabel!.isHidden
+        var imageLimitSize = CGSize.zero
+        var titleLimitSize = CGSize.zero
+        var imageTotalSize = CGSize.zero // 包含 imageEdgeInsets 那些空间
+        var titleTotalSize = CGSize.zero // 包含 titleEdgeInsets 那些空间
+        let spacingBetweenImageAndTitle = flat((isImageViewShowing && isTitleLabelShowing) ? self.spacingBetweenImageAndTitle : 0) // 如果图片或文字某一者没显示，则这个 spacing 不考虑进布局
+        var imageFrame = CGRect.zero;
+        var titleFrame = CGRect.zero;
+        let contentEdgeInsets = self.contentEdgeInsets.removeFloatMin()
         let contentSize = CGSize(width: bounds.width - contentEdgeInsets.horizontalValue, height: bounds.height - contentEdgeInsets.verticalValue)
+        
+        // 图片的布局原则都是尽量完整展示，所以不管 imagePosition 的值是什么，这个计算过程都是相同的
+        if isImageViewShowing {
+            imageLimitSize = CGSize(width: contentSize.width - imageEdgeInsets.horizontalValue, height: contentSize.height - imageEdgeInsets.verticalValue)
+            var imageSize = imageView!.sizeThatFits(imageLimitSize)
+            imageSize.width = fmin(imageSize.width, imageLimitSize.width)
+            imageSize.height = fmin(imageSize.height, imageLimitSize.height)
+            imageFrame = imageSize.rect
+            imageTotalSize = CGSize(width: imageSize.width + imageEdgeInsets.horizontalValue, height: imageSize.height + imageEdgeInsets.verticalValue)
+        }
+        
         if imagePosition == .top || imagePosition == .bottom {
-            let imageLimitWidth = contentSize.width - imageEdgeInsets.horizontalValue
-            let imageSize = imageView?.sizeThatFits(CGSize(width: imageLimitWidth, height: CGFloat.greatestFiniteMagnitude)) ?? CGSize.zero /// 假设图片的高度必定完整显示
-            var imageFrame = imageSize.rect
-
-            let titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue, height: contentSize.height - imageEdgeInsets.verticalValue - imageSize.height - titleEdgeInsets.verticalValue)
-            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? CGSize.zero
-            titleSize.height = CGFloat(fminf(Float(titleSize.height), Float(titleLimitSize.height)))
-            var titleFrame = titleSize.rect
-
+            if isTitleLabelShowing {
+                titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue, height: contentSize.height - imageTotalSize.height - spacingBetweenImageAndTitle - titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel!.sizeThatFits(titleLimitSize)
+                titleSize.width = fmin(titleSize.width, titleLimitSize.width)
+                titleSize.height = fmin(titleSize.height, titleLimitSize.height)
+                titleFrame = titleSize.rect
+                titleTotalSize = CGSize(width: titleSize.width + titleEdgeInsets.horizontalValue, height: titleSize.height + titleEdgeInsets.verticalValue)
+            }
+            
             switch contentHorizontalAlignment {
             case .left:
-                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
-                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                imageFrame = isImageViewShowing ? imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setX(contentEdgeInsets.left + self.titleEdgeInsets.left) : titleFrame
             case .center:
-                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left + imageLimitWidth.center(with: imageSize.width))
-                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left + titleLimitSize.width.center(with: titleSize.width))
+                imageFrame = isImageViewShowing ? imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left + imageLimitSize.width.center(imageFrame.width)) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left + titleLimitSize.width.center(titleFrame.width)) : titleFrame
             case .right:
-                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageSize.width)
-                titleFrame = titleFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - titleSize.width)
+                imageFrame = isImageViewShowing ? imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setX(bounds.width - contentEdgeInsets.right - titleEdgeInsets.right - titleFrame.width): titleFrame
             case .fill:
-                imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
-                imageFrame = imageFrame.setWidth(imageLimitWidth)
-                titleFrame = imageFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
-                titleFrame = titleFrame.setWidth(titleLimitSize.width)
-            default:
-                break
+                if isImageViewShowing {
+                    imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                    imageFrame = imageFrame.setWidth(imageLimitSize.width);
+                }
+                if isTitleLabelShowing {
+                    titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left);
+                    titleFrame = titleFrame.setWidth(titleLimitSize.width);
+                }
+            default: break
             }
-
+            
             if imagePosition == .top {
                 switch contentVerticalAlignment {
                 case .top:
-                    imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
-                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                    imageFrame = isImageViewShowing ? imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(contentEdgeInsets.top + imageTotalSize.height + spacingBetweenImageAndTitle + titleEdgeInsets.top) : titleFrame
                 case .center:
-                    let contentHeight = imageFrame.height + imageEdgeInsets.verticalValue + titleFrame.height + titleEdgeInsets.verticalValue
-                    let minY = contentSize.height.center(with: contentHeight) + contentEdgeInsets.top
-                    imageFrame = imageFrame.setY(minY + imageEdgeInsets.top)
-                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                    let contentHeight = imageTotalSize.height + spacingBetweenImageAndTitle + titleTotalSize.height
+                    let minY = contentSize.height.center(contentHeight) + contentEdgeInsets.top
+                    imageFrame = isImageViewShowing ? imageFrame.setY(minY + imageEdgeInsets.top) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(minY + imageTotalSize.height + spacingBetweenImageAndTitle + titleEdgeInsets.top) : titleFrame
                 case .bottom:
-                    titleFrame = titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height)
-                    imageFrame = imageFrame.setY(titleFrame.minY - titleEdgeInsets.top - imageEdgeInsets.bottom - imageFrame.height)
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height) : titleFrame
+                    imageFrame = isImageViewShowing ? imageFrame.setY(bounds.height - contentEdgeInsets.bottom - titleTotalSize.height - spacingBetweenImageAndTitle - imageEdgeInsets.bottom - imageFrame.height) : imageFrame
                 case .fill:
-                    // 图片按自身大小显示，剩余空间由标题占满
-                    imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
-                    titleFrame = titleFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
-                    titleFrame = titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.minY)
+                    if isImageViewShowing && isTitleLabelShowing {
+                        // 同时显示图片和 label 的情况下，图片高度按本身大小显示，剩余空间留给 label
+                        imageFrame = isImageViewShowing ? imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top) : imageFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setY(contentEdgeInsets.top + imageTotalSize.height + spacingBetweenImageAndTitle + titleEdgeInsets.top) : titleFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.minY) : titleFrame
+                    } else if isImageViewShowing {
+                        imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                        imageFrame = imageFrame.setHeight(contentSize.height - imageEdgeInsets.verticalValue)
+                    } else {
+                        titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                        titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
+                    }
                 }
             } else {
                 switch contentVerticalAlignment {
                 case .top:
-                    titleFrame = titleFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
-                    imageFrame = imageFrame.setY(imageFrame.maxY + imageEdgeInsets.bottom + titleEdgeInsets.top)
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top) : titleFrame
+                    imageFrame = isImageViewShowing ? imageFrame.setY(contentEdgeInsets.top + titleTotalSize.height + spacingBetweenImageAndTitle + imageEdgeInsets.top) : imageFrame
                 case .center:
-                    let contentHeight = titleFrame.height + titleEdgeInsets.verticalValue + imageFrame.height + imageEdgeInsets.verticalValue
-                    let minY = contentSize.height.center(with: contentHeight) + contentEdgeInsets.top
-                    titleFrame = titleFrame.setY(minY + titleEdgeInsets.top)
-                    imageFrame = imageFrame.setY(titleFrame.maxY + titleEdgeInsets.bottom + imageEdgeInsets.top)
+                    let contentHeight = imageTotalSize.height + titleTotalSize.height + spacingBetweenImageAndTitle
+                    let minY = contentSize.height.center(contentHeight) + contentEdgeInsets.top
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(minY + titleEdgeInsets.top) : titleFrame
+                    imageFrame = isImageViewShowing ? imageFrame.setY(minY + titleTotalSize.height + spacingBetweenImageAndTitle + imageEdgeInsets.top) : imageFrame
                 case .bottom:
-                    imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
-                    titleFrame = titleFrame.setY(imageFrame.minY - imageEdgeInsets.top - titleEdgeInsets.bottom - titleFrame.height)
+                    imageFrame = isImageViewShowing ? imageFrame.setY(bounds.height - contentEdgeInsets.bottom - self.imageEdgeInsets.bottom - imageFrame.height) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setY(bounds.height -  contentEdgeInsets.bottom - imageTotalSize.height - spacingBetweenImageAndTitle - titleEdgeInsets.bottom - titleFrame.height) : titleFrame
                 case .fill:
-                    // 图片按自身大小显示，剩余空间由标题占满
-                    imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
-                    titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
-                    titleFrame = titleFrame.setHeight(imageFrame.minY - imageEdgeInsets.top - titleEdgeInsets.bottom - titleFrame.minY)
+                    if isImageViewShowing && isTitleLabelShowing {
+                        // 同时显示图片和 label 的情况下，图片高度按本身大小显示，剩余空间留给 label
+                        imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
+                        titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                        titleFrame = titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - imageTotalSize.height - spacingBetweenImageAndTitle - titleEdgeInsets.bottom - titleFrame.minY)
+                    } else if isImageViewShowing {
+                        imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                        imageFrame = imageFrame.setHeight(contentSize.height - imageEdgeInsets.verticalValue)
+                    } else {
+                        titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                        titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
+                    }
                 }
             }
-
+            
             imageView?.frame = imageFrame.flatted
             titleLabel?.frame = titleFrame.flatted
-
-        } else if imagePosition == .right {
-            let imageLimitHeight = contentSize.height - imageEdgeInsets.verticalValue
-            let imageSize = imageView?.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageLimitHeight)) ?? .zero // 假设图片宽度必定完整显示，高度不超过按钮内容
-            var imageFrame = imageSize.rect
-
-            let titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue - imageFrame.width - imageEdgeInsets.horizontalValue, height: contentSize.height - titleEdgeInsets.verticalValue)
-            var titleSize = titleLabel?.sizeThatFits(titleLimitSize) ?? .zero
-            titleSize.height = min(titleSize.height, titleLimitSize.height)
-            var titleFrame = titleSize.rect
-
-            switch contentHorizontalAlignment {
-            case .left:
-                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
-                imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
-            case .center:
-                let contentWidth = titleFrame.width + titleEdgeInsets.horizontalValue + imageFrame.width + imageEdgeInsets.horizontalValue
-                let minX = contentEdgeInsets.left + contentSize.width.center(with: contentWidth)
-                titleFrame = titleFrame.setX(minX + titleEdgeInsets.left)
-                imageFrame = imageFrame.setX(titleFrame.maxX + titleEdgeInsets.right + imageEdgeInsets.left)
-            case .right:
-                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width)
-                titleFrame = titleFrame.setX(imageFrame.minX - imageEdgeInsets.left - titleEdgeInsets.right - titleFrame.width)
-            case .fill:
-                // 图片按自身大小显示，剩余空间由标题占满
-                imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width)
-                titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
-                titleFrame = titleFrame.setX(imageFrame.minX - imageEdgeInsets.left - titleEdgeInsets.right - titleFrame.minX)
-            default:
-                break
+        } else if imagePosition == .left || imagePosition == .right {
+            
+            if isTitleLabelShowing {
+                titleLimitSize = CGSize(width: contentSize.width - titleEdgeInsets.horizontalValue - imageTotalSize.width - spacingBetweenImageAndTitle, height: contentSize.height - titleEdgeInsets.verticalValue)
+                var titleSize = titleLabel!.sizeThatFits(titleLimitSize)
+                titleSize.width = fmin(titleLimitSize.width, titleSize.width)
+                titleSize.height = fmin(titleLimitSize.height, titleSize.height)
+                titleFrame = titleSize.rect
+                titleTotalSize = CGSize(width: titleSize.width + titleEdgeInsets.horizontalValue, height: titleSize.height + titleEdgeInsets.verticalValue)
             }
-
+            
             switch contentVerticalAlignment {
             case .top:
-                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
-                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                imageFrame = isImageViewShowing ? imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top) : titleFrame
             case .center:
-                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top + contentSize.height.center(with: titleFrame.height + titleEdgeInsets.verticalValue))
-
-                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top + contentSize.height.center(with: imageFrame.height + imageEdgeInsets.verticalValue))
+                imageFrame = isImageViewShowing ? imageFrame.setY(contentEdgeInsets.top + contentSize.height.center(imageFrame.height) + imageEdgeInsets.top) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setY(contentEdgeInsets.top + contentSize.height.center(titleFrame.height) + titleEdgeInsets.top) : titleFrame
             case .bottom:
-                titleFrame = titleFrame.setY(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height)
-                imageFrame = imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height)
+                imageFrame = isImageViewShowing ? imageFrame.setY(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.height) : imageFrame
+                titleFrame = isTitleLabelShowing ? titleFrame.setY(bounds.height -  contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.height) : titleFrame
             case .fill:
-                titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
-                titleFrame = titleFrame.setHeight(bounds.height - contentEdgeInsets.bottom - titleEdgeInsets.bottom - titleFrame.minY)
-                imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
-                imageFrame = imageFrame.setHeight(bounds.height - contentEdgeInsets.bottom - imageEdgeInsets.bottom - imageFrame.minY)
+                if isImageViewShowing {
+                    imageFrame = imageFrame.setY(contentEdgeInsets.top + imageEdgeInsets.top)
+                    imageFrame = imageFrame.setHeight(contentSize.height - imageEdgeInsets.verticalValue)
+                }
+                 if isTitleLabelShowing {
+                    titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
+                    titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
+                }
             }
+            
+            if imagePosition == .left {
+                switch contentHorizontalAlignment {
+                case .left:
+                    imageFrame = isImageViewShowing ? imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setX(contentEdgeInsets.left + imageTotalSize.width + spacingBetweenImageAndTitle + titleEdgeInsets.left) : titleFrame
+                case .center:
+                    let contentWidth = imageTotalSize.width + spacingBetweenImageAndTitle + titleTotalSize.width
+                    let minX = contentEdgeInsets.left + contentSize.width.center(contentWidth)
+                    imageFrame = isImageViewShowing ? imageFrame.setX(minX + imageEdgeInsets.left) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setX(minX + imageTotalSize.width + spacingBetweenImageAndTitle + titleEdgeInsets.left) : titleFrame
+                case .right:
+                    if imageTotalSize.width + spacingBetweenImageAndTitle + titleTotalSize.width > contentSize.width {
+                        // 图片和文字总宽超过按钮宽度，则优先完整显示图片
+                        imageFrame = isImageViewShowing ? imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left) : imageFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setX(contentEdgeInsets.left + imageTotalSize.width + spacingBetweenImageAndTitle + titleEdgeInsets.left) : titleFrame
+                    } else {
+                        // 内容不超过按钮宽度，则靠右布局即可
+                        imageFrame = isImageViewShowing ? imageFrame.setX(bounds.width -  contentEdgeInsets.right - titleTotalSize.width - spacingBetweenImageAndTitle - imageTotalSize.width + imageEdgeInsets.left) : imageFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setX(bounds.width -  contentEdgeInsets.right - titleEdgeInsets.right - titleFrame.width) : titleFrame
+                    }
+                case .fill:
+                    if isImageViewShowing && isTitleLabelShowing {
+                        // 同时显示图片和 label 的情况下，图片按本身宽度显示，剩余空间留给 label
+                        imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                        titleFrame = titleFrame.setX(contentEdgeInsets.left + imageTotalSize.width + spacingBetweenImageAndTitle + titleEdgeInsets.left)
+                        titleFrame = titleFrame.setWidth(bounds.width - contentEdgeInsets.right - titleEdgeInsets.right - titleFrame.minX)
+                    } else if isImageViewShowing {
+                        imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                        imageFrame = imageFrame.setWidth(contentSize.width - imageEdgeInsets.horizontalValue)
+                    } else {
+                        titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                        titleFrame = titleFrame.setWidth(contentSize.width - titleEdgeInsets.horizontalValue)
+                    }
+                default: break
+                }
+            } else {
+                switch contentHorizontalAlignment {
+                case .left:
+                    if imageTotalSize.width + spacingBetweenImageAndTitle + titleTotalSize.width > contentSize.width {
+                        // 图片和文字总宽超过按钮宽度，则优先完整显示图片
+                        imageFrame = isImageViewShowing ? imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width) : imageFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setX(bounds.width - contentEdgeInsets.right - imageTotalSize.width - spacingBetweenImageAndTitle - titleTotalSize.width + titleEdgeInsets.left) : titleFrame
+                    } else {
+                        // 内容不超过按钮宽度，则靠左布局即可
+                        imageFrame = isImageViewShowing ? imageFrame.setX(contentEdgeInsets.left + titleTotalSize.width + spacingBetweenImageAndTitle + imageEdgeInsets.left) : imageFrame
+                        titleFrame = isTitleLabelShowing ? titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left) : titleFrame
+                    }
+                    
+                case .center:
+                    let contentWidth = imageTotalSize.width + spacingBetweenImageAndTitle + titleTotalSize.width
+                    let minX = contentEdgeInsets.left + contentSize.width.center(contentWidth)
+                    imageFrame = isImageViewShowing ? imageFrame.setX(minX + titleTotalSize.width + spacingBetweenImageAndTitle + imageEdgeInsets.left) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setX(minX + titleEdgeInsets.left) : titleFrame
+                case .right:
+                    imageFrame = isImageViewShowing ? imageFrame.setX(bounds.width - contentEdgeInsets.right - imageEdgeInsets.right - imageFrame.width) : imageFrame
+                    titleFrame = isTitleLabelShowing ? titleFrame.setX(bounds.width - contentEdgeInsets.right - imageTotalSize.width - spacingBetweenImageAndTitle - titleEdgeInsets.right - titleFrame.width) : titleFrame
+                case .fill:
+                    if isImageViewShowing && isTitleLabelShowing {
+                        // 图片按自身大小显示，剩余空间由标题占满
+                        imageFrame = imageFrame.setX(bounds.width - contentEdgeInsets.right - self.imageEdgeInsets.right - imageFrame.width)
+                        titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                        titleFrame = titleFrame.setWidth(imageFrame.minX - imageEdgeInsets.left - spacingBetweenImageAndTitle - titleEdgeInsets.right - titleFrame.minX)
+                    } else if isImageViewShowing {
+                        imageFrame = imageFrame.setX(contentEdgeInsets.left + imageEdgeInsets.left)
+                        imageFrame = imageFrame.setWidth(contentSize.width - imageEdgeInsets.horizontalValue)
+                    } else {
+                        titleFrame = titleFrame.setX(contentEdgeInsets.left + titleEdgeInsets.left)
+                        titleFrame = titleFrame.setWidth(contentSize.width - titleEdgeInsets.horizontalValue)
+                    }
+                default: break
+                }
+            }
+            
             imageView?.frame = imageFrame.flatted
             titleLabel?.frame = titleFrame.flatted
         }
     }
 
-    public override var isHighlighted: Bool {
+    override var isHighlighted: Bool {
         didSet {
             if isHighlighted && originBorderColor == nil {
                 // 手指按在按钮上会不断触发setHighlighted:，所以这里做了保护，设置过一次就不用再设置了
@@ -401,7 +521,7 @@ public class QMUIButton: UIButton {
         }
     }
 
-    public override var isEnabled: Bool {
+    override var isEnabled: Bool {
         didSet {
             if !isEnabled && adjustsButtonWhenDisabled {
                 alpha = ButtonDisabledAlpha
@@ -413,19 +533,18 @@ public class QMUIButton: UIButton {
         }
     }
 
-    private func adjustsButtonHighlighted() {
+    fileprivate func adjustsButtonHighlighted() {
         guard let highlightedBackgroundColor = highlightedBackgroundColor else { return }
 
-        // TODO: 翻译CALayer+QMUI
-        // highlightedBackgroundLayer.qmui_removeDefaultAnimations()
+        highlightedBackgroundLayer.qmui_removeDefaultAnimations()
         layer.insertSublayer(highlightedBackgroundLayer, at: 0)
 
         highlightedBackgroundLayer.frame = bounds
         highlightedBackgroundLayer.cornerRadius = layer.cornerRadius
         highlightedBackgroundLayer.backgroundColor = isHighlighted ? highlightedBackgroundColor.cgColor : UIColorClear.cgColor
 
-        if highlightedBorderColor != nil {
-            layer.borderColor = isHighlighted ? highlightedBorderColor?.cgColor : originBorderColor?.cgColor
+        if let highlightedBorderColor = highlightedBorderColor {
+            layer.borderColor = isHighlighted ? highlightedBorderColor.cgColor : originBorderColor?.cgColor
         }
     }
 
@@ -437,20 +556,27 @@ public class QMUIButton: UIButton {
             let attributedString = NSMutableAttributedString(attributedString: currentAttributedTitle)
             let range = NSRange(location: 0, length: attributedString.length)
             attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: tintColor, range: range)
-            self.setAttributedTitle(attributedString, for: .normal)
+            setAttributedTitle(attributedString, for: .normal)
         }
     }
 
     private func updateImageRenderingModeIfNeeded() {
-        guard currentImage != nil else { return }
+        // 实际上对于 UIButton 而言如果设置了 UIControlStateNormal 的 image，则其他所有 state 下的 image 默认都会返回 normal 这张图，所以这个判断只对 UIControlStateNormal 做就行了
+        guard let _ = currentImage, let normalImage = image(for: .normal) else { return }
         let states: [UIControlState] = [.normal, .highlighted, .disabled]
+        
         for state in states {
             guard let image = image(for: state) else {
                 continue
             }
+            
+            if state.rawValue > 0 && image == normalImage {
+                // 这个 state 下的 image 如果指针和 normal 一样，说明并没有对这个 state 设置特别的 image，所以不用处理
+                continue
+            }
 
             if adjustsImageTintColorAutomatically {
-                // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
+                // 这里的 setImage: 操作不需要使用 renderingMode 对 image 重新处理，而是放到重写的 setImage:forState 里去做就行了
                 setImage(image, for: state)
             } else {
                 // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
@@ -459,15 +585,15 @@ public class QMUIButton: UIButton {
         }
     }
 
-    public override func setImage(_ image: UIImage?, for state: UIControlState) {
-        var tmpImage: UIImage?
+    override func setImage(_ image: UIImage?, for state: UIControlState) {
+        var tmpImage = image
         if adjustsImageTintColorAutomatically {
             tmpImage = image?.withRenderingMode(.alwaysTemplate)
         }
         super.setImage(tmpImage, for: state)
     }
 
-    public override func tintColorDidChange() {
+    override func tintColorDidChange() {
         super.tintColorDidChange()
 
         updateTitleColorIfNeeded()
@@ -497,26 +623,32 @@ class QMUINavigationButton: UIButton {
      */
     var useForBarButtonItem: Bool = true {
         didSet {
-            if case .back = type {
-                // 只针对返回按钮，调整箭头和title之间的间距
-                // @warning 这些数值都是每个iOS版本核对过没问题的，如果修改则要检查要每个版本里与系统UIBarButtonItem的布局是否一致
-                if useForBarButtonItem {
-                    let titleOffsetBaseOnSystem = UIOffset(horizontal: IOS_VERSION >= 11.0 ? 6 : 7, vertical: IOS_VERSION < 8.0 ? 1 : 0) // 经过这些数值的调整后，自定义返回按钮的位置才能和系统默认返回按钮的位置对准，而配置表里设置的值是在这个调整的基础上再调整
-                    let configurationOffset = NavBarBarBackButtonTitlePositionAdjustment
-                    self.titleEdgeInsets = UIEdgeInsets(top: titleOffsetBaseOnSystem.vertical + configurationOffset.vertical, left: titleOffsetBaseOnSystem.horizontal + configurationOffset.horizontal, bottom: -titleOffsetBaseOnSystem.vertical - configurationOffset.vertical, right: -titleOffsetBaseOnSystem.horizontal - configurationOffset.horizontal)
-                    self.contentEdgeInsets = UIEdgeInsetsMake(IOS_VERSION >= 11.0 ? 0 : 1, // iOS 11 以前的自定义返回按钮要特地往下偏移一点才会和系统的一模一样
-                                                              IOS_VERSION >= 11.0 ? -8 : 0, // iOS 11 使用了自定义按钮后整个按钮都会强制被往右边挪 8pt，所以这里要通过 contentEdgeInsets.left 偏移回来
-                                                              0,
-                                                              self.titleEdgeInsets.left) // 保证 button 有足够的宽度
-                }
-                // 由于contentEdgeInsets会影响frame的大小，所以更新数值后需要重新计算size
-                self.sizeToFit()
+            if useForBarButtonItem == oldValue || type != .back { return }
+            // 只针对返回按钮，调整箭头和title之间的间距
+            // @warning 这些数值都是每个iOS版本核对过没问题的，如果修改则要检查要每个版本里与系统UIBarButtonItem的布局是否一致
+            if useForBarButtonItem {
+                let titleOffsetBaseOnSystem = UIOffset(horizontal: IOS_VERSION >= 11.0 ? 6 : 7, vertical: 0) // 经过这些数值的调整后，自定义返回按钮的位置才能和系统默认返回按钮的位置对准，而配置表里设置的值是在这个调整的基础上再调整
+                let configurationOffset = NavBarBarBackButtonTitlePositionAdjustment
+                titleEdgeInsets = UIEdgeInsets(
+                    top: titleOffsetBaseOnSystem.vertical + configurationOffset.vertical,
+                    left: titleOffsetBaseOnSystem.horizontal + configurationOffset.horizontal,
+                    bottom: -titleOffsetBaseOnSystem.vertical - configurationOffset.vertical,
+                    right: -titleOffsetBaseOnSystem.horizontal - configurationOffset.horizontal)
+                contentEdgeInsets = UIEdgeInsetsMake(
+                    IOS_VERSION >= 11.0 ? 0 : 1, // iOS 11 以前的自定义返回按钮要特地往下偏移一点才会和系统的一模一样
+                    IOS_VERSION >= 11.0 ? -8 : 0, // iOS 11 使用了自定义按钮后整个按钮都会强制被往右边挪 8pt，所以这里要通过 contentEdgeInsets.left 偏移回来
+                    0,
+                    titleEdgeInsets.left) // 保证 button 有足够的宽度
             }
+            // 由于contentEdgeInsets会影响frame的大小，所以更新数值后需要重新计算size
+            sizeToFit()
         }
     }
+    
+    private var buttonPosition: QMUINavigationButtonPosition = .none
 
     convenience init() {
-        self.init(with: .normal)
+        self.init(type: .normal)
     }
 
     /**
@@ -524,11 +656,9 @@ class QMUINavigationButton: UIButton {
      *  @param type 按钮类型
      *  @param title 按钮的title
      */
-    init(with type: QMUINavigationButtonType, title: String?) {
+    init(_ type: QMUINavigationButtonType, title: String?) {
         super.init(frame: .zero)
         self.type = type
-        buttonPosition = .none
-        useForBarButtonItem = true
         setTitle(title, for: .normal)
         renderButtonStyle()
         sizeToFit()
@@ -538,16 +668,16 @@ class QMUINavigationButton: UIButton {
      *  导航栏按钮的初始化函数
      *  @param type 按钮类型
      */
-    convenience init(with type: QMUINavigationButtonType) {
-        self.init(with: type, title: nil)
+    convenience init(type: QMUINavigationButtonType) {
+        self.init(type, title: nil)
     }
 
     /**
      *  导航栏按钮的初始化函数
      *  @param image 按钮的image
      */
-    convenience init(with image: UIImage) {
-        self.init(with: .image)
+    convenience init(image: UIImage) {
+        self.init(type: .image)
         setImage(image, for: .normal)
         // 系统在iOS8及以后的版本默认对image的UIBarButtonItem加了上下3、左右11的padding，所以这里统一一下
         contentEdgeInsets = UIEdgeInsetsMake(3, 11, 3, 11)
@@ -560,46 +690,49 @@ class QMUINavigationButton: UIButton {
 
     // 修复系统的UIBarButtonItem里的图片无法跟着tintColor走
     override func setImage(_ image: UIImage?, for state: UIControlState) {
-        if var image = image {
-            image = image.withRenderingMode(.alwaysTemplate)
+        var newImage = image
+        if newImage != nil && newImage!.renderingMode == .automatic {
+            // 由于 QMUINavigationButton 是用于 UIBarButtonItem 的，所以默认的行为应该是尽量去跟随 tintColor，所以做了这个优化
+            newImage = newImage!.withRenderingMode(.alwaysTemplate)
         }
 
-        super.setImage(image, for: state)
+        super.setImage(newImage, for: state)
     }
 
     // 自定义nav按钮，需要根据这个来修改title的三态颜色
     override func tintColorDidChange() {
         super.tintColorDidChange()
 
-        self.setTitleColor(self.tintColor, for: .normal)
-        self.setTitleColor(self.tintColor.withAlphaComponent(NavBarHighlightedAlpha), for: .highlighted)
-        self.setTitleColor(self.tintColor.withAlphaComponent(NavBarDisabledAlpha), for: .disabled)
+        setTitleColor(tintColor, for: .normal)
+        setTitleColor(tintColor.withAlphaComponent(NavBarHighlightedAlpha), for: .highlighted)
+        setTitleColor(tintColor.withAlphaComponent(NavBarDisabledAlpha), for: .disabled)
     }
 
+    // 对按钮内容添加偏移，让UIBarButtonItem适配最新设备的系统行为，统一位置
     override var alignmentRectInsets: UIEdgeInsets {
         var insets = super.alignmentRectInsets
 
-        if buttonPosition == .none || self.useForBarButtonItem {
+        if !useForBarButtonItem || buttonPosition == .none {
             return insets
         }
 
-        if case .left = buttonPosition {
+        if buttonPosition == .left {
             // 正值表示往左偏移
-            if case .image = type {
+            if type == .image {
                 insets.setLeft(11)
             } else {
                 insets.setLeft(8)
             }
-        } else if case .right = buttonPosition {
+        } else if buttonPosition == .right  {
             // 正值表示往右偏移
-            if case .image = type {
+            if type == .image {
                 insets.setRight(11)
             } else {
                 insets.setRight(8)
             }
         }
 
-        let isBackOrImageType = self.type == .back || self.type == .image
+        let isBackOrImageType = type == .back || type == .image
         if isBackOrImageType {
             insets.setTop(PixelOne)
         } else {
@@ -610,28 +743,32 @@ class QMUINavigationButton: UIButton {
     }
 
     private func renderButtonStyle() {
-        let font = NavBarButtonFont
+        if let font = NavBarButtonFont {
+            titleLabel?.font = font
+        }
+        titleLabel?.backgroundColor = UIColorClear
+        titleLabel?.lineBreakMode = .byTruncatingTail
+        contentMode = .center
+        contentHorizontalAlignment = .center
+        contentVerticalAlignment = .center
+        adjustsImageWhenHighlighted = false
+        adjustsImageWhenDisabled = false
 
-        self.titleLabel?.font = font
-        self.titleLabel?.backgroundColor = UIColorClear
-        self.titleLabel?.lineBreakMode = .byTruncatingTail
-        self.contentMode = .center
-        self.contentHorizontalAlignment = .center
-        self.contentVerticalAlignment = .center
-        self.adjustsImageWhenHighlighted = false
-        self.adjustsImageWhenDisabled = false
-
-        switch self.type {
-        case .normal, .image:
-            return
+        switch type {
         case .bold:
-            self.titleLabel?.font = NavBarButtonFontBold
+            if let font = NavBarButtonFontBold{
+                titleLabel?.font = font
+            }
         case .back:
-            self.contentHorizontalAlignment = .left
-            let backIndicatorImage = NavBarBackIndicatorImage
-            self.setImage(backIndicatorImage, for: .normal)
-            self.setImage(backIndicatorImage?.qmui_image(alpha: NavBarHighlightedAlpha), for: .highlighted)
-            self.setImage(backIndicatorImage?.qmui_image(alpha: NavBarDisabledAlpha), for: .disabled)
+            contentHorizontalAlignment = .left
+            
+            guard let backIndicatorImage = NavBarBackIndicatorImage else {
+                print("NavBarBackIndicatorImage 为 nil，无法创建正确的 QMUINavigationButtonTypeBack 按钮")
+                return
+            }
+            setImage(backIndicatorImage, for: .normal)
+            setImage(backIndicatorImage.qmui_image(alpha: NavBarHighlightedAlpha), for: .highlighted)
+            setImage(backIndicatorImage.qmui_image(alpha: NavBarDisabledAlpha), for: .disabled)
         default:
             break
         }
@@ -643,8 +780,24 @@ class QMUINavigationButton: UIButton {
      *  @param Selector 按钮点击事件的方法
      *  @param tintColor 按钮要显示的颜色，如果为 nil，则表示跟随当前 UINavigationBar 的 tintColor
      */
-    class func backBarButtonItem(with _: Any?, action _: Selector?, tintColor _: UIColor) -> UIBarButtonItem {
-        fatalError()
+    static func backBarButtonItem(target: Any?, action: Selector?, tintColor: UIColor?) -> UIBarButtonItem? {
+        var backTitle: String?
+        if NeedsBackBarButtonItemTitle {
+            backTitle = "返回" // 默认文字用返回
+            if let viewController = target as? UIViewController {
+                let previousViewController = viewController.qmui_previousViewController
+                if let item = previousViewController?.navigationItem.backBarButtonItem {
+                    // 如果前一个界面有
+                    backTitle = item.title
+                } else if previousViewController?.title != nil {
+                    backTitle = previousViewController!.title
+                }
+            }
+        } else {
+            backTitle = " "
+        }
+        
+        return systemBarButtonItem(.back, title: backTitle, tintColor: tintColor, position: .left, target: target, action: action)
     }
 
     /**
@@ -652,8 +805,8 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func backBarButtonItem(with _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func backBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem? {
+        return backBarButtonItem(target: target, action: action, tintColor: nil)
     }
 
     /**
@@ -662,9 +815,11 @@ class QMUINavigationButton: UIButton {
      *  @param Selector 按钮点击事件的方法
      *  @param tintColor 按钮要显示的颜色，如果为 nil，则表示跟随当前 UINavigationBar 的 tintColor
      */
-    class func closeBarButtonItem(with _: Any?, action _: Selector?, tintColor _: UIColor)
+    static func closeBarButtonItem(target: Any?, action: Selector?, tintColor: UIColor?)
         -> UIBarButtonItem {
-        fatalError()
+            let item = UIBarButtonItem(image: NavBarCloseButtonImage, style: .plain, target: target, action: action)
+            item.tintColor = tintColor
+            return item
     }
 
     /**
@@ -672,9 +827,9 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func closeBarButtonItem(with _: Any?, action _: Selector?)
+    static func closeBarButtonItem(target: Any?, action: Selector?)
         -> UIBarButtonItem {
-        fatalError()
+            return closeBarButtonItem(target: target, action: action, tintColor: nil)
     }
 
     /**
@@ -687,8 +842,9 @@ class QMUINavigationButton: UIButton {
      *  @param Selector 按钮点击事件的方法
      */
 
-    class func barButtonItem(with _: QMUINavigationButtonType, title _: String, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(type: QMUINavigationButtonType, title: String?, tintColor: UIColor?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        let barButtonItem = systemBarButtonItem(type, title: title, tintColor: tintColor, position: position, target: target, action: action)
+        return barButtonItem
     }
 
     /**
@@ -699,8 +855,8 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func barButtonItem(with _: QMUINavigationButtonType, title _: String, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(type: QMUINavigationButtonType, title: String?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        return barButtonItem(type: type, title: title, tintColor: nil, position: position, target: target, action: action)
     }
 
     /**
@@ -713,8 +869,14 @@ class QMUINavigationButton: UIButton {
      *
      *  @note tintColor、position、target、Selector? 等参数不需要对 QMUINavigationButton 设置，通过参数传进来就可以了，就算设置了也会在这个方法里被覆盖。
      */
-    class func barButtonItem(with _: QMUINavigationButton, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(navigationButton: QMUINavigationButton, tintColor: UIColor?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        if let target = target, let action = action {
+            navigationButton.addTarget(target, action: action, for: .touchUpInside)
+        }
+        navigationButton.tintColor = tintColor
+        navigationButton.buttonPosition = position
+        let barButtonItem = UIBarButtonItem(customView: navigationButton)
+        return barButtonItem
     }
 
     /**
@@ -726,8 +888,8 @@ class QMUINavigationButton: UIButton {
      *
      *  @note position、target、Selector? 等参数不需要对 QMUINavigationButton 设置，通过参数传进来就可以了，就算设置了也会在这个方法里被覆盖。
      */
-    class func barButtonItem(with _: QMUINavigationButton, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(navigationButton: QMUINavigationButton, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        return barButtonItem(navigationButton: navigationButton, tintColor: nil, position: position, target: target, action: action)
     }
 
     /**
@@ -738,8 +900,10 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func barButtonItem(with _: UIImage, tintColor _: UIColor, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(image: UIImage?, tintColor: UIColor?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        let barButtonItem = UIBarButtonItem(image: image, style: .plain, target: target, action: action)
+        barButtonItem.tintColor = tintColor
+        return barButtonItem
     }
 
     /**
@@ -749,18 +913,46 @@ class QMUINavigationButton: UIButton {
      *  @param target 按钮点击事件的接收者
      *  @param Selector 按钮点击事件的方法
      */
-    class func barButtonItem(with _: UIImage, position _: QMUINavigationButtonPosition, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(image: UIImage?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        return barButtonItem(image: image, tintColor: nil, position: position, target: target, action: action)
     }
+    
+    static private func systemBarButtonItem(_ type: QMUINavigationButtonType, title: String?, tintColor: UIColor?, position: QMUINavigationButtonPosition, target: Any?, action: Selector?) -> UIBarButtonItem?  {
+        
+        switch type {
+        case .back:
+            // 因为有可能出现有箭头图片又有title的情况，所以这里不适合用barButtonItemWithImage:target:action:的那个接口
+            let button = QMUINavigationButton(.back, title: title)
+            button.buttonPosition = position
+            if let action = action {
+                button.addTarget(target, action: action, for: .touchUpInside)
+            }
+            button.tintColor = tintColor
+            let barButtonItem = UIBarButtonItem(customView: button)
+            return barButtonItem
+        case .bold:
+            let barButtonItem = UIBarButtonItem(title: title, style: .done, target: target, action: action)
+            barButtonItem.tintColor = tintColor
+            if let font = NavBarButtonFontBold {
+                barButtonItem.setTitleTextAttributes([NSAttributedStringKey.font: font], for: .normal)
 
-    class func renderNavigationButtonAppearanceStyle() {
+                if let tempAttributes = barButtonItem.titleTextAttributes(for: .normal) {
+                    let attributes = Dictionary(uniqueKeysWithValues: tempAttributes.map {
+                        key, value in (NSAttributedStringKey(key), value)
+                    })
+                    barButtonItem.setTitleTextAttributes(attributes, for: .highlighted)// iOS 11 如果不显式设置 highlighted 的样式，点击时字体会从加粗变成默认，导致抖动
+                }
+            }
+            return barButtonItem
+        case .image:
+            // icon - 这种类型请通过barButtonItemWithImage:position:target:action:来定义
+            return nil
+        default:
+            let barButtonItem = UIBarButtonItem(title: title, style: .plain, target: target, action: action)
+            barButtonItem.tintColor = tintColor
+            return barButtonItem
+        }
     }
-
-    class func barButtonItem(with _: QMUINavigationButtonType, title _: String, position _: QMUINavigationButtonPosition, target _: Any??, action _: Selector?) -> UIBarButtonItem {
-        return UIBarButtonItem()
-    }
-
-    private var buttonPosition: QMUINavigationButtonPosition = .none
 }
 
 /**
@@ -769,13 +961,17 @@ class QMUINavigationButton: UIButton {
 class QMUIToolbarButton: UIButton {
     /// 获取当前按钮的type
     private(set) var type: QMUIToolbarButtonType = .normal
+    
+    convenience init() {
+        self.init(type: .normal)
+    }
 
     /**
      *  工具栏按钮的初始化函数
      *  @param type  按钮类型
      */
-    convenience init(with type: QMUIToolbarButtonType) {
-        self.init(with: type, title: nil)
+    convenience init(type: QMUIToolbarButtonType) {
+        self.init(type: type, title: nil)
     }
 
     /**
@@ -783,10 +979,9 @@ class QMUIToolbarButton: UIButton {
      *  @param type 按钮类型
      *  @param title 按钮的title
      */
-    init(with type: QMUIToolbarButtonType, title: String?) {
+    init(type: QMUIToolbarButtonType, title: String?) {
         self.type = type
         super.init(frame: .zero)
-
         setTitle(title, for: .normal)
         renderButtonStyle()
         sizeToFit()
@@ -796,9 +991,8 @@ class QMUIToolbarButton: UIButton {
      *  工具栏按钮的初始化函数
      *  @param image 按钮的image
      */
-    convenience init(with image: UIImage) {
-
-        self.init(with: .image)
+    convenience init(image: UIImage) {
+        self.init(type: .image)
         self.setImage(image, for: .normal)
         self.setImage(image.qmui_image(alpha: ToolBarHighlightedAlpha), for: .highlighted)
         self.setImage(image.qmui_image(alpha: ToolBarDisabledAlpha), for: .disabled)
@@ -810,27 +1004,47 @@ class QMUIToolbarButton: UIButton {
     }
 
     private func renderButtonStyle() {
+        imageView?.contentMode = .center
+        imageView?.tintColor = nil // 重置默认值，nil表示跟随父元素
+        titleLabel?.font = ToolBarButtonFont
+        switch type {
+        case .normal:
+            setTitleColor(ToolBarTintColor, for: .normal)
+            setTitleColor(ToolBarTintColorHighlighted, for: .highlighted)
+            setTitleColor(ToolBarTintColorDisabled, for: .disabled)
+        case .red:
+            setTitleColor(UIColorRed, for: .normal)
+            setTitleColor(UIColorRed.withAlphaComponent(ToolBarHighlightedAlpha), for: .highlighted)
+            setTitleColor(UIColorRed.withAlphaComponent(ToolBarDisabledAlpha), for: .disabled)
+            imageView?.tintColor = UIColorRed; // 修改为红色
+        default: break
+        }
+        
     }
 
     /// 在原有的QMUIToolbarButton上创建一个UIBarButtonItem
-    class func barButtonItem(with _: QMUIToolbarButton, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(toolbarButton: QMUIToolbarButton, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        if let action = action {
+            toolbarButton.addTarget(target, action: action, for: .touchUpInside)
+        }
+        let buttonItem = UIBarButtonItem(customView: toolbarButton)
+        return buttonItem
     }
 
     /// 创建一个特定type的UIBarButtonItem
-    class func barButtonItem(with _: QMUIToolbarButton, title _: String, target _: Any?, action _: Selector?) -> UIBarButtonItem {
-        fatalError()
+    static func barButtonItem(type: QMUIToolbarButtonType, title: String?, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        let buttonItem = UIBarButtonItem(title: title, style: .plain, target: target, action: action)
+        if type == .red {
+            // 默认继承toolBar的tintColor，红色需要重置
+            buttonItem.tintColor = UIColorRed
+        }
+        return buttonItem
     }
 
     /// 创建一个图标类型的UIBarButtonItem
-    /*
-     class func barButtonItem(with image: UIImage, target: Any?, action: Selector?) -> UIBarButtonItem {
-
-     }
-     */
-
-    /// 对UIToolbar上的UIBarButtonItem做统一的样式调整
-    class func renderToolbarButtonAppearanceStyle() {
+    static func barButtonItem(image: UIImage?, target: Any?, action: Selector?) -> UIBarButtonItem? {
+        let buttonItem = UIBarButtonItem(image: image, style: .plain, target: target, action: action)
+        return buttonItem
     }
 }
 
@@ -840,16 +1054,32 @@ class QMUIToolbarButton: UIButton {
 class QMUILinkButton: QMUIButton {
 
     /// 控制下划线隐藏或显示，默认为NO，也即显示下划线
-    @IBInspectable var underlineHidden: Bool = false
+    @IBInspectable var underlineHidden: Bool = false {
+        didSet {
+            underlineLayer.isHidden = underlineHidden
+        }
+    }
 
     /// 设置下划线的宽度，默认为 1
-    @IBInspectable var underlineWidth: CGFloat = 1
+    @IBInspectable var underlineWidth: CGFloat = 1 {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     /// 控制下划线颜色，若设置为nil，则使用当前按钮的titleColor的颜色作为下划线的颜色。默认为 nil。
-    @IBInspectable var underlineColor: UIColor?
+    @IBInspectable var underlineColor: UIColor? {
+        didSet {
+            updateUnderlineColor()
+        }
+    }
 
     /// 下划线的位置是基于 titleLabel 的位置来计算的，默认x、width均和titleLabel一致，而可以通过这个属性来调整下划线的偏移值。默认为UIEdgeInsetsZero。
-    @IBInspectable var underlineInsets: UIEdgeInsets = .zero
+    @IBInspectable var underlineInsets: UIEdgeInsets = .zero {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     private var underlineLayer: CALayer = CALayer()
 
@@ -858,19 +1088,43 @@ class QMUILinkButton: QMUIButton {
         didInitialized()
     }
 
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        didInitialized()
     }
 
-    func didInitialized() {
-        // TODO:
+    override func didInitialized() {
+        super.didInitialized()
+        underlineLayer.qmui_removeDefaultAnimations()
+        layer.addSublayer(underlineLayer)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if underlineLayer.isHidden {
+            return
+        }
+        underlineLayer.frame = CGRect(x: underlineInsets.left, y: (titleLabel?.frame.maxY ?? 0) +  underlineInsets.top - underlineInsets.bottom, width: bounds.width - underlineInsets.horizontalValue, height: underlineWidth)
+    }
+    
+    override func setTitleColor(_ color: UIColor?, for state: UIControlState) {
+        super.setTitleColor(color, for: state)
+        updateUnderlineColor()
+    }
+    
+    private func updateUnderlineColor() {
+        var color = underlineColor
+        if color == nil {
+            color = titleColor(for: .normal)
+        }
+        underlineLayer.backgroundColor = color?.cgColor
     }
 }
 
 /**
  *  用于 `QMUIGhostButton.cornerRadius` 属性，当 `cornerRadius` 为 `QMUIGhostButtonCornerRadiusAdjustsBounds` 时，`QMUIGhostButton` 会在高度变化时自动调整 `cornerRadius`，使其始终保持为高度的 1/2。
  */
-public let QMUIGhostButtonCornerRadiusAdjustsBounds: CGFloat = -1
+fileprivate let QMUIGhostButtonCornerRadiusAdjustsBounds: CGFloat = -1
 
 /**
  *  “幽灵”按钮，也即背景透明、带圆角边框的按钮
@@ -880,25 +1134,25 @@ public let QMUIGhostButtonCornerRadiusAdjustsBounds: CGFloat = -1
  *  @warning 默认情况下，`ghostColor` 只会修改文字和边框的颜色，如果需要让 image 也跟随 `ghostColor` 的颜色，则可将 `adjustsImageWithGhostColor` 设为 `YES`
  */
 class QMUIGhostButton: QMUIButton {
-    @IBInspectable var ghostColor: UIColor = .blue { // 默认为 GhostButtonColorBlue
+    @IBInspectable var ghostColor: UIColor = GhostButtonColorBlue { // 默认为 GhostButtonColorBlue
         didSet {
-            self.setTitleColor(ghostColor, for: .normal)
-            self.layer.borderColor = ghostColor.cgColor
+            setTitleColor(ghostColor, for: .normal)
+            layer.borderColor = ghostColor.cgColor
             if adjustsImageWithGhostColor {
-                self.updateImageColor()
+                updateImageColor()
             }
         }
     }
 
     @IBInspectable var borderWidth: CGFloat = 1 { // 默认为 1pt
         didSet {
-            self.layer.borderWidth = borderWidth
+            layer.borderWidth = borderWidth
         }
     }
 
     @IBInspectable var cornerRadius: CGFloat = QMUIGhostButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIGhostButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
-            self.setNeedsLayout()
+            setNeedsLayout()
         }
     }
 
@@ -907,20 +1161,20 @@ class QMUIGhostButton: QMUIButton {
      */
     var adjustsImageWithGhostColor: Bool = false {
         didSet {
-            self.updateImageColor()
+            updateImageColor()
         }
     }
 
-    init(with ghostColor: UIColor, frame: CGRect) {
+    init(ghostColor: UIColor, frame: CGRect) {
         super.init(frame: frame)
-        initialize(with: ghostColor)
+        self.ghostColor = ghostColor
+    }
+    
+    convenience init(ghostColor: UIColor) {
+        self.init(ghostColor: ghostColor, frame: .zero)
     }
 
-    convenience init(with ghostType: QMUIGhostButtonColor) {
-        self.init(with: ghostType, frame: .zero)
-    }
-
-    convenience init(with ghostType: QMUIGhostButtonColor, frame: CGRect) {
+    convenience init(ghostType: QMUIGhostButtonColor, frame: CGRect) {
         var ghostColor: UIColor?
         switch ghostType {
         case .blue:
@@ -934,59 +1188,62 @@ class QMUIGhostButton: QMUIButton {
         case .white:
             ghostColor = GhostButtonColorWhite
         }
-        self.init(with: ghostColor ?? .blue, frame: frame)
+        self.init(ghostColor: ghostColor ?? .blue, frame: frame)
     }
 
-    convenience init(with ghostColor: UIColor) {
-        self.init(with: ghostColor, frame: .zero)
-    }
-
-    convenience override init(frame: CGRect) {
-        self.init(with: GhostButtonColorBlue ?? .blue, frame: frame)
+    convenience init(ghostType: QMUIGhostButtonColor) {
+        self.init(ghostType: ghostType, frame: .zero)
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        initialize(with: GhostButtonColorBlue ?? .blue)
-    }
-
-    private func initialize(with ghostColor: UIColor) {
-        self.ghostColor = ghostColor
+        self.ghostColor = GhostButtonColorBlue
     }
 
     private func updateImageColor() {
-        self.imageView?.tintColor = adjustsImageWithGhostColor ? self.ghostColor : nil
-        if self.currentImage != nil {
-            let states: [UIControlState] = [.normal, .highlighted, .disabled]
-            for state in states {
-                if let image = self.image(for: state) {
-                    if self.adjustsImageWithGhostColor {
-                        // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
-                        self.setImage(image, for: state)
-                    } else {
-                        // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
-                        self.setImage(image.withRenderingMode(.alwaysOriginal), for: state)
-                    }
+        imageView?.tintColor = adjustsImageWithGhostColor ? ghostColor : nil
+        guard let _ = currentImage else { return }
+        let states: [UIControlState] = [.normal, .highlighted, .disabled]
+        for state in states {
+            if let image = image(for: state) {
+                if adjustsImageWithGhostColor {
+                    // 这里的image不用做renderingMode的处理，而是放到重写的setImage:forState里去做
+                    setImage(image, for: state)
+                } else {
+                    // 如果不需要用template的模式渲染，并且之前是使用template的，则把renderingMode改回Original
+                    setImage(image.withRenderingMode(.alwaysOriginal), for: state)
                 }
             }
         }
     }
 
     override func setImage(_ image: UIImage?, for state: UIControlState) {
-        var image = image
-        if self.adjustsImageWithGhostColor {
-            image = image?.withRenderingMode(.alwaysTemplate)
+        var newImage = image
+        if adjustsImageWithGhostColor {
+            newImage = image?.withRenderingMode(.alwaysTemplate)
         }
-        super.setImage(image, for: state)
+        super.setImage(newImage, for: state)
     }
 
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
-        if self.cornerRadius != QMUIGhostButtonCornerRadiusAdjustsBounds {
-            self.layer.cornerRadius = self.cornerRadius
+        if cornerRadius != QMUIGhostButtonCornerRadiusAdjustsBounds {
+            layer.cornerRadius = cornerRadius
         } else {
-            self.layer.cornerRadius = flat(self.bounds.height / 2)
+            layer.cornerRadius = flat(bounds.height / 2)
         }
+    }
+}
+
+extension QMUIGhostButton {
+    
+//    public static func appearance() -> Self
+    
+    func setGlobalAppearance() {
+        let appearance = QMUIGhostButton.appearance()
+        appearance.borderWidth = 1
+        appearance.cornerRadius = QMUIGhostButtonCornerRadiusAdjustsBounds
+        appearance.adjustsImageWithGhostColor = false
     }
 }
 
@@ -995,7 +1252,7 @@ class QMUIGhostButton: QMUIButton {
 /**
  *  用于 `QMUIFillButton.cornerRadius` 属性，当 `cornerRadius` 为 `QMUIFillButtonCornerRadiusAdjustsBounds` 时，`QMUIFillButton` 会在高度变化时自动调整 `cornerRadius`，使其始终保持为高度的 1/2。
  */
-public let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
+let QMUIFillButtonCornerRadiusAdjustsBounds: CGFloat = -1
 
 /**
  *  QMUIFillButton

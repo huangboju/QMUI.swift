@@ -43,14 +43,14 @@ class QMUIMarqueeLabel: UILabel {
     public var fadeWidth: CGFloat = 20
 
     /// 渐变遮罩外边缘的颜色，请使用带 Alpha 通道的颜色
-    public var fadeStartColor: UIColor? = UIColor(r: 255, g: 255, b: 255) {
+    public var fadeStartColor: UIColor? = UIColorMake(255, 255, 255) {
         didSet {
             updateFadeLayerColors()
         }
     }
 
     /// 渐变遮罩内边缘的颜色，一般是 fadeStartColor 的 alpha 通道为 0 的色值
-    public var fadeEndColor: UIColor? = UIColor(r: 255, g: 255, b: 255, a: 1) {
+    public var fadeEndColor: UIColor? = UIColorMakeWithRGBA(255, 255, 255, 1) {
         didSet {
             updateFadeLayerColors()
         }
@@ -132,7 +132,7 @@ class QMUIMarqueeLabel: UILabel {
         if textAlignment == .left {
             textInitialX = 0
         } else if textAlignment == .center {
-            textInitialX = max(0, bounds.width.center(with: textWidth))
+            textInitialX = max(0, bounds.width.center(textWidth))
         } else if textAlignment == .right {
             textInitialX = max(0, bounds.width - textWidth)
         }

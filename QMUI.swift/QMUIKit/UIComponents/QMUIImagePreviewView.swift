@@ -147,7 +147,7 @@ class QMUIImagePreviewView: UIView {
             collectionView.scrollToItem(at: IndexPath(row: currentImageIndex, section: 0), at: .centeredHorizontally, animated: animated)
         } else {
             // dataSource 里的图片数量和当前 View 层的图片数量不匹配
-            QMUILog("\(type(of: self)) \(#function)，collectionView.numberOfItems = \(collectionView.numberOfItems(inSection: 0)), collectionViewDataSource.numberOfItems = \(collectionView.dataSource?.numberOfSections?(in: collectionView) ?? 0), currentImageIndex = \(currentImageIndex)")
+            print("\(type(of: self)) \(#function)，collectionView.numberOfItems = \(collectionView.numberOfItems(inSection: 0)), collectionViewDataSource.numberOfItems = \(collectionView.dataSource?.numberOfSections?(in: collectionView) ?? 0), currentImageIndex = \(currentImageIndex)")
         }
     }
 }

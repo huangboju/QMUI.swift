@@ -475,11 +475,11 @@ class QMUINavigationTitleView: UIControl {
         if style == .subTitleVertical {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, titleLabelSize.height.center(with: loadingViewSize.height) + titleEdgeInsets.top)
+                loadingView.frame.setXY(minX, titleLabelSize.height.center(loadingViewSize.height) + titleEdgeInsets.top)
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, titleLabelSize.height.center(with: accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, titleLabelSize.height.center(accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if isTitleLabelShowing {
@@ -498,18 +498,18 @@ class QMUINavigationTitleView: UIControl {
         } else {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, maxSize.height.center(with: loadingViewSize.height))
+                loadingView.frame.setXY(minX, maxSize.height.center(loadingViewSize.height))
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, maxSize.height.center(with: accessoryView.bounds.height) + accessoryViewOffset.y)
+                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, maxSize.height.center(accessoryView.bounds.height) + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if isSubtitleLabelShowing {
                 maxX -= subtitleEdgeInsets.right
                 // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
                 let shouldSubtitleLabelCenterVertically = subtitleLabelSize.height + subtitleEdgeInsets.verticalValue < contentSize.height
-                let subtitleMinY = shouldSubtitleLabelCenterVertically ? maxSize.height.center(with: subtitleLabelSize.height) + subtitleEdgeInsets.top - subtitleEdgeInsets.bottom : subtitleEdgeInsets.top
+                let subtitleMinY = shouldSubtitleLabelCenterVertically ? maxSize.height.center(subtitleLabelSize.height) + subtitleEdgeInsets.top - subtitleEdgeInsets.bottom : subtitleEdgeInsets.top
                 subtitleLabel.frame = CGRect(x: maxX - subtitleLabelSize.width, y: subtitleMinY, width: subtitleLabelSize.width, height: subtitleLabelSize.height)
                 maxX = subtitleLabel.frame.minX - subtitleEdgeInsets.left
             } else {
@@ -520,7 +520,7 @@ class QMUINavigationTitleView: UIControl {
                 maxX -= titleEdgeInsets.right
                 // 如果当前的 contentSize 就是以这个 label 的最大占位计算出来的，那么就不应该先计算 center 再计算偏移
                 let shouldTitleLabelCenterVertically = titleLabelSize.height + titleEdgeInsets.verticalValue < contentSize.height
-                let titleLabelMinY = shouldTitleLabelCenterVertically ? maxSize.height.center(with: titleLabelSize.height) + titleEdgeInsets.top - titleEdgeInsets.bottom : titleEdgeInsets.top
+                let titleLabelMinY = shouldTitleLabelCenterVertically ? maxSize.height.center(titleLabelSize.height) + titleEdgeInsets.top - titleEdgeInsets.bottom : titleEdgeInsets.top
                 titleLabel.frame = CGRect(x: minX, y: titleLabelMinY, width: maxX - minX, height: titleLabelSize.height)
             } else {
                 titleLabel.frame = .zero

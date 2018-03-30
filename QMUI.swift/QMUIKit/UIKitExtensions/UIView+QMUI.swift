@@ -442,14 +442,14 @@ extension UIView {
      * 获取当前view在superview内的水平居中时的minX
      */
     public var qmui_minXWhenCenterInSuperview: CGFloat {
-        return superview?.bounds.width.center(with: frame.width) ?? 0
+        return superview?.bounds.width.center(frame.width) ?? 0
     }
     
     /**
      * 获取当前view在superview内的垂直居中时的minY
      */
     public var qmui_minYWhenCenterInSuperview: CGFloat {
-        return superview?.bounds.height.center(with: frame.height) ?? 0
+        return superview?.bounds.height.center(frame.height) ?? 0
     }
 }
 

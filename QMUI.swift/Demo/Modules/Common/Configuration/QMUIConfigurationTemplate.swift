@@ -46,24 +46,24 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().gray = UIColorGray4 // UIColorGray  : 最常用的灰色
         QMUICMI().grayDarken = UIColorGray3 // UIColorGrayDarken : 深一点的灰色
         QMUICMI().grayLighten = UIColorGray7 // UIColorGrayLighten : 浅一点的灰色
-        QMUICMI().red = UIColor(r: 250, g: 58, b: 58) // UIColorRed : 红色
+        QMUICMI().red = UIColorMake(250, 58, 58) // UIColorRed : 红色
         QMUICMI().green = UIColorTheme4 // UIColorGreen : 绿色
-        QMUICMI().blue = UIColor(r: 49, g: 189, b: 243) // UIColorBlue : 蓝色
+        QMUICMI().blue = UIColorMake(49, 189, 243) // UIColorBlue : 蓝色
         QMUICMI().yellow = UIColorTheme3 // UIColorYellow : 黄色
         
-        QMUICMI().linkColor = UIColor(r: 56, g: 116, b: 171) // UIColorLink : 文字链接颜色
+        QMUICMI().linkColor = UIColorMake(56, 116, 171) // UIColorLink : 文字链接颜色
         QMUICMI().disabledColor = UIColorGray
         QMUICMI().backgroundColor = UIColorWhite // UIColorForBackground : 界面背景色，默认用于 QMUICommonViewController.view 的背景色
-        QMUICMI().maskDarkColor = UIColor(r: 0, g: 0, b: 0, a: 0.35) // UIColorMask : 深色的背景遮罩，默认用于 QMAlertController、QMUIDialogViewController 等弹出控件的遮罩
-        QMUICMI().maskLightColor = UIColor(r: 255, g: 255, b: 255, a: 0.5) // UIColorMaskWhite : 浅色的背景遮罩，QMUIKit 里默认没用到，只是占个位
-        QMUICMI().separatorColor = UIColor(r: 222, g: 224, b: 226) // UIColorSeparator : 全局默认的分割线颜色，默认用于列表分隔线颜色、UIView (QMUI_Border) 分隔线颜色
-        QMUICMI().separatorDashedColor = UIColor(r: 17, g: 17, b: 17) // UIColorSeparatorDashed : 全局默认的虚线分隔线的颜色，默认 QMUIKit 暂时没用到
+        QMUICMI().maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35) // UIColorMask : 深色的背景遮罩，默认用于 QMAlertController、QMUIDialogViewController 等弹出控件的遮罩
+        QMUICMI().maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5) // UIColorMaskWhite : 浅色的背景遮罩，QMUIKit 里默认没用到，只是占个位
+        QMUICMI().separatorColor = UIColorMake(222, 224, 226) // UIColorSeparator : 全局默认的分割线颜色，默认用于列表分隔线颜色、UIView (QMUI_Border) 分隔线颜色
+        QMUICMI().separatorDashedColor = UIColorMake(17, 17, 17) // UIColorSeparatorDashed : 全局默认的虚线分隔线的颜色，默认 QMUIKit 暂时没用到
         QMUICMI().placeholderColor = UIColorGray8 // UIColorPlaceholder，全局的输入框的 placeholder 颜色，默认用于 QMUITextField、QMUITextView，不影响系统 UIKit 的输入框
         
         // 测试用的颜色
-        QMUICMI().testColorRed = UIColor(r: 255, g: 0, b: 0, a: 0.3)
-        QMUICMI().testColorGreen = UIColor(r: 0, g: 255, b: 0, a: 0.3)
-        QMUICMI().testColorBlue = UIColor(r: 0, g: 0, b: 255, a: 0.3)
+        QMUICMI().testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
+        QMUICMI().testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
+        QMUICMI().testColorBlue = UIColorMakeWithRGBA(0, 0, 255, 0.3)
         
         
     }

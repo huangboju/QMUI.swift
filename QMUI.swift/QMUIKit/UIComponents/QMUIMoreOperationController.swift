@@ -81,7 +81,7 @@ class QMUIMoreOperationController: UIViewController {
         }
     }
 
-    public var contentSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
+    public var contentSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
         didSet {
             scrollViewDividingLayer.backgroundColor = contentSeparatorColor.cgColor
         }
@@ -100,7 +100,7 @@ class QMUIMoreOperationController: UIViewController {
         }
     }
 
-    public var cancelButtonSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
+    public var cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
         didSet {
             cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor
         }

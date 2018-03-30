@@ -8,15 +8,13 @@
 
 // MARK: - 变量-编译相关
 
-// 判断当前是否debug编译模式
+/// 判断当前是否debug编译模式
 #if DEBUG
     let IS_DEBUG = true
 #else
     let IS_DEBUG = false
 #endif
 
-// MARK: - Clang
-// TODO:
 
 // 设备类型
 let IS_IPAD = QMUIHelper.isIPad
@@ -25,105 +23,126 @@ let IS_IPOD = QMUIHelper.isIPod
 let IS_IPHONE = QMUIHelper.isIPhone
 let IS_SIMULATOR = QMUIHelper.isSimulator
 
-// 操作系统版本号
+/// 操作系统版本号
 let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 
-// 是否横竖屏
-// 用户界面横屏了才会返回true
+/// 数字形式的操作系统版本号，可直接用于大小比较；如 110205 代表 11.2.5 版本；根据 iOS 规范，版本号最多可能有3位
+let IOS_VERSION_NUMBER = QMUIHelper.numbericOSVersion
+
+/// 是否横竖屏，用户界面横屏了才会返回true
 let IS_LANDSCAPE = UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation)
-// 无论支不支持横屏，只要设备横屏了，就会返回YES
+/// 无论支不支持横屏，只要设备横屏了，就会返回YES
 let IS_DEVICE_LANDSCAPE = UIDeviceOrientationIsLandscape(UIDevice.current.orientation)
 
-// 屏幕宽度，会根据横竖屏的变化而变化
+/// 屏幕宽度，会根据横竖屏的变化而变化
 let SCREEN_WIDTH = UIScreen.main.bounds.width
 
-// 屏幕高度，会根据横竖屏的变化而变化
+/// 屏幕高度，会根据横竖屏的变化而变化
 let SCREEN_HEIGHT = UIScreen.main.bounds.height
 
-// 屏幕宽度，跟横竖屏无关
+/// 屏幕宽度，跟横竖屏无关
 let DEVICE_WIDTH = IS_LANDSCAPE ? UIScreen.main.bounds.height : UIScreen.main.bounds.width
 
-// 屏幕高度，跟横竖屏无关
+/// 屏幕高度，跟横竖屏无关
 let DEVICE_HEIGHT = IS_LANDSCAPE ? UIScreen.main.bounds.width : UIScreen.main.bounds.height
 
-// 设备屏幕尺寸
+/// 设备屏幕尺寸
+/// iPhoneX
 let IS_58INCH_SCREEN = QMUIHelper.is58InchScreen
+/// iPhone6/7/8 Plus
 let IS_55INCH_SCREEN = QMUIHelper.is55InchScreen
+/// iPhone6/7/8
 let IS_47INCH_SCREEN = QMUIHelper.is47InchScreen
+/// iPhone5/5s/SE
 let IS_40INCH_SCREEN = QMUIHelper.is40InchScreen
+/// iPhone4/4s
 let IS_35INCH_SCREEN = QMUIHelper.is35InchScreen
 
-// 是否Retina
+/// 是否Retina
 let IS_RETINASCREEN = UIScreen.main.scale >= 2.0
 
-// 是否支持动态字体
-let IS_RESPOND_DYNAMICTYPE = UIApplication.instancesRespond(to: #selector(getter: UIApplication.preferredContentSizeCategory))
+// 是否放大模式（iPhone 6及以上的设备支持放大模式）
+let IS_ZOOMEDMODE = ScreenNativeScale > ScreenScale
 
-// MARK: - 变量-布局相关
+/// MARK: - 变量-布局相关
 
-// bounds && nativeBounds / scale && nativeScale
+/// bounds && nativeBounds / scale && nativeScale
 let ScreenBoundsSize = UIScreen.main.bounds.size
-let ScreenNativeBoundsSize = IOS_VERSION >= 8.0 ? UIScreen.main.nativeBounds.size : ScreenBoundsSize
+let ScreenNativeBoundsSize = UIScreen.main.nativeBounds.size
 let ScreenScale = UIScreen.main.scale
-let ScreenNativeScale = IOS_VERSION >= 8.0 ? UIScreen.main.nativeScale : ScreenScale
-// 区分设备是否处于放大模式（iPhone 6及以上的设备支持放大模式）
-let ScreenInDisplayZoomMode = ScreenNativeScale > ScreenScale
+let ScreenNativeScale = UIScreen.main.nativeScale
 
-// 状态栏高度(来电等情况下，状态栏高度会发生变化，所以应该实时计算)
-let StatusBarHeight = (IOS_VERSION >= 8.0 ? UIApplication.shared.statusBarFrame.height : (IS_LANDSCAPE ? UIApplication.shared.statusBarFrame.width : UIApplication.shared.statusBarFrame.height))
+/// 状态栏高度(来电等情况下，状态栏高度会发生变化，所以应该实时计算)
+let StatusBarHeight = UIApplication.shared.statusBarFrame.height
 
-// navigationBar相关frame
-let NavigationBarHeight: CGFloat = IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44
+/// navigationBar相关frame
+let NavigationBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44)
 
-// toolBar的相关frame
-let ToolBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44)
+/// toolBar的相关frame
+let ToolBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForUniversalDevicesIncludingIPhoneX(44, 44, 53, 32, 32, 32) : PreferredVarForUniversalDevicesIncludingIPhoneX(44, 44, 83, 44, 44, 44))
 
-let TabBarHeight: CGFloat = 49
+/// tabBar相关frame
+let TabBarHeight: CGFloat = (IS_LANDSCAPE ? PreferredVarForUniversalDevicesIncludingIPhoneX(49, 49, 53, 32, 32, 32) : PreferredVarForUniversalDevicesIncludingIPhoneX(49, 49, 83, 49, 49, 49))
 
-// 保护 iPhoneX 安全区域的 insets
+/// 保护 iPhoneX 安全区域的 insets
 let IPhoneXSafeAreaInsets: UIEdgeInsets = QMUIHelper.safeAreaInsetsForIPhoneX
 
-// 除去navigationBar和toolbar后的中间内容区域
-func NavigationContentHeight(_ viewController: UIViewController) -> CGFloat {
-    guard let nav = viewController.navigationController else {
-        return viewController.view.frame.height - NavigationBarHeight - StatusBarHeight
-    }
-    let height = nav.isToolbarHidden ? 0 : nav.toolbar.frame.height
-    return viewController.view.frame.height - NavigationBarHeight - StatusBarHeight - height
-}
+// 获取顶部导航栏占位高度，从而在布局 subviews 时可以当成 minY 参考
+// 注意，以下两个宏已废弃，请尽量使用 UIViewController (QMUI) qmui_navigationBarMaxYInViewCoordinator 代替
+let NavigationContentTop = StatusBarHeight + NavigationBarHeight
+let NavigationContentStaticTop = NavigationContentTop
 
-// 兼容controller.view的subView的top值在不同iOS版本下的差异
-let NavigationContentTop = StatusBarHeight + NavigationBarHeight // 这是动态获取的
-let NavigationContentStaticTop = 20 + NavigationBarHeight // 不动态从状态栏获取高度，避免来电模式下多算了20pt（来电模式下系统会把UIViewController.view的frame往下移动20pt）
-func NavigationContentOriginY(_ y: CGFloat) -> CGFloat {
-    return NavigationContentTop + y
-}
-
+/// 获取一个像素
 let PixelOne = QMUIHelper.pixelOne
 
-// 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏
-func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47Inch: T, _ varFor40Inch: T, _ var4: T) -> T {
-    return (IS_35INCH_SCREEN ? var4 : (IS_40INCH_SCREEN ? varFor40Inch : (IS_47INCH_SCREEN ? varFor47Inch : varFor55Inch)))
+/// 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏
+func PreferredVarForDevices<T>(_ varFor55Inch: T, _ varFor47or58Inch: T, _ varFor40Inch: T, _ varFor35Inch: T) -> T {
+    return PreferredVarForUniversalDevices(varFor55Inch,
+                                           varFor55Inch,
+                                           varFor47or58Inch,
+                                           varFor40Inch,
+                                           varFor35Inch)
 }
 
-// 同上，加多一个iPad的参数
-func PreferredVarForUniversalDevices<T>(varForPad: T, varFor55Inch: T, varFor47Inch: T, varFor40Inch: T, var4: T) -> T {
-    return (IS_IPAD ? varForPad : (IS_55INCH_SCREEN ? varFor55Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_40INCH_SCREEN ? varFor40Inch : var4))))
+/// 同上，加多一个iPad的参数
+func PreferredVarForUniversalDevices<T>(_ varForPad: T,
+                                        _ varFor55Inch: T,
+                                        _ varFor47or58Inch: T,
+                                        _ varFor40Inch: T,
+                                        _ varFor35Inch: T) -> T {
+    return PreferredVarForUniversalDevicesIncludingIPhoneX(varForPad,
+                                                           varFor55Inch,
+                                                           varFor47or58Inch,
+                                                           varFor47or58Inch,
+                                                           varFor40Inch,
+                                                           varFor35Inch)
 }
 
-// 使用文件名(不带后缀名)创建一个UIImage对象，会被系统缓存，适用于大量复用的小资源图
-// 使用这个 API 而不是 imageNamed: 是因为后者在 iOS 8 下反而存在性能问题（by molice 不确定 iOS 9 及以后的版本是否还有这个问题）
+// 同上，包含 iPhoneX
+func PreferredVarForUniversalDevicesIncludingIPhoneX<T>(_ varForPad: T,
+                                                        _ varFor55Inch: T,
+                                                        _ varFor58Inch: T,
+                                                        _ varFor47Inch: T,
+                                                        _ varFor40Inch: T,
+                                                        _ varFor35Inch: T) -> T {
+    let result = (IS_IPAD ? varForPad : (IS_35INCH_SCREEN ? varFor35Inch : (IS_40INCH_SCREEN ? varFor40Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_55INCH_SCREEN ? varFor55Inch : varFor58Inch)))))
+    return result
+}
+
+/// MARK: - 方法-创建器
+
+/// 使用文件名(不带后缀名)创建一个UIImage对象，会被系统缓存，适用于大量复用的小资源图
+/// 使用这个 API 而不是 imageNamed: 是因为后者在 iOS 8 下反而存在性能问题（by molice 不确定 iOS 9 及以后的版本是否还有这个问题）
 let UIImageMake: (String) -> UIImage? = { UIImage(named: $0, in: nil, compatibleWith: nil) }
-//#define UIImageMake(img) [UIImage imageNamed:img inBundle:nil compatibleWithTraitCollection:nil]
 
-// 使用文件名(不带后缀名，仅限png)创建一个UIImage对象，不会被系统缓存，用于不被复用的图片，特别是大图
+/// 使用文件名(不带后缀名，仅限png)创建一个UIImage对象，不会被系统缓存，用于不被复用的图片，特别是大图
 let UIImageMakeWithFile: (String) -> UIImage? = { UIImageMakeWithFileAndSuffix($0, "png") }
 let UIImageMakeWithFileAndSuffix: (String, String) -> UIImage? = { UIImage(contentsOfFile: "\(Bundle.main.resourcePath ?? "")/\($0).\($1)") }
 
 
-// 字体相关创建器，包括动态字体的支持
+// 字体相关的宏，用于快速创建一个字体对象，更多创建宏可查看 UIFont+QMUI.swift
 let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
-// 斜体只对数字和字母有效，中文无效
+/// 斜体只对数字和字母有效，中文无效
 let UIFontItalicMake: (CGFloat) -> UIFont = { UIFont.italicSystemFont(ofSize: $0) }
 let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
@@ -138,11 +157,15 @@ let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { po
     UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: true)
 }
 
-// MARK: - 数学计算
+// UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.swift
+func UIColorMake(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b) }
+func UIColorMakeWithRGBA(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b, a: a) }
+
+/// MARK: - 数学计算
 
 let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }
 
-// MARK: - 动画
+/// MARK: - 动画
 extension UIViewAnimationOptions {
     static var curveOut: UIViewAnimationOptions {
         return UIViewAnimationOptions(rawValue: 7 << 16)
@@ -153,18 +176,34 @@ extension UIViewAnimationOptions {
     }
 }
 
-// MARK: - 其他
-// TODO:
-func QMUILog(_: Any...) {
-//    QMUIHelper.shared.printLogWithCalledFunction(#function, log: "")
+/// MARK: - 其他
+
+func StringFromBool(_flag: Bool) -> String {
+    if _flag {
+        return "true"
+    }
+    return "false"
 }
+
+/// MARK: - 方法-C对象、结构操作
+func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
+    let oriMethod = class_getInstanceMethod(_class, _originSelector)
+    let newMethod = class_getInstanceMethod(_class, _newSelector)
+    let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod!), method_getTypeEncoding(newMethod!))
+    if isAddedMethod {
+        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod!), method_getTypeEncoding(oriMethod!))
+    } else {
+        method_exchangeImplementations(oriMethod!, newMethod!)
+    }
+}
+
+/// MARK: - CGFloat
 
 /**
  *  基于指定的倍数，对传进来的 floatValue 进行像素取整。若指定倍数为0，则表示以当前设备的屏幕倍数为准。
  *
  *  例如传进来 “2.1”，在 2x 倍数下会返回 2.5（0.5pt 对应 1px），在 3x 倍数下会返回 2.333（0.333pt 对应 1px）。
  */
-
 func flatSpecificScale(_ value: CGFloat, _ scale: CGFloat) -> CGFloat {
     let s = scale == 0 ? ScreenScale : scale
     return ceil(value * s) / s
@@ -175,7 +214,6 @@ func flatSpecificScale(_ value: CGFloat, _ scale: CGFloat) -> CGFloat {
  *
  *  注意如果在 Core Graphic 绘图里使用时，要注意当前画布的倍数是否和设备屏幕倍数一致，若不一致，不可使用 flat() 函数，而应该用 flatSpecificScale
  */
-
 func flat(_ value: CGFloat) -> CGFloat {
     return flatSpecificScale(value, 0)
 }
@@ -196,38 +234,77 @@ func betweenOrEqual(_ minimumValue: CGFloat, _ value: CGFloat, _ maximumValue: C
     return minimumValue <= value && value <= maximumValue
 }
 
-func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
-    let oriMethod = class_getInstanceMethod(_class, _originSelector)
-    let newMethod = class_getInstanceMethod(_class, _newSelector)
-    let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod!), method_getTypeEncoding(newMethod!))
-    if isAddedMethod {
-        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod!), method_getTypeEncoding(oriMethod!))
-    } else {
-        method_exchangeImplementations(oriMethod!, newMethod!)
-    }
-}
-
-// MARK: - CGFloat
-
-/// 用于居中运算
-
 extension CGFloat {
-    func center(with child: CGFloat) -> CGFloat {
+    /**
+     *  某些地方可能会将 CGFLOAT_MIN 作为一个数值参与计算（但其实 CGFLOAT_MIN 更应该被视为一个标志位而不是数值），可能导致一些精度问题，所以提供这个方法快速将 CGFLOAT_MIN 转换为 0
+     *  issue: https://github.com/QMUI/QMUI_iOS/issues/203
+     */
+    func removeFloatMin() -> CGFloat {
+        return self == CGFloat.leastNormalMagnitude ? 0 : self
+    }
+    
+    /**
+     *  调整给定的某个 CGFloat 值的小数点精度，超过精度的部分按四舍五入处理。
+     *
+     *  例如 0.3333.fixed(2) 会返回 0.33，而 0.6666.fixed(2) 会返回 0.67
+     *
+     *  @warning 参数类型为 CGFloat，也即意味着不管传进来的是 float 还是 double 最终都会被强制转换成 CGFloat 再做计算
+     *  @warning 该方法无法解决浮点数精度运算的问题
+     */
+    func fixed(_ precision: Int) -> CGFloat {
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.maximumFractionDigits = precision
+        var cgFloat:CGFloat = 0
+        if let result = nf.string(from: NSNumber(value: Double(self))), let doubleValue = Double(result) {
+            cgFloat = CGFloat(doubleValue)
+        }
+        return cgFloat
+    }
+    
+    /// 用于居中运算
+    func center(_ child: CGFloat) -> CGFloat {
         return flat((self - child) / 2.0)
     }
 }
 
 // MARK: - CGPoint
 
-/// 两个point相加
-
 extension CGPoint {
+    
+    /// 两个point相加
     func union(_ point: CGPoint) -> CGPoint {
         return CGPoint(x: flat(x + point.x), y: flat(y + point.y))
     }
+    
+    func fixed(_ precision: Int) -> CGPoint {
+        let x = self.x.fixed(precision)
+        let y = self.y.fixed(precision)
+        let result = CGPoint(x: x, y: y)
+        return result
+    }
+    
+    func removeFloatMin() -> CGPoint {
+        let x = self.x.removeFloatMin()
+        let y = self.y.removeFloatMin()
+        let result = CGPoint(x: x, y: y)
+        return result
+    }
+}
+
+// MARK: - CGRect
+
+/// 创建一个像素对齐的CGRect
+let CGRectFlat: (CGFloat, CGFloat, CGFloat, CGFloat) -> CGRect = { x, y, w, h in
+    CGRect(x: flat(x), y: flat(y), width: flat(w), height: flat(h))
 }
 
 extension CGRect {
+    /// 通过 size 获取一个 x/y 为 0 的 CGRect
+    static func rect(size: CGSize) -> CGRect {
+        return CGRect(x: 0, y: 0, width: size.width, height: size.height)
+    }
+    
     /// 获取rect的center，包括rect本身的x/y偏移
     var center: CGPoint {
         return CGPoint(x: flat(midX), y: flat(midY))
@@ -236,6 +313,21 @@ extension CGRect {
     /// 对CGRect的x/y、width/height都调用一次flat，以保证像素对齐
     var flatted: CGRect {
         return CGRect(x: flat(minX), y: flat(minY), width: flat(width), height: flat(height))
+    }
+    
+    /// 判断一个 CGRect 是否存在NaN
+    var isNaN: Bool {
+        return self.origin.x.isNaN || self.origin.y.isNaN || self.size.width.isNaN || self.size.height.isNaN
+    }
+    
+    /// 系统提供的 CGRectIsInfinite 接口只能判断 CGRectInfinite 的情况，而该接口可以用于判断 INFINITY 的值
+    var isInf: Bool {
+        return self.origin.x.isInfinite || self.origin.y.isInfinite || self.size.width.isInfinite || self.size.height.isInfinite
+    }
+    
+    /// 判断一个 CGRect 是否合法（例如不带无穷大的值、不带非法数字）
+    var isValidated: Bool {
+        return !self.isNull && !self.isInfinite && !self.isNaN && !self.isInf
     }
 
     /// 为一个CGRect叠加scale计算
@@ -348,7 +440,27 @@ extension CGRect {
         self.size = size.flatted
         return self
     }
+    
+    func fixed(_ precision: Int) -> CGRect {
+        let x = self.origin.x.fixed(precision)
+        let y = self.origin.y.fixed(precision)
+        let width = self.width.fixed(precision)
+        let height = self.height.fixed(precision)
+        let result = CGRect(x: x, y: y, width: width, height: height)
+        return result
+    }
+    
+    func removeFloatMin() -> CGRect {
+        let x = self.origin.x.removeFloatMin()
+        let y = self.origin.y.removeFloatMin()
+        let width = self.width.removeFloatMin()
+        let height = self.height.removeFloatMin()
+        let result = CGRect(x: x, y: y, width: width, height: height)
+        return result
+    }
 }
+
+// MARK: - CGSize
 
 extension CGSize {
 
@@ -388,11 +500,20 @@ extension CGSize {
     static var max: CGSize {
         return CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
     }
-}
-
-/// 创建一个像素对齐的CGRect
-let CGRectFlat: (CGFloat, CGFloat, CGFloat, CGFloat) -> CGRect = { x, y, w, h in
-    CGRect(x: flat(x), y: flat(y), width: flat(w), height: flat(h))
+    
+    func fixed(_ precision: Int) -> CGSize {
+        let width = self.width.fixed(precision)
+        let height = self.height.fixed(precision)
+        let result = CGSize(width: width, height: height)
+        return result
+    }
+    
+    func removeFloatMin() -> CGSize {
+        let width = self.width.removeFloatMin()
+        let height = self.height.removeFloatMin()
+        let result = CGSize(width: width, height: height)
+        return result
+    }
 }
 
 // MARK: - UIEdgeInsets
@@ -432,12 +553,33 @@ extension UIEdgeInsets {
     mutating func setRight(_ right: CGFloat) {
         self.right = flat(right)
     }
+    
+    func fixed(_ precision: Int) -> UIEdgeInsets {
+        let top = self.top.fixed(precision)
+        let left = self.left.fixed(precision)
+        let bottom = self.bottom.fixed(precision)
+        let right = self.right.fixed(precision)
+        let result = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        return result
+    }
+    
+    func removeFloatMin() -> UIEdgeInsets {
+        let top = self.top.removeFloatMin()
+        let left = self.left.removeFloatMin()
+        let bottom = self.bottom.removeFloatMin()
+        let right = self.right.removeFloatMin()
+        let result = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        return result
+    }
 }
 
-// MARK: - CGRect
+// MARK: - NSRange
 
-extension CGRect {
-    static func rect(with size: CGSize) -> CGRect {
-        return CGRect(x: 0, y: 0, width: size.width, height: size.height)
+extension NSRange {
+    func containing(innerRange: NSRange) -> Bool {
+        if innerRange.location >= self.location && self.location + self.length >= innerRange.location + innerRange.length {
+            return true
+        }
+        return false
     }
 }

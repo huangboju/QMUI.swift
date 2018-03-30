@@ -121,14 +121,14 @@ class QMUIEmptyView: UIView {
     // 颜色
 
     /// 默认为(93, 100, 110)
-    public var textLabelTextColor = UIColor(r: 93, g: 100, b: 110) {
+    public var textLabelTextColor = UIColorMake(93, 100, 110) {
         didSet {
             textLabel.textColor = textLabelTextColor
         }
     }
 
     /// 默认为(133, 140, 150)
-    public var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
+    public var detailTextLabelTextColor = UIColorMake(133, 140, 150) {
         didSet {
             updateDetailTextLabel(with: detailTextLabel.text)
         }

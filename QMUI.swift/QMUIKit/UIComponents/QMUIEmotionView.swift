@@ -156,8 +156,8 @@ class QMUIEmotionView: UIView {
         addSubview(collectionView)
 
         pageControl.addTarget(self, action: #selector(handlePageControlEvent), for: .valueChanged)
-        pageControl.pageIndicatorTintColor = UIColor(r: 210, g: 210, b: 210)
-        pageControl.currentPageIndicatorTintColor = UIColor(r: 162, g: 162, b: 162)
+        pageControl.pageIndicatorTintColor = UIColorMake(210, 210, 210)
+        pageControl.currentPageIndicatorTintColor = UIColorMake(162, 162, 162)
         addSubview(pageControl)
 
         sendButton.setTitle("发送", for: .normal)
@@ -298,7 +298,7 @@ class QMUIEmotionPageView: UICollectionViewCell {
 
         emotionSelectedBackgroundView.isUserInteractionEnabled = false
 
-        emotionSelectedBackgroundView.backgroundColor = UIColor(r: 0, g: 0, b: 0, a: 0.16)
+        emotionSelectedBackgroundView.backgroundColor = UIColorMakeWithRGBA(0, 0, 0, 0.16)
         emotionSelectedBackgroundView.layer.cornerRadius = 3
         emotionSelectedBackgroundView.alpha = 0
         addSubview(emotionSelectedBackgroundView)

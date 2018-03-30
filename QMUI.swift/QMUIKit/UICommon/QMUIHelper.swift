@@ -408,7 +408,7 @@ extension QMUIHelper {
     /// 判断当前设备是否高性能设备，只会判断一次，以后都直接读取结果，所以没有性能问题
     static var isHighPerformanceDevice: Bool {
         if _isHighPerformanceDevice < 0 {
-            _isHighPerformanceDevice = PreferredVarForUniversalDevices(varForPad: 1, varFor55Inch: 1, varFor47Inch: 1, varFor40Inch: 0, var4: 0)
+            _isHighPerformanceDevice = PreferredVarForUniversalDevices(1, 1, 1, 0, 0)
         }
         return _isHighPerformanceDevice > 0
     }

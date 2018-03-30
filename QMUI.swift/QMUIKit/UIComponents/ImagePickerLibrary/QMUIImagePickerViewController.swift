@@ -160,7 +160,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
 
             sendButton.titleLabel?.font = UIFontMake(16)
             sendButton.contentHorizontalAlignment = .right
-            sendButton.setTitleColor(UIColor(r: 124, g: 124, b: 124), for: .normal)
+            sendButton.setTitleColor(UIColorMake(124, 124, 124), for: .normal)
             sendButton.setTitleColor(UIColorGray, for: .disabled)
             sendButton.setTitle("发送", for: .normal)
             sendButton.sizeToFit()
@@ -196,7 +196,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
 
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelPickerImage))
+        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelPickerImage))
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -236,9 +236,9 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         if allowsMultipleSelection {
             operationToolBarView.frame = CGRect(x: 0, y: view.bounds.height - OperationToolBarViewHeight, width: view.bounds.width, height: OperationToolBarViewHeight)
             let height = operationToolBarView.frame.height
-            previewButton.frame.setXY(OperationToolBarViewPaddingHorizontal, height.center(with: height))
-            sendButton.frame = CGRect(x: operationToolBarView.frame.width - OperationToolBarViewPaddingHorizontal - sendButton.frame.width, y: operationToolBarView.frame.height.center(with: sendButton.frame.height), width: sendButton.frame.width, height: sendButton.frame.height)
-            imageCountLabel.frame = CGRect(x: sendButton.frame.minX - ImageCountLabelSize.width - 5, y: sendButton.frame.minY + sendButton.frame.height.center(with: ImageCountLabelSize.height), width: ImageCountLabelSize.width, height: ImageCountLabelSize.height)
+            previewButton.frame.setXY(OperationToolBarViewPaddingHorizontal, height.center(height))
+            sendButton.frame = CGRect(x: operationToolBarView.frame.width - OperationToolBarViewPaddingHorizontal - sendButton.frame.width, y: operationToolBarView.frame.height.center(sendButton.frame.height), width: sendButton.frame.width, height: sendButton.frame.height)
+            imageCountLabel.frame = CGRect(x: sendButton.frame.minX - ImageCountLabelSize.width - 5, y: sendButton.frame.minY + sendButton.frame.height.center(ImageCountLabelSize.height), width: ImageCountLabelSize.width, height: ImageCountLabelSize.height)
             operationToolBarViewHeight = operationToolBarView.frame.height
         }
 
@@ -390,7 +390,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             // 下载过程中点击，取消下载，理论上能点击 progressView 就肯定是下载中，这里只是做个保护
             let cell = collectionView.cellForItem(at: indexPath) as? QMUIImagePickerCollectionViewCell
             QMUIAssetsManager.shared.phCachingImageManager.cancelImageRequest(PHImageRequestID(imageAsset.requestID))
-            QMUILog("Cancel download asset image with request ID \(imageAsset.requestID)")
+            print("Cancel download asset image with request ID \(imageAsset.requestID)")
             cell?.downloadStatus = .canceled
             imageAsset.updateDownloadStatusWithDownloadResult(false)
         }
@@ -469,7 +469,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
                  *  为了避免这种情况，这里该 block 主动放到主线程执行。
                  */
                 DispatchQueue.main.async {
-                    QMUILog("Download iCloud image, current progress is : \(progress)")
+                    print("Download iCloud image, current progress is : \(progress)")
 
                     if cell?.downloadStatus != .downloading {
                         cell?.downloadStatus = .downloading
@@ -486,7 +486,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
                         cell?.progressView.progress = CGFloat(max(0.02, progress))
                     }
                     if error != nil {
-                        QMUILog("Download iCloud image Failed, current progress is: \(progress)")
+                        print("Download iCloud image Failed, current progress is: \(progress)")
                         cell?.downloadStatus = .failed
                     }
                 }

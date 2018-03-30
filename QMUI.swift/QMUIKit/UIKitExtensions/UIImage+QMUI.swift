@@ -312,8 +312,8 @@ extension UIImage {
             }
             let resizedSize = CGSize(width: flatSpecificScale(imageSize.width * ratio, scale), height: flatSpecificScale(imageSize.height * ratio, scale))
             contextSize = CGSize(width: fmin(size.width, resizedSize.width), height: fmin(size.height, resizedSize.height))
-            drawingRect.origin.x = contextSize.width.center(with: resizedSize.width)
-            drawingRect.origin.y = contextSize.height.center(with: resizedSize.height)
+            drawingRect.origin.x = contextSize.width.center(resizedSize.width)
+            drawingRect.origin.y = contextSize.height.center(resizedSize.height)
             drawingRect.size = resizedSize
         }
         UIGraphicsBeginImageContextWithOptions(contextSize, qmui_opaque, scale)
@@ -750,7 +750,7 @@ extension UIImage {
             let string = NSAttributedString(string: "i", attributes: [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: tintColor])
             let stringSize = string.boundingRect(with: size, options: .usesFontLeading, context: nil)
 
-            string.draw(at: CGPoint(x: size.width.center(with: stringSize.width), y: size.height.center(with: stringSize.height)))
+            string.draw(at: CGPoint(x: size.width.center(stringSize.width), y: size.height.center(stringSize.height)))
         }
 
         resultImage = UIGraphicsGetImageFromCurrentImageContext()

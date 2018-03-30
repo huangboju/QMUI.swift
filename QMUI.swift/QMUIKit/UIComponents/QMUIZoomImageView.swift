@@ -905,7 +905,7 @@ class QMUIZoomImageViewVideoToolbar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = UIColor(r: 0.5, g: 255, b: 0, a: 0)
+        backgroundColor = UIColorMakeWithRGBA(0.5, 255, 0, 0)
 
         playButton.qmui_outsideEdge = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
         playButton.setImage(playButtonImage, for: .normal)
@@ -915,8 +915,8 @@ class QMUIZoomImageViewVideoToolbar: UIView {
         pauseButton.setImage(pauseButtonImage, for: .normal)
         addSubview(pauseButton)
 
-        slider.minimumTrackTintColor = UIColor(r: 195, g: 195, b: 195)
-        slider.maximumTrackTintColor = UIColor(r: 95, g: 95, b: 95)
+        slider.minimumTrackTintColor = UIColorMake(195, 195, 195)
+        slider.maximumTrackTintColor = UIColorMake(95, 95, 95)
         slider.thumbSize = CGSize(width: 12, height: 12)
         slider.thumbColor = UIColorWhite
         addSubview(slider)
@@ -991,7 +991,7 @@ class QMUIZoomImageVideoPlayerView: UIView {
 
 class QMUIZoomImageViewImageGenerator {
 
-    private static let iconsColor = UIColor(r: 0, g: 0, b: 0, a: 0.25)
+    private static let iconsColor = UIColorMakeWithRGBA(0, 0, 0, 0.25)
 
     static var largePlayImage: UIImage? {
         let width: CGFloat = 60
@@ -1001,7 +1001,7 @@ class QMUIZoomImageViewImageGenerator {
             return nil
         }
 
-        context.setStrokeColor(UIColor(r: 255, g: 255, b: 255, a: 0.75).cgColor)
+        context.setStrokeColor(UIColorMakeWithRGBA(255, 255, 255, 0.75).cgColor)
 
         // circle outside
         context.setFillColor(iconsColor.cgColor)

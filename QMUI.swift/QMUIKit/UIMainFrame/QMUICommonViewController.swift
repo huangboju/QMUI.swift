@@ -63,9 +63,7 @@ class QMUICommonViewController: UIViewController {
         supportedOrientationMask = SupportedOrientationMask
 
         // 动态字体notification
-        if IS_RESPOND_DYNAMICTYPE {
-            NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChanged(_:)), name: .UIContentSizeCategoryDidChange, object: nil)
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChanged(_:)), name: .UIContentSizeCategoryDidChange, object: nil)
     }
 
     override var title: String? {

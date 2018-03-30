@@ -10,25 +10,25 @@
 let QDSelectedThemeClassName = "selectedThemeClassName"
 
 // MARK: Colors
-let UIColorGray1 = UIColor(r: 53, g: 60, b: 70)
-let UIColorGray2 = UIColor(r: 73, g: 80, b: 90)
-let UIColorGray3 = UIColor(r: 93, g: 100, b: 110)
-let UIColorGray4 = UIColor(r: 113, g: 120, b: 130)
-let UIColorGray5 = UIColor(r: 133, g: 140, b: 150)
-let UIColorGray6 = UIColor(r: 153, g: 160, b: 170)
-let UIColorGray7 = UIColor(r: 173, g: 180, b: 190)
-let UIColorGray8 = UIColor(r: 196, g: 200, b: 208)
-let UIColorGray9 = UIColor(r: 216, g: 220, b: 228)
+let UIColorGray1 = UIColorMake(53, 60, 70)
+let UIColorGray2 = UIColorMake(73, 80, 90)
+let UIColorGray3 = UIColorMake(93, 100, 110)
+let UIColorGray4 = UIColorMake(113, 120, 130)
+let UIColorGray5 = UIColorMake(133, 140, 150)
+let UIColorGray6 = UIColorMake(153, 160, 170)
+let UIColorGray7 = UIColorMake(173, 180, 190)
+let UIColorGray8 = UIColorMake(196, 200, 208)
+let UIColorGray9 = UIColorMake(216, 220, 228)
 
-let UIColorTheme1 = UIColor(r: 239, g: 83, b: 98) // Grapefruit
-let UIColorTheme2 = UIColor(r: 254, g: 109, b: 75) // Bittersweet
-let UIColorTheme3 = UIColor(r: 255, g: 207, b: 71) // Sunflower
-let UIColorTheme4 = UIColor(r: 159, g: 214, b: 97) // Grass
-let UIColorTheme5 = UIColor(r: 63, g: 208, b: 173) // Mint
-let UIColorTheme6 = UIColor(r: 49, g: 189, b: 243) // Aqua
-let UIColorTheme7 = UIColor(r: 90, g: 154, b: 239) // Blue Jeans
-let UIColorTheme8 = UIColor(r: 172, g: 143, b: 239) // Lavender
-let UIColorTheme9 = UIColor(r: 238, g: 133, b: 193) // Pink Rose
+let UIColorTheme1 = UIColorMake(239, 83, 98) // Grapefruit
+let UIColorTheme2 = UIColorMake(254, 109, 75) // Bittersweet
+let UIColorTheme3 = UIColorMake(255, 207, 71) // Sunflower
+let UIColorTheme4 = UIColorMake(159, 214, 97) // Grass
+let UIColorTheme5 = UIColorMake(63, 208, 173) // Mint
+let UIColorTheme6 = UIColorMake(49, 189, 243) // Aqua
+let UIColorTheme7 = UIColorMake(90, 154, 239) // Blue Jeans
+let UIColorTheme8 = UIColorMake(172, 143, 239) // Lavender
+let UIColorTheme9 = UIColorMake(238, 133, 193) // Pink Rose
 
 class QDCommonUI {
     

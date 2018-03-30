@@ -117,7 +117,7 @@ extension UISearchBar: SelfAware2 {
         qmui_cancelButton()?.frame.setY(qmui_cancelButton()?.qmui_minYWhenCenterInSuperview ?? 0)
         if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
             if superView.frame.minY < bottom { // scopeBar 显示在搜索框右边
-                let y = superView.bounds.height.center(with: superView.frame.height)
+                let y = superView.bounds.height.center(superView.frame.height)
                 superView.frame.setY(y)
             }
         }
@@ -359,7 +359,7 @@ extension UISearchBar {
         // 设置搜索icon
         if let searchIconImage = SearchBarSearchIconImage {
             if !searchIconImage.size.equalTo(CGSize(width: 13, height: 13)) {
-                QMUILog("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSStringFromCGSize(CGSize(width: 13, height: 23)))")
+                print("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSStringFromCGSize(CGSize(width: 13, height: 23)))")
             }
             setImage(searchIconImage, for: .search, state: .normal)
         }

@@ -387,12 +387,12 @@ class QMUINavigationController: UINavigationController {
         
         if let currentViewController = topViewController {
             if !NeedsBackBarButtonItemTitle {
-                currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: "", position: .left, target: nil, action: nil)
+                currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "", position: .left, target: nil, action: nil)
             } else {
                 if let vc = viewController as? QMUINavigationControllerAppearanceDelegate {
                     if vc.responds(to: #selector(QMUINavigationControllerAppearanceDelegate.backBarButtonItemTitle(_:))) {
                         if let title = vc.backBarButtonItemTitle!(currentViewController) {
-                            currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(with: .normal, title: title, position: .left, target: nil, action: nil)
+                            currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: title, position: .left, target: nil, action: nil)
                         }
                     }
                 }

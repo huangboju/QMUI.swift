@@ -494,8 +494,8 @@ class QMUIModalPresentationViewController: UIViewController {
         }
         contentViewSize.width = min(contentViewLimitSize.width, contentViewSize.width)
         contentViewSize.height = min(contentViewLimitSize.height, contentViewSize.height)
-        var contentViewFrame = CGRect(x: contentViewContainerSize.width.center(with: contentViewSize.width) + contentViewMargins.left,
-                                      y: contentViewContainerSize.height.center(with: contentViewSize.height) + contentViewMargins.top,
+        var contentViewFrame = CGRect(x: contentViewContainerSize.width.center(contentViewSize.width) + contentViewMargins.left,
+                                      y: contentViewContainerSize.height.center(contentViewSize.height) + contentViewMargins.top,
                                       width: contentViewSize.width,
                                       height: contentViewSize.height)
 

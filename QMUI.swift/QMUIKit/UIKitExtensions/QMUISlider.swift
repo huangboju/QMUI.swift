@@ -90,7 +90,7 @@ class QMUISlider: UISlider {
         }
 
         result = result.setHeight(trackHeight)
-        result = result.setY(bounds.height.center(with: result.height))
+        result = result.setY(bounds.height.center(result.height))
         return result
     }
 
