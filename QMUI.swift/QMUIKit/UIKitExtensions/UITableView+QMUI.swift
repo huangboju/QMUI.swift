@@ -214,6 +214,8 @@ extension UITableView: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
+            let type = UITableView.self
+            
             let selectors = [
                 #selector(UITableView.reloadData),
                 #selector(UITableView.insertSections(_:with:)),
@@ -239,7 +241,7 @@ extension UITableView: SelfAware2 {
             ]
             
             for index in 0..<selectors.count {
-                ReplaceMethod(self, selectors[index], qmui_selectors[index])
+                ReplaceMethod(type, selectors[index], qmui_selectors[index])
             }
         }
     }

@@ -12,7 +12,9 @@ extension UINavigationController: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            ReplaceMethod(self, #selector(viewDidLoad), #selector(qmui_viewDidLoad))
+            let type = UINavigationController.self
+            
+            ReplaceMethod(type, #selector(viewDidLoad), #selector(qmui_viewDidLoad))
             // TODO: 这里UINavigationController没有显示的该方法，所以Swift类型推不出来
             //            ReplaceMethod(NSClassFromString("UINavigationController")!, #selector(navigationBar(_:shouldPop:)), #selector(qmui_navigationBar(_:shouldPop:)))
         }

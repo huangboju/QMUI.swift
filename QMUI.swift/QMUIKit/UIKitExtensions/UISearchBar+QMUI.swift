@@ -11,6 +11,8 @@ extension UISearchBar: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
+            let type = UISearchBar.self
+            
             let selectors = [
                 #selector(setter: placeholder),
                 #selector(layoutSubviews),
@@ -18,7 +20,7 @@ extension UISearchBar: SelfAware2 {
             ]
             selectors.forEach({
                 //                print("qmui_" + $0.description)
-                ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
+                ReplaceMethod(type, $0, Selector("qmui_" + $0.description))
             })
         }
     }

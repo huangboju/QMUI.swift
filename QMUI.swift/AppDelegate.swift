@@ -15,6 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        // QD自定义的全局样式渲染
+        QDCommonUI.renderGlobalAppearances()
+        
+        // 界面
         window = UIWindow(frame: UIScreen.main.bounds)
         createTabBarController()
         
@@ -28,12 +32,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let uikitViewController = QDUIKitViewController()
         uikitViewController.hidesBottomBarWhenPushed = false
         let uikitNavController = QDNavigationController(rootViewController: uikitViewController)
-        let image = UIImage(named: "icon_tabbar_uikit")?.withRenderingMode(.alwaysOriginal)
-        let selectedImage = UIImage(named: "icon_tabbar_uikit_selected")
-        uikitNavController.tabBarItem = QDUIHelper.tabBarItem(title: "QMUIKit", image: image, selectedImage: nil, tag: 0)
+        var image = UIImageMake("icon_tabbar_uikit")?.withRenderingMode(.alwaysOriginal)
+        var selectedImage = UIImageMake("icon_tabbar_uikit_selected")
+        uikitNavController.tabBarItem = QDUIHelper.tabBarItem(title: "QMUIKit", image: image, selectedImage: selectedImage, tag: 0)
+        
+        // UIComponents
+        let componentViewController = QDComponentsViewController()
+        componentViewController.hidesBottomBarWhenPushed = false
+        let componentNavController = QDNavigationController(rootViewController: componentViewController)
+        image = UIImageMake("icon_tabbar_component")?.withRenderingMode(.alwaysOriginal)
+        selectedImage = UIImageMake("icon_tabbar_component_selected")
+        componentNavController.tabBarItem = QDUIHelper.tabBarItem(title: "Components", image: image, selectedImage: selectedImage, tag: 0)
+        
+        // UIComponents
+        let labViewController = QDLabViewController()
+        labViewController.hidesBottomBarWhenPushed = false
+        let labNavController = QDNavigationController(rootViewController: labViewController)
+        image = UIImageMake("icon_tabbar_lab")?.withRenderingMode(.alwaysOriginal)
+        selectedImage = UIImageMake("icon_tabbar_lab_selected")
+        labNavController.tabBarItem = QDUIHelper.tabBarItem(title: "Lab", image: image, selectedImage: selectedImage, tag: 0)
+        
         
         // window root controller
-        tabBarViewController.viewControllers = [uikitNavController]
+        tabBarViewController.viewControllers = [uikitNavController, componentNavController, labViewController]
         window?.rootViewController = tabBarViewController
         window?.makeKeyAndVisible()
     }

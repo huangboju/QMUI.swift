@@ -11,8 +11,10 @@ extension UILabel: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            ReplaceMethod(self, #selector(setter: text), #selector(qmui_setText))
-            ReplaceMethod(self, #selector(setter: attributedText), #selector(qmui_setAttributedText))
+            let type = UILabel.self
+            
+            ReplaceMethod(type, #selector(setter: text), #selector(qmui_setText))
+            ReplaceMethod(type, #selector(setter: attributedText), #selector(qmui_setAttributedText))
         }
     }
 

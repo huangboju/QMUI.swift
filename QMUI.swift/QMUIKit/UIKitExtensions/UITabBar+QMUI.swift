@@ -16,6 +16,8 @@ extension UITabBar: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
+            let type = UITabBar.self
+            
             let selectors = [
                 #selector(setItems(_:animated:)),
                 #selector(setter: selectedItem),
@@ -23,7 +25,7 @@ extension UITabBar: SelfAware2 {
             ]
             selectors.forEach({
                 //                print("qmui_" + $0.description)
-                ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
+                ReplaceMethod(type, $0, Selector("qmui_" + $0.description))
             })
         }
     }

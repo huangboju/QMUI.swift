@@ -11,7 +11,8 @@ extension UIColor: SelfAware {
 
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
-            ReplaceMethod(self, #selector(description), #selector(getter: qmui_description))
+            let type = UIColor.self
+            ReplaceMethod(type, #selector(description), #selector(getter: qmui_description))
         }
     }
 }

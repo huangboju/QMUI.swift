@@ -8,9 +8,9 @@
 
 class QDCommonGridViewController: QDCommonViewController {
     
-    public private(set) var dataSource: QMUIOrderedDictionary<String, UIImage>!
+    private(set) var dataSource: QMUIOrderedDictionary<String, UIImage> = [:]
     
-    public private(set) var gridView: QMUIGridView!
+    private(set) var gridView: QMUIGridView!
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()

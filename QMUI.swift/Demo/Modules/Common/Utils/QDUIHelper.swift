@@ -17,7 +17,7 @@ class QDUIHelper {
 // MARK: - QMUIMoreOperationAppearance
 extension QDUIHelper {
     static func customMoreOperationAppearance() {
-        
+        // 如果需要统一修改全局的 QMUIMoreOperationController 样式，在这里修改 appearance 的值即可
     }
 }
 
@@ -38,9 +38,9 @@ extension QDUIHelper {
 // MARK: - QMUIEmotionView
 extension QDUIHelper {
     static func customEmotionViewAppearance() {
-        QMUIEmotionView.appearance().emotionSize = CGSize(width: 24, height: 24)
-        QMUIEmotionView.appearance().minimumEmotionHorizontalSpacing = 14
-        QMUIEmotionView.appearance().sendButtonBackgroundColor = QDThemeManager.shared.currentTheme!.themeTintColor
+//        QMUIEmotionView.appearance().emotionSize = CGSize(width: 24, height: 24)
+//        QMUIEmotionView.appearance().minimumEmotionHorizontalSpacing = 14
+//        QMUIEmotionView.appearance().sendButtonBackgroundColor = QDThemeManager.shared.currentTheme!.themeTintColor
     }
 }
 

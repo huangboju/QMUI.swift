@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-public struct QMUIBorderViewPosition: OptionSet {
+struct QMUIBorderViewPosition: OptionSet {
     public let rawValue: Int
 
     public init(rawValue: Int) {
@@ -25,27 +25,33 @@ extension UIView: SelfAware {
     private static let _onceToken = UUID().uuidString
 
     static func awake() {
-        if #available(iOS 11, *) {
-            DispatchQueue.once(token: _onceToken) {
-                ReplaceMethod(self, #selector(safeAreaInsetsDidChange), #selector(qmui_safeAreaInsetsDidChange))
-            }
-        }
         DispatchQueue.once(token: _onceToken) {
+            let type = UIView.self
+            if #available(iOS 11, *) {
+                ReplaceMethod(type, #selector(safeAreaInsetsDidChange), #selector(qmui_safeAreaInsetsDidChange))
+            }
+            
             var selector = #selector((UIView.convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             var qmui_selector = #selector((UIView.qmui_convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
-            ReplaceMethod(self, selector, qmui_selector)
+            ReplaceMethod(type, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:from:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             qmui_selector = #selector((UIView.qmui_convert(_:from:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
-            ReplaceMethod(self, selector, qmui_selector)
+            ReplaceMethod(type, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:to:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
             qmui_selector = #selector((UIView.qmui_convert(rect:to:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
-            ReplaceMethod(self, selector, qmui_selector)
+            ReplaceMethod(type, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:from:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
             qmui_selector = #selector((UIView.qmui_convert(rect:from:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
-            ReplaceMethod(self, selector, qmui_selector)
+            ReplaceMethod(type, selector, qmui_selector)
+            
+            ReplaceMethod(type, #selector(layoutSubviews), #selector(qmui_debug_layoutSubviews))
+            ReplaceMethod(type, #selector(addSubview(_:)), #selector(qmui_debug_addSubview(_:)))
+            ReplaceMethod(type, #selector(becomeFirstResponder), #selector(qmui_debug_becomeFirstResponder))
+            
+            ReplaceMethod(type, #selector(layoutSublayers(of:)), #selector(qmui_layoutSublayers(of:)))
         }
     }
     
@@ -74,6 +80,15 @@ extension UIView: SelfAware {
         alertConvertValue(view)
         return qmui_convert(rect: rect, from: view)
     }
+    
+    @objc func qmui_debug_layoutSubviews() {
+        qmui_debug_layoutSubviews()
+        if qmui_shouldShowDebugColor {
+            qmui_hasDebugColor = true
+            backgroundColor = debugColor()
+            renderColor(subviews)
+        }
+    }
 }
 
 extension UIView {
@@ -100,7 +115,7 @@ extension UIView {
     }
     
     /// 在 iOS 11 及之后的版本，此属性将返回系统已有的 self.safeAreaInsets。在之前的版本此属性返回 UIEdgeInsetsZero
-    public var qmui_safeAreaInsets: UIEdgeInsets {
+    var qmui_safeAreaInsets: UIEdgeInsets {
         if #available(iOS 11.0, *) {
             return safeAreaInsets
         }
@@ -109,7 +124,7 @@ extension UIView {
     
     /// 为了在 safeAreaInsetsDidChange 里得知变化前的 safeAreaInsets 值，增加了这个属性，注意这个属性仅在 `safeAreaInsetsDidChange` 的 super 调用前才有效。
     /// https://github.com/QMUI/QMUI_iOS/issues/253
-    public var qmui_safeAreaInsetsBeforeChange: UIEdgeInsets {
+    var qmui_safeAreaInsetsBeforeChange: UIEdgeInsets {
         get {
             return (objc_getAssociatedObject(self, &Keys.safeAreaInsetsBeforeChange) as? UIEdgeInsets) ?? UIEdgeInsets.zero
         }
@@ -118,11 +133,11 @@ extension UIView {
         }
     }
 
-    public func qmui_removeAllSubviews() {
+    func qmui_removeAllSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
 
-    public static func qmui_animate(with animated: Bool, duration: TimeInterval, delay: TimeInterval, options: UIViewAnimationOptions, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
+    static func qmui_animate(with animated: Bool, duration: TimeInterval, delay: TimeInterval, options: UIViewAnimationOptions, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
         if animated {
             UIView.animate(withDuration: duration, delay: delay, options: options, animations: animations, completion: completion)
         } else {
@@ -133,7 +148,7 @@ extension UIView {
         }
     }
 
-    public static func qmui_animate(with animated: Bool, duration: TimeInterval, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
+    static func qmui_animate(with animated: Bool, duration: TimeInterval, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
         if animated {
             UIView.animate(withDuration: duration, animations: animations, completion: completion)
         } else {
@@ -144,7 +159,7 @@ extension UIView {
         }
     }
 
-    public static func qmui_animate(with animated: Bool, duration: TimeInterval, animations: @escaping () -> Void) {
+    static func qmui_animate(with animated: Bool, duration: TimeInterval, animations: @escaping () -> Void) {
         if animated {
             UIView.animate(withDuration: duration, animations: animations)
         } else {
@@ -197,7 +212,7 @@ extension UIView {
      *  @param selector 要判断的方法
      *  @return YES 表示当前类重写了指定的方法，NO 表示没有重写，使用的是 UIView 默认的实现
      */
-    public func qmui_hasOverrideUIKitMethod(_ selector: Selector) -> Bool {
+    func qmui_hasOverrideUIKitMethod(_ selector: Selector) -> Bool {
         // 排序依照 Xcode Interface Builder 里的控件排序，但保证子类在父类前面
         var viewSuperclasses = [
             UILabel.self,
@@ -253,10 +268,9 @@ extension UIView {
  *  Debug UIView 的时候用，对某个 view 的 subviews 都添加一个半透明的背景色，方面查看 view 的布局情况
  */
 extension UIView {
-    /// TODO: - method swizzle
 
     /// 是否需要添加debug背景色，默认NO
-    public var qmui_shouldShowDebugColor: Bool {
+    var qmui_shouldShowDebugColor: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.shouldShowDebugColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             if newValue {
@@ -269,7 +283,7 @@ extension UIView {
     }
 
     /// 是否每个view的背景色随机，如果不随机则统一使用半透明红色，默认NO
-    public var qmui_needsDifferentDebugColor: Bool {
+    var qmui_needsDifferentDebugColor: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.needsDifferentDebugColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             if newValue {
@@ -282,13 +296,51 @@ extension UIView {
     }
 
     /// 标记一个view是否已经被添加了debug背景色，外部一般不使用
-    public private(set) var qmui_hasDebugColor: Bool {
+    private(set) var qmui_hasDebugColor: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.hasDebugColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
             return (objc_getAssociatedObject(self, &Keys.hasDebugColor) as? Bool) ?? false
         }
+    }
+    
+    private func renderColor(_ subviews: [UIView]) {
+        subviews.forEach {
+            if #available(iOS 9.0, *) {
+                if let view = $0 as? UIStackView {
+                    view.renderColor(view.arrangedSubviews)
+                }
+            }
+            $0.qmui_hasDebugColor = true
+            $0.qmui_shouldShowDebugColor = self.qmui_shouldShowDebugColor
+            $0.qmui_needsDifferentDebugColor = self.qmui_needsDifferentDebugColor
+            $0.backgroundColor = self.debugColor()
+        }
+    }
+    
+    private func debugColor() -> UIColor {
+        if !qmui_needsDifferentDebugColor {
+            return UIColorTestRed
+        } else {
+            return UIColor.qmui_randomColor.withAlphaComponent(0.8)
+        }
+    }
+    
+    @objc func qmui_debug_addSubview(_ view: UIView) {
+        assert(view != self, "把自己作为 subview 添加到自己身上！\n\(Thread.callStackSymbols)")
+        qmui_debug_addSubview(view)
+    }
+    
+    @objc func qmui_debug_becomeFirstResponder() -> Bool {
+        if IS_SIMULATOR && !(self is UIWindow) && window != nil && !window!.isKeyWindow {
+            QMUISymbolicUIViewBecomeFirstResponderWithoutKeyWindow()
+        }
+        return qmui_debug_becomeFirstResponder()
+    }
+    
+    private func QMUISymbolicUIViewBecomeFirstResponderWithoutKeyWindow() {
+        print("尝试让一个处于非 keyWindow 上的 \(self) becomeFirstResponder，可能导致界面显示异常，请添加 '\(#function)' 的 Symbolic Breakpoint 以捕捉此类信息\n\(Thread.callStackSymbols)")
     }
 }
 
@@ -304,7 +356,7 @@ extension UIView {
     
 
     /// 设置边框类型，支持组合，例如：`borderType = QMUIBorderViewTypeTop|QMUIBorderViewTypeBottom`
-    public var qmui_borderPosition: QMUIBorderViewPosition {
+    var qmui_borderPosition: QMUIBorderViewPosition {
         set {
             objc_setAssociatedObject(self, &Keys.borderPosition, newValue, .OBJC_ASSOCIATION_RETAIN)
             setNeedsLayout()
@@ -316,30 +368,30 @@ extension UIView {
 
     /// 边框的大小，默认为PixelOne
     @IBInspectable
-    public var qmui_borderWidth: CGFloat {
+    var qmui_borderWidth: CGFloat {
         set {
             objc_setAssociatedObject(self, &Keys.borderWidth, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             setNeedsLayout()
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.borderWidth) as? CGFloat) ?? 0
+            return (objc_getAssociatedObject(self, &Keys.borderWidth) as? CGFloat) ?? PixelOne
         }
     }
 
     /// 边框的颜色，默认为UIColorSeparator
     @IBInspectable
-    public var qmui_borderColor: UIColor {
+    var qmui_borderColor: UIColor {
         set {
             objc_setAssociatedObject(self, &Keys.borderColor, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             setNeedsLayout()
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.borderColor) as? UIColor) ?? UIColorWhite
+            return (objc_getAssociatedObject(self, &Keys.borderColor) as? UIColor) ?? UIColorSeparator
         }
     }
 
     /// 虚线 : dashPhase默认是0，且当dashPattern设置了才有效
-    public var qmui_dashPhase: CGFloat {
+    var qmui_dashPhase: CGFloat {
         set {
             objc_setAssociatedObject(self, &Keys.dashPhase, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             setNeedsLayout()
@@ -349,7 +401,7 @@ extension UIView {
         }
     }
 
-    public var qmui_dashPattern: [NSNumber] {
+    var qmui_dashPattern: [NSNumber]? {
         set {
             objc_setAssociatedObject(self, &Keys.dashPattern, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             setNeedsLayout()
@@ -360,7 +412,7 @@ extension UIView {
     }
 
     /// border的layer
-    public private(set) var qmui_borderLayer: CAShapeLayer {
+    private(set) var qmui_borderLayer: CAShapeLayer? {
         set {
             objc_setAssociatedObject(self, &Keys.borderLayer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
@@ -369,9 +421,58 @@ extension UIView {
         }
     }
 
-    private func setDefaultStyle() {
-        qmui_borderWidth = PixelOne
-        qmui_borderColor = UIColorSeparator
+    @objc func qmui_layoutSublayers(of layer: CALayer) {
+        qmui_layoutSublayers(of: layer)
+        if (qmui_borderLayer == nil && qmui_borderPosition == .none) || (qmui_borderLayer == nil && qmui_borderWidth == 0) {
+            return
+        }
+        if qmui_borderLayer != nil && qmui_borderPosition == .none && qmui_borderLayer!.path != nil {
+            return
+        }
+        if qmui_borderLayer != nil && qmui_borderWidth == 0 && qmui_borderLayer!.lineWidth == 0 {
+            return
+        }
+        if qmui_borderLayer == nil {
+            qmui_borderLayer = CAShapeLayer()
+            qmui_borderLayer?.qmui_removeDefaultAnimations()
+            layer.addSublayer(qmui_borderLayer!)
+        }
+        qmui_borderLayer?.frame = bounds
+        let borderWidth = qmui_borderWidth
+        qmui_borderLayer?.lineWidth = borderWidth
+        qmui_borderLayer?.strokeColor = qmui_borderColor.cgColor
+        qmui_borderLayer?.lineDashPhase = qmui_dashPhase
+        if qmui_dashPattern != nil {
+            qmui_borderLayer!.lineDashPattern = qmui_dashPattern
+        }
+        
+        var path: UIBezierPath?
+        
+        if qmui_borderPosition != .none {
+            path = UIBezierPath()
+        }
+        
+        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.top.rawValue) != 0 {
+            path?.move(to: CGPoint(x: 0, y: borderWidth / 2))
+            path?.addLine(to: CGPoint(x: bounds.width, y: borderWidth / 2))
+        }
+        
+        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.left.rawValue) != 0 {
+            path?.move(to: CGPoint(x: borderWidth / 2, y: 0))
+            path?.addLine(to: CGPoint(x: borderWidth / 2, y: bounds.height))
+        }
+        
+        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.bottom.rawValue) != 0 {
+            path?.move(to: CGPoint(x: 0, y: bounds.height - borderWidth / 2))
+            path?.addLine(to: CGPoint(x: bounds.width, y: bounds.height - borderWidth / 2))
+        }
+        
+        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.right.rawValue) != 0 {
+            path?.move(to: CGPoint(x: bounds.width - borderWidth / 2, y: 0))
+            path?.addLine(to: CGPoint(x: bounds.width - borderWidth / 2, y: bounds.height))
+        }
+        
+        qmui_borderLayer?.path = path?.cgPath
     }
 }
 
@@ -379,76 +480,123 @@ extension UIView {
 
 /**
  *  对 view.frame 操作的简便封装，注意 view 与 view 之间互相计算时，需要保证处于同一个坐标系内。
- *  siwft 支持 view.minY 等属性，调用已经很方便，无需再实现 qmui_top 等
+ *  siwft 虽然支持 view.frame.minY 等属性，调用已经很方便，但是 view.frame.minY 都是只读，并不方便
  */
 extension UIView {
-    /**
-     * 设置view的width和height
-     */
-    public func qmui_set(width: CGFloat, height: CGFloat) {
-        var frame = self.frame
-        frame.size.height = height
-        frame.size.width = width
-        self.frame = frame
+    
+    /// 等价于 CGRectGetMinY(frame)
+    var qmui_top: CGFloat {
+        get {
+            return frame.minY
+        }
+        set {
+            frame = frame.setY(qmui_top)
+        }
     }
     
-    /**
-     * 设置view的width
-     */
-    public func qmui_set(width: CGFloat) {
-        var frame = self.frame
-        frame.size.width = width
-        self.frame = frame
+    /// 等价于 CGRectGetMinX(frame)
+    var qmui_left: CGFloat {
+        get {
+            return frame.minX
+        }
+        set {
+            frame = frame.setX(qmui_left)
+        }
     }
     
-    /**
-     * 设置view的height
-     */
-    public func qmui_set(height: CGFloat) {
-        var frame = self.frame
-        frame.size.height = height
-        self.frame = frame
+    /// 等价于 CGRectGetMaxY(frame)
+    var qmui_bottom: CGFloat {
+        get {
+            return frame.maxY
+        }
+        set {
+            frame = frame.setY(qmui_bottom - frame.height)
+        }
     }
     
-    /**
-     * 设置view的x和y
-     */
-    public func qmui_set(originX: CGFloat, originY: CGFloat) {
-        var frame = self.frame
-        frame.origin.x = originX
-        frame.origin.y = originY
-        self.frame = frame
+    /// 等价于 CGRectGetMaxX(frame)
+    var qmui_right: CGFloat {
+        get {
+            return frame.maxX
+        }
+        set {
+            frame = frame.setX(qmui_right - frame.width)
+        }
     }
     
-    /**
-     * 设置view的x
-     */
-    public func qmui_set(originX: CGFloat) {
-        var frame = self.frame
-        frame.origin.x = originX
-        self.frame = frame
+    var qmui_width: CGFloat {
+        get {
+            return frame.width
+        }
+        set {
+            frame = frame.setWidth(qmui_width)
+        }
     }
     
-    /**
-     * 设置view的y
-     */
-    public func qmui_set(originY: CGFloat) {
-        var frame = self.frame
-        frame.origin.y = originY
-        self.frame = frame
+    var qmui_height: CGFloat {
+        get {
+            return frame.height
+        }
+        set {
+            frame = frame.setHeight(qmui_height)
+        }
+    }
+    
+    /// 保持其他三个边缘的位置不变的情况下，将顶边缘拓展到某个指定的位置，注意高度会跟随变化。
+    var qmui_extendToTop: CGFloat {
+        get {
+            return qmui_top
+        }
+        set {
+            qmui_height = qmui_bottom - qmui_extendToTop
+            qmui_top = qmui_extendToTop
+        }
+    }
+    
+    /// 保持其他三个边缘的位置不变的情况下，将左边缘拓展到某个指定的位置，注意宽度会跟随变化。
+    var qmui_extendToLeft: CGFloat {
+        get {
+            return qmui_left
+        }
+        set {
+            qmui_width = qmui_right - qmui_extendToLeft
+            qmui_left = qmui_extendToLeft
+        }
+    }
+    
+    /// 保持其他三个边缘的位置不变的情况下，将底边缘拓展到某个指定的位置，注意高度会跟随变化。
+    var qmui_extendToBottom: CGFloat {
+        get {
+            return qmui_bottom
+        }
+        set {
+            qmui_height = qmui_extendToBottom - qmui_top
+            qmui_bottom = qmui_extendToBottom
+        }
+    }
+    
+    /// 保持其他三个边缘的位置不变的情况下，将右边缘拓展到某个指定的位置，注意宽度会跟随变化。
+    var qmui_extendToRight: CGFloat {
+        get {
+            return qmui_right
+        }
+        set {
+            qmui_width = qmui_extendToRight - qmui_left
+            qmui_right = qmui_extendToRight
+        }
     }
     
     /**
      * 获取当前view在superview内的水平居中时的minX
      */
-    public var qmui_minXWhenCenterInSuperview: CGFloat {
+    var qmui_minXWhenCenterInSuperview: CGFloat {
         return superview?.bounds.width.center(frame.width) ?? 0
     }
     
     /**
      * 获取当前view在superview内的垂直居中时的minY
      */
-    public var qmui_minYWhenCenterInSuperview: CGFloat {
+    var qmui_minYWhenCenterInSuperview: CGFloat {
         return superview?.bounds.height.center(frame.height) ?? 0
     }
 }
@@ -459,11 +607,11 @@ extension UIView {
  *  方便地将某个 UIView 截图并转成一个 UIImage，注意如果这个 UIView 本身做了 transform，也不会在截图上反映出来，截图始终都是原始 UIView 的截图。
  */
 extension UIView {
-    public var qmui_snapshotLayerImage: UIImage? {
+    var qmui_snapshotLayerImage: UIImage? {
         return UIImage.qmui_image(view: self)
     }
 
-    public func qmui_snapshotImage(_ afterScreenUpdates: Bool) -> UIImage? {
+    func qmui_snapshotImage(_ afterScreenUpdates: Bool) -> UIImage? {
         return UIImage.qmui_image(view: self, afterScreenUpdates: afterScreenUpdates)
     }
 }
