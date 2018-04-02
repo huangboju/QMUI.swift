@@ -11,10 +11,10 @@ extension UILabel: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UILabel.self
+            let clazz = UILabel.self
             
-            ReplaceMethod(type, #selector(setter: text), #selector(qmui_setText))
-            ReplaceMethod(type, #selector(setter: attributedText), #selector(qmui_setAttributedText))
+            ReplaceMethod(clazz, #selector(setter: text), #selector(qmui_setText))
+            ReplaceMethod(clazz, #selector(setter: attributedText), #selector(qmui_setAttributedText))
         }
     }
 

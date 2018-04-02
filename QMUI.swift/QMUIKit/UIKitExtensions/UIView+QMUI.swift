@@ -26,32 +26,32 @@ extension UIView: SelfAware {
 
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UIView.self
+            let clazz = UIView.self
             if #available(iOS 11, *) {
-                ReplaceMethod(type, #selector(safeAreaInsetsDidChange), #selector(qmui_safeAreaInsetsDidChange))
+                ReplaceMethod(clazz, #selector(safeAreaInsetsDidChange), #selector(qmui_safeAreaInsetsDidChange))
             }
             
             var selector = #selector((UIView.convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             var qmui_selector = #selector((UIView.qmui_convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
-            ReplaceMethod(type, selector, qmui_selector)
+            ReplaceMethod(clazz, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:from:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             qmui_selector = #selector((UIView.qmui_convert(_:from:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
-            ReplaceMethod(type, selector, qmui_selector)
+            ReplaceMethod(clazz, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:to:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
             qmui_selector = #selector((UIView.qmui_convert(rect:to:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
-            ReplaceMethod(type, selector, qmui_selector)
+            ReplaceMethod(clazz, selector, qmui_selector)
             
             selector = #selector((UIView.convert(_:from:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
             qmui_selector = #selector((UIView.qmui_convert(rect:from:)) as (UIView) -> (CGRect, UIView?) -> CGRect)
-            ReplaceMethod(type, selector, qmui_selector)
+            ReplaceMethod(clazz, selector, qmui_selector)
             
-            ReplaceMethod(type, #selector(layoutSubviews), #selector(qmui_debug_layoutSubviews))
-            ReplaceMethod(type, #selector(addSubview(_:)), #selector(qmui_debug_addSubview(_:)))
-            ReplaceMethod(type, #selector(becomeFirstResponder), #selector(qmui_debug_becomeFirstResponder))
+            ReplaceMethod(clazz, #selector(layoutSubviews), #selector(qmui_debug_layoutSubviews))
+            ReplaceMethod(clazz, #selector(addSubview(_:)), #selector(qmui_debug_addSubview(_:)))
+            ReplaceMethod(clazz, #selector(becomeFirstResponder), #selector(qmui_debug_becomeFirstResponder))
             
-            ReplaceMethod(type, #selector(layoutSublayers(of:)), #selector(qmui_layoutSublayers(of:)))
+            ReplaceMethod(clazz, #selector(layoutSublayers(of:)), #selector(qmui_layoutSublayers(of:)))
         }
     }
     
@@ -246,10 +246,6 @@ extension UIView {
         ]
         if #available(iOS 9.0, *) {
             viewSuperclasses.append(UIStackView.self)
-        }
-
-        if NSClassFromString("UIVisualEffectView") != nil {
-            viewSuperclasses.append(UIVisualEffectView.self)
         }
 
         for aClass in viewSuperclasses {

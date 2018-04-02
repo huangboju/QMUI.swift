@@ -15,10 +15,10 @@ extension UIButton: SelfAware3 {
 
     static func awake3() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UIButton.self
+            let clazz = UIButton.self
             
-            ReplaceMethod(type, #selector(UIButton.setTitle(_:for:)), #selector(UIButton.qmui_setTitle(_:for:)))
-            ReplaceMethod(type, #selector(UIButton.setTitleColor(_:for:)), #selector(UIButton.qmui_setTitleColor(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setTitle(_:for:)), #selector(UIButton.qmui_setTitle(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setTitleColor(_:for:)), #selector(UIButton.qmui_setTitleColor(_:for:)))
         }
     }
  }

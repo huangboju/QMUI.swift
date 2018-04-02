@@ -17,12 +17,12 @@ extension NSObject {
     func qmui_hasOverrideMethod(selector: Selector, of superclass: AnyClass) -> Bool {
 
         if !type(of: self).isSubclass(of: superclass) {
-            print("\(#function), \(NSStringFromClass(superclass)) 并非 \(NSStringFromClass(type(of: self))) 的父类")
+//            print("\(#function), \(NSStringFromClass(superclass)) 并非 \(NSStringFromClass(type(of: self))) 的父类")
             return false
         }
 
         if !superclass.instancesRespond(to: selector) {
-            print("\(#function), 父类 \(NSStringFromClass(superclass)) 自己本来就无法响应 \(NSStringFromSelector(selector)) 方法")
+//            print("\(#function), 父类 \(NSStringFromClass(superclass)) 自己本来就无法响应 \(NSStringFromSelector(selector)) 方法")
             return false
         }
 

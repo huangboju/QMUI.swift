@@ -10,10 +10,10 @@
 // extension UIScrollView: SelfAware {
 //    private static let _onceToken = UUID().uuidString
 //
-//        let type = UIScrollView.self
+//        let clazz = UIScrollView.self
 //    static func awake() {
 //        DispatchQueue.once(token: _onceToken) {
-//            ReplaceMethod(type, #selector(description), #selector(qmui_description))
+//            ReplaceMethod(clazz, #selector(description), #selector(qmui_description))
 //        }
 //    }
 // }

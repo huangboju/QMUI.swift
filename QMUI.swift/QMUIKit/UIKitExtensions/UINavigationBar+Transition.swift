@@ -28,13 +28,13 @@ extension UINavigationBar: SelfAware2 {
     
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UINavigationBar.self
+            let clazz = UINavigationBar.self
             
-            ReplaceMethod(type, #selector(setter: shadowImage), #selector(NavigationBarTransition_setShadowImage))
-            ReplaceMethod(type, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
-            ReplaceMethod(type, #selector(setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
+            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(NavigationBarTransition_setShadowImage))
+            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
+            ReplaceMethod(clazz, #selector(setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
             
-            ReplaceMethod(type, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
+            ReplaceMethod(clazz, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
         }
     }
 

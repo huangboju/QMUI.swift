@@ -11,7 +11,7 @@ extension UIControl: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UIControl.self
+            let clazz = UIControl.self
             
             let selectors = [
                 #selector(UIControl.touchesBegan(_:with:)),
@@ -30,7 +30,7 @@ extension UIControl: SelfAware2 {
                 ]
 
             for index in 0..<selectors.count {
-                ReplaceMethod(type, selectors[index], qmui_selectors[index])
+                ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
         }
     }

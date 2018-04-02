@@ -551,11 +551,11 @@ extension UIViewController: SelfAware {
     
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UIViewController.self
+            let clazz = UIViewController.self
             
-            ReplaceMethod(type, #selector(viewWillAppear(_:)), #selector(qmuiNav_viewWillAppear(_:)))
-            ReplaceMethod(type, #selector(viewDidAppear(_:)), #selector(qmuiNav_viewDidAppear(_:)))
-            ReplaceMethod(type, #selector(viewDidDisappear(_:)), #selector(qmuiNav_viewDidDisappear(_:)))
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmuiNav_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(qmuiNav_viewDidAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(qmuiNav_viewDidDisappear(_:)))
         }
     }
     

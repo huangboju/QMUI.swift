@@ -135,7 +135,7 @@ extension UICollectionView: SelfAware2 {
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
-            let type = UICollectionView.self
+            let clazz = UICollectionView.self
             
             let selectors = [
                 #selector(UICollectionView.reloadData),
@@ -162,7 +162,7 @@ extension UICollectionView: SelfAware2 {
                 ]
 
             for index in 0..<selectors.count {
-                ReplaceMethod(type, selectors[index], qmui_selectors[index])
+                ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
         }
     }

@@ -42,12 +42,12 @@ class QDCommonGridViewController: QDCommonViewController {
             let subview = generateButton(index)
             gridView.addSubview(subview)
         }
-        view.addSubview(gridView)
+        scrollView.addSubview(gridView)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        scrollView.frame = view.frame
+        scrollView.frame = view.bounds
         
         let gridViewWidth = scrollView.bounds.width - scrollView.qmui_safeAreaInsets.horizontalValue
         
@@ -86,7 +86,8 @@ class QDCommonGridViewController: QDCommonViewController {
         
         let gridViewHeight = gridView.sizeThatFits(CGSize(width: gridViewWidth, height: CGFloat.greatestFiniteMagnitude)).height
         gridView.frame = CGRect(x: scrollView.qmui_safeAreaInsets.left, y: 0, width: gridViewWidth, height: gridViewHeight)
-        scrollView.contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)
+        let contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)
+        scrollView.contentSize = contentSize
     }
     
     // MARK: private
