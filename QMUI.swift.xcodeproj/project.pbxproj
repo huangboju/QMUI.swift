@@ -97,6 +97,7 @@
 		D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */; };
 		D831FC6F1E2E4F1B009CFB28 /* QMUICommonDefines.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */; };
 		D831FC711E2E5018009CFB28 /* QMUITabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D831FC701E2E5018009CFB28 /* QMUITabBarViewController.swift */; };
+		D83A4AA92072475300E445FA /* QDAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83A4AA82072475300E445FA /* QDAboutViewController.swift */; };
 		D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */; };
 		D83D41ED1E4C4F0A00CC083E /* QMUICommonTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41EC1E4C4F0A00CC083E /* QMUICommonTableViewController.swift */; };
 		D83D41EF1E4C4F3200CC083E /* QMUIOrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83D41EE1E4C4F3200CC083E /* QMUIOrderedDictionary.swift */; };
@@ -227,6 +228,7 @@
 		D831FC6A1E2E4710009CFB28 /* QMUIConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIConfiguration.swift; sourceTree = "<group>"; };
 		D831FC6E1E2E4F1B009CFB28 /* QMUICommonDefines.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUICommonDefines.swift; sourceTree = "<group>"; };
 		D831FC701E2E5018009CFB28 /* QMUITabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QMUITabBarViewController.swift; path = QMUI.swift/QMUIKit/QMUITabBarViewController.swift; sourceTree = SOURCE_ROOT; };
+		D83A4AA82072475300E445FA /* QDAboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDAboutViewController.swift; sourceTree = "<group>"; };
 		D83D41EA1E4C3C2100CC083E /* QMUIHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIHelper.swift; sourceTree = "<group>"; };
 		D83D41EC1E4C4F0A00CC083E /* QMUICommonTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUICommonTableViewController.swift; sourceTree = "<group>"; };
 		D83D41EE1E4C4F3200CC083E /* QMUIOrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIOrderedDictionary.swift; sourceTree = "<group>"; };
@@ -456,6 +458,14 @@
 			path = UIKitExtensions;
 			sourceTree = "<group>";
 		};
+		D83A4AA72072474500E445FA /* About */ = {
+			isa = PBXGroup;
+			children = (
+				D83A4AA82072475300E445FA /* QDAboutViewController.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
 		D845BA5B204E987900103B62 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -534,6 +544,7 @@
 		D864A5F2204E52200036C164 /* Demos */ = {
 			isa = PBXGroup;
 			children = (
+				D83A4AA72072474500E445FA /* About */,
 				D8F8F8F42071D74A00ECC2DD /* Lab */,
 				D845BA60204F862900103B62 /* Components */,
 				D845BA5B204E987900103B62 /* UIKit */,
@@ -720,6 +731,7 @@
 				D864A5F3204E52200036C164 /* QDCommonViewController.swift in Sources */,
 				3E6BE4EF1F13C5270089DC6D /* UITableView+QMUI.swift in Sources */,
 				BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */,
+				D83A4AA92072475300E445FA /* QDAboutViewController.swift in Sources */,
 				D845BA5A204E981400103B62 /* QDCommonGridViewController.swift in Sources */,
 				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
 				3E6BE4D91F13C5270089DC6D /* QMUITableViewCell.swift in Sources */,

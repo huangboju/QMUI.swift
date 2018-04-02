@@ -354,11 +354,15 @@ extension UIView {
     /// 设置边框类型，支持组合，例如：`borderType = QMUIBorderViewTypeTop|QMUIBorderViewTypeBottom`
     var qmui_borderPosition: QMUIBorderViewPosition {
         set {
-            objc_setAssociatedObject(self, &Keys.borderPosition, newValue, .OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &Keys.borderPosition, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             setNeedsLayout()
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.borderPosition) as? QMUIBorderViewPosition) ?? QMUIBorderViewPosition.none
+            let position = objc_getAssociatedObject(self, &Keys.borderPosition) as? QMUIBorderViewPosition
+            if position != nil {
+                print(position!)
+            }
+            return position ?? QMUIBorderViewPosition.none
         }
     }
 
@@ -403,7 +407,7 @@ extension UIView {
             setNeedsLayout()
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.dashPattern) as? [NSNumber]) ?? []
+            return objc_getAssociatedObject(self, &Keys.dashPattern) as? [NSNumber]
         }
     }
 
@@ -413,12 +417,19 @@ extension UIView {
             objc_setAssociatedObject(self, &Keys.borderLayer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.borderLayer) as? CAShapeLayer) ?? CAShapeLayer()
+            return objc_getAssociatedObject(self, &Keys.borderLayer) as? CAShapeLayer
         }
     }
 
     @objc func qmui_layoutSublayers(of layer: CALayer) {
         qmui_layoutSublayers(of: layer)
+        
+//        if self is QDCommonGridButton {
+//            print(self)
+//            print(qmui_borderWidth)
+//            print(qmui_borderColor)
+//        }
+        
         if (qmui_borderLayer == nil && qmui_borderPosition == .none) || (qmui_borderLayer == nil && qmui_borderWidth == 0) {
             return
         }
@@ -430,14 +441,14 @@ extension UIView {
         }
         if qmui_borderLayer == nil {
             qmui_borderLayer = CAShapeLayer()
-            qmui_borderLayer?.qmui_removeDefaultAnimations()
+            qmui_borderLayer!.qmui_removeDefaultAnimations()
             layer.addSublayer(qmui_borderLayer!)
         }
-        qmui_borderLayer?.frame = bounds
+        qmui_borderLayer!.frame = bounds
         let borderWidth = qmui_borderWidth
-        qmui_borderLayer?.lineWidth = borderWidth
-        qmui_borderLayer?.strokeColor = qmui_borderColor.cgColor
-        qmui_borderLayer?.lineDashPhase = qmui_dashPhase
+        qmui_borderLayer!.lineWidth = borderWidth
+        qmui_borderLayer!.strokeColor = qmui_borderColor.cgColor
+        qmui_borderLayer!.lineDashPhase = qmui_dashPhase
         if qmui_dashPattern != nil {
             qmui_borderLayer!.lineDashPattern = qmui_dashPattern
         }
@@ -468,7 +479,11 @@ extension UIView {
             path?.addLine(to: CGPoint(x: bounds.width - borderWidth / 2, y: bounds.height))
         }
         
-        qmui_borderLayer?.path = path?.cgPath
+        if path != nil {
+            print(path!)
+        }
+        
+        qmui_borderLayer!.path = path?.cgPath
     }
 }
 

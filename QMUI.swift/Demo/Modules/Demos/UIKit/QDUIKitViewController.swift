@@ -44,6 +44,7 @@ class QDUIKitViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        
+        let viewController = QDAboutViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
