@@ -14,9 +14,8 @@
 
 // 单例的宏
 func QMUICMI() -> QMUIConfiguration {
-    var shared = QMUIConfiguration.shared
+    let shared = QMUIConfiguration.shared
     shared.applyInitialTemplate()
-    shared = QMUIConfiguration.shared
     return shared
 }
 

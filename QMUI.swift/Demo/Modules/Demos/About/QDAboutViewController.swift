@@ -21,7 +21,7 @@ class QDAboutViewController: QDCommonViewController {
         let attributedString = NSAttributedString(string: "qcvwaevawv", attributes: attributes)
         let image = UIImageMake("icon_grid_button")!
         
-        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
+        if let tintColor = QDThemeManager.shared.currentTheme.themeGridItemTintColor {
             button.tintColor = tintColor
             button.adjustsImageTintColorAutomatically = true
         } else {
@@ -47,6 +47,9 @@ class QDAboutViewController: QDCommonViewController {
         
         let contentSize = CGSize(width: debugView.frame.width, height:debugView.frame.maxY)
         scrollView.contentSize = contentSize
+        
+        let string = String(describing: type(of: scrollView))
+        
 //        debugView.backgroundColor = QDCommonUI.randomThemeColor()
     }
     
@@ -57,6 +60,9 @@ class QDAboutViewController: QDCommonViewController {
     }
     
     @objc private func handleAboutItemEvent() {
+        QDThemeManager.shared.currentTheme = QMUIConfigurationTemplateGrapefruit()
+        
 
+//        [[NSUserDefaults standardUserDefaults] setObject:NSStringFromClass(self.themes[themeIndex].class) forKey:QDSelectedThemeClassName];
     }
 }

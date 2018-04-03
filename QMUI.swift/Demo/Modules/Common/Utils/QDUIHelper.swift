@@ -57,7 +57,7 @@ extension QDUIHelper {
 // MARK: - Button
 extension QDUIHelper {
     static func generateDarkFilledButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.adjustsButtonWhenHighlighted = true
         button.titleLabel?.font = UIFontBoldMake(14)
@@ -69,7 +69,7 @@ extension QDUIHelper {
     }
     
     static func generateLightBorderedButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.titleLabel?.font = UIFontBoldMake(14)
         button.setTitleColor(themeTintColor, for: .normal)
@@ -128,6 +128,26 @@ extension QDUIHelper {
 extension QDUIHelper {
     static func humanReadableFileSize(_ size: UInt64) {
         
+    }
+}
+
+// MARK: - Theme
+extension QDUIHelper {
+    static func navigationBarBackgroundImage(_ color: UIColor?) -> UIImage? {
+        let size = CGSize(width: 4, height: 88) // iPhone X，navigationBar 背景图 88，所以直接用 88 的图，其他手机会取这张图在 y 轴上的 0-64 部分的图片
+        var resultImage: UIImage?
+        let themeColor = color != nil ? color! : UIColorClear
+        
+        UIGraphicsBeginImageContextWithOptions(size, true, 0)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        let gradColors = [themeColor.cgColor, color?.qmui_colorWithAlphaAddedToWhite(0.86).cgColor]
+        guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradColors as CFArray, locations: nil) else { return nil }
+        context.drawLinearGradient(gradient, start: CGPoint.zero, end: CGPoint(x: 0, y: size.height), options: .drawsBeforeStartLocation)
+        resultImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        resultImage = resultImage?.resizableImage(withCapInsets: UIEdgeInsets(top: 0, left: 1, bottom: 0, right: 1))
+        return resultImage
     }
 }
 

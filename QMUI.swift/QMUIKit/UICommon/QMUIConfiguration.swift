@@ -7,82 +7,128 @@
 //
 
 /// 所有配置表都应该实现的 protocol
-@objc protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
+protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
     
-    @objc init()
+    init()
     
     /// 应用配置表的设置
-    @objc func applyConfigurationTemplate()
+    func applyConfigurationTemplate()
     
     /// 当返回 YES 时，启动 App 的时候 QMUIConfiguration 会自动应用这份配置表。但启动 App 时自动应用的配置表最多只允许一份，如果有多份则其他的会被忽略，需要在某些时机手动应用
-    @objc optional func shouldApplyTemplateAutomatically() -> Bool
+    func shouldApplyTemplateAutomatically() -> Bool
     
 }
 
 /**
  *  维护项目全局 UI 配置的单例，通过业务项目自己的 QMUIConfigurationTemplate 来为这个单例赋值，而业务代码里则通过 QMUIConfigurationMacros.swift 文件里的宏来使用这些值。
  */
-class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
+class QMUIConfiguration {
+    
+    static let shared: QMUIConfiguration = {
+        let instance = QMUIConfiguration()
+        return instance
+    } ()
+    
+    private init() {
+        
+        buttonHighlightedAlpha = controlHighlightedAlpha
+        buttonDisabledAlpha = controlDisabledAlpha
+        buttonTintColor = blue
+
+        ghostButtonColorBlue = blue
+        ghostButtonColorRed = red
+        ghostButtonColorGreen = green
+        ghostButtonColorGray = gray
+        ghostButtonColorWhite = white
+
+        fillButtonColorBlue = blue
+        fillButtonColorRed = red
+        fillButtonColorGreen = green
+        fillButtonColorGray = gray
+        fillButtonColorWhite = white
+
+        navBarCloseButtonImage = UIImage.qmui_image(shape: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
+
+        navBarAccessoryViewTypeDisclosureIndicatorImage = UIImage.qmui_image(shape: .triangle, size: CGSize(width: 8, height: 5), tintColor: navBarTintColor)?.qmui_image(orientation: .down)
+
+        tabBarItemTitleColorSelected = tabBarTintColor
+
+        toolBarTintColorHighlighted = toolBarTintColor?.withAlphaComponent(toolBarHighlightedAlpha)
+        toolBarTintColorDisabled = toolBarTintColor?.withAlphaComponent(toolBarDisabledAlpha)
+
+        searchBarPlaceholderColor = placeholderColor
+
+        tableViewSeparatorColor = separatorColor
+        tableViewCellBackgroundColor = white
+        tableViewCellWarningBackgroundColor = yellow
+
+        tableViewSectionHeaderTextColor = grayDarken
+        tableViewSectionFooterTextColor = gray
+
+        tableViewGroupedSectionHeaderTextColor = grayDarken
+        tableViewGroupedSectionFooterTextColor = gray
+        
+    }
     
     // MARK: Global Color
-    public var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
-    public var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
-    public var black = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-    public var gray = UIColorMake(179, 179, 179)
-    public var grayDarken = UIColorMake(163, 163, 163)
-    public var grayLighten = UIColorMake(198, 198, 198)
-    public var red = UIColorMake(227, 40, 40)
-    public var green = UIColorMake(79, 214, 79)
-    public var blue = UIColorMake(43, 133, 208)
-    public var yellow = UIColorMake(255, 252, 233)
+    var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
+    var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+    var black = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+    var gray = UIColorMake(179, 179, 179)
+    var grayDarken = UIColorMake(163, 163, 163)
+    var grayLighten = UIColorMake(198, 198, 198)
+    var red = UIColorMake(227, 40, 40)
+    var green = UIColorMake(79, 214, 79)
+    var blue = UIColorMake(43, 133, 208)
+    var yellow = UIColorMake(255, 252, 233)
     
-    public var linkColor = UIColorMake(56, 116, 171)
-    public var disabledColor: UIColor?
-    public var backgroundColor = UIColorMake(246, 246, 246)
-    public var maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35)
-    public var maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5)
-    public var separatorColor = UIColorMake(200, 199, 204)
-    public var separatorDashedColor = UIColorMake(17, 17, 17)
-    public var placeholderColor = UIColorMake(187, 187, 187)
+    var linkColor = UIColorMake(56, 116, 171)
+    var disabledColor: UIColor?
+    var backgroundColor = UIColorMake(246, 246, 246)
+    var maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35)
+    var maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5)
+    var separatorColor = UIColorMake(200, 199, 204)
+    var separatorDashedColor = UIColorMake(17, 17, 17)
+    var placeholderColor = UIColorMake(187, 187, 187)
     
-    public var testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
-    public var testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
-    public var testColorBlue = UIColorMakeWithRGBA(0, 0, 255, 0.3)
+    var testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
+    var testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
+    var testColorBlue = UIColorMakeWithRGBA(0, 0, 255, 0.3)
 
     // MARK: UIControl
-    public var controlHighlightedAlpha: CGFloat = 0.5
-    public var controlDisabledAlpha: CGFloat = 0.5
+    var controlHighlightedAlpha: CGFloat = 0.5
+    var controlDisabledAlpha: CGFloat = 0.5
     
     // MARK: UIButton
-    public var buttonHighlightedAlpha: CGFloat { get { return controlHighlightedAlpha } }
-    public var buttonDisabledAlpha: CGFloat { get { return controlDisabledAlpha } }
-    public var buttonTintColor: UIColor { get { return blue } }
+    var buttonHighlightedAlpha: CGFloat = 0
+    var buttonDisabledAlpha: CGFloat = 0
+    var buttonTintColor: UIColor
     
-    public var ghostButtonColorBlue: UIColor { get { return blue } }
-    public var ghostButtonColorRed: UIColor { get { return red } }
-    public var ghostButtonColorGreen: UIColor { get { return green } }
-    public var ghostButtonColorGray: UIColor { get { return gray } }
-    public var ghostButtonColorWhite: UIColor { get { return white } }
-    public var fillButtonColorBlue: UIColor { get { return blue } }
-    public var fillButtonColorRed: UIColor { get { return red } }
-    public var fillButtonColorGreen: UIColor { get { return green } }
-    public var fillButtonColorGray: UIColor { get { return white } }
-    public var fillButtonColorWhite: UIColor { get { return white } }
+    var ghostButtonColorBlue: UIColor
+    var ghostButtonColorRed: UIColor
+    var ghostButtonColorGreen: UIColor
+    var ghostButtonColorGray: UIColor
+    var ghostButtonColorWhite: UIColor
+    var fillButtonColorBlue: UIColor
+    var fillButtonColorRed: UIColor
+    var fillButtonColorGreen: UIColor
+    var fillButtonColorGray: UIColor
+    var fillButtonColorWhite: UIColor
     
     // MARK: UITextField & UITextView
-    public var textFieldTintColor: UIColor?
-    public var textFieldTextInsets = UIEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)
+    var textFieldTintColor: UIColor?
+    var textFieldTextInsets = UIEdgeInsets(top: 0, left: 7, bottom: 0, right: 7)
     
     // MARK: NavigationBar
-    public var navBarHighlightedAlpha: CGFloat = 0.2
-    public var navBarDisabledAlpha: CGFloat = 0.2
-    public var navBarButtonFont: UIFont? {
+    var navBarHighlightedAlpha: CGFloat = 0.2
+    var navBarDisabledAlpha: CGFloat = 0.2
+    var navBarButtonFont: UIFont? {
         didSet {
             // by molice 2017-08-04 只要用 appearence 的方式修改 UIBarButtonItem 的 font，就会导致界面切换时 UIBarButtonItem 抖动，系统的问题，所以暂时不修改 appearance。
         }
     }
-    public var navBarButtonFontBold: UIFont?
-    public var navBarBackgroundImage: UIImage? {
+    var navBarButtonFontBold: UIFont?
+    var navBarBackgroundImage: UIImage? {
         didSet {
             guard let navBarBackgroundImage = navBarBackgroundImage else { return }
             let appearance = UINavigationBar.appearance()
@@ -91,48 +137,48 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                 .navigationBar.setBackgroundImage(navBarBackgroundImage, for: .default)
         }
     }
-    public var navBarShadowImage: UIImage? {
+    var navBarShadowImage: UIImage? {
         didSet {
             guard let navBarShadowImage = navBarShadowImage else { return }
             UINavigationBar.appearance().shadowImage = navBarShadowImage
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.shadowImage = navBarShadowImage
         }
     }
-    public var navBarBarTintColor: UIColor? {
+    var navBarBarTintColor: UIColor? {
         didSet {
             guard let navBarBarTintColor = navBarBarTintColor else { return }
             UINavigationBar.appearance().barTintColor = navBarBarTintColor
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.barTintColor = navBarBarTintColor
         }
     }
-    public var navBarTintColor: UIColor? {
+    var navBarTintColor: UIColor? {
         didSet {
             guard let navBarTintColor = navBarTintColor else { return }
             print(QMUIHelper.visibleViewController ?? "")
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.tintColor = navBarTintColor
         }
     }
-    public var navBarTitleColor: UIColor? {
+    var navBarTitleColor: UIColor? {
         didSet {
             updateNavigationBarTitleAttributesIfNeeded()
         }
     }
-    public var navBarTitleFont: UIFont? {
+    var navBarTitleFont: UIFont? {
         didSet {
             updateNavigationBarTitleAttributesIfNeeded()
         }
     }
-    public var navBarLargeTitleColor: UIColor? {
+    var navBarLargeTitleColor: UIColor? {
         didSet {
             updateNavigationBarLargeTitleTextAttributesIfNeeded()
         }
     }
-    public var navBarLargeTitleFont: UIFont? {
+    var navBarLargeTitleFont: UIFont? {
         didSet {
             updateNavigationBarLargeTitleTextAttributesIfNeeded()
         }
     }
-    public var navBarBackButtonTitlePositionAdjustment = UIOffset.zero {
+    var navBarBackButtonTitlePositionAdjustment = UIOffset.zero {
         didSet {
             if !UIOffsetEqualToOffset(UIOffset.zero, navBarBackButtonTitlePositionAdjustment) {
                 let backBarButtonItem = UIBarButtonItem.appearance()
@@ -144,7 +190,7 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
             }
         }
     }
-    public var navBarBackIndicatorImage: UIImage? {
+    var navBarBackIndicatorImage: UIImage? {
         didSet {
             if navBarBackIndicatorImage != nil {
                 let navBarAppearance = UINavigationBar.appearance()
@@ -157,44 +203,36 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                     self.navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_image(spacingExtensionInsets: UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
                 }
                 
-                navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage;
-                navBarAppearance.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage;
-                navigationBar?.backIndicatorImage = self.navBarBackIndicatorImage;
-                navigationBar?.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage;
+                navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage
+                navBarAppearance.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
+                navigationBar?.backIndicatorImage = self.navBarBackIndicatorImage
+                navigationBar?.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
             }
         }
     }
-    public var navBarCloseButtonImage: UIImage? {
-        get {
-            return UIImage.qmui_image(shape: .navClose, size: CGSize(width: 16, height: 16), tintColor: navBarTintColor)
-        }
-    }
+    var navBarCloseButtonImage: UIImage?
     
-    public var navBarLoadingMarginRight: CGFloat = 3
-    public var navBarAccessoryViewMarginLeft: CGFloat = 5
-    public var navBarActivityIndicatorViewStyle: UIActivityIndicatorViewStyle = .gray
-    public var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage? {
-        get {
-            return UIImage.qmui_image(shape: .triangle, size: CGSize(width: 8, height: 5), tintColor: navBarTintColor)?.qmui_image(orientation: .down)
-        }
-    }
+    var navBarLoadingMarginRight: CGFloat = 3
+    var navBarAccessoryViewMarginLeft: CGFloat = 5
+    var navBarActivityIndicatorViewStyle: UIActivityIndicatorViewStyle = .gray
+    var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage?
 
     // MARK: TabBar
-    public var tabBarBackgroundImage: UIImage? {
+    var tabBarBackgroundImage: UIImage? {
         didSet {
             guard let tabBarBackgroundImage = tabBarBackgroundImage else { return }
             UITabBar.appearance().backgroundImage = tabBarBackgroundImage
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.backgroundImage = tabBarBackgroundImage
         }
     }
-    public var tabBarBarTintColor: UIColor? {
+    var tabBarBarTintColor: UIColor? {
         didSet {
             guard let tabBarBarTintColor = tabBarBarTintColor else { return }
             UITabBar.appearance().barTintColor = tabBarBarTintColor
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.barTintColor = tabBarBarTintColor
         }
     }
-    public var tabBarShadowImageColor: UIColor? {
+    var tabBarShadowImageColor: UIColor? {
         didSet {
             guard let tabBarShadowImageColor = tabBarShadowImageColor else { return }
             let shadowImage = UIImage.qmui_image(color: tabBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
@@ -202,13 +240,13 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.shadowImage = shadowImage
         }
     }
-    public var tabBarTintColor: UIColor? {
+    var tabBarTintColor: UIColor? {
         didSet {
             guard let tabBarTintColor = tabBarTintColor else { return }
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.tintColor = tabBarTintColor
         }
     }
-    public var tabBarItemTitleColor: UIColor? {
+    var tabBarItemTitleColor: UIColor? {
         didSet {
             guard let tabBarItemTitleColor = tabBarItemTitleColor else { return }
             let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
@@ -220,12 +258,9 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
             }
         }
     }
-    public var tabBarItemTitleColorSelected: UIColor? {
-        get {
-            return tabBarTintColor
-        }
-        set {
-            guard let tabBarItemTitleColorSelected = self.tabBarItemTitleColorSelected else { return }
+    var tabBarItemTitleColorSelected: UIColor? {
+        didSet {
+            guard let tabBarItemTitleColorSelected = tabBarItemTitleColorSelected else { return }
             let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
             var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
             textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColorSelected
@@ -235,7 +270,7 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
             }
         }
     }
-    public var tabBarItemTitleFont: UIFont? {
+    var tabBarItemTitleFont: UIFont? {
         didSet {
             guard let tabBarItemTitleFont = tabBarItemTitleFont else { return }
             let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
@@ -249,25 +284,17 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
     }
 
     // MARK: Toolbar
-    public var toolBarHighlightedAlpha: CGFloat = 0.4
-    public var toolBarDisabledAlpha: CGFloat = 0.4
-    public var toolBarTintColor: UIColor? {
+    var toolBarHighlightedAlpha: CGFloat = 0.4
+    var toolBarDisabledAlpha: CGFloat = 0.4
+    var toolBarTintColor: UIColor? {
         didSet {
             guard let toolBarTintColor = toolBarTintColor else { return }
             QMUIHelper.visibleViewController?.navigationController?.toolbar.tintColor = toolBarTintColor
         }
     }
-    public var toolBarTintColorHighlighted: UIColor? {
-        get {
-            return toolBarTintColor?.withAlphaComponent(toolBarHighlightedAlpha)
-        }
-    }
-    public var toolBarTintColorDisabled: UIColor? {
-        get {
-            return toolBarTintColor?.withAlphaComponent(toolBarDisabledAlpha)
-        }
-    }
-    public var toolBarBackgroundImage: UIImage? {
+    var toolBarTintColorHighlighted: UIColor?
+    var toolBarTintColorDisabled: UIColor?
+    var toolBarBackgroundImage: UIImage? {
         didSet {
             guard let toolBarBackgroundImage = toolBarBackgroundImage else { return }
             UIToolbar.appearance().setBackgroundImage(toolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
@@ -275,14 +302,14 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                 .setBackgroundImage(toolBarBackgroundImage, forToolbarPosition: .any, barMetrics: .default)
         }
     }
-    public var toolBarBarTintColor: UIColor? {
+    var toolBarBarTintColor: UIColor? {
         didSet {
             guard let toolBarBarTintColor = toolBarBarTintColor else { return }
             UIToolbar.appearance().barTintColor = toolBarBarTintColor
             QMUIHelper.visibleViewController?.navigationController?.toolbar.barTintColor = toolBarBarTintColor
         }
     }
-    public var toolBarShadowImageColor: UIColor? {
+    var toolBarShadowImageColor: UIColor? {
         didSet {
             guard let toolBarShadowImageColor = toolBarShadowImageColor else { return }
             let shadowImage = UIImage.qmui_image(color: toolBarShadowImageColor, size: CGSize(width: 1, height: PixelOne), cornerRadius: 0)
@@ -290,89 +317,83 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
             QMUIHelper.visibleViewController?.navigationController?.toolbar.setShadowImage(shadowImage, forToolbarPosition: .any)
         }
     }
-    public var toolBarButtonFont: UIFont?
+    var toolBarButtonFont: UIFont?
 
     // MARK: SearchBar
-    public var searchBarTextFieldBackground: UIColor?
-    public var searchBarTextFieldBorderColor: UIColor?
-    public var searchBarBottomBorderColor: UIColor?
-    public var searchBarBarTintColor: UIColor?
-    public var searchBarTintColor: UIColor?
-    public var searchBarTextColor: UIColor?
-    public var searchBarPlaceholderColor: UIColor { get { return placeholderColor } }
-    public var searchBarFont: UIFont?
+    var searchBarTextFieldBackground: UIColor?
+    var searchBarTextFieldBorderColor: UIColor?
+    var searchBarBottomBorderColor: UIColor?
+    var searchBarBarTintColor: UIColor?
+    var searchBarTintColor: UIColor?
+    var searchBarTextColor: UIColor?
+    var searchBarPlaceholderColor: UIColor
+    var searchBarFont: UIFont?
     /// 搜索框放大镜icon的图片，大小必须为13x13pt，否则会失真（系统的限制）
-    public var searchBarSearchIconImage: UIImage?
-    public var searchBarClearIconImage: UIImage?
-    public var searchBarTextFieldCornerRadius: CGFloat = 2
+    var searchBarSearchIconImage: UIImage?
+    var searchBarClearIconImage: UIImage?
+    var searchBarTextFieldCornerRadius: CGFloat = 2
 
     // MARK: TableView / TableViewCell
-    public var tableViewEstimatedHeightEnabled = true
-    public var tableViewBackgroundColor: UIColor?
-    public var tableViewGroupedBackgroundColor: UIColor?
-    public var tableSectionIndexColor: UIColor?
-    public var tableSectionIndexBackgroundColor: UIColor?
-    public var tableSectionIndexTrackingBackgroundColor: UIColor?
-    public var tableViewSeparatorColor: UIColor { get { return separatorColor } }
+    var tableViewEstimatedHeightEnabled = true
+    var tableViewBackgroundColor: UIColor?
+    var tableViewGroupedBackgroundColor: UIColor?
+    var tableSectionIndexColor: UIColor?
+    var tableSectionIndexBackgroundColor: UIColor?
+    var tableSectionIndexTrackingBackgroundColor: UIColor?
+    var tableViewSeparatorColor: UIColor
 
-    public var tableViewCellNormalHeight: CGFloat = 44
-    public var tableViewCellTitleLabelColor: UIColor?
-    public var tableViewCellDetailLabelColor: UIColor?
-    public var tableViewCellBackgroundColor: UIColor { get { return white } }
-    public var tableViewCellSelectedBackgroundColor = UIColorMake(238, 239, 241)
-    public var tableViewCellWarningBackgroundColor: UIColor { get { return yellow } }
-    public var tableViewCellDisclosureIndicatorImage: UIImage?
-    public var tableViewCellCheckmarkImage: UIImage?
-    public var tableViewCellDetailButtonImage: UIImage?
-    public var tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator: CGFloat = 12
+    var tableViewCellNormalHeight: CGFloat = 44
+    var tableViewCellTitleLabelColor: UIColor?
+    var tableViewCellDetailLabelColor: UIColor?
+    var tableViewCellBackgroundColor: UIColor
+    var tableViewCellSelectedBackgroundColor = UIColorMake(238, 239, 241)
+    var tableViewCellWarningBackgroundColor: UIColor
+    var tableViewCellDisclosureIndicatorImage: UIImage?
+    var tableViewCellCheckmarkImage: UIImage?
+    var tableViewCellDetailButtonImage: UIImage?
+    var tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator: CGFloat = 12
 
-    public var tableViewSectionHeaderBackgroundColor = UIColorMake(244, 244, 244)
-    public var tableViewSectionFooterBackgroundColor = UIColorMake(244, 244, 244)
-    public var tableViewSectionHeaderFont = UIFontBoldMake(12)
-    public var tableViewSectionFooterFont = UIFontBoldMake(12)
-    public var tableViewSectionHeaderTextColor: UIColor { get { return grayDarken } }
-    public var tableViewSectionFooterTextColor: UIColor { get { return gray } }
-    public var tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    public var tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    public var tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
-    public var tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
+    var tableViewSectionHeaderBackgroundColor = UIColorMake(244, 244, 244)
+    var tableViewSectionFooterBackgroundColor = UIColorMake(244, 244, 244)
+    var tableViewSectionHeaderFont = UIFontBoldMake(12)
+    var tableViewSectionFooterFont = UIFontBoldMake(12)
+    var tableViewSectionHeaderTextColor: UIColor
+    var tableViewSectionFooterTextColor: UIColor
+    var tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    var tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    var tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
+    var tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
 
-    public var tableViewGroupedSectionHeaderFont = UIFontMake(12)
-    public var tableViewGroupedSectionFooterFont = UIFontMake(12)
-    public var tableViewGroupedSectionHeaderTextColor: UIColor { get { return grayDarken } }
-    public var tableViewGroupedSectionFooterTextColor: UIColor { get { return gray } }
-    public var tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    public var tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    public var tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension
-    public var tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension
-    public var tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, 15, 8, 15)
-    public var tableViewGroupedSectionFooterContentInset = UIEdgeInsetsMake(8, 15, 2, 15)
+    var tableViewGroupedSectionHeaderFont = UIFontMake(12)
+    var tableViewGroupedSectionFooterFont = UIFontMake(12)
+    var tableViewGroupedSectionHeaderTextColor: UIColor
+    var tableViewGroupedSectionFooterTextColor: UIColor
+    var tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    var tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
+    var tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension
+    var tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension
+    var tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, 15, 8, 15)
+    var tableViewGroupedSectionFooterContentInset = UIEdgeInsetsMake(8, 15, 2, 15)
 
     // MARK: UIWindowLevel
-    public var windowLevelQMUIAlertView: CGFloat = UIWindowLevelAlert - 4
-    public var windowLevelQMUIImagePreviewView: CGFloat = UIWindowLevelStatusBar + 1
+    var windowLevelQMUIAlertView: CGFloat = UIWindowLevelAlert - 4
+    var windowLevelQMUIImagePreviewView: CGFloat = UIWindowLevelStatusBar + 1
 
     // MARK: QMUILog
-//    public var shouldPrintDefaultLog: Bool
-//    public var shouldPrintInfoLog: Bool
-//    public var shouldPrintWarnLog: Bool
+//    var shouldPrintDefaultLog: Bool
+//    var shouldPrintInfoLog: Bool
+//    var shouldPrintWarnLog: Bool
 
     // MARK: Others
-    public var supportedOrientationMask: UIInterfaceOrientationMask = .portrait
-    public var automaticallyRotateDeviceOrientation: Bool = false
-    public var statusbarStyleLightInitially: Bool = false
-    public var needsBackBarButtonItemTitle: Bool = false
-    public var hidesBottomBarWhenPushedInitially: Bool = false
-    public var preventConcurrentNavigationControllerTransitions: Bool = true
-    public var navigationBarHiddenInitially: Bool = false
-    public var shouldFixTabBarTransitionBugInIPhoneX: Bool = false
-    
-    static let shared = QMUIConfiguration()
-    
-    override required init() {
-        
-    }
-    
+    var supportedOrientationMask: UIInterfaceOrientationMask = .portrait
+    var automaticallyRotateDeviceOrientation: Bool = false
+    var statusbarStyleLightInitially: Bool = false
+    var needsBackBarButtonItemTitle: Bool = false
+    var hidesBottomBarWhenPushedInitially: Bool = false
+    var preventConcurrentNavigationControllerTransitions: Bool = true
+    var navigationBarHiddenInitially: Bool = false
+    var shouldFixTabBarTransitionBugInIPhoneX: Bool = false
+
     private func updateNavigationBarTitleAttributesIfNeeded() {
         if navBarTitleFont != nil || navBarTitleColor != nil {
             var titleTextAttributes = [NSAttributedStringKey: NSObject]()
@@ -383,11 +404,11 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                 titleTextAttributes[NSAttributedStringKey.foregroundColor] = navBarTitleColor
             }
             UINavigationBar.appearance().titleTextAttributes = titleTextAttributes
-            QMUIHelper.visibleViewController?.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes;
+            QMUIHelper.visibleViewController?.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
         }
     }
     
-    func updateNavigationBarLargeTitleTextAttributesIfNeeded() {
+    private func updateNavigationBarLargeTitleTextAttributesIfNeeded() {
         if #available(iOS 11, *) {
             if navBarLargeTitleFont != nil || navBarLargeTitleColor != nil {
                 var largeTitleTextAttributes = [NSAttributedStringKey: NSObject]()
@@ -399,7 +420,7 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                 }
                 UINavigationBar.appearance().largeTitleTextAttributes = largeTitleTextAttributes
                 QMUIHelper.visibleViewController?.navigationController?
-                    .navigationBar.largeTitleTextAttributes = largeTitleTextAttributes;
+                    .navigationBar.largeTitleTextAttributes = largeTitleTextAttributes
             }
         }
     }
@@ -417,9 +438,9 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
         for i in 0 ..< actualClassCount {
             let currentClass: AnyClass = allClasses[Int(i)]
             
-            if String(describing: currentClass).hasSuffix("QMUIConfigurationTemplate"), let clazz = currentClass.self as? QMUIConfigurationTemplateProtocol.Type, currentClass.instancesRespond(to: #selector(QMUIConfigurationTemplateProtocol.shouldApplyTemplateAutomatically)) {
+            if let clazz = currentClass.self as? QMUIConfigurationTemplateProtocol.Type {
                 let template = clazz.init()
-                if template.shouldApplyTemplateAutomatically!() {
+                if template.shouldApplyTemplateAutomatically() {
                     QMUI_hasAppliedInitialTemplate = true
                     template.applyConfigurationTemplate()
                     // 只应用第一个 shouldApplyTemplateAutomatically 的主题
@@ -427,13 +448,8 @@ class QMUIConfiguration: NSObject, QMUIConfigurationTemplateProtocol {
                 }
             }
         }
-        allClasses.deallocate(capacity: Int(expectedClassCount))
+        allClasses.deallocate()
     }
-    
-    func applyConfigurationTemplate() {
-        
-    }
-    
 }
 
 fileprivate var QMUI_hasAppliedInitialTemplate: Bool = false

@@ -8,11 +8,13 @@
 
 #if DEBUG
 let CGContextInspectContext: (CGContext) -> Void = {
-    print($0)
+    QMUIHelper.inspectContextIfInvalidatedInDebugMode(context: $0)
 }
 #else
 let CGContextInspectContext: (CGContext) -> Void = {
-    print($0)
+    if !QMUIHelper.inspectContextIfInvalidatedInReleaseMode(context: $0) {
+        return
+    }
 }
 #endif
 
@@ -648,13 +650,13 @@ extension UIImage {
         var lineWidth: CGFloat = 0
         switch shape {
         case .navBack:
-            lineWidth = 2.0
+            lineWidth = 2
         case .disclosureIndicator:
             lineWidth = 1.5
         case .checkmark:
             lineWidth = 1.5
         case .detailButtonImage:
-            lineWidth = 1.0
+            lineWidth = 1
         case .navClose:
             lineWidth = 1.2 // 取消icon默认的lineWidth
         default:
@@ -675,7 +677,7 @@ extension UIImage {
         CGContextInspectSize(size)
 
         var resultImage: UIImage?
-        let tintColor = tintColor ?? UIColorWhite
+        let tintColor = tintColor ?? UIColorMake(255, 255, 255)
 
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }

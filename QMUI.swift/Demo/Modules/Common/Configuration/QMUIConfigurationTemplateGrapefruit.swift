@@ -1,27 +1,19 @@
 //
-//  QMUIConfigurationTemplate.swift
+//  QMUIConfigurationTemplateGrapefruit.swift
 //  QMUI.swift
 //
-//  Created by qd-hxt on 2018/3/29.
+//  Created by qd-hxt on 2018/4/3.
 //  Copyright © 2018年 伯驹 黄. All rights reserved.
 //
 
-/**
- *  QMUIConfigurationTemplate 是一份配置表，用于配合 QMUIConfiguration 来管理整个 App 的全局样式，使用方式：
- *  在 QMUI 项目代码的文件夹里找到 QMUIConfigurationTemplate 目录，把里面所有文件复制到自己项目里，保证能被编译到即可，不需要在某些地方 import，也不需要手动运行。
- *
- *  @warning 更新 QMUIKit 的版本时，请留意 Release Log 里是否有提醒更新配置表，请尽量保持自己项目里的配置表与 QMUIKit 里的配置表一致，避免遗漏新的属性。
- *  @warning 配置表的 class 名必须以 QMUIConfigurationTemplate 开头，并且实现 <QMUIConfigurationTemplateProtocol>，因为这两者是 QMUI 识别该 NSObject 是否为一份配置表的条件。
- *  @warning QMUI 2.3.0 之后，配置表改为自动运行，不需要再在某个地方手动运行了。
- */
-class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
+class QMUIConfigurationTemplateGrapefruit: NSObject, QDThemeProtocol {
     
     override required init() {
         super.init()
     }
     
     var themeTintColor: UIColor {
-        return UIColorBlue
+        return UIColorTheme1
     }
     
     var themeListTextColor: UIColor {
@@ -33,11 +25,11 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     }
     
     var themeGridItemTintColor: UIColor? {
-        return nil
+        return themeTintColor
     }
     
     var themeName: String {
-        return "Default"
+        return "Grapefruit"
     }
     
     func applyConfigurationTemplate() {
@@ -100,7 +92,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().navBarDisabledAlpha = 0.2 // NavBarDisabledAlpha : QMUINavigationButton 在 disabled 时的 alpha
         QMUICMI().navBarButtonFont = UIFontMake(17) // NavBarButtonFont : QMUINavigationButtonTypeNormal 的字体（由于系统存在一些 bug，这个属性默认不对 UIBarButtonItem 生效）
         QMUICMI().navBarButtonFontBold = UIFontBoldMake(17) // NavBarButtonFontBold : QMUINavigationButtonTypeBold 的字体
-        QMUICMI().navBarBackgroundImage = UIImageMake("navigationbar_background") // NavBarBackgroundImage : UINavigationBar 的背景图
+        QMUICMI().navBarBackgroundImage = QDUIHelper.navigationBarBackgroundImage(themeTintColor) // NavBarBackgroundImage : UINavigationBar 的背景图
         QMUICMI().navBarShadowImage = UIImage() // NavBarShadowImage : UINavigationBar.shadowImage，也即导航栏底部那条分隔线
         QMUICMI().navBarBarTintColor = nil // NavBarBarTintColor : UINavigationBar.barTintColor，也即背景色
         QMUICMI().navBarTintColor = UIColorWhite // NavBarTintColor : QMUINavigationController.navigationBar 的 tintColor，也即导航栏上面的按钮颜色，由于 tintColor 不支持 appearance，所以这里只支持 QMUINavigationController
@@ -122,7 +114,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().tabBarBackgroundImage = UIImage.qmui_image(color: UIColorMake(249, 249, 249))?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)) // TabBarBackgroundImage : UITabBar 的背景图
         QMUICMI().tabBarBarTintColor = nil // TabBarBarTintColor : UITabBar 的 barTintColor
         QMUICMI().tabBarShadowImageColor = UIColorSeparator // TabBarShadowImageColor : UITabBar 的 shadowImage 的颜色，会自动创建一张 1px 高的图片
-        QMUICMI().tabBarTintColor = UIColorMake(4, 189, 231) // TabBarTintColor : UITabBar 的 tintColor
+        QMUICMI().tabBarTintColor = themeTintColor // TabBarTintColor : UITabBar 的 tintColor
         QMUICMI().tabBarItemTitleColor = UIColorGray6 // TabBarItemTitleColor : 未选中的 UITabBarItem 的标题颜色
         QMUICMI().tabBarItemTitleColorSelected = TabBarTintColor // TabBarItemTitleColorSelected : 选中的 UITabBarItem 的标题颜色
         QMUICMI().tabBarItemTitleFont = nil // TabBarItemTitleFont : UITabBarItem 的标题字体
@@ -202,9 +194,9 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1 // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
         
         // MARK: QMUILog
-//        QMUICMI().shouldPrintDefaultLog = true // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log
-//        QMUICMI().shouldPrintInfoLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelInfo 级别的 log
-//        QMUICMI().shouldPrintWarnLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelWarn 级别的 log
+        //        QMUICMI().shouldPrintDefaultLog = true // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log
+        //        QMUICMI().shouldPrintInfoLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelInfo 级别的 log
+        //        QMUICMI().shouldPrintWarnLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelWarn 级别的 log
         
         // MARK: Others
         

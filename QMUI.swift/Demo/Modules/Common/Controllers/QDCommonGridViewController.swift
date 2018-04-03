@@ -10,7 +10,7 @@ class QDCommonGridViewController: QDCommonViewController {
     
     private(set) var dataSource: QMUIOrderedDictionary<String, UIImage> = [:]
     
-    private(set) var gridView: QMUIGridView!
+    private(set) var gridView: QMUIGridView = QMUIGridView()
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -37,7 +37,6 @@ class QDCommonGridViewController: QDCommonViewController {
         
         view.addSubview(scrollView)
         
-        gridView = QMUIGridView()
         for index in 0..<dataSource.count {
             let subview = generateButton(index)
             gridView.addSubview(subview)
@@ -101,7 +100,7 @@ class QDCommonGridViewController: QDCommonViewController {
         
         let button = QDCommonGridButton()
         
-        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
+        if let tintColor = QDThemeManager.shared.currentTheme.themeGridItemTintColor {
             button.tintColor = tintColor
             button.adjustsImageTintColorAutomatically = true
         } else {

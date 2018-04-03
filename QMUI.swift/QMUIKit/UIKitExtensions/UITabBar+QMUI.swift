@@ -30,25 +30,29 @@ extension UITabBar: SelfAware2 {
         }
     }
 
-    @objc open func qmui_setItems(_ items: [UITabBarItem]?, animated: Bool) {
+    @objc func qmui_setItems(_ items: [UITabBarItem]?, animated: Bool) {
         qmui_setItems(items, animated: animated)
 
-        items?.forEach({ item in
-            if let itemView = item.qmui_barButton() {
+        items?.forEach({
+            if let itemView = $0.qmui_barButton() {
                 itemView.addTarget(self, action: #selector(handleTabBarItemViewEvent(_:)), for: .touchUpInside)
             }
         })
     }
 
-    @objc open func qmui_setSelectedItem(_ selectedItem: UITabBarItem?) {
-        let olderSelectedIndex = selectedItem != nil ? items?.index(of: selectedItem!) : -1
+    @objc func qmui_setSelectedItem(_ selectedItem: UITabBarItem?) {
+        guard let selectedItem = selectedItem, let items = self.items else { return }
+        var olderSelectedIndex = -1
+        if self.selectedItem != nil {
+            olderSelectedIndex = items.index(of: selectedItem) ?? -1
+        }
         qmui_setSelectedItem(selectedItem)
-        let newerSelectedIndex = items?.index(of: selectedItem!)
+        let newerSelectedIndex = Int(items.index(of: selectedItem) ?? -1)
         // 只有双击当前正在显示的界面的 tabBarItem，才能正常触发双击事件
         canItemRespondDoubleTouch = olderSelectedIndex == newerSelectedIndex
     }
 
-    @objc open func qmui_setFrame(_ frame: CGRect) {
+    @objc func qmui_setFrame(_ frame: CGRect) {
         var newFrame = frame
         if IOS_VERSION < 11.2 && IS_58INCH_SCREEN && ShouldFixTabBarTransitionBugInIPhoneX {
             if frame.height == TabBarHeight && frame.maxY < superview?.bounds.height ?? 0 {
@@ -64,7 +68,7 @@ extension UITabBar: SelfAware2 {
         if !canItemRespondDoubleTouch {
             return
         }
-        guard let qmui_doubleTapBlock = selectedItem?.qmui_doubleTapBlock else {
+        guard let qmui_doubleTapClosure = selectedItem?.qmui_doubleTapClosure else {
             return
         }
 
@@ -78,7 +82,7 @@ extension UITabBar: SelfAware2 {
         if lastTouchedTabBarItemViewIndex == UITabBar.kLastTouchedTabBarItemIndexNone {
             // 记录第一次点击的 index
             lastTouchedTabBarItemViewIndex = selectedIndex
-        } else {
+        } else if lastTouchedTabBarItemViewIndex != selectedIndex {
             // 后续的点击如果与第一次点击的 index 不一致，则认为是重新开始一次新的点击
             revertTabBarItemTouch()
             lastTouchedTabBarItemViewIndex = selectedIndex
@@ -89,7 +93,7 @@ extension UITabBar: SelfAware2 {
         if tabBarItemViewTouchCount == 2 {
             // 第二次点击了相同的 tabBarItem，触发双击事件
             if let item = items?[selectedIndex] {
-                qmui_doubleTapBlock(item, selectedIndex)
+                qmui_doubleTapClosure(item, selectedIndex)
             }
             revertTabBarItemTouch()
         }

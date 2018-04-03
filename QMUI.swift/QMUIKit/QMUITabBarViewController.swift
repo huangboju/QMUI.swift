@@ -34,12 +34,20 @@ class QMUITabBarViewController: UITabBarController {
 
     // MARK: - 屏幕旋转
     override var shouldAutorotate: Bool {
-        guard let selectedViewController = selectedViewController else { return false }
-        return selectedViewController.responds(to: #selector(getter: self.shouldAutorotate)) ? selectedViewController.shouldAutorotate : false
+        guard let selectedViewController = selectedViewController else { return true }
+        if selectedViewController.qmui_hasOverrideUIKitMethod(#function) {
+            return selectedViewController.shouldAutorotate
+        } else {
+            return true
+        }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        guard let selectedViewController = selectedViewController else { return .portrait }
-        return selectedViewController.responds(to: #selector(getter: supportedInterfaceOrientations)) ? selectedViewController.supportedInterfaceOrientations : .portrait
+        guard let selectedViewController = selectedViewController else { return SupportedOrientationMask }
+        if selectedViewController.qmui_hasOverrideUIKitMethod(#function) {
+            return selectedViewController.supportedInterfaceOrientations
+        } else {
+            return SupportedOrientationMask
+        }
     }
 }
