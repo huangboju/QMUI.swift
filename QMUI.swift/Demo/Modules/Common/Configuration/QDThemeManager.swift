@@ -33,8 +33,9 @@ class QDThemeManager: QDChangingThemeDelegate {
         return instance
     } ()
     
-    var currentTheme: QDThemeProtocol {
+    var currentTheme: QDThemeProtocol? {
         didSet {
+            guard let currentTheme = currentTheme, let oldValue = oldValue else { return }
             if !currentTheme.isEqual(oldValue) {
                 // 从 nil 变成某个 theme 就不发通知了，初始化时会自动 apply，这里只需要处理在 QD 里手动更改 theme 的场景就行
                 currentTheme.applyConfigurationTemplate()
@@ -44,7 +45,6 @@ class QDThemeManager: QDChangingThemeDelegate {
     }
     
     private init() {
-        currentTheme = QMUIConfigurationTemplate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChanged(_:)), name: Notification.QD.ThemeChanged, object: nil)
     }
     

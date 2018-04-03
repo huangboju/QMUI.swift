@@ -54,7 +54,6 @@ extension UIView: SelfAware {
             ReplaceMethod(clazz, #selector(layoutSublayers(of:)), #selector(qmui_layoutSublayers(of:)))
         }
     }
-    
 
     @objc open func qmui_safeAreaInsetsDidChange() {
         qmui_safeAreaInsetsDidChange()
@@ -371,7 +370,8 @@ extension UIView {
             setNeedsLayout()
         }
         get {
-            return (objc_getAssociatedObject(self, &Keys.borderWidth) as? CGFloat) ?? PixelOne
+            let borderWidth = objc_getAssociatedObject(self, &Keys.borderWidth) as? CGFloat
+            return borderWidth ?? PixelOne
         }
     }
 

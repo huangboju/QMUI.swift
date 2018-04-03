@@ -472,9 +472,12 @@ extension QMUIHelper {
      * @warning 注意返回值可能为nil，要做好保护
      */
     static var visibleViewController: UIViewController? {
-        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
-        let visibleViewController = rootViewController?.qmui_visibleViewControllerIfExist
-        return visibleViewController
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if let rootViewController = appDelegate.window?.rootViewController {
+            let visibleViewController = rootViewController.qmui_visibleViewControllerIfExist
+            return visibleViewController
+        }
+        return nil
     }
 }
 

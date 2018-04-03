@@ -43,10 +43,10 @@ extension UIViewController {
         if let presentedViewController = presentedViewController {
             return presentedViewController.qmui_visibleViewControllerIfExist
         }
-        if let nav = self as? UINavigationController {
-            return nav.topViewController?.qmui_visibleViewControllerIfExist
+        if self is UINavigationController, let nav = self as? UINavigationController {
+            return nav.visibleViewController?.qmui_visibleViewControllerIfExist
         }
-        if let tabbar = self as? UITabBarController {
+        if self is UITabBarController, let tabbar = self as? UITabBarController {
             return tabbar.selectedViewController?.qmui_visibleViewControllerIfExist
         }
 

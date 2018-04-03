@@ -220,7 +220,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     
     // QMUI 2.3.0 版本里，配置表新增这个方法，返回 true 表示在 App 启动时要自动应用这份配置表。仅当你的 App 里存在多份配置表时，才需要把除默认配置表之外的其他配置表的返回值改为 false。
     func shouldApplyTemplateAutomatically() -> Bool {
-        let result = UserDefaults.standard.string(forKey: QDSelectedThemeClassName) == String(describing: self)
+        let result = QDThemeManager.shared.currentTheme == nil ||  UserDefaults.standard.string(forKey: QDSelectedThemeClassName) == String(describing: self)
         if result {
             QDThemeManager.shared.currentTheme = self
         }

@@ -31,6 +31,8 @@ class QMUIConfiguration {
     
     private init() {
         
+        disabledColor = gray
+        
         buttonHighlightedAlpha = controlHighlightedAlpha
         buttonDisabledAlpha = controlDisabledAlpha
         buttonTintColor = blue
@@ -77,19 +79,19 @@ class QMUIConfiguration {
     var gray = UIColorMake(179, 179, 179)
     var grayDarken = UIColorMake(163, 163, 163)
     var grayLighten = UIColorMake(198, 198, 198)
-    var red = UIColorMake(227, 40, 40)
-    var green = UIColorMake(79, 214, 79)
-    var blue = UIColorMake(43, 133, 208)
-    var yellow = UIColorMake(255, 252, 233)
+    var red = UIColorMake(250, 58, 58)
+    var green = UIColorMake(159, 214, 97)
+    var blue = UIColorMake(49, 189, 243)
+    var yellow = UIColorMake(255, 207, 71)
     
     var linkColor = UIColorMake(56, 116, 171)
-    var disabledColor: UIColor?
-    var backgroundColor = UIColorMake(246, 246, 246)
+    var disabledColor: UIColor
+    var backgroundColor: UIColor?
     var maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35)
     var maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5)
-    var separatorColor = UIColorMake(200, 199, 204)
+    var separatorColor = UIColorMake(222, 224, 226)
     var separatorDashedColor = UIColorMake(17, 17, 17)
-    var placeholderColor = UIColorMake(187, 187, 187)
+    var placeholderColor = UIColorMake(196, 200, 208)
     
     var testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
     var testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)

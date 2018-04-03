@@ -57,7 +57,7 @@ extension QDUIHelper {
 // MARK: - Button
 extension QDUIHelper {
     static func generateDarkFilledButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.adjustsButtonWhenHighlighted = true
         button.titleLabel?.font = UIFontBoldMake(14)
@@ -69,7 +69,7 @@ extension QDUIHelper {
     }
     
     static func generateLightBorderedButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme.themeTintColor
+        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.titleLabel?.font = UIFontBoldMake(14)
         button.setTitleColor(themeTintColor, for: .normal)

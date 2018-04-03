@@ -21,7 +21,7 @@ class QDAboutViewController: QDCommonViewController {
         let attributedString = NSAttributedString(string: "qcvwaevawv", attributes: attributes)
         let image = UIImageMake("icon_grid_button")!
         
-        if let tintColor = QDThemeManager.shared.currentTheme.themeGridItemTintColor {
+        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
             button.tintColor = tintColor
             button.adjustsImageTintColorAutomatically = true
         } else {
