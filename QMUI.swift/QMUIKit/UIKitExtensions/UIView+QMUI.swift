@@ -359,9 +359,6 @@ extension UIView {
         }
         get {
             let position = objc_getAssociatedObject(self, &Keys.borderPosition) as? QMUIBorderViewPosition
-            if position != nil {
-                print(position!)
-            }
             return position ?? QMUIBorderViewPosition.none
         }
     }
@@ -424,12 +421,6 @@ extension UIView {
     @objc func qmui_layoutSublayers(of layer: CALayer) {
         qmui_layoutSublayers(of: layer)
         
-//        if self is QDCommonGridButton {
-//            print(self)
-//            print(qmui_borderWidth)
-//            print(qmui_borderColor)
-//        }
-        
         if (qmui_borderLayer == nil && qmui_borderPosition == .none) || (qmui_borderLayer == nil && qmui_borderWidth == 0) {
             return
         }
@@ -459,28 +450,24 @@ extension UIView {
             path = UIBezierPath()
         }
         
-        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.top.rawValue) != 0 {
+        if qmui_borderPosition.contains(QMUIBorderViewPosition.top) {
             path?.move(to: CGPoint(x: 0, y: borderWidth / 2))
             path?.addLine(to: CGPoint(x: bounds.width, y: borderWidth / 2))
         }
         
-        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.left.rawValue) != 0 {
+        if qmui_borderPosition.contains(QMUIBorderViewPosition.left) {
             path?.move(to: CGPoint(x: borderWidth / 2, y: 0))
-            path?.addLine(to: CGPoint(x: borderWidth / 2, y: bounds.height))
+            path?.addLine(to: CGPoint(x: borderWidth / 2, y: bounds.height - 0))
         }
         
-        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.bottom.rawValue) != 0 {
+        if qmui_borderPosition.contains(QMUIBorderViewPosition.bottom) {
             path?.move(to: CGPoint(x: 0, y: bounds.height - borderWidth / 2))
             path?.addLine(to: CGPoint(x: bounds.width, y: bounds.height - borderWidth / 2))
         }
         
-        if UInt8(qmui_borderPosition.rawValue) & UInt8(QMUIBorderViewPosition.right.rawValue) != 0 {
+        if qmui_borderPosition.contains(QMUIBorderViewPosition.right) {
             path?.move(to: CGPoint(x: bounds.width - borderWidth / 2, y: 0))
             path?.addLine(to: CGPoint(x: bounds.width - borderWidth / 2, y: bounds.height))
-        }
-        
-        if path != nil {
-            print(path!)
         }
         
         qmui_borderLayer!.path = path?.cgPath

@@ -74,14 +74,16 @@ class QDCommonGridViewController: QDCommonViewController {
         
         for (index, item) in gridView.subviews.enumerated() {
             item.qmui_borderPosition = [.left, .top]
+            
             if (index % gridView.columnCount == gridView.columnCount - 1) || (index == gridView.subviews.count - 1) {
                 // 每行最后一个，或者所有的最后一个（因为它可能不是所在行的最后一个）
-                item.qmui_borderPosition = [.left, .top, .right]
+                item.qmui_borderPosition = item.qmui_borderPosition.union([.right])
             }
             if (index + gridView.columnCount >= gridView.subviews.count) {
                 // 那些下方没有其他 item 的 item，底部都加个边框
-                item.qmui_borderPosition = [.left, .top, .bottom]
+                item.qmui_borderPosition = item.qmui_borderPosition.union([.bottom])
             }
+            
         }
         
         let gridViewHeight = gridView.sizeThatFits(CGSize(width: gridViewWidth, height: CGFloat.greatestFiniteMagnitude)).height

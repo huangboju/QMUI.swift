@@ -8,15 +8,46 @@
 
 class QDAboutViewController: QDCommonViewController {
     
-    lazy var debugView: UIView = {
-        return UIView(frame: CGRect(x: 100, y: 100, width: 200, height: 200))
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        
+        return scrollView
+    }()
+    
+    private lazy var debugView: QMUIButton = {
+        let button = QDCommonGridButton()
+        
+        let attributes = [NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.font: UIFontMake(11), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 12, lineBreakMode: .byTruncatingTail, textAlignment: .center)]
+        let attributedString = NSAttributedString(string: "qcvwaevawv", attributes: attributes)
+        let image = UIImageMake("icon_grid_button")!
+        
+        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
+            button.tintColor = tintColor
+            button.adjustsImageTintColorAutomatically = true
+        } else {
+            button.tintColor = nil
+            button.adjustsImageTintColorAutomatically = false
+        }
+        button.setAttributedTitle(attributedString, for: .normal)
+        button.setImage(image, for: .normal)
+//        button.tag = index
+//        button.addTarget(self, action: #selector(handleGirdButtonEvent(_:)), for: .touchUpInside)
+        button.frame = CGRect(x: 100, y: 100, width: 200, height: 200)
+        
+        return button
     }()
     
     override func didInitialized() {
         super.didInitialized()
         
-        view.addSubview(debugView)
-        debugView.backgroundColor = QDCommonUI.randomThemeColor()
+        view.addSubview(scrollView)
+        scrollView.addSubview(debugView)
+        
+        scrollView.frame = view.bounds
+        
+        let contentSize = CGSize(width: debugView.frame.width, height:debugView.frame.maxY)
+        scrollView.contentSize = contentSize
+//        debugView.backgroundColor = QDCommonUI.randomThemeColor()
     }
     
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
@@ -26,8 +57,6 @@ class QDAboutViewController: QDCommonViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        debugView.qmui_borderColor = UIColorGray1
-        debugView.qmui_borderWidth = 2
-        debugView.qmui_borderPosition = .left
+
     }
 }
