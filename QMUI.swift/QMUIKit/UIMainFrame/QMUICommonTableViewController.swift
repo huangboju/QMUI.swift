@@ -93,7 +93,9 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor
+        if let backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor {
+            view.backgroundColor = backgroundColor
+        }
     }
 
     override func initSubviews() {

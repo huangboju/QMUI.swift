@@ -66,8 +66,8 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
         layer.insertSublayer(bottomLineLayer, at: 0)
     }
 
-    override func updateCellAppearance(with indexPath: IndexPath) {
-        super.updateCellAppearance(with: indexPath)
+    override func updateCellAppearance(_ indexPath: IndexPath) {
+        super.updateCellAppearance(indexPath)
         textLabel?.font = UIFontBoldMake(albumNameFontSize)
         detailTextLabel?.font = UIFontMake(albumAssetsNumberFontSize)
     }
@@ -198,7 +198,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
 
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? QMUIAlbumTableViewCell
         if cell == nil {
-            cell = QMUIAlbumTableViewCell(for: tableView, withStyle: .subtitle, reuseIdentifier: "cell")
+            cell = QMUIAlbumTableViewCell(tableView, style: .subtitle, reuseIdentifier: "cell")
             cell?.accessoryType = .disclosureIndicator
         }
         let assetsGroup = _albumsArray[indexPath.row]
@@ -210,7 +210,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
         // 显示相册中所包含的资源数量
         cell?.detailTextLabel?.text = "\(assetsGroup.numberOfAssets)"
 
-        cell?.updateCellAppearance(with: indexPath)
+        cell?.updateCellAppearance(indexPath)
 
         return cell!
     }

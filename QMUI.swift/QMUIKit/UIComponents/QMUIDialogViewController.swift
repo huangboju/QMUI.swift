@@ -381,7 +381,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
         let identifier = "cell"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = QMUITableViewCell(for: tableView, withStyle: .subtitle, reuseIdentifier: identifier)
+            cell = QMUITableViewCell(tableView, style: .subtitle, reuseIdentifier: identifier)
         }
         cell?.textLabel?.text = items[indexPath.row]
 
@@ -402,7 +402,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
         }
 
         if let customCell = cell as? QMUITableViewCell {
-            customCell.updateCellAppearance(with: indexPath)
+            customCell.updateCellAppearance(indexPath)
             cellForItemBlock?(self, customCell, indexPath.row)
         }
         return cell!

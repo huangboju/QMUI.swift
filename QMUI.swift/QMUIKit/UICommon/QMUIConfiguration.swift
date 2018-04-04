@@ -143,6 +143,7 @@ class QMUIConfiguration {
         didSet {
             guard let navBarShadowImage = navBarShadowImage else { return }
             UINavigationBar.appearance().shadowImage = navBarShadowImage
+            let vc = QMUIHelper.visibleViewController?.navigationController
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.shadowImage = navBarShadowImage
         }
     }
@@ -194,22 +195,21 @@ class QMUIConfiguration {
     }
     var navBarBackIndicatorImage: UIImage? {
         didSet {
-            if navBarBackIndicatorImage != nil {
-                let navBarAppearance = UINavigationBar.appearance()
-                let navigationBar = QMUIHelper.visibleViewController?.navigationController?.navigationBar
-                // 返回按钮的图片frame是和系统默认的返回图片的大小一致的（13, 21），所以用自定义返回箭头时要保证图片大小与系统的箭头大小一样，否则无法对齐
-                let systemBackIndicatorImageSize = CGSize(width: 13, height: 31)
-                let customBackIndicatorImageSize = navBarBackIndicatorImage!.size
-                if !(customBackIndicatorImageSize == systemBackIndicatorImageSize) {
-                    let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(customBackIndicatorImageSize.height)
-                    self.navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_image(spacingExtensionInsets: UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
-                }
-                
-                navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage
-                navBarAppearance.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
-                navigationBar?.backIndicatorImage = self.navBarBackIndicatorImage
-                navigationBar?.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
+            guard let navBarBackIndicatorImage = navBarBackIndicatorImage else { return }
+            let navBarAppearance = UINavigationBar.appearance()
+            let navigationBar = QMUIHelper.visibleViewController?.navigationController?.navigationBar
+            // 返回按钮的图片frame是和系统默认的返回图片的大小一致的（13, 21），所以用自定义返回箭头时要保证图片大小与系统的箭头大小一样，否则无法对齐
+            let systemBackIndicatorImageSize = CGSize(width: 13, height: 31)
+            let customBackIndicatorImageSize = navBarBackIndicatorImage.size
+            if customBackIndicatorImageSize != systemBackIndicatorImageSize {
+                let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(customBackIndicatorImageSize.height)
+                self.navBarBackIndicatorImage = navBarBackIndicatorImage.qmui_image(spacingExtensionInsets: UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage.renderingMode)
             }
+            
+            navBarAppearance.backIndicatorImage = self.navBarBackIndicatorImage
+            navBarAppearance.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
+            navigationBar?.backIndicatorImage = self.navBarBackIndicatorImage
+            navigationBar?.backIndicatorTransitionMaskImage = self.navBarBackIndicatorImage
         }
     }
     var navBarCloseButtonImage: UIImage?

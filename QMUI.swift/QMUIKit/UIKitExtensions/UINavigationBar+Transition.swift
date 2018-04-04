@@ -12,7 +12,7 @@ extension UINavigationBar: SelfAware2 {
     }
 
     /// 用来模仿真的navBar，配合 UINavigationController+NavigationBarTransition 在转场过程中存在的一条假navBar
-    public var transitionNavigationBar: UINavigationBar? {
+    var transitionNavigationBar: UINavigationBar? {
         set {
             guard let bar = newValue else {
                 return
@@ -30,9 +30,9 @@ extension UINavigationBar: SelfAware2 {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationBar.self
             
-            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(NavigationBarTransition_setShadowImage))
-            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
-            ReplaceMethod(clazz, #selector(setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
+            ReplaceMethod(clazz, #selector(setter: UINavigationBar.shadowImage), #selector(UINavigationBar.NavigationBarTransition_setShadowImage(_:)))
+//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
+//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
             
             ReplaceMethod(clazz, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
         }
@@ -40,7 +40,7 @@ extension UINavigationBar: SelfAware2 {
 
     @objc func NavigationBarTransition_setShadowImage(_ image: UIImage) {
         NavigationBarTransition_setShadowImage(image)
-        transitionNavigationBar?.shadowImage = image
+//        transitionNavigationBar?.shadowImage = image
     }
 
     @objc func NavigationBarTransition_setBarTintColor(_ tintColor: UIColor) {

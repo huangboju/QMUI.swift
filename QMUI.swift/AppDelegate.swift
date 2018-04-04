@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         // window root controller
-        tabBarViewController.viewControllers = [uikitNavController, componentNavController, labViewController]
+        tabBarViewController.viewControllers = [uikitNavController, componentNavController, labNavController]
         window?.rootViewController = tabBarViewController
         window?.makeKeyAndVisible()
     }

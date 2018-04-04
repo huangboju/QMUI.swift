@@ -8,4 +8,26 @@
 
 class QDLabViewController: QDCommonListViewController {
     
+    override var dataSource: [String] {
+        get {
+            return ["All System Fonts",
+                    "Default Line Height",
+                    "Theme",
+                    "Animation",
+                    "Log Manager"]
+        }
+        set {
+            
+        }
+    }
+    
+    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
+        super.setNavigationItems(isInEditMode, animated: animated)
+        title = "Lab"
+        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(image: UIImageMake("icon_nav_about"), position: .right, target: self, action: #selector(handleAboutItemEvent))
+    }
+    
+    @objc private func handleAboutItemEvent() {
+        QDThemeManager.shared.currentTheme = QMUIConfigurationTemplateGrapefruit()
+    }
 }

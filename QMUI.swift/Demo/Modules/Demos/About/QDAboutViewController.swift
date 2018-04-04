@@ -61,8 +61,5 @@ class QDAboutViewController: QDCommonViewController {
     
     @objc private func handleAboutItemEvent() {
         QDThemeManager.shared.currentTheme = QMUIConfigurationTemplateGrapefruit()
-        
-
-//        [[NSUserDefaults standardUserDefaults] setObject:NSStringFromClass(self.themes[themeIndex].class) forKey:QDSelectedThemeClassName];
     }
 }
