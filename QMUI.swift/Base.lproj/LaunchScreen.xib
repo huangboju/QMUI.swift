@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_background" translatesAutoresizingMaskIntoConstraints="NO" id="FCu-Ze-kzT">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch_logo" translatesAutoresizingMaskIntoConstraints="NO" id="Job-xj-IjZ">
+                    <rect key="frame" x="160" y="1" width="160" height="210"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2018 QMUI Team All Rights Reserved." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="84c-Pz-PLx">
+                    <rect key="frame" x="126.5" y="441" width="227" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="FCu-Ze-kzT" secondAttribute="trailing" id="0uK-Gx-8C8"/>
+                <constraint firstItem="Job-xj-IjZ" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-134" id="7GN-V3-M6R"/>
+                <constraint firstAttribute="bottom" secondItem="FCu-Ze-kzT" secondAttribute="bottom" identifier="bottomAlign" id="7Th-Ek-fwz"/>
+                <constraint firstItem="84c-Pz-PLx" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="dxp-SA-TZ6"/>
+                <constraint firstItem="FCu-Ze-kzT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="jiX-63-ebN"/>
+                <constraint firstAttribute="bottom" secondItem="84c-Pz-PLx" secondAttribute="bottom" constant="24" id="ncS-pI-R1y"/>
+                <constraint firstItem="Job-xj-IjZ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="u1n-Ex-hvE"/>
+                <constraint firstItem="FCu-Ze-kzT" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="xCm-yn-XWe"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="launch_background" width="375" height="667"/>
+        <image name="launch_logo" width="160" height="210"/>
+    </resources>
+</document>

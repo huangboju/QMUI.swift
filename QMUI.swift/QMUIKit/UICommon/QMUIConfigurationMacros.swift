@@ -21,6 +21,8 @@ func QMUICMI() -> QMUIConfiguration {
 
 // MARK: - Global Color
 
+// MARK: TODO 这里的声明全是 let 常量，但实际上，QMUICMI()里的属性时可变的，是不是要改为可变的，比如说 TabBarTintColor
+
 // 基础颜色
 let UIColorClear = QMUICMI().clear
 let UIColorWhite = QMUICMI().white
@@ -110,7 +112,11 @@ let NavBarAccessoryViewTypeDisclosureIndicatorImage = QMUICMI().navBarAccessoryV
 let TabBarBackgroundImage = QMUICMI().tabBarBackgroundImage
 let TabBarBarTintColor = QMUICMI().tabBarBarTintColor
 let TabBarShadowImageColor = QMUICMI().tabBarShadowImageColor
-let TabBarTintColor = QMUICMI().tabBarTintColor
+
+var TabBarTintColor: UIColor? {
+    return QMUICMI().tabBarTintColor
+}
+
 let TabBarItemTitleColor = QMUICMI().tabBarItemTitleColor
 let TabBarItemTitleColorSelected = QMUICMI().tabBarItemTitleColorSelected
 let TabBarItemTitleFont = QMUICMI().tabBarItemTitleFont

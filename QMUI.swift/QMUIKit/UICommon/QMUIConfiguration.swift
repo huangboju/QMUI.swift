@@ -266,7 +266,7 @@ class QMUIConfiguration {
             let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
             var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
             textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColorSelected
-            UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
+            UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .selected)
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
                 $0.setTitleTextAttributes(textAttributes, for: .selected)
             }
