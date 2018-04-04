@@ -6,35 +6,30 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-// TODO: 这里先注释掉，保证UITableView的Swizzle成功
-// extension UIScrollView: SelfAware {
-//    private static let _onceToken = UUID().uuidString
-//
-//        let clazz = UIScrollView.self
-//    static func awake() {
-//        DispatchQueue.once(token: _onceToken) {
-//            ReplaceMethod(clazz, #selector(description), #selector(qmui_description))
-//        }
-//    }
-// }
+extension UIScrollView: SelfAware3 {
+    private static let _onceToken = UUID().uuidString
+
+    static func awake3() {
+        let clazz = UIScrollView.self
+        DispatchQueue.once(token: _onceToken) {
+            ReplaceMethod(clazz, #selector(description), #selector(qmui_description))
+        }
+    }
+}
 
 extension UIScrollView {
-
-    private struct AssociatedKeys {
-        static var description = "description"
-    }
 
     @objc func qmui_description() -> String {
         return qmui_description() + ", contentInset = \(contentInset)"
     }
 
     /// 判断UIScrollView是否已经处于顶部（当UIScrollView内容不够多不可滚动时，也认为是在顶部）
-    public var qmui_alreadyAtTop: Bool {
-        if qmui_canScroll {
+    var qmui_alreadyAtTop: Bool {
+        if !qmui_canScroll {
             return true
         }
 
-        if contentOffset.y == -contentInset.top {
+        if contentOffset.y == -qmui_contentInset.top {
             return true
         }
 
@@ -42,30 +37,39 @@ extension UIScrollView {
     }
 
     /// 判断UIScrollView是否已经处于底部（当UIScrollView内容不够多不可滚动时，也认为是在底部）
-    public var qmui_alreadyAtBottom: Bool {
+    var qmui_alreadyAtBottom: Bool {
         if !qmui_canScroll {
             return true
         }
 
-        if contentOffset.y == contentSize.height + contentInset.bottom - bounds.height {
+        if contentOffset.y == contentSize.height + qmui_contentInset.bottom - bounds.height {
             return true
         }
 
         return false
+    }
+    
+    /// UIScrollView 的真正 inset，在 iOS11 以后需要用到 adjustedContentInset 而在 iOS11 以前只需要用 contentInset
+    var qmui_contentInset: UIEdgeInsets {
+        if #available(iOS 11, *) {
+            return adjustedContentInset
+        } else {
+            return contentInset
+        }
     }
 
     /**
      * 判断当前的scrollView内容是否足够滚动
      * @warning 避免与<i>scrollEnabled</i>混淆
      */
-    @objc public var qmui_canScroll: Bool {
+    @objc var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.size == .zero {
             return false
         }
 
-        let canVerticalScroll = contentSize.height + contentInset.verticalValue > bounds.height
-        let canHorizontalScoll = contentSize.width + contentInset.horizontalValue > bounds.width
+        let canVerticalScroll = contentSize.height + qmui_contentInset.verticalValue > bounds.height
+        let canHorizontalScoll = contentSize.width + qmui_contentInset.horizontalValue > bounds.width
         return canVerticalScroll || canHorizontalScoll
     }
 
@@ -74,21 +78,21 @@ extension UIScrollView {
      * @param force 是否无视qmui_canScroll而强制滚动
      * @param animated 是否用动画表现
      */
-    public func qmui_scrollToTopForce(_ force: Bool, animated: Bool) {
+    func qmui_scrollToTopForce(_ force: Bool, animated: Bool) {
         if force || (!force && qmui_canScroll) {
-            setContentOffset(CGPoint(x: -contentInset.left, y: -contentInset.top), animated: animated)
+            setContentOffset(CGPoint(x: -qmui_contentInset.left, y: -qmui_contentInset.top), animated: animated)
         }
     }
 
     /**
      * 等同于qmui_scrollToTop(false, animated: animated)
      */
-    public func qmui_scrollToTopAnimated(_ animated: Bool) {
+    func qmui_scrollToTopAnimated(_ animated: Bool) {
         qmui_scrollToTopForce(false, animated: animated)
     }
 
     /// 等同于qmui_scrollToTop(false)
-    public func qmui_scrollToTop() {
+    func qmui_scrollToTop() {
         qmui_scrollToTopAnimated(false)
     }
 
@@ -97,19 +101,19 @@ extension UIScrollView {
      * @param animated 是否用动画表现
      * @see [UIScrollView qmui_canScroll]
      */
-    public func qmui_scrollToBottomAnimated(_ animated: Bool) {
+    func qmui_scrollToBottomAnimated(_ animated: Bool) {
         if qmui_canScroll {
-            setContentOffset(CGPoint(x: contentOffset.x, y: contentSize.height + contentInset.bottom - bounds.height), animated: animated)
+            setContentOffset(CGPoint(x: contentOffset.x, y: contentSize.height + qmui_contentInset.bottom - bounds.height), animated: animated)
         }
     }
 
     /// 等同于qmui_scrollToBottomAnimated(false)
-    public func qmui_scrollToBottom() {
+    func qmui_scrollToBottom() {
         qmui_scrollToBottomAnimated(false)
     }
 
     // 立即停止滚动，用于那种手指已经离开屏幕但列表还在滚动的情况。
-    public func qmui_stopDeceleratingIfNeeded() {
+    func qmui_stopDeceleratingIfNeeded() {
         if isDecelerating {
             setContentOffset(contentOffset, animated: false)
         }

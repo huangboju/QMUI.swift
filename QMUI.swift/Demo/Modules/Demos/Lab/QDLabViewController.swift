@@ -28,6 +28,18 @@ class QDLabViewController: QDCommonListViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        QDThemeManager.shared.currentTheme = QMUIConfigurationTemplateGrapefruit()
+        
+    }
+    
+    override func didSelectCell(_ title: String) {
+        var viewController: UIViewController?
+        //        if title == "UIColor+QMUI" {
+        viewController = QDColorViewController()
+        //        }
+        
+        if let viewController = viewController {
+            viewController.title = title
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }

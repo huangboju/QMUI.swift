@@ -427,8 +427,8 @@ extension QMUIHelper {
      *  @return 是否真正旋转了方向，YES 表示参数的方向和目前设备方向不一致，NO 表示一致也即不会旋转
      *  @see [QMUIConfiguration automaticallyRotateDeviceOrientation]
      */
-    static func rotateToDeviceOrientation(_ orientation: UIInterfaceOrientation) -> Bool {
-        if UIDevice.current.orientation.rawValue == orientation.rawValue {
+    static func rotateToDeviceOrientation(_ orientation: UIDeviceOrientation) -> Bool {
+        if UIDevice.current.orientation == orientation {
             UIViewController.attemptRotationToDeviceOrientation()
             return false
         }

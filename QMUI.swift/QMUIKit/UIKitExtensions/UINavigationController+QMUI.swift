@@ -7,14 +7,14 @@
 //
 import UIKit
 
-extension UINavigationController: SelfAware2 {
+extension UINavigationController: SelfAware3 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake2() {
+    static func awake3() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationController.self
             
-            ReplaceMethod(clazz, #selector(viewDidLoad), #selector(qmui_viewDidLoad))
+            ReplaceMethod(clazz, #selector(UINavigationController.viewDidLoad), #selector(UINavigationController.qmui_viewDidLoad))
             // TODO: 这里UINavigationController没有显示的该方法，所以Swift类型推不出来
             //            ReplaceMethod(NSClassFromString("UINavigationController")!, #selector(navigationBar(_:shouldPop:)), #selector(qmui_navigationBar(_:shouldPop:)))
         }
@@ -81,8 +81,8 @@ extension UINavigationController {
         }
     }
 
-    @objc public func qmui_viewDidLoad() {
-        self.qmui_viewDidLoad()
+    @objc func qmui_viewDidLoad() {
+        qmui_viewDidLoad()
 
         objc_setAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey, interactivePopGestureRecognizer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         interactivePopGestureRecognizer?.delegate = self

@@ -30,8 +30,6 @@ class QDAboutViewController: QDCommonViewController {
         }
         button.setAttributedTitle(attributedString, for: .normal)
         button.setImage(image, for: .normal)
-//        button.tag = index
-//        button.addTarget(self, action: #selector(handleGirdButtonEvent(_:)), for: .touchUpInside)
         button.frame = CGRect(x: 100, y: 100, width: 200, height: 200)
         
         return button

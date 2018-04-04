@@ -144,7 +144,7 @@ extension UITableView {
     /**
      *  UITableView的tableHeaderView如果是UISearchBar的话，tableView.contentSize会强制设置为至少比bounds高（从而实现headerView的吸附效果），从而导致qmui_canScroll的判断不准确。所以为UITableView重写了qmui_canScroll方法
      */
-    public override var qmui_canScroll: Bool {
+    override var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.height <= 0 {
             return false

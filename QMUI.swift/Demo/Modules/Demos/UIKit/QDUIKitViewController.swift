@@ -44,7 +44,20 @@ class QDUIKitViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        let viewController = QDAboutViewController()
-        navigationController?.pushViewController(viewController, animated: true)
+//        let viewController = QDAboutViewController()
+//        navigationController?.pushViewController(viewController, animated: true)
+        print(self.scrollView)
+    }
+    
+    override func didSelectCell(_ title: String) {
+        var viewController: UIViewController?
+//        if title == "UIColor+QMUI" {
+            viewController = QDColorViewController()
+//        }
+        
+        if let viewController = viewController {
+            viewController.title = title
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }

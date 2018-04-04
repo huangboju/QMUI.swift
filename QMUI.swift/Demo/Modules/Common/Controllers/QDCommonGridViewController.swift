@@ -12,7 +12,7 @@ class QDCommonGridViewController: QDCommonViewController {
     
     private(set) var gridView: QMUIGridView = QMUIGridView()
     
-    private lazy var scrollView: UIScrollView = {
+    public lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         
         return scrollView
