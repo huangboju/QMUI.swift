@@ -545,19 +545,7 @@ extension UIViewController {
 }
 
 // MARK: QMUINavigationControllerTransition
-extension UIViewController: SelfAware {
-
-    private static let _onceToken = UUID().uuidString
-    
-    static func awake() {
-        DispatchQueue.once(token: _onceToken) {
-            let clazz = UIViewController.self
-            
-            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmuiNav_viewWillAppear(_:)))
-            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(qmuiNav_viewDidAppear(_:)))
-            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(qmuiNav_viewDidDisappear(_:)))
-        }
-    }
+extension UIViewController {
     
     @objc func qmuiNav_viewWillAppear(_ animated: Bool) {
         qmuiNav_viewWillAppear(animated)

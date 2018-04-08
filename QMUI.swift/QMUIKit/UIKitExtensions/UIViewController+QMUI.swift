@@ -13,10 +13,10 @@ extension Notification {
     }
 }
 
-extension UIViewController: SelfAware2 {
+extension UIViewController: SelfAware {
     private static let _onceToken = UUID().uuidString
     
-    static func awake2() {
+    static func awake() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UIViewController.self
             
@@ -32,6 +32,17 @@ extension UIViewController: SelfAware2 {
             
             // 实现 AutomaticallyRotateDeviceOrientation 开关的功能
             ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmui_viewWillAppear(_:)))
+            
+            // MARK: QMUINavigationControllerTransition
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmuiNav_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(qmuiNav_viewDidAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(qmuiNav_viewDidDisappear(_:)))
+            
+            // MARK: NavigationBarTransition
+            ReplaceMethod(clazz, #selector(viewWillLayoutSubviews), #selector(NavigationBarTransition_viewWillLayoutSubviews))
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(NavigationBarTransition_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(NavigationBarTransition_viewDidAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(NavigationBarTransition_viewDidDisappear(_:)))
         }
     }
     

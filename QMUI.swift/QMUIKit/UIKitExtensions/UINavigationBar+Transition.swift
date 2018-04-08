@@ -10,6 +10,35 @@ extension UINavigationBar: SelfAware2 {
     private struct Keys {
         static var transitionNavigationBarKey = "transitionNavigationBarKey"
     }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake2() {
+        DispatchQueue.once(token: _onceToken) {
+            let clazz = UINavigationBar.self
+            
+//            ReplaceMethod(clazz, #selector(setter: UINavigationBar.shadowImage), #selector(UINavigationBar.NavigationBarTransition_setShadowImage(_:)))
+//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
+//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
+            
+            ReplaceMethod(clazz, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
+        }
+    }
+    
+    @objc func NavigationBarTransition_setShadowImage(_ image: UIImage) {
+        NavigationBarTransition_setShadowImage(image)
+        transitionNavigationBar?.shadowImage = image
+    }
+    
+    @objc func NavigationBarTransition_setBarTintColor(_ tintColor: UIColor) {
+        NavigationBarTransition_setBarTintColor(tintColor)
+        transitionNavigationBar?.barTintColor = tintColor
+    }
+    
+    @objc func NavigationBarTransition_setBackgroundImage(_ backgroundImage: UIImage, for barMetrics: UIBarMetrics) {
+        NavigationBarTransition_setBackgroundImage(backgroundImage, for: barMetrics)
+        transitionNavigationBar?.setBackgroundImage(backgroundImage, for: barMetrics)
+    }
 
     /// 用来模仿真的navBar，配合 UINavigationController+NavigationBarTransition 在转场过程中存在的一条假navBar
     var transitionNavigationBar: UINavigationBar? {
@@ -22,35 +51,6 @@ extension UINavigationBar: SelfAware2 {
         get {
             return objc_getAssociatedObject(self, &Keys.transitionNavigationBarKey) as? UINavigationBar
         }
-    }
-    
-    private static let _onceToken = UUID().uuidString
-    
-    static func awake2() {
-        DispatchQueue.once(token: _onceToken) {
-            let clazz = UINavigationBar.self
-            
-            ReplaceMethod(clazz, #selector(setter: UINavigationBar.shadowImage), #selector(UINavigationBar.NavigationBarTransition_setShadowImage(_:)))
-//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
-//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
-            
-            ReplaceMethod(clazz, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
-        }
-    }
-
-    @objc func NavigationBarTransition_setShadowImage(_ image: UIImage) {
-        NavigationBarTransition_setShadowImage(image)
-//        transitionNavigationBar?.shadowImage = image
-    }
-
-    @objc func NavigationBarTransition_setBarTintColor(_ tintColor: UIColor) {
-        NavigationBarTransition_setBarTintColor(tintColor)
-        transitionNavigationBar?.barTintColor = tintColor
-    }
-
-    @objc func NavigationBarTransition_setBackgroundImage(_ backgroundImage: UIImage, for barMetrics: UIBarMetrics) {
-        NavigationBarTransition_setBackgroundImage(backgroundImage, for: barMetrics)
-        transitionNavigationBar?.setBackgroundImage(backgroundImage, for: barMetrics)
     }
 }
 

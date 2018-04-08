@@ -7,16 +7,22 @@
 //
 import UIKit
 
-extension UINavigationController: SelfAware3 {
+extension UINavigationController: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake3() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationController.self
             
             ReplaceMethod(clazz, #selector(UINavigationController.viewDidLoad), #selector(UINavigationController.qmui_viewDidLoad))
             // TODO: 这里UINavigationController没有显示的该方法，所以Swift类型推不出来
             //            ReplaceMethod(NSClassFromString("UINavigationController")!, #selector(navigationBar(_:shouldPop:)), #selector(qmui_navigationBar(_:shouldPop:)))
+            
+            // MARK: NavigationBarTransition
+            ReplaceMethod(clazz, #selector(UINavigationController.pushViewController(_:animated:)), #selector(UINavigationController.NavigationBarTransition_pushViewController(_:animated:)))
+            ReplaceMethod(clazz, #selector(UINavigationController.popViewController(animated:)), #selector(UINavigationController.NavigationBarTransition_popViewController(animated:)))
+            ReplaceMethod(clazz, #selector(UINavigationController.popToViewController(_:animated:)), #selector(UINavigationController.NavigationBarTransition_popToViewController(_:animated:)))
+            ReplaceMethod(clazz, #selector(UINavigationController.popToRootViewController(animated:)), #selector(UINavigationController.NavigationBarTransition_popToRootViewController(animated:)))
         }
     }
 }

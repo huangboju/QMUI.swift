@@ -130,10 +130,10 @@ extension UICollectionView {
 }
 
 /// QMUIIndexPathHeightCacheInvalidation
-extension UICollectionView: SelfAware2 {
+extension UICollectionView: SelfAware3 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake2() {
+    static func awake3() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UICollectionView.self
             

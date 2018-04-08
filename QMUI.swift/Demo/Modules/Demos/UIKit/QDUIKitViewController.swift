@@ -52,7 +52,7 @@ class QDUIKitViewController: QDCommonGridViewController {
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
 //        if title == "UIColor+QMUI" {
-            viewController = QDColorViewController()
+            viewController = QDSliderViewController()
 //        }
         
         if let viewController = viewController {

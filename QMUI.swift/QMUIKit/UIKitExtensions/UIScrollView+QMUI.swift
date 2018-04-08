@@ -6,10 +6,10 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UIScrollView: SelfAware3 {
+extension UIScrollView: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake3() {
+    static func awake2() {
         let clazz = UIScrollView.self
         DispatchQueue.once(token: _onceToken) {
             ReplaceMethod(clazz, #selector(description), #selector(qmui_description))

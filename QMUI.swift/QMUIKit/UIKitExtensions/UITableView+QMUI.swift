@@ -209,10 +209,10 @@ extension UITableView {
 }
 
 // MARK: - QMUIIndexPathHeightCacheInvalidation
-extension UITableView: SelfAware2 {
+extension UITableView: SelfAware3 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake2() {
+    static func awake3() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UITableView.self
             
