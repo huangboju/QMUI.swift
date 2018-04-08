@@ -56,7 +56,9 @@ enum QMUINavigationTitleViewAccessoryType {
 
 class QMUINavigationTitleView: UIControl {
     weak var delegate: QMUINavigationTitleViewDelegate?
-    var style: QMUINavigationTitleViewStyle = .default {
+    
+    
+    var style: QMUINavigationTitleViewStyle {
         didSet {
             if style == .subTitleVertical {
                 titleLabel.font = verticalTitleFont
@@ -117,40 +119,44 @@ class QMUINavigationTitleView: UIControl {
     /// 水平布局下的标题字体，默认为 NavBarTitleFont
     @objc dynamic var horizontalTitleFont = NavBarTitleFont {
         didSet {
-            guard style == .default else { return }
-            titleLabel.font = horizontalTitleFont
-            updateTitleLabelSize()
-            refreshLayout()
+            if style == .default {
+                titleLabel.font = horizontalTitleFont
+                updateTitleLabelSize()
+                refreshLayout()
+            }
         }
     }
 
     /// 水平布局下的副标题的字体，默认为 NavBarTitleFont
     @objc dynamic var horizontalSubtitleFont = NavBarTitleFont {
         didSet {
-            guard style == .default else { return }
-            subtitleLabel.font = horizontalSubtitleFont
-            updateSubtitleLabelSize()
-            refreshLayout()
+            if style == .default {
+                subtitleLabel.font = horizontalSubtitleFont
+                updateSubtitleLabelSize()
+                refreshLayout()
+            }
         }
     }
 
     /// 垂直布局下的标题字体，默认为 UIFontMake(15)
     @objc dynamic var verticalTitleFont = UIFontMake(15) {
         didSet {
-            guard style == .subTitleVertical else { return }
-            titleLabel.font = verticalTitleFont
-            updateTitleLabelSize()
-            refreshLayout()
+            if style == .subTitleVertical {
+                titleLabel.font = verticalTitleFont
+                updateTitleLabelSize()
+                refreshLayout()
+            }
         }
     }
 
     /// 垂直布局下的副标题字体，默认为 UIFontLightMake(12)
     @objc dynamic var verticalSubtitleFont = UIFontLightMake(12) {
         didSet {
-            guard style == .subTitleVertical else { return }
-            titleLabel.font = verticalSubtitleFont
-            updateTitleLabelSize()
-            refreshLayout()
+            if style == .subTitleVertical {
+                subtitleLabel.font = verticalSubtitleFont
+                updateSubtitleLabelSize()
+                refreshLayout()
+            }
         }
     }
 
@@ -320,24 +326,24 @@ class QMUINavigationTitleView: UIControl {
     }
 
     init(style: QMUINavigationTitleViewStyle, frame: CGRect) {
+        self.style = .default
         super.init(frame: frame)
         
         addTarget(self, action: #selector(handleTouchTitleViewEvent), for: .touchUpInside)
-
+        
         titleLabel = UILabel()
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byTruncatingTail
         addSubview(titleLabel)
-
+        
         subtitleLabel = UILabel()
         subtitleLabel.textAlignment = .center
         subtitleLabel.lineBreakMode = .byTruncatingTail
         addSubview(subtitleLabel)
-
+        
         isUserInteractionEnabled = false
         contentHorizontalAlignment = .center
-        self.style = style
-
+        
         let appearance = QMUINavigationTitleView.appearance()
         maximumWidth = appearance.maximumWidth
         loadingViewSize = appearance.loadingViewSize
@@ -348,6 +354,12 @@ class QMUINavigationTitleView: UIControl {
         verticalSubtitleFont = appearance.verticalSubtitleFont
         accessoryViewOffset = appearance.accessoryViewOffset
         tintColor = NavBarTitleColor
+        
+        didInitialized(style)
+    }
+    
+    fileprivate func didInitialized(_ style: QMUINavigationTitleViewStyle) {
+        self.style = style
     }
 
     override var description: String {
@@ -427,8 +439,8 @@ class QMUINavigationTitleView: UIControl {
     }
 
     private var contentSize: CGSize {
-        var size = CGSize()
         if style == .subTitleVertical {
+            var size = CGSize.zero
             // 垂直排列的情况下，loading和accessory与titleLabel同一行
             var firstLineWidth = titleLabelSize.width + titleEdgeInsetsIfShowingTitleLabel.horizontalValue
             firstLineWidth += loadingViewSpacingSizeIfNeedsPlaceholder.width
@@ -436,17 +448,19 @@ class QMUINavigationTitleView: UIControl {
 
             let secondLineWidth = subtitleLabelSize.width + subtitleEdgeInsetsIfShowingSubtitleLabel.horizontalValue
 
-            size.width = max(firstLineWidth, secondLineWidth)
+            size.width = fmax(firstLineWidth, secondLineWidth)
 
             size.height = titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue + subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue
+            return size.flatted
         } else {
+            var size = CGSize.zero
             size.width = titleLabelSize.width + titleEdgeInsetsIfShowingTitleLabel.horizontalValue + subtitleLabelSize.width + subtitleEdgeInsetsIfShowingSubtitleLabel.horizontalValue
             size.width += loadingViewSpacingSizeIfNeedsPlaceholder.width + accessorySpacingSizeIfNeedesPlaceholder.width
-            size.height = max(titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue, subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue)
-            size.height = max(size.height, loadingViewSpacingSizeIfNeedsPlaceholder.height)
-            size.height = max(size.height, accessorySpacingSizeIfNeedesPlaceholder.height)
+            size.height = fmax(titleLabelSize.height + titleEdgeInsetsIfShowingTitleLabel.verticalValue, subtitleLabelSize.height + subtitleEdgeInsetsIfShowingSubtitleLabel.verticalValue)
+            size.height = fmax(size.height, loadingViewSpacingSizeIfNeedsPlaceholder.height)
+            size.height = fmax(size.height, accessorySpacingSizeIfNeedesPlaceholder.height)
+            return size.flatted
         }
-        return size.flatted
     }
 
     override func sizeThatFits(_ : CGSize) -> CGSize {
@@ -471,8 +485,8 @@ class QMUINavigationTitleView: UIControl {
 
         // 实际内容的size，小于等于maxSize
         var contentSize = self.contentSize
-        contentSize.width = min(maxSize.width, contentSize.width)
-        contentSize.height = min(maxSize.height, contentSize.height)
+        contentSize.width = fmin(maxSize.width, contentSize.width)
+        contentSize.height = fmin(maxSize.height, contentSize.height)
 
         // 计算左右两边的偏移值
         var offsetLeft: CGFloat = 0

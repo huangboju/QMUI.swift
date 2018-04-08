@@ -12,7 +12,7 @@ extension CALayer {
      *  @param  sublayer    要被移动的layer
      *  @warning 要被移动的sublayer必须已经添加到当前layer上
      */
-    public func qmui_sendSublayerToBack(_ sublayer: CALayer) {
+    func qmui_sendSublayerToBack(_ sublayer: CALayer) {
         if sublayer.superlayer == self {
             sublayer.removeFromSuperlayer()
             insertSublayer(sublayer, at: 0)
@@ -24,7 +24,7 @@ extension CALayer {
      *  @param  sublayer    要被移动的layer
      *  @warning 要被移动的sublayer必须已经添加到当前layer上
      */
-    public func qmui_bringSublayerToFront(_ sublayer: CALayer) {
+    func qmui_bringSublayerToFront(_ sublayer: CALayer) {
         if sublayer.superlayer == self {
             sublayer.removeFromSuperlayer()
             insertSublayer(sublayer, at: UInt32(sublayers?.count ?? 0))
@@ -34,7 +34,7 @@ extension CALayer {
     /**
      * 移除 CALayer（包括 CAShapeLayer 和 CAGradientLayer）所有支持动画的属性的默认动画，方便需要一个不带动画的 layer 时使用。
      */
-    public func qmui_removeDefaultAnimations() {
+    func qmui_removeDefaultAnimations() {
         var actions: [String: CAAction] = [
             NSStringFromSelector(#selector(getter: bounds)): NSNull(),
             NSStringFromSelector(#selector(getter: position)): NSNull(),
@@ -92,7 +92,7 @@ extension CALayer {
     /**
      * 产生一个适用于做通用分隔线的 layer，高度为 PixelOne，默认会移除动画，并且背景色用 UIColorSeparator
      */
-    public static func qmui_separatorLayer() -> CALayer {
+    static func qmui_separatorLayer() -> CALayer {
         let layer = CALayer()
         layer.qmui_removeDefaultAnimations()
         layer.backgroundColor = UIColorSeparator.cgColor
@@ -103,7 +103,7 @@ extension CALayer {
     /**
      * 产生一个适用于做列表分隔线的 layer，高度为 PixelOne，默认会移除动画，并且背景色用 TableViewSeparatorColor
      */
-    public static func qmui_separatorLayerForTableView() -> CALayer {
+    static func qmui_separatorLayerForTableView() -> CALayer {
         let layer = qmui_separatorLayer()
         layer.backgroundColor = TableViewSeparatorColor.cgColor
         return layer

@@ -424,7 +424,7 @@ extension UIView {
         if (qmui_borderLayer == nil && qmui_borderPosition == .none) || (qmui_borderLayer == nil && qmui_borderWidth == 0) {
             return
         }
-        if qmui_borderLayer != nil && qmui_borderPosition == .none && qmui_borderLayer!.path != nil {
+        if qmui_borderLayer != nil && qmui_borderPosition == .none && qmui_borderLayer!.path == nil {
             return
         }
         if qmui_borderLayer != nil && qmui_borderWidth == 0 && qmui_borderLayer!.lineWidth == 0 {
