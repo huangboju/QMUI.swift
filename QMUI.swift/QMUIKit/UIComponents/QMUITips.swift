@@ -35,17 +35,17 @@ class QMUITips: QMUIToastView {
     }
 
     public func showSucceed(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
-        contentCustomView = UIImageView(image: QMUIHelper.image(with: "QMUI_tips_done"))
+        contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_done"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
     public func showError(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
-        contentCustomView = UIImageView(image: QMUIHelper.image(with: "QMUI_tips_error"))
+        contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_error"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
     public func showInfo(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
-        contentCustomView = UIImageView(image: QMUIHelper.image(with: "QMUI_tips_info"))
+        contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_info"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 

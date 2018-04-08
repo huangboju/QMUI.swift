@@ -50,7 +50,7 @@ class QMUIMoreOperationItemView: QMUIButton {
 
     override var isHighlighted: Bool {
         didSet {
-            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha! : 1
+            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha : 1
         }
     }
 
@@ -81,7 +81,7 @@ class QMUIMoreOperationController: UIViewController {
         }
     }
 
-    public var contentSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
+    public var contentSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
         didSet {
             scrollViewDividingLayer.backgroundColor = contentSeparatorColor.cgColor
         }
@@ -96,11 +96,11 @@ class QMUIMoreOperationController: UIViewController {
     public var cancelButtonTitleColor = UIColorBlue {
         didSet {
             cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
-            cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha!), for: .highlighted)
+            cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
         }
     }
 
-    public var cancelButtonSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
+    public var cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
         didSet {
             cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor
         }
@@ -236,7 +236,7 @@ class QMUIMoreOperationController: UIViewController {
         cancelButton.backgroundColor = cancelButtonBackgroundColor
         cancelButton.setTitle("取消", for: .normal)
         cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
-        cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha!), for: .highlighted)
+        cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
         cancelButton.addTarget(self, action: #selector(handleCancelButtonEvent), for: .touchUpInside)
 
         cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor

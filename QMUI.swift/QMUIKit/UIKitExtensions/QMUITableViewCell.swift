@@ -10,31 +10,31 @@ import UIKit
 
 class QMUITableViewCell: UITableViewCell {
 
-    public private(set) var style: UITableViewCellStyle = .default
+    private(set) var style: UITableViewCellStyle = .default
 
     /**
      *  imageEdgeInsets，这个属性用来调整imageView里面图片的位置，有些情况titleLabel前面是一个icon，但是icon与titleLabel的间距不是你想要的。<br/>
      *  @warning 目前只对UITableViewCellStyleDefault和UITableViewCellStyleSubtitle类型的cell开放
      */
-    public var imageEdgeInsets: UIEdgeInsets = .zero
+    var imageEdgeInsets: UIEdgeInsets = .zero
 
     /**
      *  textLabelEdgeInsets，这个属性和imageEdgeInsets合作使用，用来调整titleLabel的位置，默认为 UIEdgeInsetsZero。<br/>
      *  @warning 目前只对UITableViewCellStyleDefault和UITableViewCellStyleSubtitle类型的cell开放。
      */
-    public var textLabelEdgeInsets: UIEdgeInsets = .zero
+    var textLabelEdgeInsets: UIEdgeInsets = .zero
 
     /// 与textLabelEdgeInsets一致，作用目标为detailTextLabel，默认为 UIEdgeInsetsZero。
-    public var detailTextLabelEdgeInsets: UIEdgeInsets = .zero
+    var detailTextLabelEdgeInsets: UIEdgeInsets = .zero
 
     /// 用于调整右边 accessoryView 的布局偏移，默认为 UIEdgeInsetsZero。
-    public var accessoryEdgeInsets: UIEdgeInsets = .zero
+    var accessoryEdgeInsets: UIEdgeInsets = .zero
 
     /// 用于调整accessoryView的点击响应区域，可用负值扩大点击范围，默认为(-12, -12, -12, -12)
-    public var accessoryHitTestEdgeInsets: UIEdgeInsets = UIEdgeInsets(top: -12, left: -12, bottom: -12, right: -12)
+    var accessoryHitTestEdgeInsets: UIEdgeInsets = UIEdgeInsets(top: -12, left: -12, bottom: -12, right: -12)
 
     /// 设置当前cell是否enabled，setter方法里面会修改当前的subviews样式。
-    public var isEnabled: Bool = true {
+    var isEnabled: Bool = true {
         willSet {
             if newValue {
                 self.isUserInteractionEnabled = true
@@ -49,7 +49,7 @@ class QMUITableViewCell: UITableViewCell {
     }
 
     /// 保存对tableView的弱引用，在布局时可能会使用到tableView的一些属性例如separatorColor等。只有使用下面两个 initForTableView: 的接口初始化时这个属性才有值，否则就只能自己初始化后赋值
-    public weak var parentTableView: UITableView?
+    weak var parentTableView: UITableView?
 
     /**
      *  cell 处于 section 中的位置，要求：
@@ -57,7 +57,7 @@ class QMUITableViewCell: UITableViewCell {
      *  2. 在 cellForRow 里调用 [cell updateCellAppearanceWithIndexPath:] 方法。
      *  3. 之后即可通过 cellPosition 获取到正确的位置。
      */
-    public fileprivate(set) var cellPosition: QMUITableViewCellPosition = .none
+    fileprivate(set) var cellPosition: QMUITableViewCellPosition = .none
 
     private lazy var defaultAccessoryImageView: UIImageView = {
         let imageView = UIImageView()
@@ -84,33 +84,32 @@ class QMUITableViewCell: UITableViewCell {
      *
      *  @return 一个QMUITableViewCell实例
      */
-    convenience init(for tableView: UITableView, withStyle style: UITableViewCellStyle, reuseIdentifier: String?) {
+    convenience init(_ tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
         self.init(style: style, reuseIdentifier: reuseIdentifier)
         parentTableView = tableView
     }
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        didInitialized(with: style)
+        didInitialized(style)
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-
-        didInitialized(with: .default)
+        didInitialized(.default)
     }
 
     deinit {
         parentTableView = nil
     }
 
+    // 解决 iOS 8 以后的 cell 中 separatorInset 受 layoutMargins 影响的问题
     override var layoutMargins: UIEdgeInsets {
         get {
             return .zero
         }
         set {
-            self.layoutMargins = newValue
+            super.layoutMargins = newValue
         }
     }
 
@@ -176,10 +175,10 @@ class QMUITableViewCell: UITableViewCell {
 
         let hasCustomAccessoryEdgeInset = accessoryView?.superview != nil && (accessoryEdgeInsets != .zero)
         if hasCustomAccessoryEdgeInset {
-            var accessoryViewOldFrame = accessoryView?.frame ?? .zero
+            var accessoryViewOldFrame = accessoryView!.frame
             accessoryViewOldFrame = accessoryViewOldFrame.setX(accessoryViewOldFrame.minX - accessoryEdgeInsets.right)
             accessoryViewOldFrame = accessoryViewOldFrame.setY(accessoryViewOldFrame.minY + accessoryEdgeInsets.top - accessoryEdgeInsets.bottom)
-            accessoryView?.frame = accessoryViewOldFrame
+            accessoryView!.frame = accessoryViewOldFrame
 
             var contentViewOldFrame = contentView.frame
             contentViewOldFrame = contentViewOldFrame.setWidth(accessoryViewOldFrame.minX - accessoryEdgeInsets.left)
@@ -247,28 +246,32 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
 
-    private func didInitialized(with _: UITableViewCellStyle) {
+    private func didInitialized(_ style: UITableViewCellStyle) {
+        self.style = style
+        
         textLabel?.font = UIFontMake(16)
         textLabel?.backgroundColor = UIColorClear
-        textLabel?.textColor = TableViewCellTitleLabelColor
-
+        if let color = TableViewCellTitleLabelColor {
+            textLabel?.textColor = color
+        }
+        
         detailTextLabel?.font = UIFontMake(15)
         detailTextLabel?.backgroundColor = UIColorClear
-        detailTextLabel?.textColor = TableViewCellDetailLabelColor
+        if let color = TableViewCellDetailLabelColor {
+            detailTextLabel?.textColor = color
+        }
 
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = TableViewCellSelectedBackgroundColor
         self.selectedBackgroundView = selectedBackgroundView
-
+        
         // 因为在hitTest里扩大了accessoryView的响应范围，因此提高了系统一个与此相关的bug的出现几率，所以又在scrollView.delegate里做一些补丁性质的东西来修复
-        if let scrollView = self.subviews.first as? UIScrollView {
+        if let scrollView = subviews.first as? UIScrollView {
             scrollView.delegate = self
         }
     }
-}
-
-extension QMUITableViewCell {
-    @objc func updateCellAppearance(with indexPath: IndexPath) {
+    
+    func updateCellAppearance(_ indexPath: IndexPath) {
         // 子类继承
         if let parentTableView = parentTableView {
             cellPosition = parentTableView.qmui_positionForRow(at: indexPath)

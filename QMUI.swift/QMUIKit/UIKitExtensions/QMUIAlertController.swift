@@ -43,8 +43,8 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// alert的最大宽度，默认270。
     @objc public dynamic var alertContentMaximumWidth: CGFloat = 270
 
-    /// alert上分隔线颜色，默认 UIColor(r: 211, g: 211, b: 219)。
-    @objc public dynamic var alertSeperatorColor: UIColor = UIColor(r: 211, g: 211, b: 219) {
+    /// alert上分隔线颜色，默认 UIColorMake(211, 211, 219)。
+    @objc public dynamic var alertSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
         didSet {
             updateEffectBackgroundColor()
         }
@@ -71,8 +71,8 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         }
     }
 
-    /// alert按钮disabled时的样式，默认 [NSAttributedStringKey.foregroundColor: UIColor(r: 129, g: 129, b: 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor(r: 129, g: 129, b: 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// alert按钮disabled时的样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
+    @objc public dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
@@ -102,22 +102,22 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// alert按钮高度，默认44pt
     @objc public dynamic var alertButtonHeight: CGFloat = 44
 
-    /// alert头部（非按钮部分）背景色，默认值是：UIColor(r: 247, g: 247, b: 247, a:1)
-    @objc public dynamic var alertHeaderBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
+    /// alert头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
+    @objc public dynamic var alertHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// alert按钮背景色，默认值同`alertHeaderBackgroundColor`
-    @objc public dynamic var alertButtonBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
+    @objc public dynamic var alertButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// alert按钮高亮背景色，默认 UIColor(r: 232, g: 232, b: 232)
-    @objc public dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColor(r: 232, g: 232, b: 232) {
+    /// alert按钮高亮背景色，默认 UIColorMake(232, 232, 232)
+    @objc public dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
         didSet {
             _needsUpdateAction = true
         }
@@ -135,22 +135,22 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// sheet的最大宽度，默认值是5.5英寸的屏幕的宽度减去水平的 sheetContentMargin
     @objc public dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsetsMake(10, 10, 10, 10).horizontalValue
 
-    /// sheet分隔线颜色，默认 UIColor(r: 211, g: 211, b: 219)
-    @objc public dynamic var sheetSeperatorColor: UIColor = UIColor(r: 211, g: 211, b: 219) {
+    /// sheet分隔线颜色，默认 UIColorMake(211, 211, 219)
+    @objc public dynamic var sheetSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
         didSet {
             updateEffectBackgroundColor()
         }
     }
 
-    /// sheet标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColor(r: 143, g: 143, b: 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var sheetTitleAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor(r: 143, g: 143, b: 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// sheet标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc public dynamic var sheetTitleAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateTitle = true
         }
     }
 
-    /// sheet信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColor(r: 143, g: 143, b: 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var sheetMessageAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor(r: 143, g: 143, b: 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// sheet信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc public dynamic var sheetMessageAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateMessage = true
         }
@@ -163,8 +163,8 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         }
     }
 
-    /// sheet按钮disabled时的样式，默认 [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor(r: 129, g: 129, b: 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor(r: 129, g: 129, b: 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// sheet按钮disabled时的样式，默认 [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
+    @objc public dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
@@ -198,21 +198,21 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     @objc public dynamic var sheetButtonHeight: CGFloat = (IOS_VERSION >= 9.0 ? 57 : 44)
 
     /// sheet头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
-    @objc public dynamic var sheetHeaderBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
+    @objc public dynamic var sheetHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// sheet按钮背景色，默认值同`sheetHeaderBackgroundColor`
-    @objc public dynamic var sheetButtonBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
+    @objc public dynamic var sheetButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// sheet按钮高亮背景色，默认 UIColor(r: 232, g: 232, b: 232)
-    @objc public dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColor(r: 232, g: 232, b: 232) {
+    /// sheet按钮高亮背景色，默认 UIColorMake(232, 232, 232)
+    @objc public dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
         didSet {
             _needsUpdateAction = true
         }
@@ -906,7 +906,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 增加一个输入框
     ///
     /// - Parameter configurationHandler: 回调
-    public func addTextField(with configurationHandler: ((_ textField: UITextField) -> Void)?) {
+    public func addTextField(with configurationHandler: ((_ textField: QMUITextField) -> Void)?) {
         if customView != nil {
             NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
@@ -921,7 +921,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         textField.textColor = .black
         textField.autocapitalizationType = .none
         textField.clearButtonMode = .whileEditing
-        textField.layer.borderColor = UIColor(r: 210, g: 210, b: 210).cgColor
+        textField.layer.borderColor = UIColorMake(210, 210, 210).cgColor
         textField.layer.borderWidth = PixelOne
         headerScrollView.addSubview(textField)
         alertTextFields.append(textField)
@@ -993,7 +993,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             if let image = $0.button.image(for: .normal), let attributeStr = attributeString {
                 var range = NSRange(location: 0, length: attributeStr.length)
                 let disabledColor = attributeString?.attribute(NSAttributedStringKey.foregroundColor, at: 0, effectiveRange: &range)
-                $0.button.setImage(image.qmui_imageWith(tintColor: disabledColor as! UIColor), for: .disabled)
+                $0.button.setImage(image.qmui_image(tintColor: disabledColor as! UIColor), for: .disabled)
             }
         }
     }

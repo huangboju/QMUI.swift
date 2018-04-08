@@ -6,11 +6,13 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-extension UISearchBar: SelfAware {
+extension UISearchBar: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake2() {
         DispatchQueue.once(token: _onceToken) {
+            let clazz = UISearchBar.self
+            
             let selectors = [
                 #selector(setter: placeholder),
                 #selector(layoutSubviews),
@@ -18,7 +20,7 @@ extension UISearchBar: SelfAware {
             ]
             selectors.forEach({
                 //                print("qmui_" + $0.description)
-                ReplaceMethod(self, $0, Selector("qmui_" + $0.description))
+                ReplaceMethod(clazz, $0, Selector("qmui_" + $0.description))
             })
         }
     }
@@ -117,7 +119,7 @@ extension UISearchBar: SelfAware {
         qmui_cancelButton()?.frame.setY(qmui_cancelButton()?.qmui_minYWhenCenterInSuperview ?? 0)
         if let superView = qmui_segmentedControl()?.superview, let bottom = qmui_textField()?.frame.maxY {
             if superView.frame.minY < bottom { // scopeBar 显示在搜索框右边
-                let y = superView.bounds.height.center(with: superView.frame.height)
+                let y = superView.bounds.height.center(superView.frame.height)
                 superView.frame.setY(y)
             }
         }
@@ -246,7 +248,7 @@ extension UISearchBar {
             return objc_getAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView, newValue, .OBJC_ASSOCIATION_ASSIGN)
+            objc_setAssociatedObject(self, &AssociatedKeys.kUsedAsTableHeaderView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -313,6 +315,7 @@ extension UISearchBar {
         }
     }
 
+    /// 获取 searchBar 内的取消按钮
     public func qmui_cancelButton() -> UIButton? {
         if let button = value(forKey: "cancelButton") {
             return button as? UIButton
@@ -320,6 +323,7 @@ extension UISearchBar {
         return nil
     }
 
+    /// 获取 scopeBar 里的 UISegmentedControl
     public func qmui_segmentedControl() -> UISegmentedControl? {
         // 注意，segmentedControl 只是整条 scopeBar 里的一部分，虽然它的 key 叫做“scopeBar”
         if let segmentedControl = value(forKey: "scopeBar") {
@@ -347,9 +351,7 @@ extension UISearchBar {
         }
 
         // placeholder 的文字颜色
-        if let placeholderColor = SearchBarPlaceholderColor {
-            qmui_placeholderColor = placeholderColor
-        }
+        qmui_placeholderColor = SearchBarPlaceholderColor
 
         placeholder = "搜索"
         autocorrectionType = .no
@@ -359,7 +361,7 @@ extension UISearchBar {
         // 设置搜索icon
         if let searchIconImage = SearchBarSearchIconImage {
             if !searchIconImage.size.equalTo(CGSize(width: 13, height: 13)) {
-                QMUILog("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSStringFromCGSize(CGSize(width: 13, height: 23)))")
+                print("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSStringFromCGSize(CGSize(width: 13, height: 23)))")
             }
             setImage(searchIconImage, for: .search, state: .normal)
         }
@@ -374,20 +376,25 @@ extension UISearchBar {
 
         // 输入框背景图
         if let textFieldBackgroundColor = SearchBarTextFieldBackground {
-            var image = UIImage.qmui_image(withColor: textFieldBackgroundColor, size: CGSize(width: 60, height: 28), cornerRadius: SearchBarTextFieldCornerRadius)
-            image = image?.qmui_image(withBorderColor: textFieldBackgroundColor, borderWidth: PixelOne, cornerRadius: SearchBarTextFieldCornerRadius)
+            var image = UIImage.qmui_image(color: textFieldBackgroundColor, size: CGSize(width: 60, height: 28), cornerRadius: SearchBarTextFieldCornerRadius)
+            image = image?.qmui_image(borderColor: textFieldBackgroundColor, borderWidth: PixelOne, cornerRadius: SearchBarTextFieldCornerRadius)
             image?.resizableImage(withCapInsets: UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14))
             setSearchFieldBackgroundImage(image, for: .normal)
         }
 
         // 整条bar的背景
         // 为了让 searchBar 底部的边框颜色支持修改，背景色不使用 barTintColor 的方式去改，而是用 backgroundImage
-        var backgroundImage = UIImage.qmui_image(withColor: SearchBarBarTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
-
-        if backgroundImage == nil {
-            backgroundImage = UIImage.qmui_image(withColor: .white, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+        var backgroundImage: UIImage? = nil
+        if let barTintColor = SearchBarBarTintColor {
+            backgroundImage = UIImage.qmui_image(color: barTintColor, size: CGSize(width: 10, height: 10), cornerRadius: 0)
         }
-        backgroundImage = backgroundImage?.qmui_image(withBorderColor: SearchBarBottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
+        
+        if let bottomBorderColor = SearchBarBottomBorderColor {
+            if backgroundImage != nil {
+                backgroundImage = UIImage.qmui_image(color: UIColorWhite, size: CGSize(width: 10, height: 10), cornerRadius: 0)
+            }
+            backgroundImage = backgroundImage?.qmui_image(borderColor: bottomBorderColor, borderWidth: PixelOne, borderPosition: .bottom)
+        }
 
         if backgroundImage != nil {
             backgroundImage = backgroundImage?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1))

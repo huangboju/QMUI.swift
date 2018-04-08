@@ -92,8 +92,8 @@ class QMUIEmotionView: UIView {
     /// 表情与表情之间的最小水平间距，默认为10
     public var minimumEmotionHorizontalSpacing: CGFloat = 10
 
-    /// 表情面板右下角的删除按钮的图片，默认为`QMUIHelper.image(with: "QMUI_emotion_delete")`
-    public var deleteButtonImage = QMUIHelper.image(with: "QMUI_emotion_delete")
+    /// 表情面板右下角的删除按钮的图片，默认为`QMUIHelper.image(name: "QMUI_emotion_delete")`
+    public var deleteButtonImage = QMUIHelper.image(name: "QMUI_emotion_delete")
 
     /// 发送按钮的文字样式，默认为{NSFontAttributeName: UIFontMake(15), NSForegroundColorAttributeName: UIColorWhite}
     public var sendButtonTitleAttributes: [NSAttributedStringKey: Any] = [:] {
@@ -156,8 +156,8 @@ class QMUIEmotionView: UIView {
         addSubview(collectionView)
 
         pageControl.addTarget(self, action: #selector(handlePageControlEvent), for: .valueChanged)
-        pageControl.pageIndicatorTintColor = UIColor(r: 210, g: 210, b: 210)
-        pageControl.currentPageIndicatorTintColor = UIColor(r: 162, g: 162, b: 162)
+        pageControl.pageIndicatorTintColor = UIColorMake(210, 210, 210)
+        pageControl.currentPageIndicatorTintColor = UIColorMake(162, 162, 162)
         addSubview(pageControl)
 
         sendButton.setTitle("发送", for: .normal)
@@ -239,7 +239,7 @@ extension QMUIEmotionView: UICollectionViewDataSource {
         pageView?.emotionSelectedBackgroundExtension = emotionSelectedBackgroundExtension
         pageView?.minimumEmotionHorizontalSpacing = minimumEmotionHorizontalSpacing
         pageView?.deleteButton.setImage(deleteButtonImage, for: .normal)
-        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_imageWith(alpha: ButtonHighlightedAlpha!), for: .highlighted)
+        pageView?.deleteButton.setImage(deleteButtonImage?.qmui_image(alpha: ButtonHighlightedAlpha), for: .highlighted)
         pageView?.isDebug = isDebug
         pageView?.setNeedsDisplay()
         return cell
@@ -298,7 +298,7 @@ class QMUIEmotionPageView: UICollectionViewCell {
 
         emotionSelectedBackgroundView.isUserInteractionEnabled = false
 
-        emotionSelectedBackgroundView.backgroundColor = UIColor(r: 0, g: 0, b: 0, a: 0.16)
+        emotionSelectedBackgroundView.backgroundColor = UIColorMakeWithRGBA(0, 0, 0, 0.16)
         emotionSelectedBackgroundView.layer.cornerRadius = 3
         emotionSelectedBackgroundView.alpha = 0
         addSubview(emotionSelectedBackgroundView)

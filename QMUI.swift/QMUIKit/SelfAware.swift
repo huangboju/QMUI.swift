@@ -10,6 +10,18 @@ protocol SelfAware: class {
     static func awake()
 }
 
+protocol SelfAware2: class {
+    static func awake2()
+}
+
+protocol SelfAware3: class {
+    static func awake3()
+}
+
+protocol QMUIAppearance: UIAppearance {
+    static func setDefaultAppearance()
+}
+
 class NothingToSeeHere {
 
     static func harmlessFunction() {
@@ -17,8 +29,14 @@ class NothingToSeeHere {
         let types = UnsafeMutablePointer<AnyClass?>.allocate(capacity: typeCount)
         let autoreleasingTypes = AutoreleasingUnsafeMutablePointer<AnyClass>(types)
         objc_getClassList(autoreleasingTypes, Int32(typeCount))
-        for index in 0 ..< typeCount { (types[index] as? SelfAware.Type)?.awake() }
-        types.deallocate(capacity: typeCount)
+        for index in 0 ..< typeCount {
+            (types[index] as? SelfAware.Type)?.awake()
+            (types[index] as? SelfAware2.Type)?.awake2()
+            (types[index] as? SelfAware3.Type)?.awake3()
+            (types[index] as? QMUIAppearance.Type)?.setDefaultAppearance()
+        }
+        
+        types.deallocate()
     }
 }
 

@@ -36,7 +36,7 @@ extension QMUIImagePickerPreviewViewControllerDelegate {
 }
 
 class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
-    public var toolBarBackgroundColor = UIColor(r: 27, g: 27, b: 27, a: 0.9) {
+    public var toolBarBackgroundColor = UIColorMakeWithRGBA(27, 27, 27, 0.9) {
         didSet {
             topToolBarView.backgroundColor = toolBarBackgroundColor
         }
@@ -117,10 +117,10 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
         checkboxButton = QMUIButton()
         checkboxButton?.adjustsImageTintColorAutomatically = true
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox"), for: .normal)
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: .selected)
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
-        checkboxButton?.setImage(QMUIHelper.image(with: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox"), for: .normal)
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: .selected)
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
+        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
         checkboxButton?.tintColor = topToolBarView.tintColor
         checkboxButton?.sizeToFit()
         checkboxButton?.addTarget(self, action: #selector(handleCheckButtonClick), for: .touchUpInside)
@@ -133,7 +133,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         topToolBarView.addSubview(progressView)
 
         downloadRetryButton = UIButton()
-        downloadRetryButton.setImage(QMUIHelper.image(with: "QMUI_icloud_download_fault"), for: .normal)
+        downloadRetryButton.setImage(QMUIHelper.image(name: "QMUI_icloud_download_fault"), for: .normal)
         downloadRetryButton.sizeToFit()
         downloadRetryButton.addTarget(self, action: #selector(handleDownloadRetryButtonClick), for: .touchUpInside)
         downloadRetryButton.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)
@@ -144,9 +144,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if !NavigationBarHiddenStateUsable {
-            navigationController?.setNavigationBarHidden(true, animated: false)
-        }
+        navigationController?.setNavigationBarHidden(true, animated: false)
         if !_singleCheckMode {
             let imageAsset = imagesAssetArray[imagePreviewView!.currentImageIndex]
             checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
@@ -156,9 +154,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         UIApplication.shared.isStatusBarHidden = false
-        if !NavigationBarHiddenStateUsable {
-            navigationController?.setNavigationBarHidden(false, animated: false)
-        }
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     override func viewDidLayoutSubviews() {
@@ -169,13 +165,13 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         let topToolbarPaddingTop = UIApplication.shared.isStatusBarHidden ? 0 : StatusBarHeight
         let topToolbarContentHeight = topToolBarView.bounds.height - topToolbarPaddingTop
 
-        backButton.frame.setXY(8, topToolbarPaddingTop + topToolbarContentHeight.center(with: backButton.frame.height))
+        backButton.frame.setXY(8, topToolbarPaddingTop + topToolbarContentHeight.center(backButton.frame.height))
         if !checkboxButton.isHidden {
-            checkboxButton.frame.setXY(topToolBarView.frame.width - 10 - checkboxButton.frame.width, topToolbarContentHeight.center(with: checkboxButton.frame.height))
+            checkboxButton.frame.setXY(topToolBarView.frame.width - 10 - checkboxButton.frame.width, topToolbarContentHeight.center(checkboxButton.frame.height))
         }
 
         let downloadRetryImageSize = downloadRetryButton.image(for: .normal)?.size ?? .zero
-        downloadRetryButton.frame.setXY(topToolBarView.frame.width - 10 - downloadRetryImageSize.width, topToolbarPaddingTop + topToolbarContentHeight.center(with: downloadRetryButton.frame.height))
+        downloadRetryButton.frame.setXY(topToolBarView.frame.width - 10 - downloadRetryImageSize.width, topToolbarPaddingTop + topToolbarContentHeight.center(downloadRetryButton.frame.height))
         /* 理论上 progressView 作为进度按钮，应该需要跟错误重试按钮 downloadRetryButton 的 frame 保持一致，但这里并没有直接使用
          * self.progressView.frame = self.downloadRetryButton.frame，这是因为 self.downloadRetryButton 具有 1pt 的 top
          * contentEdgeInsets，因此最终的 frame 是椭圆型，如果按上面的操作，progressView 内部绘制出的饼状图形就会变成椭圆型，
@@ -375,9 +371,9 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     }
 
     // MARK: - QMUINavigationControllerDelegate
-    override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
-        return NavigationBarHiddenStateInitially
-    }
+//    override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
+//        return NavigationBarHiddenInitially
+//    }
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {

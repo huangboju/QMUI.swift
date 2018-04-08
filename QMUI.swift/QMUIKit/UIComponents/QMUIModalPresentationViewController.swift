@@ -494,8 +494,8 @@ class QMUIModalPresentationViewController: UIViewController {
         }
         contentViewSize.width = min(contentViewLimitSize.width, contentViewSize.width)
         contentViewSize.height = min(contentViewLimitSize.height, contentViewSize.height)
-        var contentViewFrame = CGRect(x: contentViewContainerSize.width.center(with: contentViewSize.width) + contentViewMargins.left,
-                                      y: contentViewContainerSize.height.center(with: contentViewSize.height) + contentViewMargins.top,
+        var contentViewFrame = CGRect(x: contentViewContainerSize.width.center(contentViewSize.width) + contentViewMargins.left,
+                                      y: contentViewContainerSize.height.center(contentViewSize.height) + contentViewMargins.top,
                                       width: contentViewSize.width,
                                       height: contentViewSize.height)
 
@@ -507,7 +507,7 @@ class QMUIModalPresentationViewController: UIViewController {
     // MARK: - Keyboard
 
     @objc func handleKeyboardWillShow(_ notification: Notification) {
-        let keyboardHeight = QMUIHelper.keyboardHeight(with: notification, in: view)
+        let keyboardHeight = QMUIHelper.keyboardHeight(notification, in: view)
         if keyboardHeight > 0 {
             self.keyboardHeight = keyboardHeight
             view.setNeedsLayout()
@@ -614,7 +614,7 @@ extension UIViewController {
     var modalPresentedViewController: QMUIModalPresentationViewController? {
         set {
             if let vc = newValue {
-                objc_setAssociatedObject(self, &Keys.modalPresentationViewController, vc, .OBJC_ASSOCIATION_ASSIGN)
+                objc_setAssociatedObject(self, &Keys.modalPresentationViewController, vc, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
         get {

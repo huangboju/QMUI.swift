@@ -231,7 +231,7 @@ class QMUIPopupContainerView: UIControl {
         let isTextLabelShowing = isSubviewShowing(textLabel)
         if isImageViewShowing {
             imageView.sizeToFit()
-            imageView.frame.setXY(imageEdgeInsets.left, flat(contentView.bounds.height.center(with: imageView.frame.height) + imageEdgeInsets.top))
+            imageView.frame.setXY(imageEdgeInsets.left, flat(contentView.bounds.height.center(imageView.frame.height) + imageEdgeInsets.top))
         }
         if isTextLabelShowing {
             let textLabelMinX = (isImageViewShowing ? ceil(imageView.frame.maxX + imageEdgeInsets.right) : 0) + textEdgeInsets.left
@@ -240,7 +240,7 @@ class QMUIPopupContainerView: UIControl {
 
             let textLabelSize = textLabel.sizeThatFits(textLabelLimitSize)
             let textLabelOrigin = CGPoint(x: textLabelMinX,
-                                          y: flat(contentView.bounds.height.center(with: ceil(textLabelSize.height)) + textEdgeInsets.top))
+                                          y: flat(contentView.bounds.height.center(ceil(textLabelSize.height)) + textEdgeInsets.top))
             textLabel.frame = CGRect(x: textLabelOrigin.x, y: textLabelOrigin.y, width: textLabelLimitSize.width, height: ceil(textLabelSize.height))
         }
     }

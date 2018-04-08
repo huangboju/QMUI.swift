@@ -121,21 +121,21 @@ class QMUIEmptyView: UIView {
     // 颜色
 
     /// 默认为(93, 100, 110)
-    public var textLabelTextColor = UIColor(r: 93, g: 100, b: 110) {
+    public var textLabelTextColor = UIColorMake(93, 100, 110) {
         didSet {
             textLabel.textColor = textLabelTextColor
         }
     }
 
     /// 默认为(133, 140, 150)
-    public var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
+    public var detailTextLabelTextColor = UIColorMake(133, 140, 150) {
         didSet {
             updateDetailTextLabel(with: detailTextLabel.text)
         }
     }
 
-    /// 默认为QMUICMI.buttonTintColor
-    public var actionButtonTitleColor = QMUICMI.buttonTintColor {
+    /// 默认为QMUICMI().buttonTintColor
+    public var actionButtonTitleColor = QMUICMI().buttonTintColor {
         didSet {
             actionButton.setTitleColor(actionButtonTitleColor, for: .normal)
         }
@@ -297,7 +297,7 @@ class QMUIEmptyView: UIView {
      * 设置提示语
      * @param text 提示语文本，若为nil则隐藏textLabel
      */
-    func setTextLabelText(_ text: String?) {
+    func setTextLabel(_ text: String?) {
         textLabel.text = text
         textLabel.isHidden = text == nil
         setNeedsLayout()
@@ -307,7 +307,7 @@ class QMUIEmptyView: UIView {
      * 设置详细提示语的文本
      * @param text 详细提示语文本，若为nil则隐藏detailTextLabel
      */
-    func setDetailTextLabelText(_ text: String?) {
+    func setDetailTextLabel(_ text: String?) {
         updateDetailTextLabel(with: text)
     }
 

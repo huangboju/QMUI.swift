@@ -150,22 +150,22 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
  *  支持显示图片和标题，以及点击事件的回调。
  *  可在 QMUIPopupMenuView 里统一修改菜单项的样式，如果某个菜单项需要特殊调整，可获取到对应的 QMUIPopupMenuItem.button 并进行调整。
  */
-public class QMUIPopupMenuItem: NSObject {
-    public var image: UIImage? {
+class QMUIPopupMenuItem: NSObject {
+    var image: UIImage? {
         didSet {
             button.setImage(image, for: .normal)
         }
     }
 
-    public var title: String? {
+    var title: String? {
         didSet {
             button.setTitle(title, for: .normal)
         }
     }
 
-    public var handler: (() -> Void)?
+    var handler: (() -> Void)?
 
-    public var button: QMUIButton!
+    var button: QMUIButton!
 
     init(image: UIImage?, title: String?, handler: (() -> Void)?) {
         super.init()

@@ -6,11 +6,196 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-// TODO: - Method Swizzle
+extension Notification {
+    fileprivate class QMUI {
+        /// 当主题发生变化时，会发送这个通知
+        public static let TabBarStyleChanged = Notification.Name("Notification.QMUI.TabBarStyleChanged")
+    }
+}
+
+extension UIViewController: SelfAware {
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake() {
+        DispatchQueue.once(token: _onceToken) {
+            let clazz = UIViewController.self
+            
+            // 为 description 增加更丰富的信息
+            ReplaceMethod(clazz, #selector(description), #selector(qmui_description))
+            
+            // 兼容 iOS 9.0 以下的版本对 loadViewIfNeeded 方法的调用
+            // MARK: TODO
+            
+            // 修复 iOS 11 scrollView 无法自动适配不透明的 tabBar，导致底部 inset 错误的问题
+            // https://github.com/QMUI/QMUI_iOS/issues/218
+            ReplaceMethod(clazz, #selector(UIViewController.viewDidLoad), #selector(UIViewController.qmui_UIViewController_viewDidLoad))
+            
+            // 实现 AutomaticallyRotateDeviceOrientation 开关的功能
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmui_viewWillAppear(_:)))
+            
+            // MARK: QMUINavigationControllerTransition
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmuiNav_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(qmuiNav_viewDidAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(qmuiNav_viewDidDisappear(_:)))
+            
+            // MARK: NavigationBarTransition
+            ReplaceMethod(clazz, #selector(viewWillLayoutSubviews), #selector(NavigationBarTransition_viewWillLayoutSubviews))
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(NavigationBarTransition_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(NavigationBarTransition_viewDidAppear(_:)))
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(NavigationBarTransition_viewDidDisappear(_:)))
+        }
+    }
+    
+    @objc func qmui_description() -> String {
+        var result = "\(qmui_description())\nsuperclass:\t\t\t\t\(String(describing: superclass))\ntitle:\t\t\t\t\t\(String(describing: title))\nview:\t\t\t\t\t\(isViewLoaded ? String(describing: view) : "")"
+        if let navController = self as? UINavigationController {
+            let navDescription = "\nviewControllers(\(navController.viewControllers.count):\t\t\(description(navController.viewControllers))\ntopViewController:\t\t\(navController.topViewController?.qmui_description() ?? "")\nvisibleViewController:\t\(navController.visibleViewController?.qmui_description() ?? "")"
+            result = result + navDescription
+        } else if let tabBarController = self as? UITabBarController, let viewControllers = tabBarController.viewControllers {
+            let tabBarDescription = "\nviewControllers(\(viewControllers.count):\t\t\(description(viewControllers))\nselectedViewController(\(tabBarController.selectedIndex):\t\(tabBarController.selectedViewController?.qmui_description() ?? "")"
+            result = result + tabBarDescription
+        }
+        return result
+    }
+    
+    private func description(_ viewControllers:[UIViewController]) -> String {
+        var string: String = "(\n"
+        for (index, vc) in viewControllers.enumerated() {
+            string += "\t\t\t\t\t\t\t[\(index)]\(vc.qmui_description())\(index < viewControllers.count - 1 ? "," : "")\n"
+        }
+        string += "\t\t\t\t\t\t)"
+        return string
+    }
+    
+    @objc func qmui_viewWillAppear(_ animated: Bool) {
+        qmui_viewWillAppear(animated)
+        if !AutomaticallyRotateDeviceOrientation {
+            return
+        }
+        
+        let statusBarOrientation = UIApplication.shared.statusBarOrientation
+        let deviceOrientationBeforeChangingByHelper = QMUIHelper.shared.orientationBeforeChangingByHelper
+        let shouldConsiderBeforeChanging = deviceOrientationBeforeChangingByHelper != .unknown
+        let deviceOrientation = UIDevice.current.orientation
+        
+        // 虽然这两者的 unknow 值是相同的，但在启动 App 时可能只有其中一个是 unknown
+        if statusBarOrientation == .unknown || deviceOrientation == .unknown {
+            return
+        }
+        
+        // 如果当前设备方向和界面支持的方向不一致，则主动进行旋转
+        var deviceOrientationToRotate: UIDeviceOrientation = interfaceOrientationMask(supportedInterfaceOrientations, contains: deviceOrientation) ? deviceOrientation : deviceOrientationWithInterfaceOrientationMask(supportedInterfaceOrientations)
+        
+        // 之前没用私有接口修改过，那就按最标准的方式去旋转
+        if !shouldConsiderBeforeChanging {
+            if QMUIHelper.rotateToDeviceOrientation(deviceOrientationToRotate) {
+                QMUIHelper.shared.orientationBeforeChangingByHelper = deviceOrientation
+            } else {
+                QMUIHelper.shared.orientationBeforeChangingByHelper = .unknown
+            }
+            return
+        }
+        
+        // 用私有接口修改过方向，但下一个界面和当前界面方向不相同，则要把修改前记录下来的那个设备方向考虑进来
+        deviceOrientationToRotate = interfaceOrientationMask(supportedInterfaceOrientations, contains: deviceOrientationBeforeChangingByHelper) ? deviceOrientationBeforeChangingByHelper : deviceOrientationWithInterfaceOrientationMask(supportedInterfaceOrientations)
+        let _ = QMUIHelper.rotateToDeviceOrientation(deviceOrientationToRotate)
+    }
+    
+    private func deviceOrientationWithInterfaceOrientationMask(_ mask: UIInterfaceOrientationMask) -> UIDeviceOrientation {
+        if mask.contains(.all) {
+            return UIDevice.current.orientation
+        }
+        if mask.contains(.allButUpsideDown) {
+            return UIDevice.current.orientation
+        }
+        if mask.contains(.portrait) {
+            return .portrait
+        }
+        if mask.contains(.landscape) {
+            return UIDevice.current.orientation == .landscapeLeft ? .landscapeLeft : .landscapeRight
+        }
+        if mask.contains(.landscapeLeft) {
+            return .landscapeRight
+        }
+        if mask.contains(.landscapeRight) {
+            return .landscapeLeft
+        }
+        if mask.contains(.portraitUpsideDown) {
+            return .portraitUpsideDown
+        }
+        return UIDevice.current.orientation
+    }
+    
+    private func interfaceOrientationMask(_ mask: UIInterfaceOrientationMask, contains deviceOrientation: UIDeviceOrientation) -> Bool {
+        if deviceOrientation == .unknown {
+            return true // true 表示不用额外处理
+        }
+        if mask.contains(.all) {
+            return true
+        }
+        if mask.contains(.allButUpsideDown) {
+            return deviceOrientation != .portraitUpsideDown
+        }
+        if mask.contains(.portrait) {
+            return deviceOrientation == .portrait
+        }
+        if mask.contains(.landscape) {
+            return deviceOrientation == .landscapeLeft || deviceOrientation == .landscapeRight
+        }
+        if mask.contains(.landscapeLeft) {
+            return deviceOrientation == .landscapeLeft
+        }
+        if mask.contains(.landscapeRight) {
+            return deviceOrientation == .landscapeRight
+        }
+        if mask.contains(.portraitUpsideDown) {
+            return deviceOrientation == .portraitUpsideDown
+        }
+        
+        return true
+    }
+    
+    @objc func qmui_UIViewController_viewDidLoad() {
+        let isContainerViewController = self is UINavigationController || self is UITabBarController || self is UISplitViewController
+        if !isContainerViewController {
+            NotificationCenter.default.addObserver(self, selector: #selector(adjustsAdditionalSafeAreaInsetsForOpaqueTabBar(_:)), name: Notification.QMUI.TabBarStyleChanged, object: nil)
+        }
+        qmui_UIViewController_viewDidLoad()
+    }
+    
+    @objc func adjustsAdditionalSafeAreaInsetsForOpaqueTabBar(_ notification: Notification) {
+        if #available(iOS 11, *) {
+            guard
+                let object = notification.object as? UITabBar,
+                let tabBarController = tabBarController,
+                let navigationController = navigationController else {
+                return
+            }
+            let isCurrentTabBar = navigationController.qmui_rootViewController == self && navigationController.parent == tabBarController && object == tabBarController.tabBar
+            if !isCurrentTabBar {
+                return
+            }
+            
+            let tabBar = tabBarController.tabBar
+            // 这串判断条件来源于这个 issue：https://github.com/QMUI/QMUI_iOS/issues/218
+            let isOpaqueBarAndCanExtendedLayout = !tabBar.isTranslucent && extendedLayoutIncludesOpaqueBars
+            if !isOpaqueBarAndCanExtendedLayout {
+                return
+            }
+            
+            let tabBarHidden = tabBar.isHidden
+            // 这里直接用 CGRectGetHeight(tabBar.frame) 来计算理论上不准确，但因为系统有这个 bug（https://github.com/QMUI/QMUI_iOS/issues/217），所以暂时用 CGRectGetHeight(tabBar.frame) 来代替
+            let correctSafeAreaInsetsBottom = tabBarHidden ? tabBar.safeAreaInsets.bottom : tabBar.frame.height
+            let additionalSafeAreaInsetsBottom = correctSafeAreaInsetsBottom - tabBar.safeAreaInsets.bottom
+            additionalSafeAreaInsets.setBottom(bottom: additionalSafeAreaInsetsBottom)
+        }
+    }
+}
+
 extension UIViewController {
 
     /** 获取和自身处于同一个UINavigationController里的上一个UIViewController */
-    public weak var qmui_previousViewController: UIViewController? {
+    weak var qmui_previousViewController: UIViewController? {
         if let controllers = navigationController?.viewControllers,
             controllers.count > 1,
             navigationController?.topViewController == self {
@@ -22,7 +207,7 @@ extension UIViewController {
     }
 
     /** 获取上一个UIViewController的title，可用于设置自定义返回按钮的文字 */
-    public var qmui_previousViewControllerTitle: String? {
+    var qmui_previousViewControllerTitle: String? {
 
         if let previousViewController = qmui_previousViewController {
             return previousViewController.title
@@ -38,15 +223,15 @@ extension UIViewController {
      *
      *  @return 当前controller里的最高层可见viewController
      */
-    public var qmui_visibleViewControllerIfExist: UIViewController? {
+    var qmui_visibleViewControllerIfExist: UIViewController? {
 
         if let presentedViewController = presentedViewController {
             return presentedViewController.qmui_visibleViewControllerIfExist
         }
-        if let nav = self as? UINavigationController {
-            return nav.topViewController?.qmui_visibleViewControllerIfExist
+        if self is UINavigationController, let nav = self as? UINavigationController {
+            return nav.visibleViewController?.qmui_visibleViewControllerIfExist
         }
-        if let tabbar = self as? UITabBarController {
+        if self is UITabBarController, let tabbar = self as? UITabBarController {
             return tabbar.selectedViewController?.qmui_visibleViewControllerIfExist
         }
 
@@ -62,7 +247,7 @@ extension UIViewController {
      *  当前 viewController 是否是被以 present 的方式显示的，是则返回 YES，否则返回 NO
      *  @warning 对于被放在 UINavigationController 里显示的 UIViewController，如果 self 是 self.navigationController 的第一个 viewController，则如果 self.navigationController 是被 present 起来的，那么 self.qmui_isPresented = self.navigationController.qmui_isPresented = YES。利用这个特性，可以方便地给 navigationController 的第一个界面的左上角添加关闭按钮。
      */
-    public var qmui_isPresented: Bool {
+    var qmui_isPresented: Bool {
         var viewController = self
         if let navigationController = self.navigationController {
             if navigationController.qmui_rootViewController != self {
@@ -75,20 +260,20 @@ extension UIViewController {
     }
 
     /** 是否响应 QMUINavigationControllerDelegate */
-    public var qmui_respondQMUINavigationControllerDelegate: Bool {
+    var qmui_respondQMUINavigationControllerDelegate: Bool {
         return self is QMUINavigationControllerDelegate
     }
 
     /**
      *  是否应该响应一些UI相关的通知，例如 UIKeyboardNotification、UIMenuControllerNotification等，因为有可能当前界面已经被切走了（push到其他界面），但仍可能收到通知，所以在响应通知之前都应该做一下这个判断
      */
-    public var qmui_isViewLoadedAndVisible: Bool {
+    var qmui_isViewLoadedAndVisible: Bool {
         return isViewLoaded && (view.window != nil)
     }
 }
 
 extension UIViewController {
-    public func qmui_hasOverrideUIKitMethod(_ selector: Selector) -> Bool {
+    func qmui_hasOverrideUIKitMethod(_ selector: Selector) -> Bool {
         // 排序依照 Xcode Interface Builder 里的控件排序，但保证子类在父类前面
         var viewControllerSuperclasses = [
             UIImagePickerController.self,

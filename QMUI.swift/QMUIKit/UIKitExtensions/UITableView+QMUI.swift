@@ -144,7 +144,7 @@ extension UITableView {
     /**
      *  UITableView的tableHeaderView如果是UISearchBar的话，tableView.contentSize会强制设置为至少比bounds高（从而实现headerView的吸附效果），从而导致qmui_canScroll的判断不准确。所以为UITableView重写了qmui_canScroll方法
      */
-    public override var qmui_canScroll: Bool {
+    override var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.height <= 0 {
             return false
@@ -209,28 +209,39 @@ extension UITableView {
 }
 
 // MARK: - QMUIIndexPathHeightCacheInvalidation
-extension UITableView: SelfAware {
+extension UITableView: SelfAware3 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake3() {
         DispatchQueue.once(token: _onceToken) {
+            let clazz = UITableView.self
+            
             let selectors = [
-                #selector(reloadData),
-                #selector(insertSections(_:with:)),
-                #selector(deleteSections(_:with:)),
-                #selector(reloadSections(_:with:)),
-                #selector(moveSection(_:toSection:)),
-                #selector(insertRows(at:with:)),
-                #selector(deleteRows(at:with:)),
-                #selector(reloadRows(at:with:)),
-                #selector(moveRow(at:to:)),
+                #selector(UITableView.reloadData),
+                #selector(UITableView.insertSections(_:with:)),
+                #selector(UITableView.deleteSections(_:with:)),
+                #selector(UITableView.reloadSections(_:with:)),
+                #selector(UITableView.moveSection(_:toSection:)),
+                #selector(UITableView.insertRows(at:with:)),
+                #selector(UITableView.deleteRows(at:with:)),
+                #selector(UITableView.reloadRows(at:with:)),
+                #selector(UITableView.moveRow(at:to:)),
             ]
-
-            for selector in selectors {
-                let swizzledSelector = Selector("qmui_" + selector.description)
-                let originalMethod = class_getInstanceMethod(self, selector)
-                let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-                method_exchangeImplementations(originalMethod!, swizzledMethod!)
+            
+            let qmui_selectors = [
+                #selector(UITableView.qmui_reloadData),
+                #selector(UITableView.qmui_insertSections(_:with:)),
+                #selector(UITableView.qmui_deleteSections(_:with:)),
+                #selector(UITableView.qmui_reloadSections(_:with:)),
+                #selector(UITableView.qmui_moveSection(_:toSection:)),
+                #selector(UITableView.qmui_insertRows(at:with:)),
+                #selector(UITableView.qmui_deleteRows(at:with:)),
+                #selector(UITableView.qmui_reloadRows(at:with:)),
+                #selector(UITableView.qmui_moveRow(at:to:)),
+            ]
+            
+            for index in 0..<selectors.count {
+                ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
         }
     }
@@ -238,7 +249,7 @@ extension UITableView: SelfAware {
 
 extension UITableView {
 
-    func qmui_reloadData() {
+    @objc open func qmui_reloadData() {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
                 heightsBySection.removeAll()
@@ -247,7 +258,7 @@ extension UITableView {
         qmui_reloadData()
     }
 
-    func qmui_insertSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_insertSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
@@ -259,7 +270,7 @@ extension UITableView {
         qmui_insertSections(sections, with: rowAnimation)
     }
 
-    func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
@@ -271,7 +282,7 @@ extension UITableView {
         }
     }
 
-    func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
@@ -283,7 +294,7 @@ extension UITableView {
         qmui_reloadSections(sections, with: rowAnimation)
     }
 
-    func qmui_moveSection(_ section: Int, toSection newSection: Int) {
+    @objc open func qmui_moveSection(_ section: Int, toSection newSection: Int) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
             qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
@@ -293,7 +304,7 @@ extension UITableView {
         qmui_moveSection(section, toSection: newSection)
     }
 
-    func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
@@ -305,7 +316,7 @@ extension UITableView {
         qmui_insertRows(at: indexPaths, with: rowAnimation)
     }
 
-    func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
 
@@ -330,7 +341,7 @@ extension UITableView {
         }
     }
 
-    func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc open func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
@@ -342,7 +353,7 @@ extension UITableView {
         qmui_reloadRows(at: indexPaths, with: rowAnimation)
     }
 
-    func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
+    @objc open func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
             qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in

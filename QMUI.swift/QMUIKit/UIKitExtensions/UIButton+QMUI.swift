@@ -9,26 +9,27 @@
 import Foundation
 import UIKit
 
-// TODO: UIControl已经继承了SelfAware
+extension UIButton: SelfAware3 {
+    
+    private static let _onceToken = UUID().uuidString
 
-// extension UIButton: SelfAware {
-//    private static let _onceToken = UUID().uuidString
-//
-//    static func awake() {
-//        DispatchQueue.once(token: _onceToken) {
-//            ReplaceMethod(NSClassFromString("UIButton")!, #selector(setTitle(_:for:)), #selector(qmui_setTitle(_:for:)))
-//            ReplaceMethod(NSClassFromString("UIButton")!, #selector(setTitleColor(_:for:)), #selector(qmui_setTitleColor(_:for:)))
-//        }
-//    }
-// }
+    static func awake3() {
+        DispatchQueue.once(token: _onceToken) {
+            let clazz = UIButton.self
+            
+            ReplaceMethod(clazz, #selector(UIButton.setTitle(_:for:)), #selector(UIButton.qmui_setTitle(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setTitleColor(_:for:)), #selector(UIButton.qmui_setTitleColor(_:for:)))
+        }
+    }
+ }
 
-public extension UIButton {
+extension UIButton {
 
     /**
      * 在UIButton的样式（如字体）设置完后，将button的text设置为一个测试字符，再调用sizeToFit，从而令button的高度适应字体
      * @warning 会调用<i>setText:forState:</i>，因此请确保在设置完按钮的样式之后、设置text之前调用
      */
-    public func qmui_calculateHeightAfterSetAppearance() {
+    func qmui_calculateHeightAfterSetAppearance() {
         setTitle("测", for: .normal)
         sizeToFit()
         setTitle(nil, for: .normal)
@@ -42,7 +43,7 @@ public extension UIButton {
      * @note 该方法和 setTitleColor:forState: 均可设置字体颜色，如果二者冲突，则代码顺序较后的方法定义的颜色会最终生效
      * @note 如果包含了 NSKernAttributeName ，则此方法会自动帮你去掉最后一个字的 kern 效果，否则容易导致文字整体在视觉上不居中
      */
-    public func qmui_setTitleAttributes(_ attributes: [NSAttributedStringKey: Any], for state: UIControlState) {
+    func qmui_setTitleAttributes(_ attributes: [NSAttributedStringKey: Any], for state: UIControlState) {
         var attributes = attributes
         if attributes.isEmpty {
             qmui_titleAttributes.removeValue(forKey: state.rawValue)
@@ -62,12 +63,12 @@ public extension UIButton {
 
         // 一个系统的不好的特性（bug?）：如果你给 UIControlStateHighlighted（或者 normal 之外的任何 state）设置了包含 NSFont/NSKern/NSUnderlineAttributeName 之类的 attributedString ，但又仅用 setTitle:forState: 给 UIControlStateNormal 设置了普通的 string ，则按钮从 highlighted 切换回 normal 状态时，font 之类的属性依然会停留在 highlighted 时的状态
         // 为了解决这个问题，我们要确保一旦有 normal 之外的 state 通过设置 qmui_titleAttributes 属性而导致使用了 attributedString，则 normal 也必须使用 attributedString
-        if qmui_titleAttributes.count > 0 && qmui_titleAttributes[UIControlState.normal.rawValue] != nil {
+        if qmui_titleAttributes.count > 0 && qmui_titleAttributes[UIControlState.normal.rawValue] == nil {
             qmui_setTitleAttributes([:], for: .normal)
         }
     }
 
-    private func qmui_setTitle(_ title: String, for state: UIControlState) {
+    @objc func qmui_setTitle(_ title: String, for state: UIControlState) {
         qmui_setTitle(title, for: state) // 方法替换之后相当于调用系统的setTitle方法
 
         if title.length <= 0 || qmui_titleAttributes.count == 0 {
@@ -79,20 +80,20 @@ public extension UIButton {
                 let keyState = UIControlState(rawValue: attribute.key)
                 let titleForState = self.title(for: keyState) ?? ""
                 let attributeString = NSAttributedString(string: titleForState, attributes: attribute.value)
-                setAttributedTitle(attributeString, for: keyState)
+                setAttributedTitle(attributedStringWithEndKernRemoved(attributeString), for: keyState)
             }
             return
         }
 
-        if let attribute = self.qmui_titleAttributes[state.rawValue] {
+        if let attribute = qmui_titleAttributes[state.rawValue] {
             let string = NSAttributedString(string: title, attributes: attribute)
-            setAttributedTitle(string, for: state)
+            setAttributedTitle(attributedStringWithEndKernRemoved(string), for: state)
             return
         }
     }
 
     // 如果之前已经设置了此 state 下的文字颜色，则覆盖掉之前的颜色
-    private func qmui_setTitleColor(_ color: UIColor, for state: UIControlState) {
+    @objc private func qmui_setTitleColor(_ color: UIColor, for state: UIControlState) {
         qmui_setTitleColor(color, for: state)
 
         if let attribute = self.qmui_titleAttributes[state.rawValue] {
@@ -103,7 +104,7 @@ public extension UIButton {
     }
 
     // 去除最后一个字的 kern 效果
-    private func attributedStringWithEndKernRemoved(string: NSAttributedString) -> NSAttributedString {
+    private func attributedStringWithEndKernRemoved(_ string: NSAttributedString) -> NSAttributedString {
         if string.length <= 0 {
             return string
         }
