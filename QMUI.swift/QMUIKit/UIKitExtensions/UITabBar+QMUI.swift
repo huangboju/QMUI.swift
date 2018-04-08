@@ -6,8 +6,6 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-import Foundation
-
 extension UITabBar: SelfAware2 {
 
     private static let kLastTouchedTabBarItemIndexNone = -1
@@ -22,6 +20,9 @@ extension UITabBar: SelfAware2 {
                 #selector(setItems(_:animated:)),
                 #selector(setter: selectedItem),
                 #selector(setter: frame),
+                #selector(setter: backgroundImage),
+                #selector(setter: isTranslucent),
+                #selector(setter: isHidden),
             ]
             selectors.forEach({
                 //                print("qmui_" + $0.description)

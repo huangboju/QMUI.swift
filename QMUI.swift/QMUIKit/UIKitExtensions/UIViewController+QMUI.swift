@@ -291,27 +291,3 @@ extension UIViewController {
         return false
     }
 }
-
-extension UITabBar: SelfAware3 {
-    
-    private static let _onceToken = UUID().uuidString
-    
-    static func awake3() {
-        DispatchQueue.once(token: _onceToken) {
-            let clazz = UITabBar.self
-            
-            let selectors = [
-                #selector(setter: backgroundImage),
-                #selector(setter: isTranslucent),
-                #selector(setter: isHidden),
-                #selector(setter: frame),
-                ]
-            selectors.forEach({
-                print("qmui_" + $0.description)
-//                ReplaceMethod(clazz, $0, Selector("nav_" + $0.description))
-            })
-        }
-    }
-    
-    
-}
