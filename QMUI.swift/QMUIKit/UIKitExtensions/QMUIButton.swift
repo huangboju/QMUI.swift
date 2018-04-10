@@ -1144,13 +1144,13 @@ class QMUIGhostButton: QMUIButton {
         }
     }
 
-    @IBInspectable var borderWidth: CGFloat = 1 { // 默认为 1pt
+    @IBInspectable @objc dynamic var borderWidth: CGFloat = 1 { // 默认为 1pt
         didSet {
             layer.borderWidth = borderWidth
         }
     }
 
-    @IBInspectable var cornerRadius: CGFloat = QMUIGhostButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIGhostButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
+    @IBInspectable @objc dynamic var cornerRadius: CGFloat = QMUIGhostButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIGhostButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
             setNeedsLayout()
         }
@@ -1159,7 +1159,7 @@ class QMUIGhostButton: QMUIButton {
     /**
      *  控制按钮里面的图片是否也要跟随 `ghostColor` 一起变化，默认为 `NO`
      */
-    var adjustsImageWithGhostColor: Bool = false {
+     @objc dynamic var adjustsImageWithGhostColor: Bool = false {
         didSet {
             updateImageColor()
         }
@@ -1167,7 +1167,17 @@ class QMUIGhostButton: QMUIButton {
 
     init(ghostColor: UIColor, frame: CGRect) {
         super.init(frame: frame)
+        didInitialized(ghostColor)
+    }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    private func didInitialized(_ ghostColor:UIColor) {
         self.ghostColor = ghostColor
+        
+        DispatchQueue.once(token: QMUIGhostButton._onceToken) {
+            QMUIGhostButton.setDefaultAppearance()
+        }
     }
     
     convenience init(ghostColor: UIColor) {
@@ -1175,7 +1185,7 @@ class QMUIGhostButton: QMUIButton {
     }
 
     convenience init(ghostType: QMUIGhostButtonColor, frame: CGRect) {
-        var ghostColor: UIColor?
+        var ghostColor: UIColor = GhostButtonColorBlue
         switch ghostType {
         case .blue:
             ghostColor = GhostButtonColorBlue
@@ -1188,7 +1198,7 @@ class QMUIGhostButton: QMUIButton {
         case .white:
             ghostColor = GhostButtonColorWhite
         }
-        self.init(ghostColor: ghostColor ?? .blue, frame: frame)
+        self.init(ghostColor: ghostColor, frame: frame)
     }
 
     convenience init(ghostType: QMUIGhostButtonColor) {
@@ -1197,12 +1207,7 @@ class QMUIGhostButton: QMUIButton {
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.ghostColor = GhostButtonColorBlue
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.ghostColor = GhostButtonColorBlue
+        didInitialized(GhostButtonColorBlue)
     }
 
     private func updateImageColor() {
@@ -1242,11 +1247,6 @@ class QMUIGhostButton: QMUIButton {
 
 extension QMUIGhostButton {
     
-    public override static func appearance() -> QMUIGhostButton {
-        
-        return QMUIGhostButton(ghostType: .blue)
-    }
-    
     static func setDefaultAppearance() {
         let appearance = QMUIGhostButton.appearance()
         appearance.borderWidth = 1
@@ -1274,13 +1274,14 @@ class QMUIFillButton: QMUIButton {
 
     @IBInspectable var titleTextColor: UIColor = UIColorWhite { // 默认为 UIColorWhite
         didSet {
+            setTitleColor(titleTextColor, for: .normal)
             if adjustsImageWithTitleTextColor {
                 updateImageColor()
             }
         }
     }
 
-    @IBInspectable var cornerRadius: CGFloat = QMUIFillButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIFillButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
+    @IBInspectable @objc dynamic var cornerRadius: CGFloat = QMUIFillButtonCornerRadiusAdjustsBounds / 2 { // 默认为 QMUIFillButtonCornerRadiusAdjustsBounds，也即固定保持按钮高度的一半。
         didSet {
             setNeedsLayout()
         }
@@ -1289,60 +1290,69 @@ class QMUIFillButton: QMUIButton {
     /**
      *  控制按钮里面的图片是否也要跟随 `titleTextColor` 一起变化，默认为 `NO`
      */
-    var adjustsImageWithTitleTextColor: Bool = false {
+    @objc dynamic var adjustsImageWithTitleTextColor: Bool = false {
         didSet {
             if adjustsImageWithTitleTextColor {
-                self.updateImageColor()
+                updateImageColor()
             }
         }
     }
 
     convenience init() {
-        self.init(with: .blue)
+        self.init(fillType: .blue)
     }
 
     convenience override init(frame: CGRect) {
-        self.init(with: .blue, frame: frame)
+        self.init(fillType: .blue, frame: frame)
     }
 
-    convenience init(with _: QMUIFillButtonColor) {
-        self.init(with: .blue, frame: .zero)
+    convenience init(fillType: QMUIFillButtonColor) {
+        self.init(fillType: fillType, frame: .zero)
     }
 
-    convenience init(with fillType: QMUIFillButtonColor, frame: CGRect) {
-        var fillColor = FillButtonColorBlue
+    convenience init(fillType: QMUIFillButtonColor, frame: CGRect) {
+        var color = FillButtonColorBlue
         let textColor = UIColorWhite
         switch fillType {
         case .blue:
-            fillColor = FillButtonColorBlue
+            color = FillButtonColorBlue
         case .red:
-            fillColor = FillButtonColorRed
+            color = FillButtonColorRed
         case .green:
-            fillColor = FillButtonColorGreen
+            color = FillButtonColorGreen
         case .gray:
-            fillColor = FillButtonColorGray
+            color = FillButtonColorGray
         case .white:
-            fillColor = FillButtonColorWhite
+            color = FillButtonColorWhite
         }
 
-        self.init(with: fillColor ?? .blue, titleTextColor: textColor, frame: frame)
+        self.init(fillColor: color, titleTextColor: textColor, frame: frame)
     }
 
-    convenience init(with fillColor: UIColor, titleTextColor: UIColor) {
-        self.init(with: fillColor, titleTextColor: titleTextColor, frame: .zero)
+    convenience init(fillColor: UIColor, titleTextColor: UIColor) {
+        self.init(fillColor: fillColor, titleTextColor: titleTextColor, frame: .zero)
     }
 
-    init(with fillColor: UIColor, titleTextColor: UIColor, frame: CGRect) {
+    init(fillColor: UIColor, titleTextColor: UIColor, frame: CGRect) {
         super.init(frame: frame)
-
-        self.fillColor = fillColor
-        self.titleTextColor = titleTextColor
+        didInitialized(fillColor, titleTextColor: titleTextColor)
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.fillColor = FillButtonColorBlue ?? .blue
+        self.fillColor = FillButtonColorBlue
         self.titleTextColor = UIColorWhite
+    }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    private func didInitialized(_ fillColor: UIColor, titleTextColor: UIColor) {
+        self.fillColor = fillColor
+        self.titleTextColor = titleTextColor
+
+        DispatchQueue.once(token: QMUIFillButton._onceToken) {
+            QMUIFillButton.setDefaultAppearance()
+        }
     }
 
     override func setImage(_ image: UIImage?, for state: UIControlState) {
@@ -1378,5 +1388,14 @@ class QMUIFillButton: QMUIButton {
         } else {
             self.layer.cornerRadius = flat(self.bounds.height / 2)
         }
+    }
+}
+
+extension QMUIFillButton {
+    
+    static func setDefaultAppearance() {
+        let appearance = QMUIFillButton.appearance()
+        appearance.cornerRadius = QMUIFillButtonCornerRadiusAdjustsBounds
+        appearance.adjustsImageWithTitleTextColor = false
     }
 }

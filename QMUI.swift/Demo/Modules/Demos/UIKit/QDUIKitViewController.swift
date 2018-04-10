@@ -51,9 +51,57 @@ class QDUIKitViewController: QDCommonGridViewController {
     
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
-//        if title == "UIColor+QMUI" {
+        if title == "UIColor+QMUI" {
             viewController = QDSliderViewController()
-//        }
+        }
+        if title == "UIImage+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUILabel" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUITextView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUITextField" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUISlider" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUITableView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUICollectionViewLayout" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIButton" {
+            viewController = QDButtonViewController()
+        }
+        if title == "QMUISearchController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIAlertController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "ViewController Orientation" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUINavigationController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UITabBarItem+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UIFont+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UIView+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "NSObject+QMUI" {
+            viewController = QDSliderViewController()
+        }
         
         if let viewController = viewController {
             viewController.title = title

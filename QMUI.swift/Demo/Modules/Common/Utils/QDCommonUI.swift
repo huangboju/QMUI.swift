@@ -9,6 +9,8 @@
 
 let QDSelectedThemeClassName = "selectedThemeClassName"
 
+let QDButtonSpacingHeight: CGFloat = 72
+
 // MARK: Colors
 let UIColorGray1 = UIColorMake(53, 60, 70)
 let UIColorGray2 = UIColorMake(73, 80, 90)
