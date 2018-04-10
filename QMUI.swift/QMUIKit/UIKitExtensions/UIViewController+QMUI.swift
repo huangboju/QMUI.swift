@@ -270,6 +270,91 @@ extension UIViewController {
     var qmui_isViewLoadedAndVisible: Bool {
         return isViewLoaded && (view.window != nil)
     }
+    
+    /**
+     *  UINavigationBar 在 self.view 坐标系里的 maxY，一般用于 self.view.subviews 布局时参考用
+     *  @warning 注意由于使用了坐标系转换的计算，所以要求在 self.view.window 存在的情况下使用才可以，因此请勿在 viewDidLoad 内使用，建议在 viewDidLayoutSubviews、viewWillAppear: 里使用。
+     *  @warning 如果不存在 UINavigationBar，则返回 0
+     */
+    var qmui_navigationBarMaxYInViewCoordinator: CGFloat {
+        if !isViewLoaded {
+            return 0
+        }
+        
+        // 这里为什么要把 transitionNavigationBar 考虑进去，请参考 https://github.com/QMUI/QMUI_iOS/issues/268
+        var navBar: UINavigationBar? = nil
+        if let navigationController = navigationController, !navigationController.isNavigationBarHidden {
+            navBar = navigationController.navigationBar
+        } else if transitionNavigationBar != nil  {
+            navBar = transitionNavigationBar
+        }
+        
+        guard let navigationBar = navBar else {
+            return 0
+        }
+        
+        let navigationBarFrameInView = view.convert(navigationBar.frame, from: navigationBar.superview)
+        let navigationBarFrame = view.bounds.intersection(navigationBarFrameInView)
+        
+        // 两个 rect 如果不存在交集，CGRectIntersection 计算结果可能为非法的 rect，所以这里做个保护
+        if !navigationBarFrame.isValidated {
+            return 0
+        }
+        
+        let result = navigationBarFrame.maxY
+        
+        return result
+    }
+    
+    /**
+     *  底部 UIToolbar 在 self.view 坐标系里的占位高度，一般用于 self.view.subviews 布局时参考用
+     *  @warning 注意由于使用了坐标系转换的计算，所以要求在 self.view.window 存在的情况下使用才可以，因此请勿在 viewDidLoad 内使用，建议在 viewDidLayoutSubviews、viewWillAppear: 里使用。
+     *  @warning 如果不存在 UIToolbar，则返回 0
+     */
+    var qmui_toolbarSpacingInViewCoordinator: CGFloat {
+        if !isViewLoaded {
+            return 0
+        }
+        
+        guard let navigationController = navigationController, let toolbar = navigationController.toolbar, !navigationController.isToolbarHidden else {
+            return 0
+        }
+        
+        let toolbarFrame = view.bounds.intersection(view.convert(toolbar.frame, from: toolbar.superview))
+        
+        // 两个 rect 如果不存在交集，CGRectIntersection 计算结果可能为非法的 rect，所以这里做个保护
+        if !toolbarFrame.isValidated {
+            return 0
+        }
+        
+        let result = view.bounds.height - toolbarFrame.minY
+        
+        return result
+    }
+    
+    /**
+     *  底部 UITabBar 在 self.view 坐标系里的占位高度，一般用于 self.view.subviews 布局时参考用
+     *  @warning 注意由于使用了坐标系转换的计算，所以要求在 self.view.window 存在的情况下使用才可以，因此请勿在 viewDidLoad 内使用，建议在 viewDidLayoutSubviews、viewWillAppear: 里使用。
+     *  @warning 如果不存在 UITabBar，则返回 0
+     */
+    var qmui_tabBarSpacingInViewCoordinator: CGFloat {
+        if !isViewLoaded {
+            return 0
+        }
+        guard let tabBarController = tabBarController, !tabBarController.tabBar.isHidden else {
+            return 0
+        }
+        
+        let tabBarFrame = view.bounds.intersection(view.convert(tabBarController.tabBar.frame, from: tabBarController.tabBar.superview))
+        
+        // 两个 rect 如果不存在交集，CGRectIntersection 计算结果可能为非法的 rect，所以这里做个保护
+        if !tabBarFrame.isValidated {
+            return 0
+        }
+        
+        let result = view.bounds.height - tabBarFrame.minY
+        return result
+    }
 }
 
 extension UIViewController {

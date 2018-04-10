@@ -422,7 +422,7 @@ extension UIViewController {
     }
 
     /// 用来模仿真的navBar的，在转场过程中存在的一条假navBar
-    fileprivate var transitionNavigationBar: _QMUITransitionNavigationBar? {
+    var transitionNavigationBar: _QMUITransitionNavigationBar? {
         set {
             objc_setAssociatedObject(self, &Keys.transitionNavigationBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
@@ -473,9 +473,9 @@ extension UIViewController {
     }
 }
 
-fileprivate class _QMUITransitionNavigationBar: UINavigationBar {
+class _QMUITransitionNavigationBar: UINavigationBar {
     
-    override fileprivate func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         // iOS 11 以前，自己 init 的 navigationBar，它的 backgroundView 默认会一直保持与 navigationBar 的高度相等，但 iOS 11 Beta1 里，自己 init 的 navigationBar.backgroundView.height 默认一直是 44，所以才加上这个兼容
         if IOS_VERSION >= 11.0 {
