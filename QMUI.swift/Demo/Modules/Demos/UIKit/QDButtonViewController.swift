@@ -24,6 +24,21 @@ class QDButtonViewController: QDCommonListViewController {
         if title == "QMUIButton" {
             viewController = QDNormalButtonViewController()
         }
+        if title == "QMUILinkButton" {
+            viewController = QDLinkButtonViewController()
+        }
+        if title == "QMUIGhostButton" {
+            viewController = QDGhostButtonViewController()
+        }
+        if title == "QMUIFillButton" {
+            viewController = QDFillButtonViewController()
+        }
+        if title == "QMUINavigationButton" {
+            viewController = QDNavigationButtonViewController()
+        }
+        if title == "QMUIToolbarButton" {
+            viewController = QDToolBarButtonViewController()
+        }
         
         if let viewController = viewController {
             viewController.title = title

@@ -316,7 +316,7 @@ class QMUINavigationTitleView: UIControl {
     private var titleLabelSize: CGSize = .zero
     private var subtitleLabelSize: CGSize = .zero
     private var accessoryTypeView: UIImageView?
-
+    
     convenience override init(frame: CGRect) {
         self.init(style: .default, frame: frame)
     }
@@ -358,8 +358,14 @@ class QMUINavigationTitleView: UIControl {
         didInitialized(style)
     }
     
+    private static let _onceToken = UUID().uuidString
+    
     fileprivate func didInitialized(_ style: QMUINavigationTitleViewStyle) {
         self.style = style
+        
+        DispatchQueue.once(token: QMUINavigationTitleView._onceToken) {
+            QMUINavigationTitleView.setDefaultAppearance()
+        }
     }
 
     override var description: String {
@@ -609,7 +615,7 @@ class QMUINavigationTitleView: UIControl {
     }
 }
 
-extension QMUINavigationTitleView: QMUIAppearance {
+extension QMUINavigationTitleView {
 
     static func setDefaultAppearance() {
         let appearance = QMUINavigationTitleView.appearance()

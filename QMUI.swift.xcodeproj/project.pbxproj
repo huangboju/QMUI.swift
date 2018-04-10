@@ -115,6 +115,11 @@
 		D87A2D5F207B1F3400F4BD4A /* QDButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D5E207B1F3400F4BD4A /* QDButtonViewController.swift */; };
 		D87A2D61207B20C800F4BD4A /* QDNormalButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D60207B20C800F4BD4A /* QDNormalButtonViewController.swift */; };
 		D87A2D63207B212200F4BD4A /* QDButtonEdgeInsetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D62207B212200F4BD4A /* QDButtonEdgeInsetsViewController.swift */; };
+		D87A2D65207C988C00F4BD4A /* QDLinkButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D64207C988C00F4BD4A /* QDLinkButtonViewController.swift */; };
+		D87A2D67207CA0C200F4BD4A /* QDGhostButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D66207CA0C200F4BD4A /* QDGhostButtonViewController.swift */; };
+		D87A2D69207CA43200F4BD4A /* QDFillButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D68207CA43200F4BD4A /* QDFillButtonViewController.swift */; };
+		D87A2D6B207CA44B00F4BD4A /* QDNavigationButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D6A207CA44B00F4BD4A /* QDNavigationButtonViewController.swift */; };
+		D87A2D6D207CA46000F4BD4A /* QDToolBarButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D6C207CA46000F4BD4A /* QDToolBarButtonViewController.swift */; };
 		D8F01FB3204F882F003BCC8A /* QDTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB2204F882F003BCC8A /* QDTabBarViewController.swift */; };
 		D8F01FB5204F8AF1003BCC8A /* QDUIKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB4204F8AF1003BCC8A /* QDUIKitViewController.swift */; };
 		D8F01FB7204F8B53003BCC8A /* QDNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB6204F8B53003BCC8A /* QDNavigationController.swift */; };
@@ -251,6 +256,11 @@
 		D87A2D5E207B1F3400F4BD4A /* QDButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDButtonViewController.swift; sourceTree = "<group>"; };
 		D87A2D60207B20C800F4BD4A /* QDNormalButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDNormalButtonViewController.swift; sourceTree = "<group>"; };
 		D87A2D62207B212200F4BD4A /* QDButtonEdgeInsetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDButtonEdgeInsetsViewController.swift; sourceTree = "<group>"; };
+		D87A2D64207C988C00F4BD4A /* QDLinkButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDLinkButtonViewController.swift; sourceTree = "<group>"; };
+		D87A2D66207CA0C200F4BD4A /* QDGhostButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDGhostButtonViewController.swift; sourceTree = "<group>"; };
+		D87A2D68207CA43200F4BD4A /* QDFillButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDFillButtonViewController.swift; sourceTree = "<group>"; };
+		D87A2D6A207CA44B00F4BD4A /* QDNavigationButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDNavigationButtonViewController.swift; sourceTree = "<group>"; };
+		D87A2D6C207CA46000F4BD4A /* QDToolBarButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDToolBarButtonViewController.swift; sourceTree = "<group>"; };
 		D8F01FB2204F882F003BCC8A /* QDTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDTabBarViewController.swift; sourceTree = "<group>"; };
 		D8F01FB4204F8AF1003BCC8A /* QDUIKitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDUIKitViewController.swift; sourceTree = "<group>"; };
 		D8F01FB6204F8B53003BCC8A /* QDNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDNavigationController.swift; sourceTree = "<group>"; };
@@ -484,6 +494,11 @@
 				D87A2D5E207B1F3400F4BD4A /* QDButtonViewController.swift */,
 				D87A2D60207B20C800F4BD4A /* QDNormalButtonViewController.swift */,
 				D87A2D62207B212200F4BD4A /* QDButtonEdgeInsetsViewController.swift */,
+				D87A2D64207C988C00F4BD4A /* QDLinkButtonViewController.swift */,
+				D87A2D66207CA0C200F4BD4A /* QDGhostButtonViewController.swift */,
+				D87A2D68207CA43200F4BD4A /* QDFillButtonViewController.swift */,
+				D87A2D6A207CA44B00F4BD4A /* QDNavigationButtonViewController.swift */,
+				D87A2D6C207CA46000F4BD4A /* QDToolBarButtonViewController.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -710,6 +725,7 @@
 				D83D41ED1E4C4F0A00CC083E /* QMUICommonTableViewController.swift in Sources */,
 				3E6BE4D71F13C5270089DC6D /* QMUISlider.swift in Sources */,
 				3E6BE4E61F13C5270089DC6D /* UIImageView+QMUI.swift in Sources */,
+				D87A2D6B207CA44B00F4BD4A /* QDNavigationButtonViewController.swift in Sources */,
 				BEB72CF61F13AA87006426D3 /* QMUIVisualEffectView.swift in Sources */,
 				BEB72CDE1F13A8E6006426D3 /* QMUIModalPresentationViewController.swift in Sources */,
 				D87A2D5D2079C6DC00F4BD4A /* UITabBar+QMUI.swift in Sources */,
@@ -717,6 +733,7 @@
 				3E6BE4F21F13C5270089DC6D /* UIView+QMUI.swift in Sources */,
 				BEB72CCA1F13A821006426D3 /* QMUIImagePickerHelper.swift in Sources */,
 				3E6BE4E51F13C5270089DC6D /* UIImage+QMUI.swift in Sources */,
+				D87A2D69207CA43200F4BD4A /* QDFillButtonViewController.swift in Sources */,
 				3E6BE4D41F13C5270089DC6D /* QMUISearchBar.swift in Sources */,
 				BEB72CFB1F13BA68006426D3 /* QMUIMarqueeLabel.swift in Sources */,
 				3E6BE4DD1F13C5270089DC6D /* String+QMUI.swift in Sources */,
@@ -742,11 +759,13 @@
 				3E6BE4CF1F13C5270089DC6D /* QMUIButton.swift in Sources */,
 				3E6BE4D21F13C5270089DC6D /* QMUICollectionViewPagingLayout.swift in Sources */,
 				3E6BE4D31F13C5270089DC6D /* QMUILabel.swift in Sources */,
+				D87A2D67207CA0C200F4BD4A /* QDGhostButtonViewController.swift in Sources */,
 				D8F8F8F32071D6AD00ECC2DD /* QDComponentsViewController.swift in Sources */,
 				3E6BE4F31F13C5270089DC6D /* UIViewController+QMUI.swift in Sources */,
 				BEB72CD81F13A8C2006426D3 /* QMUIImagePreviewView.swift in Sources */,
 				D852C5A3206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift in Sources */,
 				D864A5F3204E52200036C164 /* QDCommonViewController.swift in Sources */,
+				D87A2D65207C988C00F4BD4A /* QDLinkButtonViewController.swift in Sources */,
 				3E6BE4EF1F13C5270089DC6D /* UITableView+QMUI.swift in Sources */,
 				D87A2D61207B20C800F4BD4A /* QDNormalButtonViewController.swift in Sources */,
 				BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */,
@@ -790,6 +809,7 @@
 				3E6BE4CA1F13C5270089DC6D /* DispatchQueue+QMUI.swift in Sources */,
 				3E6BE4DC1F13C5270089DC6D /* QMUITextView.swift in Sources */,
 				D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */,
+				D87A2D6D207CA46000F4BD4A /* QDToolBarButtonViewController.swift in Sources */,
 				BEB72CC61F13A80B006426D3 /* QMUIAlbumViewController.swift in Sources */,
 				BEB72CE61F13A92D006426D3 /* QMUIPopupMenuView.swift in Sources */,
 			);

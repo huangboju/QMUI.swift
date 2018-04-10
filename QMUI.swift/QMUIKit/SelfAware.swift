@@ -18,10 +18,6 @@ protocol SelfAware3: class {
     static func awake3()
 }
 
-protocol QMUIAppearance: UIAppearance {
-    static func setDefaultAppearance()
-}
-
 class NothingToSeeHere {
 
     static func harmlessFunction() {
@@ -33,7 +29,6 @@ class NothingToSeeHere {
             (types[index] as? SelfAware.Type)?.awake()
             (types[index] as? SelfAware2.Type)?.awake2()
             (types[index] as? SelfAware3.Type)?.awake3()
-            (types[index] as? QMUIAppearance.Type)?.setDefaultAppearance()
         }
         
         types.deallocate()
