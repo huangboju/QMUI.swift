@@ -267,11 +267,11 @@ class QMUIDialogViewController: QMUICommonViewController {
         modalPresentationViewController.contentViewMargins = contentViewMargins
         modalPresentationViewController.contentViewController = self
         modalPresentationViewController.isModal = true
-        modalPresentationViewController.show(with: true, completion: completion)
+        modalPresentationViewController.show(true, completion: completion)
     }
 
     public func hide(with animated: Bool = true, completion: ((Bool) -> Void)? = nil) {
-        modalPresentedViewController?.hide(with: animated, completion: completion)
+        qmui_modalPresentationViewController?.hide(animated, completion: completion)
     }
 
     @objc func handleCancelButtonEvent(_: QMUIButton) {

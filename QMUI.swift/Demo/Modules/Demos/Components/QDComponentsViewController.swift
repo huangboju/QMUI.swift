@@ -44,14 +44,78 @@ class QDComponentsViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        
+        let alertController = QMUIAlertController(title: "水平对齐方式", message: nil, preferredStyle: .sheet)
+        alertController.title = "12345"
+        var action = QMUIAlertAction(title: "左对齐", style: .default) { (_) in
+            print("左对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "居中对齐", style: .default) { (_) in
+            print("居中对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "右对齐", style: .default) { (_) in
+            print("右对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.add(action: action)
+        alertController.show(true)
     }
     
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
-        //        if title == "UIColor+QMUI" {
-        viewController = QDColorViewController()
-        //        }
+        if title == "QMUINavigationTitleView" {
+            viewController = QDNavigationTitleViewController()
+        }
+        if title == "UIImage+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUILabel" {
+            viewController = QDLabelViewController()
+        }
+        if title == "QMUITextView" {
+            viewController = QDTextViewController()
+        }
+        if title == "QMUITextField" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUISlider" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUITableView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUICollectionViewLayout" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIButton" {
+            viewController = QDButtonViewController()
+        }
+        if title == "QMUISearchController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIAlertController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "ViewController Orientation" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUINavigationController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UITabBarItem+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UIFont+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "UIView+QMUI" {
+            viewController = QDSliderViewController()
+        }
+        if title == "NSObject+QMUI" {
+            viewController = QDSliderViewController()
+        }
         
         if let viewController = viewController {
             viewController.title = title

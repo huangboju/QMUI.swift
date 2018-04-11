@@ -19,15 +19,15 @@ enum QMUIAlertActionStyle: Int {
 
 // MARK: Delegate
 
-@objc protocol QMUIAlertControllerDelegate: NSObjectProtocol {
-    @objc func willShow(_ alertController: QMUIAlertController)
-    @objc func willHide(_ alertController: QMUIAlertController)
-    @objc func didShow(_ alertController: QMUIAlertController)
-    @objc func didHide(_ alertController: QMUIAlertController)
+@objc protocol QMUIAlertControllerDelegate {
+    @objc optional func willShow(_ alertController: QMUIAlertController)
+    @objc optional func willHide(_ alertController: QMUIAlertController)
+    @objc optional func didShow(_ alertController: QMUIAlertController)
+    @objc optional func didHide(_ alertController: QMUIAlertController)
 }
 
-@objc private protocol QMUIAlertActionDelegate: NSObjectProtocol {
-    @objc func didClick(_ alertAction: QMUIAlertAction)
+@objc private protocol QMUIAlertActionDelegate {
+    @objc optional func didClick(_ alertAction: QMUIAlertAction)
 }
 
 // MARK: QMUIAlertController
@@ -35,202 +35,202 @@ enum QMUIAlertActionStyle: Int {
 /*
  *  `QMUIAlertController`是模仿系统`UIAlertController`的控件，所以系统有的功能在QMUIAlertController里面基本都有。同时`QMUIAlertController`还提供了一些扩展功能，例如：它的每个 button 都是开放出来的，可以对默认的按钮进行二次处理（比如加一个图片）；可以通过 QMUIAlertController.appearance() 在 app 启动的时候修改整个`QMUIAlertController`的主题样式。
  */
-class QMUIAlertController: UIViewController, QMUIModalPresentationViewControllerDelegate, QMUIAlertActionDelegate {
+class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalPresentationViewControllerDelegate {
 
     /// alert距离屏幕四边的间距，默认UIEdgeInsetsMake(0, 0, 0, 0)。alert的宽度最终是通过屏幕宽度减去水平的 alertContentMargin 和 alertContentMaximumWidth 决定的。
-    @objc public dynamic var alertContentMargin: UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+    @objc dynamic var alertContentMargin: UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)
 
     /// alert的最大宽度，默认270。
-    @objc public dynamic var alertContentMaximumWidth: CGFloat = 270
+    @objc dynamic var alertContentMaximumWidth: CGFloat = 270
 
     /// alert上分隔线颜色，默认 UIColorMake(211, 211, 219)。
-    @objc public dynamic var alertSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
+    @objc dynamic var alertSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
         didSet {
             updateEffectBackgroundColor()
         }
     }
 
     /// alert标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var alertTitleAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    @objc dynamic var alertTitleAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateTitle = true
         }
     }
 
     /// alert信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var alertMessageAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    @objc dynamic var alertMessageAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateMessage = true
         }
     }
 
     /// alert按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0]
-    @objc public dynamic var alertButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var alertButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert按钮disabled时的样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert cancel 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var alertCancelButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var alertCancelButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert destructive 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var alertDestructiveButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var alertDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert圆角大小，默认值是：IOS_VERSION >= 9.0 ? 13 : 6，以保持与系统默认样式一致
-    @objc public dynamic var alertContentCornerRadius: CGFloat = (IOS_VERSION > 9.0 ? 13 : 6) {
+    @objc dynamic var alertContentCornerRadius: CGFloat = (IOS_VERSION > 9.0 ? 13 : 6) {
         didSet {
             updateCornerRadius()
         }
     }
 
     /// alert按钮高度，默认44pt
-    @objc public dynamic var alertButtonHeight: CGFloat = 44
+    @objc dynamic var alertButtonHeight: CGFloat = 44
 
     /// alert头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
-    @objc public dynamic var alertHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var alertHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// alert按钮背景色，默认值同`alertHeaderBackgroundColor`
-    @objc public dynamic var alertButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var alertButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert按钮高亮背景色，默认 UIColorMake(232, 232, 232)
-    @objc public dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
+    @objc dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// alert头部四边insets间距
-    @objc public dynamic var alertHeaderInsets: UIEdgeInsets = UIEdgeInsetsMake(20, 16, 20, 16)
+    @objc dynamic var alertHeaderInsets: UIEdgeInsets = UIEdgeInsetsMake(20, 16, 20, 16)
 
     /// alert头部title和message之间的间距，默认3pt
-    @objc public dynamic var alertTitleMessageSpacing: CGFloat = 3
+    @objc dynamic var alertTitleMessageSpacing: CGFloat = 3
 
     /// sheet距离屏幕四边的间距，默认UIEdgeInsetsMake(10, 10, 10, 10)。
-    @objc public dynamic var sheetContentMargin: UIEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10)
+    @objc dynamic var sheetContentMargin: UIEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10)
 
     /// sheet的最大宽度，默认值是5.5英寸的屏幕的宽度减去水平的 sheetContentMargin
-    @objc public dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsetsMake(10, 10, 10, 10).horizontalValue
+    @objc dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsetsMake(10, 10, 10, 10).horizontalValue
 
     /// sheet分隔线颜色，默认 UIColorMake(211, 211, 219)
-    @objc public dynamic var sheetSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
+    @objc dynamic var sheetSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
         didSet {
             updateEffectBackgroundColor()
         }
     }
 
     /// sheet标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var sheetTitleAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    @objc dynamic var sheetTitleAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateTitle = true
         }
     }
 
     /// sheet信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc public dynamic var sheetMessageAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    @objc dynamic var sheetMessageAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateMessage = true
         }
     }
 
     /// sheet按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var sheetButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var sheetButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// sheet按钮disabled时的样式，默认 [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// sheet按钮disabled时的样式，默认 [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
+    @objc dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// sheet cancel 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var sheetCancelButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var sheetCancelButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// sheet destructive 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc public dynamic var sheetDestructiveButtonAttributes: [NSAttributedStringKey: AnyObject] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    @objc dynamic var sheetDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// sheet cancel 按钮距离其上面元素（按钮或者header）的间距，默认8pt
-    @objc public dynamic var sheetCancelButtonMarginTop: CGFloat = 8
+    @objc dynamic var sheetCancelButtonMarginTop: CGFloat = 8
 
     /// sheet内容的圆角，默认值是：(IOS_VERSION >= 9.0 ? 13 : 6)，以保持与系统默认样式一致
-    @objc public dynamic var sheetContentCornerRadius: CGFloat = (IOS_VERSION >= 9.0 ? 13 : 6) {
+    @objc dynamic var sheetContentCornerRadius: CGFloat = (IOS_VERSION >= 9.0 ? 13 : 6) {
         didSet {
             updateCornerRadius()
         }
     }
 
     /// sheet按钮高度，默认值是：(IOS_VERSION >= 9.0 ? 57 : 44)，以保持与系统默认样式一致
-    @objc public dynamic var sheetButtonHeight: CGFloat = (IOS_VERSION >= 9.0 ? 57 : 44)
+    @objc dynamic var sheetButtonHeight: CGFloat = (IOS_VERSION >= 9.0 ? 57 : 44)
 
     /// sheet头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
-    @objc public dynamic var sheetHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var sheetHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// sheet按钮背景色，默认值同`sheetHeaderBackgroundColor`
-    @objc public dynamic var sheetButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var sheetButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// sheet按钮高亮背景色，默认 UIColorMake(232, 232, 232)
-    @objc public dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
+    @objc dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
         didSet {
             _needsUpdateAction = true
         }
     }
 
     /// sheet头部四边insets间距
-    @objc public dynamic var sheetHeaderInsets: UIEdgeInsets = UIEdgeInsetsMake(16, 16, 16, 16)
+    @objc dynamic var sheetHeaderInsets: UIEdgeInsets = UIEdgeInsetsMake(16, 16, 16, 16)
 
     /// sheet头部title和message之间的间距，默认8pt
-    @objc public dynamic var sheetTitleMessageSpacing: CGFloat = 8
+    @objc dynamic var sheetTitleMessageSpacing: CGFloat = 8
 
     /// 所有`QMUIAlertAction`对象
-    public var actions: [QMUIAlertAction] {
+    var actions: [QMUIAlertAction] {
         return alertActions
     }
 
     /// 当前所有通过`addTextFieldWithConfigurationHandler:`接口添加的输入框
-    public var textFields: [UITextField] {
+    var textFields: [UITextField] {
         return alertTextFields
     }
 
@@ -248,20 +248,15 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     private(set) var modalPresentationViewController: QMUIModalPresentationViewController?
 
     /// 当前标题title
-    public override var title: String? {
-        get {
-            return super.title
-        }
-        set {
-            let oldValue = super.title
-            super.title = newValue
+    override var title: String? {
+        didSet {
             if titleLabel == nil {
                 let newTitleLabel = UILabel()
                 newTitleLabel.numberOfLines = 0
                 headerScrollView.addSubview(newTitleLabel)
                 titleLabel = newTitleLabel
             }
-            if oldValue == nil || oldValue == "" {
+            if title == nil || title == "" {
                 titleLabel?.isHidden = true
             } else {
                 titleLabel?.isHidden = false
@@ -271,7 +266,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     /// 当前信息message
-    public var message: String? {
+    var message: String? {
         didSet {
             if messageLabel == nil {
                 let label = UILabel()
@@ -293,16 +288,16 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
      *
      *  @warning 注意 QMUIAlertActionStyleCancel 按钮不受这个属性的影响
      */
-    public var orderActionsByAddedOrdered: Bool = false
+    var orderActionsByAddedOrdered: Bool = false
 
     /// maskView是否响应点击，alert默认为 false，sheet 默认为 true
-    public var shouldRespondMaskViewTouch: Bool {
+    var shouldRespondMaskViewTouch: Bool {
         return preferredStyle == .sheet
     }
 
     /// 在 iPhoneX 机器上是否延伸底部背景色。因为在 iPhoneX 上我们会把整个面板往上移动 safeArea 的距离，如果你的面板本来就配置成撑满全屏的样式，那么就会露出底部的空隙，isExtendBottomLayout 可以帮助你把空暇填补上。默认为 false。
     /// @warning: 只对 sheet 类型有效
-    public var isExtendBottomLayout: Bool = false {
+    var isExtendBottomLayout: Bool = false {
         didSet {
             if isExtendBottomLayout {
                 extendLayer.isHidden = false
@@ -391,12 +386,10 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
 
     override init(nibName _: String?, bundle _: Bundle?) {
         super.init(nibName: nil, bundle: nil)
-        didInitialized()
     }
 
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        didInitialized()
+        fatalError("init(coder:) has not been implemented")
     }
 
     convenience init(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
@@ -405,13 +398,50 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         self.message = message
         self.preferredStyle = preferredStyle
 
+        didInitialized()
+        
         updateHeaderBackgrondColor()
         updateEffectBackgroundColor()
         updateCornerRadius()
         updateExtendLayerAppearance()
     }
-
+    
     private func didInitialized() {
+        alertContentMargin = QMUIAlertController.appearance().alertContentMargin
+        alertContentMaximumWidth = QMUIAlertController.appearance().alertContentMaximumWidth
+        alertSeperatorColor = QMUIAlertController.appearance().alertSeperatorColor
+        alertContentCornerRadius = QMUIAlertController.appearance().alertContentCornerRadius
+        alertTitleAttributes = QMUIAlertController.appearance().alertTitleAttributes
+        alertMessageAttributes = QMUIAlertController.appearance().alertMessageAttributes
+        alertButtonAttributes = QMUIAlertController.appearance().alertButtonAttributes
+        alertButtonDisabledAttributes = QMUIAlertController.appearance().alertButtonDisabledAttributes
+        alertCancelButtonAttributes = QMUIAlertController.appearance().alertCancelButtonAttributes
+        alertDestructiveButtonAttributes = QMUIAlertController.appearance().alertDestructiveButtonAttributes
+        alertButtonHeight = QMUIAlertController.appearance().alertButtonHeight
+        alertHeaderBackgroundColor = QMUIAlertController.appearance().alertHeaderBackgroundColor
+        alertButtonBackgroundColor = QMUIAlertController.appearance().alertButtonBackgroundColor
+        alertButtonHighlightBackgroundColor = QMUIAlertController.appearance().alertButtonHighlightBackgroundColor
+        alertHeaderInsets = QMUIAlertController.appearance().alertHeaderInsets
+        alertTitleMessageSpacing = QMUIAlertController.appearance().alertTitleMessageSpacing
+        
+        sheetContentMargin = QMUIAlertController.appearance().sheetContentMargin
+        sheetContentMaximumWidth = QMUIAlertController.appearance().sheetContentMaximumWidth
+        sheetSeperatorColor = QMUIAlertController.appearance().sheetSeperatorColor
+        sheetTitleAttributes = QMUIAlertController.appearance().sheetTitleAttributes
+        sheetMessageAttributes = QMUIAlertController.appearance().sheetMessageAttributes
+        sheetButtonAttributes = QMUIAlertController.appearance().sheetButtonAttributes
+        sheetButtonDisabledAttributes = QMUIAlertController.appearance().sheetButtonDisabledAttributes
+        sheetCancelButtonAttributes = QMUIAlertController.appearance().sheetCancelButtonAttributes
+        sheetDestructiveButtonAttributes = QMUIAlertController.appearance().sheetDestructiveButtonAttributes
+        sheetCancelButtonMarginTop = QMUIAlertController.appearance().sheetCancelButtonMarginTop
+        sheetContentCornerRadius = QMUIAlertController.appearance().sheetContentCornerRadius
+        sheetButtonHeight = QMUIAlertController.appearance().sheetButtonHeight
+        sheetHeaderBackgroundColor = QMUIAlertController.appearance().sheetHeaderBackgroundColor
+        sheetButtonBackgroundColor = QMUIAlertController.appearance().sheetButtonBackgroundColor
+        sheetButtonHighlightBackgroundColor = QMUIAlertController.appearance().sheetButtonHighlightBackgroundColor
+        sheetHeaderInsets = QMUIAlertController.appearance().sheetHeaderInsets
+        sheetTitleMessageSpacing = QMUIAlertController.appearance().sheetTitleMessageSpacing
+        isExtendBottomLayout = QMUIAlertController.appearance().isExtendBottomLayout
     }
 
     override func viewDidLoad() {
@@ -429,8 +459,8 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        let hasTitle = (titleLabel?.text ?? "").isEmpty && titleLabel != nil && !titleLabel!.isHidden
-        let hasMessage = (messageLabel?.text ?? "").isEmpty && messageLabel != nil && !messageLabel!.isHidden
+        let hasTitle = titleLabel != nil && titleLabel!.text != nil && !titleLabel!.text!.isEmpty && !titleLabel!.isHidden
+        let hasMessage = messageLabel != nil && messageLabel!.text != nil && !messageLabel!.text!.isEmpty && !messageLabel!.isHidden
         let hasTextField = alertTextFields.count > 0
         let hasCustomView = customView != nil
         var contentOriginY: CGFloat = 0
@@ -683,28 +713,24 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     private func updateTitleLabel() {
-        if let titleLabel = self.titleLabel, let title = self.title {
-            if !titleLabel.isHidden {
-                let attributeString = NSAttributedString(string: title, attributes: (preferredStyle == .alert ? alertTitleAttributes : sheetTitleAttributes))
-                titleLabel.attributedText = attributeString
-                titleLabel.textAlignment = .center
-            }
+        if let titleLabel = titleLabel, let title = title, !titleLabel.isHidden {
+            let attributeString = NSAttributedString(string: title, attributes: (preferredStyle == .alert ? alertTitleAttributes : sheetTitleAttributes))
+            titleLabel.attributedText = attributeString
+            titleLabel.textAlignment = .center
         }
     }
 
-    private func orderedAlertActions(_: [QMUIAlertAction]) -> [QMUIAlertAction] {
+    private func orderedAlertActions(_ actions: [QMUIAlertAction]) -> [QMUIAlertAction] {
         var newActions: [QMUIAlertAction] = []
         // 按照用户addAction的先后顺序来排序
         if orderActionsByAddedOrdered {
-            alertActions.forEach({
-                newActions.append($0)
-            })
+            newActions += actions
             // 取消按钮不参与排序，所以先移除，在最后再重新添加
             if cancelAction != nil {
                 newActions.remove(object: cancelAction!)
             }
         } else {
-            alertActions.forEach({
+            actions.forEach({
                 if $0.style != .cancel && $0.style != .destructive {
                     newActions.append($0)
                 }
@@ -720,25 +746,24 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     private func initModalPresentationController() {
-        let modalController = QMUIModalPresentationViewController()
-        modalController.delegate = self
-        modalController.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
-        modalController.contentViewMargins = UIEdgeInsets.zero
-        modalController.dimmingView = nil
-        modalController.contentViewController = self as? (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
+        modalPresentationViewController = QMUIModalPresentationViewController()
+        modalPresentationViewController!.delegate = self
+        modalPresentationViewController!.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
+        modalPresentationViewController!.contentViewMargins = UIEdgeInsets.zero
+        modalPresentationViewController!.dimmingView = nil
+        modalPresentationViewController!.contentViewController = self
         customModalPresentationControllerAnimation()
-        modalPresentationViewController = modalController
     }
 
     private func customModalPresentationControllerAnimation() {
 
-        modalPresentationViewController?.layoutBlock = { [weak self] (_ containerBounds: CGRect, _ keyboardHeight: CGFloat, _: CGRect) in
+        modalPresentationViewController?.layoutClosure = { [weak self] (_ containerBounds: CGRect, _ keyboardHeight: CGFloat, _: CGRect) in
             self?.view.frame = CGRect(x: 0, y: 0, width: containerBounds.width, height: containerBounds.height)
             self?.keyboardHeight = keyboardHeight
             self?.view.setNeedsLayout()
         }
 
-        modalPresentationViewController?.showingAnimation = { [weak self] (_: UIView, _: CGRect, _: CGFloat, _: CGRect, _ completion: ((Bool) -> Void)?) in
+        modalPresentationViewController?.showingAnimationClosure = { [weak self] (_: UIView?, _: CGRect, _: CGFloat, _: CGRect, _ completion: ((Bool) -> Void)?) in
             if self?.preferredStyle == .alert {
                 self!.containerView.alpha = 0
                 self!.containerView.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1.0)
@@ -764,7 +789,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             }
         }
 
-        modalPresentationViewController?.hidingAnimation = { [weak self] (_: UIView, _: CGRect, _: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) in
+        modalPresentationViewController?.hidingAnimationClosure = { [weak self] (_: UIView?, _: CGRect, _: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) in
             if self?.preferredStyle == .alert {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
                     self!.maskView.alpha = 0
@@ -791,7 +816,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 显示`QMUIAlertController`
     ///
     /// - Parameter animated: animated
-    public func show(with animated: Bool = true) {
+    func show(_ animated: Bool = true) {
         if isShowing {
             return
         }
@@ -810,20 +835,18 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
 
         initModalPresentationController()
 
-        if delegate?.responds(to: #selector(QMUIAlertControllerDelegate.willShow(_:))) ?? false {
-            delegate!.willShow(self)
-        }
-
-        modalPresentationViewController?.show(with: animated, completion: { [weak self] _ in
-            self?.maskView.alpha = 1
-            self?.isShowing = true
-            if self?.isNeedsHideAfterAlertShowed ?? false {
-                self!.hide(with: self!.isAnimatedForHideAfterAlertShowed)
-                self!.isNeedsHideAfterAlertShowed = false
-                self!.isAnimatedForHideAfterAlertShowed = false
-            }
-            if self?.delegate?.responds(to: #selector(QMUIAlertControllerDelegate.didShow(_:))) ?? false {
-                self!.delegate!.didShow(self!)
+        delegate?.willShow?(self)
+        
+        modalPresentationViewController?.show(animated, completion: { [weak self] _ in
+            if let strongSelf = self {
+                strongSelf.maskView.alpha = 1
+                strongSelf.isShowing = true
+                if strongSelf.isNeedsHideAfterAlertShowed {
+                    strongSelf.hide(strongSelf.isAnimatedForHideAfterAlertShowed)
+                    strongSelf.isNeedsHideAfterAlertShowed = false
+                    strongSelf.isAnimatedForHideAfterAlertShowed = false
+                }
+                strongSelf.delegate?.didShow?(strongSelf)
             }
         })
 
@@ -834,19 +857,18 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 隐藏`QMUIAlertController`
     ///
     /// - Parameter animated: animated
-    public func hide(with animated: Bool) {
-        hide(with: animated, completion: nil)
+    func hide(_ animated: Bool) {
+        hide(animated, completion: nil)
     }
 
-    private func hide(with animated: Bool, completion: (() -> Void)?) {
+    private func hide(_ animated: Bool, completion: (() -> Void)?) {
         if !isShowing {
             isNeedsHideAfterAlertShowed = true
         }
-        if delegate?.responds(to: #selector(QMUIAlertControllerDelegate.willHide(_:))) ?? false {
-            delegate!.willHide(self)
-        }
+        
+        delegate?.willHide?(self)
 
-        modalPresentationViewController?.hide(with: animated, completion: { [weak self] _ in
+        modalPresentationViewController?.hide(animated, completion: { [weak self] _ in
             self?.modalPresentationViewController = nil
             self?.isShowing = false
             self?.maskView.alpha = 0
@@ -855,9 +877,9 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
             } else if self?.preferredStyle == .sheet {
                 self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0)
             }
-            if self?.delegate?.responds(to: #selector(QMUIAlertControllerDelegate.didHide(_:))) ?? false {
-                self!.delegate!.didHide(self!)
-            }
+            
+            self?.delegate?.didHide?(self!)
+
             if completion != nil {
                 completion!()
             }
@@ -874,7 +896,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 增加一个按钮
     ///
     /// - Parameter action: 按钮
-    public func add(action: QMUIAlertAction) {
+    func add(action: QMUIAlertAction) {
         if action.style == .cancel && cancelAction != nil {
             NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "同一个alertController不可以同时添加两个cancel按钮", userInfo: nil).raise()
         }
@@ -898,7 +920,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     }
 
     /// 增加一个“取消”按钮，点击后 alertController 会被 hide
-    public func addCancelAction() {
+    func addCancelAction() {
         let action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
         add(action: action)
     }
@@ -906,7 +928,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 增加一个输入框
     ///
     /// - Parameter configurationHandler: 回调
-    public func addTextField(with configurationHandler: ((_ textField: QMUITextField) -> Void)?) {
+    func addTextField(with configurationHandler: ((_ textField: QMUITextField) -> Void)?) {
         if customView != nil {
             NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
@@ -933,7 +955,7 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     /// 增加一个自定义的view作为`QMUIAlertController`的customView
     ///
     /// - Parameter view: 自定义的view
-    public func addCustomView(_ view: UIView) {
+    func addCustomView(_ view: UIView) {
         if alertTextFields.count > 0 {
             NSException(name: NSExceptionName(rawValue: "QMUIAlertController使用错误"), reason: "UITextField和CustomView不能共存", userInfo: nil).raise()
         }
@@ -998,9 +1020,9 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
         }
     }
 
-    @objc private func handleMaskViewEvent(_: AnyObject) {
+    @objc func handleMaskViewEvent(_ sender: Any) {
         if shouldRespondMaskViewTouch {
-            hide(with: true, completion: nil)
+            hide(true, completion: nil)
         }
     }
 
@@ -1017,13 +1039,13 @@ class QMUIAlertController: UIViewController, QMUIModalPresentationViewController
     // MARK: QMUIModalPresentationViewControllerDelegate
 
     func requestHideAllModalPresentationViewController() {
-        hide(with: true, completion: nil)
+        hide(true, completion: nil)
     }
 
     // MARK: QMUIAlertActionDelegate
 
     func didClick(_ alertAction: QMUIAlertAction) {
-        hide(with: true) {
+        hide(true) {
             if alertAction.handler != nil {
                 alertAction.handler!(alertAction)
                 alertAction.handler = nil
@@ -1037,8 +1059,99 @@ extension QMUIAlertController {
     /// 可方便地判断是否有 alertController 正在显示，全局生效
     ///
     /// - Returns: 是否 alertController 正在显示
-    class func isAnyAlertControllerVisible() -> Bool {
+    static var isAnyAlertControllerVisible: Bool {
         return QMUIAlertController.alertControllerCount > 0
+    }
+}
+
+extension QMUIAlertController {
+    
+    static func appearance() -> QMUIAlertController {
+        DispatchQueue.once(token: QMUIAlertController._onceToken) {
+            QMUIAlertController.resetAppearance()
+        }
+        return QMUIAlertController.alertControllerAppearance!
+    }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    static var alertControllerAppearance: QMUIAlertController?
+    
+    private static func resetAppearance() {
+        let alertControllerAppearance = QMUIAlertController()
+        alertControllerAppearance.alertContentMargin = UIEdgeInsetsMake(0, 0, 0, 0)
+        alertControllerAppearance.alertContentMaximumWidth = 270
+        alertControllerAppearance.alertSeperatorColor = UIColorMake(211, 211, 219)
+        alertControllerAppearance.alertTitleAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorBlack,
+        NSAttributedStringKey.font: UIFontBoldMake(17),
+        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        alertControllerAppearance.alertMessageAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorBlack,
+        NSAttributedStringKey.font: UIFontMake(13),
+        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        alertControllerAppearance.alertButtonAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorBlue,
+        NSAttributedStringKey.font: UIFontMake(17)]
+        alertControllerAppearance.alertButtonDisabledAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
+        NSAttributedStringKey.font: UIFontMake(17),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.alertCancelButtonAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorBlue,
+        NSAttributedStringKey.font: UIFontBoldMake(17),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.alertDestructiveButtonAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorRed,
+        NSAttributedStringKey.font: UIFontMake(17),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.alertContentCornerRadius = IOS_VERSION > 9.0 ? 13 : 6
+        alertControllerAppearance.alertButtonHeight = 44
+        alertControllerAppearance.alertHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
+        alertControllerAppearance.alertButtonBackgroundColor = alertControllerAppearance.alertHeaderBackgroundColor
+        alertControllerAppearance.alertButtonHighlightBackgroundColor = UIColorMake(232, 232, 232)
+        alertControllerAppearance.alertHeaderInsets = UIEdgeInsetsMake(20, 16, 20, 16)
+        alertControllerAppearance.alertTitleMessageSpacing = 3
+        
+        alertControllerAppearance.sheetContentMargin = UIEdgeInsetsMake(10, 10, 10, 10)
+        alertControllerAppearance.sheetContentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - alertControllerAppearance.sheetContentMargin.horizontalValue
+        alertControllerAppearance.sheetSeperatorColor = UIColorMake(211, 211, 219)
+        
+        alertControllerAppearance.sheetTitleAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
+        NSAttributedStringKey.font: UIFontBoldMake(13),
+        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        alertControllerAppearance.sheetMessageAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
+        NSAttributedStringKey.font: UIFontMake(13),
+        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        alertControllerAppearance.sheetButtonAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorBlue,
+        NSAttributedStringKey.font: UIFontMake(20),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.sheetButtonDisabledAttributes =
+        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
+        NSAttributedStringKey.font: UIFontMake(20),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.sheetCancelButtonAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorBlue,
+        NSAttributedStringKey.font: UIFontBoldMake(20),
+        NSAttributedStringKey.kern: 0]
+        alertControllerAppearance.sheetDestructiveButtonAttributes = [
+        NSAttributedStringKey.foregroundColor: UIColorRed,
+        NSAttributedStringKey.font: UIFontMake(20),
+        NSAttributedStringKey.kern: 0]
+        
+        alertControllerAppearance.sheetCancelButtonMarginTop = 8
+        alertControllerAppearance.sheetContentCornerRadius = IOS_VERSION >= 9.0 ? 13 : 6
+        alertControllerAppearance.sheetButtonHeight = IOS_VERSION >= 9.0 ? 57 : 44
+        alertControllerAppearance.sheetHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
+        alertControllerAppearance.sheetButtonBackgroundColor = alertControllerAppearance.sheetHeaderBackgroundColor
+        alertControllerAppearance.sheetButtonHighlightBackgroundColor = UIColorMake(232, 232, 232)
+        alertControllerAppearance.sheetHeaderInsets = UIEdgeInsetsMake(16, 16, 16, 16)
+        alertControllerAppearance.sheetTitleMessageSpacing = 8
+        alertControllerAppearance.isExtendBottomLayout = false
+        QMUIAlertController.alertControllerAppearance = alertControllerAppearance
     }
 }
 
@@ -1050,20 +1163,20 @@ extension QMUIAlertController {
 class QMUIAlertAction: NSObject {
 
     /// `QMUIAlertAction`是否允许操作
-    public var isEnabled: Bool {
+    var isEnabled: Bool {
         didSet {
             button.isEnabled = isEnabled
         }
     }
 
     /// `QMUIAlertAction`按钮样式，默认nil。当此值为nil的时候，则使用`QMUIAlertController`的`alertButtonAttributes`或者`sheetButtonAttributes`的值。
-    public var buttonAttributes: [NSAttributedStringKey: AnyObject]?
+    fileprivate var buttonAttributes: [NSAttributedStringKey: Any]?
 
     /// 原理同上`buttonAttributes`
-    public var buttonDisabledAttributes: [NSAttributedStringKey: AnyObject]?
+    fileprivate var buttonDisabledAttributes: [NSAttributedStringKey: Any]?
 
     /// `QMUIAlertAction`对应的 button 对象
-    public var button: QMUIButton {
+    fileprivate var button: QMUIButton {
         return buttonWrapView.button
     }
 
@@ -1077,12 +1190,14 @@ class QMUIAlertAction: NSObject {
 
     fileprivate var handler: ((QMUIAlertAction) -> Void)?
 
-    fileprivate var delegate: QMUIAlertActionDelegate?
+    fileprivate weak var delegate: QMUIAlertActionDelegate?
 
     override init() {
         isEnabled = true
         buttonWrapView = QMUIAlertButtonWrapView()
         super.init()
+        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
+        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
     }
 
     /// 初始化`QMUIAlertController`的按钮
@@ -1096,13 +1211,11 @@ class QMUIAlertAction: NSObject {
         self.title = title
         self.style = style
         self.handler = handler
-        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
-        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
     }
 
-    @objc func handleAlertActionEvent(_: AnyObject) {
+    @objc func handleAlertActionEvent(_ sender: Any) {
         // 需要先调delegate，里面会先恢复keywindow
-        delegate?.responds(to: #selector(QMUIAlertActionDelegate.didClick(_:)))
+        delegate?.didClick?(self)
     }
 }
 
@@ -1117,6 +1230,7 @@ fileprivate class QMUIAlertButtonWrapView: UIView {
         button.adjustsButtonWhenDisabled = false
         button.adjustsButtonWhenHighlighted = false
         super.init(frame: CGRect.zero)
+        addSubview(button)
     }
 
     required init?(coder _: NSCoder) {

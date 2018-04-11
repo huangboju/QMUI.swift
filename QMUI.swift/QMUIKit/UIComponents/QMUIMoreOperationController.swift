@@ -379,7 +379,7 @@ class QMUIMoreOperationController: UIViewController {
         modalPresentationViewController.dimmingView = nil
         modalPresentationViewController.contentViewController = self
 
-        modalPresentationViewController.showingAnimation = { [weak self] _, _, _, _, completion in
+        modalPresentationViewController.showingAnimationClosure = { [weak self] _, _, _, _, completion in
             self?.delegate?.willPresentMoreOperationController(self!)
             self?.containerView.frame.setY(self?.view.bounds.height ?? 0)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
@@ -393,7 +393,7 @@ class QMUIMoreOperationController: UIViewController {
             })
         }
 
-        modalPresentationViewController.hidingAnimation = { [weak self] _, containerBounds, _, completion in
+        modalPresentationViewController.hidingAnimationClosure = { [weak self] _, containerBounds, _, completion in
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
                 self?.maskView.alpha = 0
                 self?.containerView.frame.setY(containerBounds.height)
@@ -401,7 +401,7 @@ class QMUIMoreOperationController: UIViewController {
         }
 
         isAnimating = true
-        modalPresentationViewController.show(with: true, completion: nil)
+        modalPresentationViewController.show(true, completion: nil)
     }
 
     /// 与showFromBottom相反
@@ -418,7 +418,7 @@ class QMUIMoreOperationController: UIViewController {
 
         delegate?.willDismissMoreOperationController(self, cancelled: cancelled)
 
-        modalPresentedViewController?.hide(with: true, completion: { [weak self] _ in
+        qmui_modalPresentationViewController?.hide(true, completion: { [weak self] _ in
             self?.isShowing = false
             self?.isAnimating = false
             self?.delegate?.didDismissMoreOperationController(self!, cancelled: cancelled)
