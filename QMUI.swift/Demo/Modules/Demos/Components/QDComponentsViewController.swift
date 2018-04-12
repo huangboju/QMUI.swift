@@ -68,52 +68,52 @@ class QDComponentsViewController: QDCommonGridViewController {
         if title == "QMUINavigationTitleView" {
             viewController = QDNavigationTitleViewController()
         }
-        if title == "UIImage+QMUI" {
+        if title == "QMUIEmptyView" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUILabel" {
+        if title == "QMUIToastView" {
             viewController = QDLabelViewController()
         }
-        if title == "QMUITextView" {
+        if title == "QMUIStaticTableView" {
             viewController = QDTextViewController()
         }
-        if title == "QMUITextField" {
+        if title == "QMUIImagePreviewView" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUISlider" {
+        if title == "QMUIPickingImage" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUITableView" {
+        if title == "QMUIAssetsManager" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUICollectionViewLayout" {
+        if title == "QMUIMoreOperationController" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUIButton" {
+        if title == "QMUIEmotionView" {
             viewController = QDButtonViewController()
         }
-        if title == "QMUISearchController" {
+        if title == "QMUIGridView" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUIAlertController" {
+        if title == "QMUIFloatLayoutView" {
             viewController = QDSliderViewController()
         }
-        if title == "ViewController Orientation" {
+        if title == "QMUIPieProgressView" {
             viewController = QDSliderViewController()
         }
-        if title == "QMUINavigationController" {
+        if title == "QMUIPopupContainerView" {
             viewController = QDSliderViewController()
         }
-        if title == "UITabBarItem+QMUI" {
+        if title == "QMUIModalPresentationViewController" {
+            viewController = QDModalPresentationViewController(style: .grouped)
+        }
+        if title == "QMUIDialogViewController" {
             viewController = QDSliderViewController()
         }
-        if title == "UIFont+QMUI" {
+        if title == "QMUIKeyboardManager" {
             viewController = QDSliderViewController()
         }
-        if title == "UIView+QMUI" {
-            viewController = QDSliderViewController()
-        }
-        if title == "NSObject+QMUI" {
+        if title == "QMUIMarqueeLabel" {
             viewController = QDSliderViewController()
         }
         

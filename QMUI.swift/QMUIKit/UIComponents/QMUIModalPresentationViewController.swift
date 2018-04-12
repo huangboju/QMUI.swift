@@ -12,14 +12,14 @@
     case slide // 从下往上升起
 }
 
-protocol QMUIModalPresentationContentViewControllerProtocol {
+@objc protocol QMUIModalPresentationContentViewControllerProtocol {
     /**
      *  当浮层以 UIViewController 的形式展示（而非 UIView），并且使用 modalController 提供的默认布局时，则可通过这个方法告诉 modalController 当前浮层期望的大小
      *  @param  controller  当前的modalController
      *  @param  limitSize   浮层最大的宽高，由当前 modalController 的大小及 `contentViewMargins`、`maximumContentViewWidth` 决定
      *  @return 返回浮层在 `limitSize` 限定内的大小，如果业务自身不需要限制宽度/高度，则为 width/height 返回 `CGFLOAT_MAX` 即可
      */
-    func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
+    @objc optional func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
 }
 
 @objc protocol QMUIModalPresentationViewControllerDelegate {
@@ -99,7 +99,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @warning 当设置了`contentViewController`时，`contentViewController.view`会被当成`contentView`使用，因此不要再自行设置`contentView`
      *  @warning 注意`contentViewController`是强引用，容易导致循环引用，使用时请注意
      */
-    weak var contentViewController: UIViewController? {
+    weak var contentViewController: (UIViewController & QMUIModalPresentationContentViewControllerProtocol)? {
         didSet {
             contentView = contentViewController?.view
         }
@@ -635,8 +635,8 @@ class QMUIModalPresentationViewController: UIViewController {
         let contentViewContainerSize = CGSize(width: view.bounds.width - contentViewMargins.horizontalValue, height: view.bounds.height - keyboardHeight - contentViewMargins.verticalValue)
         let contentViewLimitSize = CGSize(width: min(maximumContentViewWidth, contentViewContainerSize.width), height: contentViewContainerSize.height)
         var contentViewSize = CGSize.zero
-        if let contentViewController = contentViewController as? QMUIModalPresentationContentViewControllerProtocol {
-            contentViewSize = contentViewController.preferredContentSize(in: self, limitSize: contentViewLimitSize)
+        if let contentViewController = contentViewController, (contentViewController.preferredContentSize != nil) {
+            contentViewSize = contentViewController.preferredContentSize!(in: self, limitSize: contentViewLimitSize)
         } else {
             contentViewSize = contentView!.sizeThatFits(contentViewLimitSize)
         }

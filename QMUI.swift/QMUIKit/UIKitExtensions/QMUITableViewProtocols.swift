@@ -18,7 +18,12 @@ extension qmui_UITableViewDataSource {
     }
 }
 
-protocol QMUITableViewDelegate: UITableViewDelegate {
+@objc protocol QMUICellHeightCache_UITableViewDelegate {
+    /// 搭配 QMUICellHeightCache 使用，在 UITableView safeAreaInsetsChange 之后会通过这个方法通知到外面。至于缓存到内存的高度清理、tableView reloadData 的调用，都是在这个方法执行之后才执行。
+    @objc optional func qmui_willReloadAfterSafeAreaInsetsDidChange(in tableView: UITableView)
+}
+
+protocol QMUITableViewDelegate: UITableViewDelegate, QMUICellHeightCache_UITableViewDelegate {
 
     /**
      * 自定义要在<i>- (BOOL)touchesShouldCancelInContentView:(UIView *)view</i>内的逻辑<br/>

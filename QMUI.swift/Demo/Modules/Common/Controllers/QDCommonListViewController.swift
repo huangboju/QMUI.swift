@@ -42,9 +42,9 @@ class QDCommonListViewController: QMUICommonTableViewController {
         var cell = tableView.dequeueReusableCell(withIdentifier: identifierNormal)
         if cell == nil {
             if dataSourceWithDetailText != nil {
-                cell = QMUITableViewCell(self.tableView, style: .subtitle, reuseIdentifier: identifierNormal)
+                cell = QMUITableViewCell(tableView: self.tableView, style: .subtitle, reuseIdentifier: identifierNormal)
             } else {
-                cell = QMUITableViewCell(self.tableView, style: .value1, reuseIdentifier: identifierNormal)
+                cell = QMUITableViewCell(tableView: self.tableView, style: .value1, reuseIdentifier: identifierNormal)
             }
             cell?.accessoryType = .disclosureIndicator
         }

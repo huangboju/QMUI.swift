@@ -381,7 +381,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
         let identifier = "cell"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = QMUITableViewCell(tableView, style: .subtitle, reuseIdentifier: identifier)
+            cell = QMUITableViewCell(tableView: tableView, style: .subtitle, reuseIdentifier: identifier)
         }
         cell?.textLabel?.text = items[indexPath.row]
 
