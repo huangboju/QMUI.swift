@@ -99,7 +99,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @warning 当设置了`contentViewController`时，`contentViewController.view`会被当成`contentView`使用，因此不要再自行设置`contentView`
      *  @warning 注意`contentViewController`是强引用，容易导致循环引用，使用时请注意
      */
-    weak var contentViewController: (UIViewController & QMUIModalPresentationContentViewControllerProtocol)? {
+    var contentViewController: (UIViewController & QMUIModalPresentationContentViewControllerProtocol)? {
         didSet {
             contentView = contentViewController?.view
         }
@@ -304,8 +304,8 @@ class QMUIModalPresentationViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
 
         if contentViewController != nil {
-            contentViewController?.qmui_modalPresentationViewController = self
-            contentViewController?.beginAppearanceTransition(true, animated: _animated)
+            contentViewController!.qmui_modalPresentationViewController = self
+            contentViewController!.beginAppearanceTransition(true, animated: _animated)
         }
         
         // 如果是因为 present 了新的界面再从那边回来，导致走到 viewWillAppear，则后面那些升起浮层的操作都可以不用做了，因为浮层从来没被降下去过
@@ -314,10 +314,10 @@ class QMUIModalPresentationViewController: UIViewController {
             return
         }
 
-        if isShownInWindowMode{
+        if isShownInWindowMode {
             QMUIHelper.dimmedApplicationWindow()
         }
-
+        
         let didShownCompletion: (Bool) -> Void = {
             self.contentViewController?.endAppearanceTransition()
 

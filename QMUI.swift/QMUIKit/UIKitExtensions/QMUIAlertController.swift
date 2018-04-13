@@ -355,15 +355,15 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     private var cancelAction: QMUIAlertAction?
 
     private lazy var alertActions: [QMUIAlertAction] = {
-        []
+        return []
     }()
 
     private lazy var destructiveActions: [QMUIAlertAction] = {
-        []
+        return []
     }()
 
     private lazy var alertTextFields: [UITextField] = {
-        []
+        return []
     }()
 
     private var keyboardHeight: CGFloat = 0
@@ -752,7 +752,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         modalPresentationViewController!.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
         modalPresentationViewController!.contentViewMargins = UIEdgeInsets.zero
         modalPresentationViewController!.dimmingView = nil
-        modalPresentationViewController!.contentViewController = self as? (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
+        modalPresentationViewController!.contentViewController = self as (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
         customModalPresentationControllerAnimation()
     }
 
@@ -1197,8 +1197,7 @@ class QMUIAlertAction: NSObject {
         isEnabled = true
         buttonWrapView = QMUIAlertButtonWrapView()
         super.init()
-        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
-        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
+        didInitialized()
     }
 
     /// 初始化`QMUIAlertController`的按钮
@@ -1212,6 +1211,11 @@ class QMUIAlertAction: NSObject {
         self.title = title
         self.style = style
         self.handler = handler
+    }
+    
+    private func didInitialized() {
+        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
+        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
     }
 
     @objc func handleAlertActionEvent(_ sender: Any) {
