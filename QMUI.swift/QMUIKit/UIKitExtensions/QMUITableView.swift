@@ -33,7 +33,7 @@ class QMUITableView: UITableView {
 
     override func touchesShouldCancel(in view: UIView) -> Bool {
         if let delegate = delegate as? QMUITableViewDelegate {
-            return delegate.tableView(self, touchesShouldCancelIn: view)
+            return delegate.tableView?(self, touchesShouldCancelIn: view) ?? true
         }
 
         // 默认情况下只有当view是非UIControl的时候才会返回yes，这里统一对UIButton也返回yes

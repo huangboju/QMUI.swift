@@ -9,6 +9,15 @@
 
 let QDSelectedThemeClassName = "selectedThemeClassName"
 
+func CodeFontMake(_ pointSize: CGFloat) -> UIFont {
+    return UIFont(name: "Menlo", size: pointSize)!
+}
+
+func CodeAttributes(_ fontSize: CGFloat) -> [NSAttributedStringKey : Any] {
+    let attributes: [NSAttributedStringKey : Any] = [NSAttributedStringKey.font : CodeFontMake(fontSize), NSAttributedStringKey.foregroundColor: QDThemeManager.shared.currentTheme?.themeCodeColor ?? UIColorBlack]
+    return attributes
+}
+
 let QDButtonSpacingHeight: CGFloat = 72
 
 // MARK: Colors

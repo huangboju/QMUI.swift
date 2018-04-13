@@ -109,6 +109,7 @@
 		D8491C92207EECFE004D0170 /* QDModalPresentationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C91207EECFE004D0170 /* QDModalPresentationViewController.swift */; };
 		D8491C94207EED28004D0170 /* QDCommonGroupListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C93207EED28004D0170 /* QDCommonGroupListViewController.swift */; };
 		D8491C97207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C96207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift */; };
+		D8491C9920805FBB004D0170 /* UIImage+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9820805FBB004D0170 /* UIImage+Effects.swift */; };
 		D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */; };
 		D852C5A3206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */; };
 		D852C5A5206CDC44001B5F36 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */; };
@@ -256,6 +257,7 @@
 		D8491C91207EECFE004D0170 /* QDModalPresentationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDModalPresentationViewController.swift; sourceTree = "<group>"; };
 		D8491C93207EED28004D0170 /* QDCommonGroupListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDCommonGroupListViewController.swift; sourceTree = "<group>"; };
 		D8491C96207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUITableViewHeaderFooterView.swift; sourceTree = "<group>"; };
+		D8491C9820805FBB004D0170 /* UIImage+Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Effects.swift"; sourceTree = "<group>"; };
 		D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationMacros.swift; sourceTree = "<group>"; };
 		D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+QMUI.swift"; sourceTree = "<group>"; };
 		D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
@@ -571,6 +573,7 @@
 			children = (
 				D845BA5E204EA07D00103B62 /* QDCommonUI.swift */,
 				D8F01FB8204F8C3F003BCC8A /* QDUIHelper.swift */,
+				D8491C9820805FBB004D0170 /* UIImage+Effects.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -764,6 +767,7 @@
 				D845BA5F204EA07D00103B62 /* QDCommonUI.swift in Sources */,
 				3E6BE4EA1F13C5270089DC6D /* UINavigationController+QMUI.swift in Sources */,
 				D87A2D6F207CC40900F4BD4A /* QDLabelViewController.swift in Sources */,
+				D8491C9920805FBB004D0170 /* UIImage+Effects.swift in Sources */,
 				D831FC531E2E08DF009CFB28 /* Curry.swift in Sources */,
 				3E6BE4CC1F13C5270089DC6D /* NSObject+QMUI.swift in Sources */,
 				BEB72CEA1F13A9AD006426D3 /* QMUITestView.swift in Sources */,

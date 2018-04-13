@@ -151,4 +151,18 @@ extension QDUIHelper {
     }
 }
 
+// MARK: - Code
+extension String {
+    
+    func enumerateCodeString(using closure: ((_ string: String, _ range: NSRange) -> ())?) {
+        let pattern = "\\[?[A-Za-z0-9_.]+\\s?[A-Za-z0-9_:.]+\\]?"
+        let regex = try! NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        regex.enumerateMatches(in: self, options: [.reportCompletion], range: NSMakeRange(0, self.length)) { (result, flags, stop) in
+            if let result = result, result.range.length > 0 {
+                closure?(self.substring(with: result.range), result.range)
+            }
+        }
+    }
+}
+
 

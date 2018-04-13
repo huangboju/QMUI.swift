@@ -98,7 +98,7 @@ extension UITableView {
     
     /// 获取可视范围内的所有 sectionHeader 的 index
     var qmui_indexForVisibleSectionHeaders: [Int]? {
-        var visibleCellIndexPaths = indexPathsForVisibleRows ?? []
+        let visibleCellIndexPaths = indexPathsForVisibleRows ?? []
         var visibleSections:[Int] = []
         var result:[Int] = []
         for indexPath in visibleCellIndexPaths {
@@ -347,6 +347,7 @@ extension UITableView: SelfAware3 {
                 #selector(UITableView.deleteRows(at:with:)),
                 #selector(UITableView.reloadRows(at:with:)),
                 #selector(UITableView.moveRow(at:to:)),
+                #selector(UITableView.sizeThatFits(_:)),
             ]
             
             let qmui_selectors = [
@@ -359,6 +360,7 @@ extension UITableView: SelfAware3 {
                 #selector(UITableView.qmui_deleteRows(at:with:)),
                 #selector(UITableView.qmui_reloadRows(at:with:)),
                 #selector(UITableView.qmui_moveRow(at:to:)),
+                #selector(UITableView.qmui_sizeThatFits(_:)),
             ]
             
             for index in 0..<selectors.count {
@@ -373,10 +375,34 @@ extension UITableView: SelfAware3 {
 }
 
 extension UITableView {
+    
+    @objc func qmui_init(frame: CGRect, style: UITableViewStyle) {
+        qmui_init(frame: frame, style: style)
+        // iOS 11 之后 estimatedRowHeight 默认值变成 UITableViewAutomaticDimension 了，会导致 contentSize 之类的计算不准确，所以这里给一个途径让项目可以方便地禁掉所有 UITableView 的 estimatedXxxHeight
+        
+        if !TableViewEstimatedHeightEnabled {
+            estimatedRowHeight = 0
+            estimatedSectionHeaderHeight = 0
+            estimatedSectionFooterHeight = 0
+        } else {
+            estimatedRowHeight = UITableViewAutomaticDimension
+            estimatedSectionHeaderHeight = UITableViewAutomaticDimension
+            estimatedSectionFooterHeight = UITableViewAutomaticDimension
+        }
+    }
+    
+    @objc func qmui_sizeThatFits(_ size: CGSize) -> CGSize {
+        alertEstimatedHeightUsageIfDetected()
+        let result = qmui_sizeThatFits(size)
+        return result
+    }
+}
+
+extension UITableView {
 
     @objc func qmui_reloadData() {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.removeAll()
             })
         }
@@ -387,7 +413,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.insert([], at: section)
                 })
             }
@@ -399,7 +425,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.remove(at: section)
                 })
             }
@@ -411,7 +437,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[section].removeAll()
                 })
             }
@@ -422,7 +448,7 @@ extension UITableView {
     @objc func qmui_moveSection(_ section: Int, toSection newSection: Int) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.swapAt(section, newSection)
             })
         }
@@ -433,7 +459,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[indexPath.section].insert(-1, at: indexPath.row)
                 })
             }
@@ -457,7 +483,7 @@ extension UITableView {
             }
 
             for (key, indexSet) in mutableIndexSetsToRemove {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[key].remove(at: indexSet)
                 })
             }
@@ -470,7 +496,7 @@ extension UITableView {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[indexPath.section][indexPath.row] = -1
                 })
             }
@@ -481,7 +507,7 @@ extension UITableView {
     @objc func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 var sourceRows = heightsBySection[indexPath.section]
                 var destinationRows = heightsBySection[newIndexPath.section]
                 let sourceValue = sourceRows[indexPath.row]
@@ -523,9 +549,9 @@ extension UITableView {
         var templateCell = templateCellsByIdentifiers![identifier]
         if templateCell == nil {
             // 是否有通过dataSource返回的cell
-            let qmui_dataSource = dataSource as? qmui_UITableViewDataSource
-
-            templateCell = qmui_dataSource?.qmui_tableView(self, cellWithIdentifier: identifier)
+            if let qmui_dataSource = dataSource as? QMUICellHeightCache_UITableViewDataSource {
+                templateCell = qmui_dataSource.qmui_tableView?(self, cellWithIdentifier: identifier)
+            }
             // 没有的话，则需要通过register来注册一个cell，否则会crash
             if templateCell == nil {
                 templateCell = dequeueReusableCell(withIdentifier: identifier)

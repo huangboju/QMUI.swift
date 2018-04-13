@@ -167,7 +167,7 @@ class QMUIKeyboardManager {
         userInfo.targetResponder = kCurrentResponder
 
         if shouldReceiveHideNotification() {
-            delegate?.keyboardDidHide!(userInfo)
+            delegate?.keyboardDidHide?(userInfo)
         }
 
         if kCurrentResponder?.isFirstResponder ?? false && !IS_IPAD {
@@ -194,7 +194,7 @@ class QMUIKeyboardManager {
             return
         }
 
-        delegate?.keyboardWillChangeFrame!(with: userInfo)
+        delegate?.keyboardWillChangeFrame?(with: userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {
@@ -215,7 +215,7 @@ class QMUIKeyboardManager {
             return
         }
 
-        delegate?.keyboardDidChangeFrame!(with: userInfo)
+        delegate?.keyboardDidChangeFrame?(with: userInfo)
 
         // 额外处理iPad浮动键盘
         if IS_IPAD {

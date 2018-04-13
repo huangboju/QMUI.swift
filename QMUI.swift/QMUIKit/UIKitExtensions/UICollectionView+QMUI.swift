@@ -173,7 +173,7 @@ extension UICollectionView: SelfAware3 {
 
     @objc open func qmui_reloadData() {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.removeAll()
             })
         }
@@ -184,7 +184,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             for section in sections {
                 qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.insert([], at: section)
                 })
             }
@@ -196,7 +196,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             for section in sections {
                 qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.remove(at: section)
                 })
             }
@@ -208,7 +208,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             for section in sections {
                 qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[section].removeAll()
                 })
             }
@@ -220,7 +220,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildSectionsIfNeeded(section)
             qmui_indexPathHeightCache?.buildSectionsIfNeeded(newSection)
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.swapAt(section, newSection)
             })
         }
@@ -231,7 +231,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     var rows = heightsBySection[indexPath.section]
                     rows.insert(-1, at: indexPath.item)
                     heightsBySection[indexPath.section] = rows
@@ -255,7 +255,7 @@ extension UICollectionView: SelfAware3 {
             }
 
             for dict in mutableIndexSetsToRemove {
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     var rows = heightsBySection[dict.key]
                     rows.remove(at: dict.value)
                     heightsBySection[dict.key] = rows
@@ -269,7 +269,7 @@ extension UICollectionView: SelfAware3 {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[indexPath.section][indexPath.item] = -1
                 })
             }
@@ -280,7 +280,7 @@ extension UICollectionView: SelfAware3 {
     @objc open func qmui_moveItem(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         if qmui_indexPathHeightCache?.automaticallyInvalidateEnabled ?? false {
             qmui_indexPathHeightCache?.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
-            qmui_indexPathHeightCache?.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache?.enumerateAllOrientations(handle: { heightsBySection in
                 if heightsBySection.count > 0 && heightsBySection.count > indexPath.section && heightsBySection.count > newIndexPath.section {
                     let sourceValue = heightsBySection[indexPath.section][indexPath.item]
                     let destinationValue = heightsBySection[newIndexPath.section][newIndexPath.item]

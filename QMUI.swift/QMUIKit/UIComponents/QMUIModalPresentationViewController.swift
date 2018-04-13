@@ -19,7 +19,7 @@
      *  @param  limitSize   浮层最大的宽高，由当前 modalController 的大小及 `contentViewMargins`、`maximumContentViewWidth` 决定
      *  @return 返回浮层在 `limitSize` 限定内的大小，如果业务自身不需要限制宽度/高度，则为 width/height 返回 `CGFLOAT_MAX` 即可
      */
-    @objc optional func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
+    @objc optional func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
 }
 
 @objc protocol QMUIModalPresentationViewControllerDelegate {
@@ -217,7 +217,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @arg  keyboardHeight      键盘在当前界面里的高度，若无键盘，则为0
      *  @arg  completion          动画结束后给到modalController的回调，modalController会在这个回调里做一些清理工作，务必调用
      */
-    var hidingAnimationClosure: ((_ dimmingView: UIView?, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ completion: ((_ finished: Bool) -> Void)?) -> Void)?
+    var hidingAnimationClosure: ((_ dimmingView: UIView?, _ containerBounds: CGRect, _ keyboardHeight: CGFloat, _ completion: ((Bool) -> Void)?) -> Void)?
 
     private var containerWindow: QMUIModalPresentationWindow?
     private weak var previousKeyWindow: UIWindow?
@@ -613,7 +613,7 @@ class QMUIModalPresentationViewController: UIViewController {
             loadViewIfNeeded()
         }
         beginAppearanceTransition(true, animated: animated)
-        self.view.addSubview(view)
+        view.addSubview(self.view)
         endAppearanceTransition()
     }
 
@@ -636,7 +636,7 @@ class QMUIModalPresentationViewController: UIViewController {
         let contentViewLimitSize = CGSize(width: min(maximumContentViewWidth, contentViewContainerSize.width), height: contentViewContainerSize.height)
         var contentViewSize = CGSize.zero
         if let contentViewController = contentViewController, (contentViewController.preferredContentSize != nil) {
-            contentViewSize = contentViewController.preferredContentSize!(in: self, limitSize: contentViewLimitSize)
+            contentViewSize = contentViewController.preferredContentSize!(inModalPresentationViewController: self, limitSize: contentViewLimitSize)
         } else {
             contentViewSize = contentView!.sizeThatFits(contentViewLimitSize)
         }
