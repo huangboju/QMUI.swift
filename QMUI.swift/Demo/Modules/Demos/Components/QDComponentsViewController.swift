@@ -44,14 +44,78 @@ class QDComponentsViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        
+        let alertController = QMUIAlertController(title: "水平对齐方式", message: nil, preferredStyle: .sheet)
+        alertController.title = "12345"
+        var action = QMUIAlertAction(title: "左对齐", style: .default) { (_) in
+            print("左对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "居中对齐", style: .default) { (_) in
+            print("居中对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "右对齐", style: .default) { (_) in
+            print("右对齐")
+        }
+        alertController.add(action: action)
+        action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.add(action: action)
+        alertController.show(true)
     }
     
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
-        //        if title == "UIColor+QMUI" {
-        viewController = QDColorViewController()
-        //        }
+        if title == "QMUINavigationTitleView" {
+            viewController = QDNavigationTitleViewController()
+        }
+        if title == "QMUIEmptyView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIToastView" {
+            viewController = QDLabelViewController()
+        }
+        if title == "QMUIStaticTableView" {
+            viewController = QDTextViewController()
+        }
+        if title == "QMUIImagePreviewView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIPickingImage" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIAssetsManager" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIMoreOperationController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIEmotionView" {
+            viewController = QDButtonViewController()
+        }
+        if title == "QMUIGridView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIFloatLayoutView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIPieProgressView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIPopupContainerView" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIModalPresentationViewController" {
+            viewController = QDModalPresentationViewController(style: .grouped)
+        }
+        if title == "QMUIDialogViewController" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIKeyboardManager" {
+            viewController = QDSliderViewController()
+        }
+        if title == "QMUIMarqueeLabel" {
+            viewController = QDSliderViewController()
+        }
         
         if let viewController = viewController {
             viewController.title = title

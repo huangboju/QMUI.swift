@@ -148,6 +148,7 @@ let SearchBarClearIconImage = QMUICMI().searchBarClearIconImage
 let SearchBarTextFieldCornerRadius = QMUICMI().searchBarTextFieldCornerRadius
 
 // MARK: - TableView / TableViewCell
+let TableViewEstimatedHeightEnabled = QMUICMI().tableViewEstimatedHeightEnabled // 是否要开启全局 UITableView 的 estimatedRow(Section/Footer)Height
 
 let TableViewBackgroundColor = QMUICMI().tableViewBackgroundColor // 普通列表的背景色
 let TableViewGroupedBackgroundColor = QMUICMI().tableViewGroupedBackgroundColor // Grouped类型的列表的背景色

@@ -304,13 +304,13 @@ class QMUIPopupContainerView: UIControl {
      *  即将隐藏时的回调
      *  @argv hidesByUserTap 用于区分此次隐藏是否因为用户手动点击空白区域导致浮层被隐藏
      */
-    public var willHideBlock: ((Bool) -> Void)?
+    public var willHideClosure: ((Bool) -> Void)?
 
     /**
      *  已经隐藏后的回调
      *  @argv hidesByUserTap 用于区分此次隐藏是否因为用户手动点击空白区域导致浮层被隐藏
      */
-    public var didHideBlock: ((Bool) -> Void)?
+    public var didHideClosure: ((Bool) -> Void)?
 
     private var popupWindow: QMUIPopupContainerViewWindow?
     private weak var previousKeyWindow: UIWindow?
@@ -472,7 +472,7 @@ class QMUIPopupContainerView: UIControl {
         return tipMinY
     }
 
-    public func show(with animated: Bool, completion: ((Bool) -> Void)? = nil) {
+    func show(_ animated: Bool, completion: ((Bool) -> Void)? = nil) {
         var isShowingByWindowMode = false
         if superview == nil {
             initPopupContainerViewWindowIfNeeded()
@@ -521,7 +521,7 @@ class QMUIPopupContainerView: UIControl {
     }
 
     public func hide(with animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        willHideBlock?(self.hidesByUserTap)
+        willHideClosure?(self.hidesByUserTap)
 
         let isShowingByWindowMode = popupWindow != nil
 
@@ -559,7 +559,7 @@ class QMUIPopupContainerView: UIControl {
             isHidden = true
         }
         completion?(true)
-        didHideBlock?(hidesByUserTap)
+        didHideClosure?(hidesByUserTap)
         hidesByUserTap = false
     }
 

@@ -12,10 +12,8 @@
  */
 let QMUICommonTableViewControllerInitialContentInsetNotSet = UIEdgeInsets(top: -1, left: -1, bottom: -1, right: -1)
 
-let QMUICommonTableViewControllerSectionHeaderIdentifier = "QMUISectionHeaderView"
-let QMUICommonTableViewControllerSectionFooterIdentifier = "QMUISectionFooterView"
-
-let kSectionHeaderFooterLabelTag = 1024
+private let QMUICommonTableViewControllerSectionHeaderIdentifier = "QMUISectionHeaderView"
+private let QMUICommonTableViewControllerSectionFooterIdentifier = "QMUISectionFooterView"
 
 /**
  *  可作为项目内所有 `UITableViewController` 的基类，注意是继承自 `QMUICommonViewController` 而不是 `UITableViewController`。
@@ -24,17 +22,17 @@ let kSectionHeaderFooterLabelTag = 1024
  *
  *  提供的功能包括：
  *
- *  1. 集成 `QMUISearchController`，可通过在 `shouldShowSearchBarInTableView:` 里返回 `YES` 来快速为列表生成一个搜索框。
+ *  1. 集成 `QMUISearchController`，可通过属性 `shouldShowSearchBar` 来快速为列表生成一个 searchBar 及 searchController，具体请查看 QMUICommonTableViewController (Search)。
  *
  *  2. 通过属性 `tableViewInitialContentInset` 和 `tableViewInitialScrollIndicatorInsets` 来提供对界面初始状态下的列表 `contentInset`、`contentOffset` 的调整能力，一般在系统的 `automaticallyAdjustsScrollViewInsets` 属性无法满足需求时使用。
  *
- *  @warning 在 `QMUICommonTableViewController` 里的 emptyView 将会以 `tableFooterView` 的方式显示出来，所以如果你的界面拥有自己的 `tableFooterView`，则需要重写 `showEmptyView`、`hideEmptyView` 来处理你的 footerView 和 emptyView 的显隐冲突问题。
+ *  @note emptyView 会从 tableHeaderView 的下方开始布局到 tableView 最底部，因此它会遮挡 tableHeaderView 之外的部分（比如 tableFooterView 和 cells ），你可以重写 layoutEmptyView 来改变这个布局方式
  *
  *  @see QMUISearchController
  */
 class QMUICommonTableViewController: QMUICommonViewController {
     /// 获取当前的 `UITableViewStyle`
-    private(set) var style: UITableViewStyle!
+    private(set) var style: UITableViewStyle = .plain
 
     /// 获取当前的 tableView
     fileprivate(set) var tableView: QMUITableView!
@@ -42,19 +40,28 @@ class QMUICommonTableViewController: QMUICommonViewController {
     private var hasHideTableHeaderViewInitial = false
     private var hasSetInitialContentInset = false
 
-    fileprivate var _searchController: QMUISearchController?
-    fileprivate var _searchBar: UISearchBar?
-
     /**
      *  列表使用自定义的contentInset，不使用系统默认计算的，默认为QMUICommonTableViewControllerInitialContentInsetNotSet。<br/>
-     *  当更改了这个值后，会把self.automaticallyAdjustsScrollViewInsets = NO
+     *  @warning 当更改了这个值后，在 iOS 11 及以后里，会把 self.tableView.contentInsetAdjustmentBehavior 改为 UIScrollViewContentInsetAdjustmentNever，而在 iOS 11 以前，会把 self.automaticallyAdjustsScrollViewInsets 改为 NO。
      */
     var tableViewInitialContentInset: UIEdgeInsets! {
         didSet {
             if tableViewInitialContentInset == QMUICommonTableViewControllerInitialContentInsetNotSet {
-                automaticallyAdjustsScrollViewInsets = true
+                if #available(iOS 11, *) {
+                    if isViewLoaded {
+                        tableView.contentInsetAdjustmentBehavior = .automatic
+                    }
+                } else {
+                    automaticallyAdjustsScrollViewInsets = true
+                }
             } else {
-                automaticallyAdjustsScrollViewInsets = false
+                if #available(iOS 11, *) {
+                    if isViewLoaded {
+                        tableView.contentInsetAdjustmentBehavior = .never
+                    }
+                } else {
+                    automaticallyAdjustsScrollViewInsets = false
+                }
             }
         }
     }
@@ -64,7 +71,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
      *
      *  只有当更改了tableViewInitialContentInset后，这个属性才会生效。
      */
-    var tableViewInitialScrollIndicatorInsets: UIEdgeInsets!
+    var tableViewInitialScrollIndicatorInsets: UIEdgeInsets = QMUICommonTableViewControllerInitialContentInsetNotSet
 
     convenience init() {
         self.init(style: .plain)
@@ -96,12 +103,16 @@ class QMUICommonTableViewController: QMUICommonViewController {
         if let backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor {
             view.backgroundColor = backgroundColor
         }
+        
+        DispatchQueue.main.async {
+            self.tableView.delegate = self
+            self.tableView.reloadData()
+        }
     }
 
     override func initSubviews() {
         super.initSubviews()
         initTableView()
-        initSearchController()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -111,10 +122,8 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        let shouldChangeTableViewFrame = view.bounds != tableView.frame
-        if shouldChangeTableViewFrame {
-            tableView.frame = view.bounds
-        }
+        
+        layoutTableView()
 
         if shouldAdjustTableViewContentInsetsInitially && !hasSetInitialContentInset {
             tableView.contentInset = tableViewInitialContentInset
@@ -128,27 +137,19 @@ class QMUICommonTableViewController: QMUICommonViewController {
             hasSetInitialContentInset = true
         }
 
-        hideTableHeaderViewInitialIfCan(with: false)
+        hideTableHeaderViewInitialIfCan(animated: false, force: false)
 
         layoutEmptyView()
     }
 
     // MARK: - 工具方法
 
-    //    var tableView {
-    //        if (!_tableView) {
-    //            loadViewIfNeeded()
-    //        }
-    //        return _tableView
-    //    }
-
-    func hideTableHeaderViewInitialIfCan(with animated: Bool) {
-        guard let tableHeaderView = tableView.tableHeaderView, shouldHideTableHeaderViewInitial && !hasHideTableHeaderViewInitial else {
-            return
+    func hideTableHeaderViewInitialIfCan(animated: Bool, force: Bool) {
+        if let tableHeaderView = tableView.tableHeaderView, shouldHideTableHeaderViewInitial && (force || !hasHideTableHeaderViewInitial) {
+            let contentOffset = CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + tableHeaderView.frame.height)
+            tableView.setContentOffset(contentOffset, animated: animated)
+            hasHideTableHeaderViewInitial = true
         }
-        let contentOffset = CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + tableHeaderView.frame.height)
-        tableView.setContentOffset(contentOffset, animated: animated)
-        hasHideTableHeaderViewInitial = true
     }
 
     override func contentSizeCategoryDidChanged(_ notification: Notification) {
@@ -157,11 +158,13 @@ class QMUICommonTableViewController: QMUICommonViewController {
     }
 
     var shouldAdjustTableViewContentInsetsInitially: Bool {
-        return tableViewInitialContentInset != QMUICommonTableViewControllerInitialContentInsetNotSet
+        let result = tableViewInitialContentInset != QMUICommonTableViewControllerInitialContentInsetNotSet
+        return result
     }
 
     var shouldAdjustTableViewScrollIndicatorInsetsInitially: Bool {
-        return tableViewInitialScrollIndicatorInsets != QMUICommonTableViewControllerInitialContentInsetNotSet
+        let result = tableViewInitialScrollIndicatorInsets != QMUICommonTableViewControllerInitialContentInsetNotSet
+        return result
     }
 
     // MARK: - 空列表视图 QMUIEmptyView
@@ -172,33 +175,31 @@ class QMUICommonTableViewController: QMUICommonViewController {
         }
         tableView.addSubview(emptyView!)
         layoutEmptyView()
-
-        if shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == searchBar {
-            tableView.tableHeaderView = nil
-        }
     }
 
     override func hideEmptyView() {
         emptyView?.removeFromSuperview()
-
-        if shouldShowSearchBar(in: tableView) && shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == nil {
-            initSearchController()
-            tableView.tableHeaderView = searchBar
-            hideTableHeaderViewInitialIfCan(with: false)
-        }
     }
 
     @discardableResult
     override func layoutEmptyView() -> Bool {
-        if emptyView == nil || emptyView?.superview == nil {
+        guard let emptyView = emptyView, let _ = emptyView.superview else {
             return false
+        }
+        
+        var insets = tableView.contentInset
+        
+        if #available(iOS 11, *) {
+            if tableView.contentInsetAdjustmentBehavior != .never {
+                insets = tableView.adjustedContentInset
+            }
         }
 
         // 当存在 tableHeaderView 时，emptyView 的高度为 tableView 的高度减去 headerView 的高度
         if let tableHeaderView = tableView.tableHeaderView {
-            emptyView?.frame = CGRect(x: 0, y: tableHeaderView.frame.maxY, width: tableView.bounds.width - tableView.contentInset.horizontalValue, height: tableView.bounds.height - tableView.contentInset.verticalValue - tableHeaderView.frame.maxY)
+            emptyView.frame = CGRect(x: 0, y: tableHeaderView.frame.maxY, width: tableView.bounds.width - insets.horizontalValue, height: tableView.bounds.height - insets.verticalValue - tableHeaderView.frame.maxY)
         } else {
-            emptyView?.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width - tableView.contentInset.horizontalValue, height: tableView.bounds.height - tableView.contentInset.verticalValue)
+            emptyView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width - insets.horizontalValue, height: tableView.bounds.height - insets.verticalValue)
         }
         return true
     }
@@ -208,81 +209,57 @@ extension QMUICommonTableViewController: QMUITableViewDelegate {
     // 默认拿title来构建一个view然后添加到viewForHeaderInSection里面，如果业务重写了viewForHeaderInSection，则titleForHeaderInSection被覆盖
     // viewForFooterInSection同上
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let title = _tableView(tableView, realTitleForHeaderIn: section)
-        if let title = title {
-            let headerFooterView = tableHeaderFooterLabel(in: tableView, identifier: "headerTitle")
-            let label = headerFooterView.contentView.viewWithTag(kSectionHeaderFooterLabelTag) as? QMUILabel
-            label?.text = title
-            let isPlain = tableView.style == .plain
-            label?.contentEdgeInsets = isPlain ? TableViewSectionHeaderContentInset : TableViewGroupedSectionHeaderContentInset
-            label?.font = isPlain ? TableViewSectionHeaderFont : TableViewGroupedSectionHeaderFont
-            label?.textColor = isPlain ? TableViewSectionHeaderTextColor : TableViewGroupedSectionHeaderTextColor
-            label?.backgroundColor = isPlain ? TableViewSectionHeaderBackgroundColor : UIColorClear
-            let labelLimitWidth = tableView.bounds.width - tableView.contentInset.horizontalValue
-            let labelSize = label!.sizeThatFits(CGSize(width: labelLimitWidth, height: CGFloat.infinity))
-            label?.frame = CGRect(x: 0, y: 0, width: labelLimitWidth, height: labelSize.height)
-            return label!
+        if let title = _tableView(tableView: tableView, realTitleForHeaderIn: section) {
+            if let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: QMUICommonTableViewControllerSectionHeaderIdentifier) as? QMUITableViewHeaderFooterView {
+                headerView.parentTableView = tableView
+                headerView.type = .header
+                headerView.titleLabel.text = title
+                return headerView
+            }
         }
         return nil
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let title = _tableView(tableView, realTitleForFooterIn: section)
-        if let title = title {
-            let headerFooterView = tableHeaderFooterLabel(in: tableView, identifier: "footerTitle")
-            let label = headerFooterView.contentView.viewWithTag(kSectionHeaderFooterLabelTag) as? QMUILabel
-            label?.text = title
-            let isPlain = tableView.style == .plain
-            label?.contentEdgeInsets = isPlain ? TableViewSectionFooterContentInset : TableViewGroupedSectionFooterContentInset
-            label?.font = isPlain ? TableViewSectionFooterFont : TableViewGroupedSectionFooterFont
-            label?.textColor = isPlain ? TableViewSectionFooterTextColor : TableViewGroupedSectionFooterTextColor
-            label?.backgroundColor = isPlain ? TableViewSectionFooterBackgroundColor : UIColorClear
-            let labelLimitWidth = tableView.bounds.width - tableView.contentInset.horizontalValue
-            let labelSize = label!.sizeThatFits(CGSize(width: labelLimitWidth, height: .infinity))
-            label?.frame = CGRect(x: 0, y: 0, width: labelLimitWidth, height: labelSize.height)
-            return label!
+        if let title = _tableView(tableView: tableView, realTitleForFooterIn: section) {
+            if let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: QMUICommonTableViewControllerSectionFooterIdentifier) as? QMUITableViewHeaderFooterView {
+                footerView.parentTableView = tableView
+                footerView.type = .footer
+                footerView.titleLabel.text = title
+                return footerView
+            }
         }
         return nil
     }
 
-    func tableHeaderFooterLabel(in tableView: UITableView, identifier: String) -> UITableViewHeaderFooterView {
-        var headerFooterView = tableView.dequeueReusableHeaderFooterView(withIdentifier: identifier)
-        if headerFooterView == nil {
-            let label = QMUILabel()
-            label.tag = kSectionHeaderFooterLabelTag
-            label.numberOfLines = 0
-            headerFooterView = UITableViewHeaderFooterView(reuseIdentifier: identifier)
-            headerFooterView?.contentView.addSubview(label)
-        }
-        return headerFooterView!
-    }
-
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard let headerView = tableView.delegate?.tableView?(tableView, viewForHeaderInSection: section) else {
-            // 默认 plain 类型直接设置为 0，TableViewSectionHeaderHeight 是在需要重写 headerHeight 的时候才用的
+        guard let view = tableView.delegate?.tableView?(tableView, viewForHeaderInSection: section) else {
+            // 分别测试过 iOS 11 前后的系统版本，最终总结，对于 Plain 类型的 tableView 而言，要去掉 header / footer 请使用 0，对于 Grouped 类型的 tableView 而言，要去掉 header / footer 请使用 CGFloat.leastNormalMagnitude
             return tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderDefaultHeight
         }
-        return max(headerView.bounds.height, tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderDefaultHeight)
+        let height = view.sizeThatFits(CGSize(width: tableView.bounds.width - tableView.qmui_safeAreaInsets.horizontalValue, height: CGFloat.greatestFiniteMagnitude)).height
+        return height
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        guard let footerView = tableView.delegate?.tableView?(tableView, viewForFooterInSection: section) else {
-            // 默认 plain 类型直接设置为 0，TableViewSectionFooterHeight 是在需要重写 footerHeight 的时候才用的
-            return tableView.style == .plain ? 0 : TableViewGroupedSectionFooterDefaultHeight
+        guard let view = tableView.delegate?.tableView?(tableView, viewForFooterInSection: section) else {
+            // 分别测试过 iOS 11 前后的系统版本，最终总结，对于 Plain 类型的 tableView 而言，要去掉 header / footer 请使用 0，对于 Grouped 类型的 tableView 而言，要去掉 header / footer 请使用 CGFloat.leastNormalMagnitude
+            return tableView.style == .plain ? 0 : TableViewGroupedSectionHeaderDefaultHeight
         }
-        return max(footerView.bounds.height, tableView.style == .plain ? 0 : TableViewGroupedSectionFooterDefaultHeight)
+        let height = view.sizeThatFits(CGSize(width: tableView.bounds.width - tableView.qmui_safeAreaInsets.horizontalValue, height: CGFloat.greatestFiniteMagnitude)).height
+        return height
     }
 
     // 是否有定义某个section的header title
-    func _tableView(_ tableView: UITableView, realTitleForHeaderIn section: Int) -> String? {
+    private func _tableView(tableView: UITableView, realTitleForHeaderIn section: Int) -> String? {
         guard let sectionTitle = tableView.dataSource?.tableView?(tableView, titleForHeaderInSection: section), !sectionTitle.isEmpty else {
             return nil
         }
         return sectionTitle
     }
 
-    // 是否有定义某个section的footer title(编译器bug添加_)
-    func _tableView(_ tableView: UITableView, realTitleForFooterIn section: Int) -> String? {
+    // 是否有定义某个section的footer title
+    private func _tableView(tableView: UITableView, realTitleForFooterIn section: Int) -> String? {
         guard let sectionFooter = tableView.dataSource?.tableView?(tableView, titleForFooterInSection: section), !sectionFooter.isEmpty else {
             return nil
         }
@@ -316,10 +293,39 @@ extension QMUICommonTableViewController {
      *  一般情况下，有关tableView的设置属性的代码都应该写在这里。
      */
     @objc func initTableView() {
+        
+        if #available(iOS 9.0, *) {
+            loadViewIfNeeded()
+        }
+        else {
+            // _ = self.view works but some Swift compiler genius could optimize what seems like a noop out
+            // hence this perversion from this recipe http://stackoverflow.com/questions/17279604/clean-way-to-force-view-to-load-subviews-early
+            view.alpha = 1
+        }
+        
         tableView = QMUITableView(frame: view.bounds, style: style)
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionHeaderIdentifier)
+        tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionFooterIdentifier)
         view.addSubview(tableView)
+        
+        if #available(iOS 11, *) {
+            if shouldAdjustTableViewContentInsetsInitially {
+                tableView.contentInsetAdjustmentBehavior = .never
+            }
+        }
+    }
+    
+    /**
+     *  布局 tableView 的方法独立抽取出来，方便子类在需要自定义 tableView.frame 时能重写并且屏蔽掉 super 的代码。如果不独立一个方法而是放在 viewDidLayoutSubviews 里，子类就很难屏蔽 super 里对 tableView.frame 的修改。
+     *  默认的实现是撑满 self.view，如果要自定义，可以写在这里而不调用 super，或者干脆重写这个方法但留空
+     */
+    @objc func layoutTableView() {
+        let shouldChangeTableViewFrame = view.bounds != tableView.frame
+        if shouldChangeTableViewFrame {
+            tableView.frame = view.bounds
+        }
     }
 
     /**
@@ -330,55 +336,4 @@ extension QMUICommonTableViewController {
      *  @see QMUITableViewDelegate
      */
     var shouldHideTableHeaderViewInitial: Bool { return false }
-}
-
-extension QMUICommonTableViewController: QMUISearchControllerDelegate {
-    /**
-     *  获取当前的searchController，注意只有当 `shouldShowSearchBarInTableView:` 返回 `YES` 时才有用
-     *
-     *  默认为 `nil`
-     *
-     *  @see QMUITableViewDelegate
-     */
-    var searchController: QMUISearchController? {
-        return _searchController
-    }
-
-    /**
-     *  获取当前的searchBar，注意只有当 `shouldShowSearchBarInTableView:` 返回 `YES` 时才有用
-     *
-     *  默认为 `nil`
-     *
-     *  @see QMUITableViewDelegate
-     */
-    var searchBar: UISearchBar? {
-        return _searchBar
-    }
-
-    /**
-     *  是否应该在显示空界面时自动隐藏搜索框
-     *
-     *  默认为 `false`
-     */
-    var shouldHideSearchBarWhenEmptyViewShowing: Bool { return false }
-
-    /**
-     *  初始化searchController和searchBar，在initSubViews的时候被自动调用。
-     *
-     *  会询问 `[self.tableView.delegate shouldShowSearchBarInTableView:]`，若返回 `YES`，则创建 searchBar 并将其以 `tableHeaderView` 的形式呈现在界面里；若返回 `NO`，则将 `tableHeaderView` 置为nil。
-     *
-     *  @warning `shouldShowSearchBarInTableView:` 默认返回 NO，需要 searchBar 的界面必须重写该方法并返回 `YES`
-     */
-    func initSearchController() {
-        guard let delegate = tableView.delegate as? QMUITableViewDelegate else { return }
-        if delegate.shouldShowSearchBar(in: tableView) && searchController == nil {
-            _searchController = QMUISearchController(contentsViewController: self)
-            searchController?.searchResultsDelegate = self
-            searchController?.searchBar?.placeholder = "搜索"
-            tableView.tableHeaderView = searchController?.searchBar
-            _searchBar = searchController?.searchBar
-        }
-    }
-
-    func searchController(_: QMUISearchController, updateResultsFor _: String?) {}
 }

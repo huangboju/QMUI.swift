@@ -198,7 +198,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
 
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? QMUIAlbumTableViewCell
         if cell == nil {
-            cell = QMUIAlbumTableViewCell(tableView, style: .subtitle, reuseIdentifier: "cell")
+            cell = QMUIAlbumTableViewCell(tableView: tableView, style: .subtitle, reuseIdentifier: "cell")
             cell?.accessoryType = .disclosureIndicator
         }
         let assetsGroup = _albumsArray[indexPath.row]

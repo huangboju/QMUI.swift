@@ -6,14 +6,14 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-protocol QMUINavigationTitleViewDelegate: class {
+@objc protocol QMUINavigationTitleViewDelegate {
     /**
      点击 titleView 后的回调，只需设置 titleView.userInteractionEnabled = YES 后即可使用。不过一般都用于配合 QMUINavigationTitleViewAccessoryTypeDisclosureIndicator。
 
      @param titleView 被点击的 titleView
      @param isActive titleView 是否处于活跃状态（所谓的活跃，对应右边的箭头而言，就是点击后箭头向上的状态）
      */
-    func didTouch(titleView: QMUINavigationTitleView, isActive: Bool)
+    @objc optional func didTouch(_ titleView: QMUINavigationTitleView, isActive: Bool)
 
     /**
      titleView 的活跃状态发生变化时会被调用，也即 [titleView setActive:] 被调用时。
@@ -21,12 +21,7 @@ protocol QMUINavigationTitleViewDelegate: class {
      @param active 是否处于活跃状态
      @param titleView 变换状态的 titleView
      */
-    func didChanged(active: Bool, for titleView: QMUINavigationTitleView)
-}
-
-extension QMUINavigationTitleViewDelegate {
-    func didTouch(titleView _: QMUINavigationTitleView, isActive _: Bool) {}
-    func didChanged(active _: Bool, for _: QMUINavigationTitleView) {}
+    @objc optional func didChanged(_ active: Bool, for titleView: QMUINavigationTitleView)
 }
 
 /// 设置title和subTitle的布局方式，默认是水平布局。
@@ -79,7 +74,7 @@ class QMUINavigationTitleView: UIControl {
 
     var isActive = false {
         didSet {
-            delegate?.didChanged(active: isActive, for: self)
+            delegate?.didChanged?(isActive, for: self)
             guard accessoryType == .disclosureIndicator else { return }
             let angle: CGFloat = isActive ? -180 : 0.1
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseIn, animations: {
@@ -110,8 +105,8 @@ class QMUINavigationTitleView: UIControl {
     
     var subtitle: String? {
         didSet {
-            titleLabel.text = subtitle
-            updateTitleLabelSize()
+            subtitleLabel.text = subtitle
+            updateSubtitleLabelSize()
             refreshLayout()
         }
     }
@@ -605,7 +600,7 @@ class QMUINavigationTitleView: UIControl {
 
     @objc func handleTouchTitleViewEvent() {
         let active = !isActive
-        delegate?.didTouch(titleView: self, isActive: active)
+        delegate?.didTouch?(self, isActive: active)
         isActive = active
         refreshLayout()
     }

@@ -84,7 +84,7 @@ class QMUITableViewCell: UITableViewCell {
      *
      *  @return 一个QMUITableViewCell实例
      */
-    convenience init(_ tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
+    convenience init(tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
         self.init(style: style, reuseIdentifier: reuseIdentifier)
         parentTableView = tableView
     }

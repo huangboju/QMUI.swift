@@ -98,13 +98,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        UIView.animate(withDuration: 0.15, delay: 1.3, options: .curveOut, animations: {
+        UIView.animate(withDuration: 0.15, delay: 0.9, options: .curveOut, animations: {
             launchScreenView.layoutIfNeeded()
             logoImageView.alpha = 0
             copyrightLabel?.alpha = 0
         }, completion: nil)
         
-        UIView.animate(withDuration: 1.2, delay: 1.3, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 1.2, delay: 0.9, options: .curveEaseOut, animations: {
             maskView.alpha = 0
             backgroundImageView.alpha = 0
         }) { (finished) in

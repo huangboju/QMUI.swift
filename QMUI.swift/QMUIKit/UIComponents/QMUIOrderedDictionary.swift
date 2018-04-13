@@ -8,14 +8,14 @@
 
 // 使用： let od = QMUIOrderedDictionary(dictionaryLiteral: ("3", "q"), ("2", "w"))
 public struct QMUIOrderedDictionary<K: Hashable, V> {
-    public var allKeys = [K]()
+    var allKeys = [K]()
     private var dict = [K: V]()
 
-    public var count: Int {
+    var count: Int {
         return allKeys.count
     }
 
-    public subscript(key: K) -> V? {
+    subscript(key: K) -> V? {
         get {
             return dict[key]
         }
