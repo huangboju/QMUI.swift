@@ -110,6 +110,10 @@
 		D8491C94207EED28004D0170 /* QDCommonGroupListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C93207EED28004D0170 /* QDCommonGroupListViewController.swift */; };
 		D8491C97207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C96207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift */; };
 		D8491C9920805FBB004D0170 /* UIImage+Effects.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9820805FBB004D0170 /* UIImage+Effects.swift */; };
+		D8491C9B20843B88004D0170 /* QDAllSystemFontsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9A20843B87004D0170 /* QDAllSystemFontsViewController.swift */; };
+		D8491C9D20843BD0004D0170 /* QDThemeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9C20843BD0004D0170 /* QDThemeViewController.swift */; };
+		D8491C9F208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9E208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift */; };
+		D8491CA1208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */; };
 		D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */; };
 		D852C5A3206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */; };
 		D852C5A5206CDC44001B5F36 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */; };
@@ -258,6 +262,10 @@
 		D8491C93207EED28004D0170 /* QDCommonGroupListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDCommonGroupListViewController.swift; sourceTree = "<group>"; };
 		D8491C96207F2EF0004D0170 /* QMUITableViewHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUITableViewHeaderFooterView.swift; sourceTree = "<group>"; };
 		D8491C9820805FBB004D0170 /* UIImage+Effects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Effects.swift"; sourceTree = "<group>"; };
+		D8491C9A20843B87004D0170 /* QDAllSystemFontsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDAllSystemFontsViewController.swift; sourceTree = "<group>"; };
+		D8491C9C20843BD0004D0170 /* QDThemeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDThemeViewController.swift; sourceTree = "<group>"; };
+		D8491C9E208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplateGrass.swift; sourceTree = "<group>"; };
+		D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplatePinkRose.swift; sourceTree = "<group>"; };
 		D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationMacros.swift; sourceTree = "<group>"; };
 		D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+QMUI.swift"; sourceTree = "<group>"; };
 		D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
@@ -564,6 +572,8 @@
 				D864A5F4204E72F10036C164 /* QDThemeProtocol.swift */,
 				D845BA57204E8B8100103B62 /* QDThemeManager.swift */,
 				D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */,
+				D8491C9E208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift */,
+				D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -607,6 +617,8 @@
 			isa = PBXGroup;
 			children = (
 				D8F8F8F52071D76D00ECC2DD /* QDLabViewController.swift */,
+				D8491C9A20843B87004D0170 /* QDAllSystemFontsViewController.swift */,
+				D8491C9C20843BD0004D0170 /* QDThemeViewController.swift */,
 			);
 			path = Lab;
 			sourceTree = "<group>";
@@ -732,6 +744,7 @@
 				3E6BE4E11F13C5270089DC6D /* UICollectionView+QMUI.swift in Sources */,
 				3E6BE4C81F13C5270089DC6D /* Array+QMUI.swift in Sources */,
 				D8F8F8F82071D7A700ECC2DD /* QDCommonListViewController.swift in Sources */,
+				D8491C9F208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift in Sources */,
 				D8F01FB9204F8C3F003BCC8A /* QDUIHelper.swift in Sources */,
 				3E6BE4D01F13C5270089DC6D /* QMUICellHeightIndexPathCache.swift in Sources */,
 				3E6BE4EC1F13C5270089DC6D /* UISearchBar+QMUI.swift in Sources */,
@@ -764,6 +777,7 @@
 				D831FC391E2E0591009CFB28 /* QMUICommonViewController.swift in Sources */,
 				D8125B311E35ECD600FE210A /* QMUINavigationController.swift in Sources */,
 				D83D1EE92074A9EB007BC8B0 /* QDColorViewController.swift in Sources */,
+				D8491C9B20843B88004D0170 /* QDAllSystemFontsViewController.swift in Sources */,
 				D845BA5F204EA07D00103B62 /* QDCommonUI.swift in Sources */,
 				3E6BE4EA1F13C5270089DC6D /* UINavigationController+QMUI.swift in Sources */,
 				D87A2D6F207CC40900F4BD4A /* QDLabelViewController.swift in Sources */,
@@ -824,6 +838,8 @@
 				3E6BE4DE1F13C5270089DC6D /* UIActivityIndicatorView+QMUI.swift in Sources */,
 				D864A5F5204E72F10036C164 /* QDThemeProtocol.swift in Sources */,
 				3E6BE4CD1F13C5270089DC6D /* NSParagraphStyle+QMUI.swift in Sources */,
+				D8491C9D20843BD0004D0170 /* QDThemeViewController.swift in Sources */,
+				D8491CA1208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift in Sources */,
 				3E6BE4C91F13C5270089DC6D /* CALayer+QMUI.swift in Sources */,
 				BEB72CE21F13A915006426D3 /* QMUIPieProgressView.swift in Sources */,
 				D8F01FB3204F882F003BCC8A /* QDTabBarViewController.swift in Sources */,

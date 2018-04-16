@@ -33,13 +33,14 @@ class QDThemeManager: QDChangingThemeDelegate {
         return instance
     } ()
     
-    var currentTheme: QDThemeProtocol? {
+    var currentTheme: (NSObject & QDThemeProtocol)? {
         didSet {
-            guard let currentTheme = currentTheme, let oldValue = oldValue else { return }
-            if !currentTheme.isEqual(oldValue) {
-                // 从 nil 变成某个 theme 就不发通知了，初始化时会自动 apply，这里只需要处理在 QD 里手动更改 theme 的场景就行
+            guard let themeBeforeChanged = oldValue, let currentTheme = currentTheme else {
+                return
+            }
+            if !currentTheme.isEqual(themeBeforeChanged) {
                 currentTheme.applyConfigurationTemplate()
-                NotificationCenter.default.post(name: Notification.QD.ThemeChanged, object: self, userInfo: [QDThemeNameKey.beforeChanged: oldValue, QDThemeNameKey.afterChanged: currentTheme])
+                NotificationCenter.default.post(name: Notification.QD.ThemeChanged, object: self, userInfo: [QDThemeNameKey.beforeChanged: themeBeforeChanged, QDThemeNameKey.afterChanged: currentTheme])
             }
         }
     }

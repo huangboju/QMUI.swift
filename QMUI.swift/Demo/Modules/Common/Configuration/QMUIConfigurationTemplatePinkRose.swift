@@ -1,28 +1,22 @@
 //
-//  QMUIConfigurationTemplate.swift
+//  QMUIConfigurationTemplatePinkRose.swift
 //  QMUI.swift
 //
-//  Created by qd-hxt on 2018/3/29.
+//  Created by qd-hxt on 2018/4/16.
 //  Copyright © 2018年 伯驹 黄. All rights reserved.
 //
 
-/**
- *  QMUIConfigurationTemplate 是一份配置表，用于配合 QMUIConfiguration 来管理整个 App 的全局样式，使用方式：
- *  在 QMUI 项目代码的文件夹里找到 QMUIConfigurationTemplate 目录，把里面所有文件复制到自己项目里，保证能被编译到即可，不需要在某些地方 import，也不需要手动运行。
- *
- *  @warning 更新 QMUIKit 的版本时，请留意 Release Log 里是否有提醒更新配置表，请尽量保持自己项目里的配置表与 QMUIKit 里的配置表一致，避免遗漏新的属性。
- *  @warning 配置表的 class 名必须以 QMUIConfigurationTemplate 开头，并且实现 <QMUIConfigurationTemplateProtocol>，因为这两者是 QMUI 识别该 NSObject 是否为一份配置表的条件。
- *  @warning QMUI 2.3.0 之后，配置表改为自动运行，不需要再在某个地方手动运行了。
- */
-@objc(QMUIConfigurationTemplate)
-class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
-    
+import UIKit
+
+@objc(QMUIConfigurationTemplatePinkRose)
+class QMUIConfigurationTemplatePinkRose: NSObject, QDThemeProtocol  {
+
     override required init() {
         super.init()
     }
     
     var themeTintColor: UIColor {
-        return UIColorBlue
+        return UIColorTheme9
     }
     
     var themeListTextColor: UIColor {
@@ -34,11 +28,11 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     }
     
     var themeGridItemTintColor: UIColor? {
-        return nil
+        return themeTintColor
     }
     
     var themeName: String {
-        return "Default"
+        return "Grapefruit"
     }
     
     func applyConfigurationTemplate() {
@@ -101,7 +95,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().navBarDisabledAlpha = 0.2 // NavBarDisabledAlpha : QMUINavigationButton 在 disabled 时的 alpha
         QMUICMI().navBarButtonFont = UIFontMake(17) // NavBarButtonFont : QMUINavigationButtonTypeNormal 的字体（由于系统存在一些 bug，这个属性默认不对 UIBarButtonItem 生效）
         QMUICMI().navBarButtonFontBold = UIFontBoldMake(17) // NavBarButtonFontBold : QMUINavigationButtonTypeBold 的字体
-        QMUICMI().navBarBackgroundImage = UIImageMake("navigationbar_background") // NavBarBackgroundImage : UINavigationBar 的背景图
+        QMUICMI().navBarBackgroundImage = QDUIHelper.navigationBarBackgroundImage(themeTintColor) // NavBarBackgroundImage : UINavigationBar 的背景图
         QMUICMI().navBarShadowImage = UIImage() // NavBarShadowImage : UINavigationBar.shadowImage，也即导航栏底部那条分隔线
         QMUICMI().navBarBarTintColor = nil // NavBarBarTintColor : UINavigationBar.barTintColor，也即背景色
         QMUICMI().navBarTintColor = UIColorWhite // NavBarTintColor : QMUINavigationController.navigationBar 的 tintColor，也即导航栏上面的按钮颜色，由于 tintColor 不支持 appearance，所以这里只支持 QMUINavigationController
@@ -110,7 +104,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().navBarLargeTitleColor = nil // NavBarLargeTitleColor : UINavigationBar 在大标题模式下的标题颜色，仅在 iOS 11 之后才有效
         QMUICMI().navBarLargeTitleFont = nil // NavBarLargeTitleFont : UINavigationBar 在大标题模式下的标题字体，仅在 iOS 11 之后才有效
         QMUICMI().navBarBackButtonTitlePositionAdjustment = UIOffset.zero // NavBarBarBackButtonTitlePositionAdjustment : 导航栏返回按钮的文字偏移
-        QMUICMI().navBarBackIndicatorImage = UIImage.qmui_image(shape: .navBack, size: CGSize(width: 13, height: 21), tintColor: NavBarTintColor) // NavBarBackIndicatorImage : 导航栏的返回按钮的图片，图片尺寸需要为(13, 21)，如果尺寸不一致则会自动调整，以保证与系统的返回按钮图片布局相同。
+        QMUICMI().navBarBackIndicatorImage = UIImage.qmui_image(shape: .navBack, size: CGSize(width: 12, height: 20), tintColor: NavBarTintColor) // NavBarBackIndicatorImage : 导航栏的返回按钮的图片，图片尺寸需要为(13, 21)，如果尺寸不一致则会自动调整，以保证与系统的返回按钮图片布局相同。
         QMUICMI().navBarCloseButtonImage = UIImage.qmui_image(shape: .navClose, size: CGSize(width: 16, height: 16), tintColor: NavBarTintColor) // NavBarCloseButtonImage : QMUINavigationButton 用到的 × 的按钮图片
         
         QMUICMI().navBarLoadingMarginRight = 3 // NavBarLoadingMarginRight : QMUINavigationTitleView 里左边 loading 的右边距
@@ -123,7 +117,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().tabBarBackgroundImage = UIImage.qmui_image(color: UIColorMake(249, 249, 249))?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)) // TabBarBackgroundImage : UITabBar 的背景图
         QMUICMI().tabBarBarTintColor = nil // TabBarBarTintColor : UITabBar 的 barTintColor
         QMUICMI().tabBarShadowImageColor = UIColorSeparator // TabBarShadowImageColor : UITabBar 的 shadowImage 的颜色，会自动创建一张 1px 高的图片
-        QMUICMI().tabBarTintColor = UIColorMake(4, 189, 231) // TabBarTintColor : UITabBar 的 tintColor
+        QMUICMI().tabBarTintColor = themeTintColor // TabBarTintColor : UITabBar 的 tintColor
         QMUICMI().tabBarItemTitleColor = UIColorGray6 // TabBarItemTitleColor : 未选中的 UITabBarItem 的标题颜色
         QMUICMI().tabBarItemTitleColorSelected = TabBarTintColor // TabBarItemTitleColorSelected : 选中的 UITabBarItem 的标题颜色
         QMUICMI().tabBarItemTitleFont = nil // TabBarItemTitleFont : UITabBarItem 的标题字体
@@ -203,9 +197,9 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI().windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1 // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
         
         // MARK: QMUILog
-//        QMUICMI().shouldPrintDefaultLog = true // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log
-//        QMUICMI().shouldPrintInfoLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelInfo 级别的 log
-//        QMUICMI().shouldPrintWarnLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelWarn 级别的 log
+        //        QMUICMI().shouldPrintDefaultLog = true // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log
+        //        QMUICMI().shouldPrintInfoLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelInfo 级别的 log
+        //        QMUICMI().shouldPrintWarnLog = true // ShouldPrintInfoLog : 是否允许输出 QMUILogLevelWarn 级别的 log
         
         // MARK: Others
         
@@ -221,14 +215,13 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     
     // QMUI 2.3.0 版本里，配置表新增这个方法，返回 true 表示在 App 启动时要自动应用这份配置表。仅当你的 App 里存在多份配置表时，才需要把除默认配置表之外的其他配置表的返回值改为 false。
     func shouldApplyTemplateAutomatically() -> Bool {
-        if let themeName = UserDefaults.standard.string(forKey: QDSelectedThemeClassName) {
-            let result = themeName == String(describing: self)
-            if result {
-                QDThemeManager.shared.currentTheme = self
-            }
-            return result
+        guard let themeName = UserDefaults.standard.string(forKey: QDSelectedThemeClassName) else {
+            return false
         }
-        QDThemeManager.shared.currentTheme = self
-        return true
+        let result = themeName == String(describing: type(of: self))
+        if result {
+            QDThemeManager.shared.currentTheme = self
+        }
+        return result
     }
 }

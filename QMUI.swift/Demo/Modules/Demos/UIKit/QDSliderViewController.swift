@@ -11,7 +11,7 @@ class QDSliderViewController: QDCommonViewController {
     lazy var slider: QMUISlider = {
         let slider = QMUISlider()
         slider.value = 0.3
-        slider.minimumTrackTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
+        slider.minimumTrackTintColor = QDThemeManager.shared.currentTheme?.themeTintColor
         slider.maximumTrackTintColor = UIColorGray9
         slider.trackHeight = 1 // 支持修改背后导轨的高度
         slider.thumbColor = slider.minimumTrackTintColor

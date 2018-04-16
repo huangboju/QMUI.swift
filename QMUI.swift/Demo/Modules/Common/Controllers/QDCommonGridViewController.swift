@@ -100,7 +100,7 @@ class QDCommonGridViewController: QDCommonViewController {
         
         let button = QDCommonGridButton()
         
-        if let tintColor = QDThemeManager.shared.currentTheme!.themeGridItemTintColor {
+        if let tintColor = QDThemeManager.shared.currentTheme?.themeGridItemTintColor {
             button.tintColor = tintColor
             button.adjustsImageTintColorAutomatically = true
         } else {
