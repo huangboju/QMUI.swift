@@ -131,7 +131,7 @@ class QMUIKeyboardManager {
         let shouldReceiveDidShowNotification = targetResponderValues.count <= 0 || firstResponder == kCurrentResponder
 
         if shouldReceiveDidShowNotification {
-            delegate?.keyBoardDidShow!(nil)
+            delegate?.keyBoardDidShow?(nil)
 
             // 额外处理iPad浮动键盘
             if IS_IPAD {

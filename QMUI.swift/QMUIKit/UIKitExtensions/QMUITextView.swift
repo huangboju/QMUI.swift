@@ -58,23 +58,23 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
      *
      *  默认为YES（注意系统的 UITextView 对这种行为默认是 NO）
      */
-    @IBInspectable public var shouldResponseToProgrammaticallyTextChanges: Bool = true
+    @IBInspectable var shouldResponseToProgrammaticallyTextChanges: Bool = true
 
     /**
      *  显示允许输入的最大文字长度，默认为 Int.max，也即不限制长度。
      */
-    @IBInspectable public var maximumTextLength: UInt = UInt.max
+    @IBInspectable var maximumTextLength: UInt = UInt.max
 
     /**
      *  在使用 maximumTextLength 功能的时候，是否应该把文字长度按照 NSString (QMUI) qmui_lengthWhenCountingNonASCIICharacterAsTwo(_:) 的方法来计算。
      *  默认为 false。
      */
-    @IBInspectable public var shouldCountingNonASCIICharacterAsTwo: Bool = false
+    @IBInspectable var shouldCountingNonASCIICharacterAsTwo: Bool = false
 
     /**
      *   placeholder 的文字
      */
-    @IBInspectable public var placeholder: String? {
+    @IBInspectable var placeholder: String? {
         didSet {
             let attributes = Dictionary(uniqueKeysWithValues: typingAttributes.map {
                 key, value in (NSAttributedStringKey(key), value)
@@ -92,7 +92,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     /**
      *  placeholder 文字的颜色
      */
-    @IBInspectable public var placeholderColor: UIColor = UIColorPlaceholder {
+    @IBInspectable var placeholderColor: UIColor = UIColorPlaceholder {
         didSet {
             placeholderLabel?.textColor = placeholderColor
         }
@@ -101,13 +101,13 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     /**
      *  placeholder 在默认位置上的偏移（默认位置会自动根据 textContainerInset、contentInset 来调整）
      */
-    public var placeholderMargins: UIEdgeInsets = UIEdgeInsets.zero
+    var placeholderMargins: UIEdgeInsets = UIEdgeInsets.zero
 
     /**
      *  是否支持自动拓展高度，默认为 false
      *  @see textView(_:newHeightAfterTextChanged:)
      */
-    public var autoResizable: Bool = false
+    var autoResizable: Bool = false
 
     /**
      *  控制输入框是否要出现“粘贴”menu
@@ -115,14 +115,14 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
      *  @param superReturnValue super.canPerformAction(_:withSender:) 的返回值，当你不需要控制这个 block 的返回值时，可以返回 superReturnValue
      *  @return 控制是否要出现“粘贴”menu，YES 表示出现，NO 表示不出现。当你想要返回系统默认的结果时，请返回参数 superReturnValue
      */
-    public var canPerformPasteActionBlock: ((_ sender: Any?, _ superReturnValue: Bool) -> Bool)?
+    var canPerformPasteActionBlock: ((_ sender: Any?, _ superReturnValue: Bool) -> Bool)?
 
     /**
      *  当输入框的“粘贴”事件被触发时，可通过这个 block 去接管事件的响应。
      *  @param sender “粘贴”事件触发的来源，例如可能是一个 UIMenuController
      *  @return 返回值用于控制是否要调用系统默认的 paste: 实现，YES 表示执行完 block 后继续调用系统默认实现，NO 表示执行完 block 后就结束了，不调用 super。
      */
-    public var pasteBlock: ((_ sender: Any?) -> Bool)?
+    var pasteBlock: ((_ sender: Any?) -> Bool)?
 
     private var debug: Bool = false
 
@@ -148,11 +148,8 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
 
             // 前后文字发生变化，则要根据是否主动接管 delegate 来决定是否要询问 delegate
             if shouldResponseToProgrammaticallyTextChanges {
-                var shouldChangeText = true
-
-                if delegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:))) ?? false {
-                    shouldChangeText = delegate!.textView!(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange!.length), replacementText: newValue)
-                }
+                
+                let shouldChangeText = delegate?.textView?(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange!.length), replacementText: newValue) ?? true
 
                 if !shouldChangeText {
                     // 不应该改变文字，所以连 super 都不调用，直接结束方法
@@ -162,9 +159,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 // 应该改变文字，则调用 super 来改变文字，然后主动调用 textViewDidChange:
                 super.text = newValue
 
-                if delegate?.responds(to: #selector(QMUITextViewDelegate.textViewDidChange(_:))) ?? false {
-                    delegate?.textViewDidChange!(self)
-                }
+                delegate?.textViewDidChange?(self)
 
                 NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: self)
             } else {
@@ -193,11 +188,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
 
             // 前后文字发生变化，则要根据是否主动接管 delegate 来决定是否要询问 delegate
             if shouldResponseToProgrammaticallyTextChanges {
-                var shouldChangeText = true
-
-                if delegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:))) ?? false {
-                    shouldChangeText = delegate!.textView!(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange.length), replacementText: newValue.string)
-                }
+                let shouldChangeText = delegate?.textView?(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange.length), replacementText: newValue.string) ?? true
 
                 if !shouldChangeText {
                     // 不应该改变文字，所以连 super 都不调用，直接结束方法
@@ -207,9 +198,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 // 应该改变文字，则调用 super 来改变文字，然后主动调用 textViewDidChange:
                 super.attributedText = newValue
 
-                if delegate?.responds(to: #selector(QMUITextViewDelegate.textViewDidChange(_:))) ?? false {
-                    delegate?.textViewDidChange!(self)
-                }
+                delegate?.textViewDidChange?(self)
 
                 NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: self)
             } else {
@@ -273,6 +262,12 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     private func didInitialized() {
         delegate = self
         scrollsToTop = false
+        placeholderColor = UIColorPlaceholder
+        placeholderMargins = .zero
+        autoResizable = false
+        maximumTextLength = UInt.max
+        shouldResponseToProgrammaticallyTextChanges = true
+        
         if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = .never
         }
@@ -333,10 +328,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 }
 
                 // 通知delegate去更新textView的高度
-                let respondsTo = textView?.originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:newHeightAfterTextChanged:))) ?? false
-                if respondsTo && (resultHeight != bounds.height) {
-                    textView?.originalDelegate?.textView!(self, newHeightAfterTextChanged: resultHeight)
-                }
+                textView?.originalDelegate?.textView?(self, newHeightAfterTextChanged: resultHeight)
             }
 
             // textView 尚未被展示到界面上时，此时过早进行光标调整会计算错误
@@ -427,11 +419,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 // 如果是中文输入法正在输入拼音的过程中（markedTextRange 不为 nil），是不应该限制字数的（例如输入“huang”这5个字符，其实只是为了输入“黄”这一个字符），所以在 shouldChange 这里不会限制，而是放在 didChange 那里限制。
                 let isDeleting = range.length > 0 && text.length <= 0
                 if isDeleting || (textView.markedTextRange != nil) {
-                    if textView.originalDelegate?.responds(to: #function) ?? false {
-                        return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-                    }
-
-                    return true
+                     return textView.originalDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text) ?? true
                 }
 
                 let valueIfTrue = textView.text.substring(with: range).qmui_lengthWhenCountingNonASCIICharacterAsTwo
@@ -463,17 +451,12 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                             }
                         }
                     }
-
-                    if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
-                        originalDelegate!.textView!(textView, didPreventTextChangeInRange: range, replacementText: text)
-                    }
+                    originalDelegate?.textView?(textView, didPreventTextChangeInRange: range, replacementText: text)
                     return false
                 }
             }
 
-            if textView.originalDelegate?.responds(to: #function) ?? false {
-                return textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-            }
+            return textView.originalDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text) ?? true
         }
 
         return true
@@ -489,10 +472,8 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 let swiftRange = Range(nsRange, in: textView.text)
                 textView.text = textView.text.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
 
-                if originalDelegate?.responds(to: #selector(QMUITextViewDelegate.textView(_:didPreventTextChangeInRange:replacementText:))) ?? false {
-                    // 如果是在这里被截断，是无法得知截断前光标所处的位置及要输入的文本的，所以只能将当前的 selectedRange 传过去，而 replacementText 为 nil
-                    originalDelegate?.textView!(textView, didPreventTextChangeInRange: textView.selectedRange, replacementText: nil)
-                }
+                // 如果是在这里被截断，是无法得知截断前光标所处的位置及要输入的文本的，所以只能将当前的 selectedRange 传过去，而 replacementText 为 nil
+                originalDelegate?.textView?(textView, didPreventTextChangeInRange: textView.selectedRange, replacementText: nil)
 
                 if textView.shouldResponseToProgrammaticallyTextChanges {
                     return
@@ -500,15 +481,11 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             }
         }
 
-        if originalDelegate?.responds(to: #function) ?? false {
-            originalDelegate?.textViewDidChange!(textView)
-        }
+        originalDelegate?.textViewDidChange?(textView)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if originalDelegate?.responds(to: #function) ?? false {
-            originalDelegate!.scrollViewDidScroll!(scrollView)
-        }
+        originalDelegate?.scrollViewDidScroll?(scrollView)
     }
 
     override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
@@ -543,8 +520,6 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        if originalDelegate?.responds(to: #function) ?? false {
-            originalDelegate!.scrollViewDidZoom!(scrollView)
-        }
+        originalDelegate?.scrollViewDidZoom?(scrollView)
     }
 }

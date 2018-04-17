@@ -18,33 +18,33 @@ class QMUITips: QMUIToastView {
 
     /// 实例方法：需要自己addSubview，hide之后不会自动removeFromSuperView
 
-    public func show(with text: String?, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func show(with text: String?, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         contentCustomView = nil
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
-    public func showLoadingHideAfterDelay(_ delay: TimeInterval) {
+    func showLoadingHideAfterDelay(_ delay: TimeInterval) {
         showLoading(hideAfterDelay: delay)
     }
 
-    public func showLoading(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showLoading(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         indicator.startAnimating()
         contentCustomView = indicator
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
-    public func showSucceed(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showSucceed(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_done"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
-    public func showError(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showError(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_error"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
 
-    public func showInfo(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showInfo(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_info"))
         showTip(with: text, detailText: detailText, hideAfterDelay: delay)
     }
@@ -66,38 +66,38 @@ class QMUITips: QMUIToastView {
 
     /// 类方法：主要用在局部一次性使用的场景，hide之后会自动removeFromSuperView
 
-    public static func createTips(to view: UIView) -> QMUITips {
+    static func createTips(to view: UIView) -> QMUITips {
         let tips = QMUITips(view: view)
         view.addSubview(tips)
         tips.removeFromSuperViewWhenHide = true
         return tips
     }
 
-    public static func show(with text: String?, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func show(with text: String?, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.show(with: text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
-    public static func showLoading(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showLoading(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showLoading(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
-    public static func showSucceed(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showSucceed(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showSucceed(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
-    public static func showError(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showError(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showError(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
-    public static func showInfo(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showInfo(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showInfo(text, detailText: detailText, hideAfterDelay: delay)
         return tips
