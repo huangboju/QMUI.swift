@@ -56,7 +56,6 @@ class QDThemeManager: QDChangingThemeDelegate {
         if let beforeChanged = userInfo[QDThemeNameKey.beforeChanged] as? QDThemeProtocol, let afterChanged = userInfo[QDThemeNameKey.afterChanged] as? QDThemeProtocol {
             themeBeforeChanged(beforeChanged, afterChanged: afterChanged)
         }
-        
     }
     
     deinit {

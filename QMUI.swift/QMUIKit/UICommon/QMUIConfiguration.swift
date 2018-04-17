@@ -143,7 +143,6 @@ class QMUIConfiguration {
         didSet {
             guard let navBarShadowImage = navBarShadowImage else { return }
             UINavigationBar.appearance().shadowImage = navBarShadowImage
-            let vc = QMUIHelper.visibleViewController?.navigationController
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.shadowImage = navBarShadowImage
         }
     }
@@ -157,7 +156,7 @@ class QMUIConfiguration {
     var navBarTintColor: UIColor? {
         didSet {
             guard let navBarTintColor = navBarTintColor else { return }
-            print(QMUIHelper.visibleViewController ?? "")
+//            print(QMUIHelper.visibleViewController ?? "")
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.tintColor = navBarTintColor
         }
     }

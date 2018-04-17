@@ -44,9 +44,8 @@ class QDUIKitViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-//        let viewController = QDAboutViewController()
-//        navigationController?.pushViewController(viewController, animated: true)
-        print(self.scrollView)
+        let viewController = QDAboutViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func didSelectCell(_ title: String) {

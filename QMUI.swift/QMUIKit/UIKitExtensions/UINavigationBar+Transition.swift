@@ -17,21 +17,21 @@ extension UINavigationBar: SelfAware2 {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationBar.self
             
-//            ReplaceMethod(clazz, #selector(setter: UINavigationBar.shadowImage), #selector(UINavigationBar.qmui_setShadowImage(_:)))
-//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(qmui_setBarTintColor))
-            
+            // MARK: TODO 使用 UINavigationBar.appearance() 时，交换会发生崩溃
+//            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(UINavigationBar.qmui_setShadowImage(_:)))
+//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(UINavigationBar.qmui_setBarTintColor(_:)))
 //            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(UINavigationBar.qmui_setBackgroundImage(_:for:)))
-
+            
             ReplaceMethod(clazz, #selector(UINavigationBar.layoutSubviews), #selector(UINavigationBar.titleView_navigationBarLayoutSubviews))
         }
     }
     
-    @objc func qmui_setShadowImage(_ image: UIImage) {
+    @objc func qmui_setShadowImage(_ image: UIImage?) {
         qmui_setShadowImage(image)
         transitionNavigationBar?.shadowImage = image
     }
     
-    @objc func qmui_setBarTintColor(_ tintColor: UIColor) {
+    @objc func qmui_setBarTintColor(_ tintColor: UIColor?) {
         qmui_setBarTintColor(tintColor)
         transitionNavigationBar?.barTintColor = tintColor
     }
