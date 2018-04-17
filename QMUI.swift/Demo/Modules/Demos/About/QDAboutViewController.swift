@@ -90,6 +90,19 @@ class QDAboutViewController: QDCommonViewController {
                 self.saveImageAsFile(blendedAboutLogoImage)
                 DispatchQueue.main.async {
                     self.themeAboutLogoImage = blendedAboutLogoImage
+                    
+                    if self.logoImageView.image != self.themeAboutLogoImage {
+                        let templateImageView = UIImageView(frame: self.logoImageView.bounds)
+                        templateImageView.image = self.themeAboutLogoImage
+                        templateImageView.alpha = 0
+                        self.logoImageView.addSubview(templateImageView)
+                        UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                            templateImageView.alpha = 1
+                        }) { (_) in
+                            self.logoImageView.image = self.themeAboutLogoImage
+                            templateImageView.removeFromSuperview()
+                        }
+                    }
                 }
             }
         }
@@ -107,23 +120,6 @@ class QDAboutViewController: QDCommonViewController {
         scrollView.addSubview(documentButton)
         scrollView.addSubview(gitHubButton)
         scrollView.addSubview(copyrightLabel)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        guard let themeAboutLogoImage = themeAboutLogoImage, logoImageView.image != themeAboutLogoImage else { return }
-        
-        let templateImageView = UIImageView(frame: logoImageView.bounds)
-        templateImageView.image = themeAboutLogoImage
-        templateImageView.alpha = 0
-        logoImageView.addSubview(templateImageView)
-        UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
-            templateImageView.alpha = 1
-        }) { (_) in
-            self.logoImageView.image = self.themeAboutLogoImage
-            templateImageView.removeFromSuperview()
-        }
     }
     
     override func viewDidLayoutSubviews() {
