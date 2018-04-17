@@ -36,15 +36,27 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
     private weak var originalDelegate: QMUITextFieldDelegate?
 
     override var delegate: UITextFieldDelegate? {
-        didSet {
-            originalDelegate = delegate as? QMUITextFieldDelegate
+        get {
+            return super.delegate
+        }
+        set {
+            if newValue as? NSObject != self {
+                originalDelegate = newValue as? QMUITextFieldDelegate
+            } else {
+                originalDelegate = nil
+            }
+            if newValue != nil {
+                super.delegate = self
+            } else {
+                super.delegate = nil
+            }
         }
     }
 
     /**
      *  修改 placeholder 的颜色，默认是 UIColorPlaceholder。
      */
-    @IBInspectable public var placeholderColor: UIColor = UIColorPlaceholder {
+    @IBInspectable var placeholderColor: UIColor = UIColorPlaceholder {
         didSet {
             if let _ = placeholder {
                 updateAttributedPlaceholderIfNeeded()
@@ -52,7 +64,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
         }
     }
 
-    public override var placeholder: String? {
+    override var placeholder: String? {
         didSet {
             updateAttributedPlaceholderIfNeeded()
         }
@@ -92,7 +104,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
      *
      *  默认为 TextFieldTextInsets
      */
-    public var textInsets: UIEdgeInsets = TextFieldTextInsets {
+    var textInsets: UIEdgeInsets = TextFieldTextInsets {
         didSet {
             //            if let thumbView = thumbViewIfExist() {
             //                thumbView.layer.shadowOffset = thumbShadowOffset
@@ -106,7 +118,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
      *
      *  默认为true（注意系统的 UITextField 对这种行为默认是 false）
      */
-    @IBInspectable public var shouldResponseToProgrammaticallyTextChanges: Bool = true {
+    @IBInspectable var shouldResponseToProgrammaticallyTextChanges: Bool = true {
         didSet {
             //            if let thumbView = thumbViewIfExist() {
             //                thumbView.layer.shadowOffset = thumbShadowOffset
@@ -118,7 +130,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
     /**
      *  显示允许输入的最大文字长度，默认为 Int.max，也即不限制长度。
      */
-    @IBInspectable public var maximumTextLength: UInt = UInt.max {
+    @IBInspectable var maximumTextLength: UInt = UInt.max {
         didSet {
             //            if let thumbView = thumbViewIfExist() {
             //                thumbView.layer.shadowOffset = thumbShadowOffset
@@ -131,7 +143,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
      *  在使用 maximumTextLength 功能的时候，是否应该把文字长度按照 NSString (QMUI) qmui_lengthWhenCountingNonASCIICharacterAsTwo(_:) 的方法来计算。
      *  默认为 false。
      */
-    @IBInspectable public var shouldCountingNonASCIICharacterAsTwo: Bool = false {
+    @IBInspectable var shouldCountingNonASCIICharacterAsTwo: Bool = false {
         didSet {
             //            if let thumbView = thumbViewIfExist() {
             //                thumbView.layer.shadowOffset = thumbShadowOffset
@@ -235,8 +247,8 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
                 let allowedText = textField.text!.qmui_substringAvoidBreakingUpCharacterSequencesWithRange(range: swiftRange!, lessValue: true, countingNonASCIICharacterAsTwo: shouldCountingNonASCIICharacterAsTwo)
                 textField.text = allowedText
 
-                if originalDelegate?.responds(to: #selector(QMUITextFieldDelegate.textField(_:didPreventTextChangeInRange:replacementString:))) ?? false && textField.qmui_selectedRange() != nil {
-                    originalDelegate!.textField!(textField, didPreventTextChangeInRange: textField.qmui_selectedRange()!, replacementString: nil)
+                if let range = textField.qmui_selectedRange {
+                    originalDelegate?.textField?(textField, didPreventTextChangeInRange: range, replacementString: nil)
                 }
             }
         }
@@ -261,10 +273,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
 
                 let isDeleting = range.length > 0 && string.length <= 0
                 if isDeleting || (textField.markedTextRange != nil) {
-                    if textField.originalDelegate?.responds(to: #function) ?? false {
-                        return textField.originalDelegate!.textField!(textField, shouldChangeCharactersIn: range, replacementString: string)
-                    }
-                    return true
+                    return textField.originalDelegate?.textField?(textField, shouldChangeCharactersIn: range, replacementString: string) ?? true
                 }
 
                 let valueIfTrue = textField.text?.substring(with: range).qmui_lengthWhenCountingNonASCIICharacterAsTwo ?? 0
@@ -288,16 +297,12 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
                         }
                     }
 
-                    if originalDelegate?.responds(to: #selector(QMUITextFieldDelegate.textField(_:didPreventTextChangeInRange:replacementString:))) ?? false {
-                        originalDelegate?.textField!(textField, didPreventTextChangeInRange: range, replacementString: string)
-                    }
+                    originalDelegate?.textField?(textField, didPreventTextChangeInRange: range, replacementString: string)
                     return false
                 }
             }
 
-            if textField.originalDelegate?.responds(to: #function) ?? false {
-                return textField.originalDelegate!.textField!(textField, shouldChangeCharactersIn: range, replacementString: string)
-            }
+            return textField.originalDelegate?.textField?(textField, shouldChangeCharactersIn: range, replacementString: string) ?? true
         }
 
         return true

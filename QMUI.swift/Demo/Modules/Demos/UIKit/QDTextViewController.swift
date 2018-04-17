@@ -40,6 +40,11 @@ class QDTextViewController: QDCommonViewController {
     private var textViewMinimumHeight: CGFloat = 96
     private var textViewMaximumHeight: CGFloat = 200
     
+    override func didInitialized() {
+        super.didInitialized()
+        automaticallyAdjustsScrollViewInsets = false
+    }
+    
     override func initSubviews() {
         super.initSubviews()
         
