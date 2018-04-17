@@ -42,7 +42,7 @@ class QMUIToastView: UIView {
         contentView = defaultContentView()
 
         isOpaque = false
-        alpha = 0.0
+        alpha = 0
         backgroundColor = UIColorClear
         layer.allowsGroupOpacity = false
 
@@ -54,14 +54,17 @@ class QMUIToastView: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(statusBarOrientationDidChange), name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
     }
 
+    private func commonInit() {
+        
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
     }
 
     // MARK: - 横竖屏
 
-    @objc
-    private func statusBarOrientationDidChange(_: NSNotification) {
+    @objc private func statusBarOrientationDidChange(_: NSNotification) {
         if parentView == nil {
             return
         }
@@ -100,7 +103,7 @@ class QMUIToastView: UIView {
      *
      * @see toastAnimator
      */
-    public func showAnimated(_ animated: Bool) {
+    func show(_ animated: Bool) {
         // show之前需要layout以下，防止同一个tip切换不同的状态导致layout没更新
         setNeedsLayout()
 
@@ -108,19 +111,19 @@ class QMUIToastView: UIView {
 
         alpha = 1.0
 
-        willShowBlock?(parentView, animated)
+        willShowClosure?(parentView, animated)
 
         if animated {
             if toastAnimator == nil {
                 toastAnimator = defaultAnimator()
             }
             toastAnimator?.show() { [weak self] _ in
-                self?.didShowBlock?(self?.parentView, animated)
+                self?.didShowClosure?(self?.parentView, animated)
             }
         } else {
             backgroundView?.alpha = 1.0
             contentView?.alpha = 1.0
-            didShowBlock?(parentView, animated)
+            didShowClosure?(parentView, animated)
         }
     }
 
@@ -131,8 +134,8 @@ class QMUIToastView: UIView {
      *
      * @see toastAnimator
      */
-    public func hideAnimated(_ animated: Bool) {
-        willHideBlock?(parentView, animated)
+    func hide(_ animated: Bool) {
+        willHideClosure?(parentView, animated)
 
         if animated {
             if toastAnimator == nil {
@@ -147,18 +150,7 @@ class QMUIToastView: UIView {
             didHide(with: animated)
         }
     }
-
-    private func didHide(with animated: Bool) {
-
-        didHideBlock?(parentView, animated)
-
-        hideDelayTimer?.invalidate()
-        alpha = 0.0
-        if removeFromSuperViewWhenHide {
-            removeFromSuperview()
-        }
-    }
-
+    
     /**
      * 在`delay`时间后隐藏ToastView。
      *
@@ -167,63 +159,108 @@ class QMUIToastView: UIView {
      *
      * @see toastAnimator
      */
-    public func hideAnimated(_ animated: Bool, afterDelay delay: TimeInterval) {
+    func hide(_ animated: Bool, afterDelay delay: TimeInterval) {
         let timer = Timer(timeInterval: delay, target: self, selector: #selector(handleHideTimer), userInfo: animated, repeats: false)
         RunLoop.current.add(timer, forMode: .commonModes)
         hideDelayTimer = timer
     }
 
-    @objc
-    private func handleHideTimer(_ timer: Timer) {
-        hideAnimated((timer.userInfo as? Bool) ?? false)
+
+    private func didHide(with animated: Bool) {
+
+        didHideClosure?(parentView, animated)
+
+        hideDelayTimer?.invalidate()
+        alpha = 0.0
+        if removeFromSuperViewWhenHide {
+            removeFromSuperview()
+        }
+    }
+
+    @objc private func handleHideTimer(_ timer: Timer) {
+        hide((timer.userInfo as? Bool) ?? false)
     }
 
     /// @warning 如果使用 [QMUITips showXxx] 系列快捷方法来显示 tips，willShowBlock 将会在 show 之后才被设置，最终并不会被调用。这种场景建议自己在调用 [QMUITips showXxx] 之前执行一段代码，或者不要使用 [QMUITips showXxx] 的方式显示 tips
-    public var willShowBlock: ((UIView?, Bool) -> Void)?
-    public var didShowBlock: ((UIView?, Bool) -> Void)?
-    public var willHideBlock: ((UIView?, Bool) -> Void)?
-    public var didHideBlock: ((UIView?, Bool) -> Void)?
+    var willShowClosure: ((UIView?, Bool) -> Void)?
+    var didShowClosure: ((UIView?, Bool) -> Void)?
+    var willHideClosure: ((UIView?, Bool) -> Void)?
+    var didHideClosure: ((UIView?, Bool) -> Void)?
 
     /**
      * `QMUIToastAnimator`可以让你通过实现一些协议来自定义ToastView显示和隐藏的动画。你可以继承`QMUIToastAnimator`，然后实现`QMUIToastAnimatorDelegate`中的方法，即可实现自定义的动画。如果不赋值，则会使用`QMUIToastAnimator`中的默认动画。
      */
-    public var toastAnimator: QMUIToastAnimator?
+    var toastAnimator: QMUIToastAnimator?
 
     /**
      * 决定QMUIToastView的位置，目前有上中下三个位置，默认值是center。
 
      * 如果设置了top或者bottom，那么ToastView的布局规则是：顶部从marginInsets.top开始往下布局(QMUIToastViewPositionTop) 和 底部从marginInsets.bottom开始往上布局(QMUIToastViewPositionBottom)。
      */
-    public var toastPosition: QMUIToastViewPosition = .center
+    var toastPosition: QMUIToastViewPosition = .center
 
     /**
      * 是否在ToastView隐藏的时候顺便把它从superView移除，默认为false。
      */
-    public var removeFromSuperViewWhenHide = false
+    var removeFromSuperViewWhenHide = false
 
     ///////////////////
 
     /**
      * 会盖住整个superView，防止手指可以点击到ToastView下面的内容，默认透明。
      */
-    public let _maskView = UIView()
+    private(set) var _maskView = UIView()
 
     /** s
      * 承载Toast内容的UIView，可以自定义并赋值给contentView。如果contentView需要跟随ToastView的tintColor变化而变化，可以重写自定义view的`tintColorDidChange`来实现。默认使用`QMUIToastContentView`实现。
      */
-    public var contentView: UIView?
+    private var _contentView: UIView?
+    var contentView: UIView? {
+        get {
+            return _contentView
+        }
+        set {
+            if _contentView != nil {
+                _contentView!.removeFromSuperview()
+                _contentView = nil
+            }
+            _contentView = newValue
+            if _contentView != nil {
+                _contentView!.alpha = 0
+                addSubview(_contentView!)
+            }
+            setNeedsLayout()
+        }
+    }
 
     /**
      * `contentView`下面的黑色背景UIView，默认使用`QMUIToastBackgroundView`实现，可以通过`QMUIToastBackgroundView`的 cornerRadius 和 styleColor 来修改圆角和背景色。
      */
-    public var backgroundView: UIView?
+    private var _backgroundView: UIView?
+    var backgroundView: UIView? {
+        get {
+            return _backgroundView
+        }
+        set {
+            if _backgroundView != nil {
+                _backgroundView!.removeFromSuperview()
+                _backgroundView = nil
+            }
+            _backgroundView = newValue
+            if _backgroundView != nil {
+                _backgroundView!.alpha = 0
+                addSubview(_backgroundView!)
+            }
+            setNeedsLayout()
+        }
+    }
 
     ///////////////////
 
     /**
      * 上下左右的偏移值。
      */
-    public var offset: CGPoint = .zero {
+    var offset: CGPoint = .zero {
         didSet {
             setNeedsLayout()
         }
@@ -232,9 +269,54 @@ class QMUIToastView: UIView {
     /**
      * ToastView距离上下左右的最小间距。
      */
-    public var marginInsets: UIEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20) {
+    var marginInsets: UIEdgeInsets = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20) {
         didSet {
             setNeedsLayout()
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        guard let parentView = parentView else {
+            return
+        }
+        
+        frame = parentView.bounds
+        _maskView.frame = bounds
+        
+        let contentWidth = parentView.bounds.width
+        var contentHeight = parentView.bounds.height
+        
+        let limitWidth = contentWidth - marginInsets.horizontalValue
+        let  limitHeight = contentHeight - marginInsets.verticalValue
+        
+        if QMUIKeyboardManager.isKeyboardVisible {
+            // 处理键盘相关逻辑，当键盘在显示的时候，内容高度会减去键盘的高度以使 Toast 居中
+            let keyboardFrame = QMUIKeyboardManager.currentKeyboardFrame
+            let parentViewRect = QMUIKeyboardManager.keyboardWindow?.convert(parentView.frame, from: parentView.superview) ?? .zero
+            let overlapRect = keyboardFrame.intersection(parentViewRect).flatted
+            contentHeight -= overlapRect.height
+        }
+        
+        if let contentView = contentView {
+            let contentViewSize = contentView.sizeThatFits(CGSize(width: limitWidth, height: limitHeight))
+            let contentViewX = fmax(marginInsets.left, (contentWidth - contentViewSize.width) / 2) + offset.x
+            var contentViewY = fmax(marginInsets.top, (contentHeight - contentViewSize.height) / 2) + offset.y
+            
+            if toastPosition == .top {
+                contentViewY = marginInsets.top + offset.y
+            } else if toastPosition == .bottom {
+                contentViewY = contentHeight - contentViewSize.height - marginInsets.bottom + offset.y
+            }
+            
+            let contentRect = CGRectFlat(contentViewX, contentViewY, contentViewSize.width, contentViewSize.height)
+            contentView.frame = contentRect.applying(contentView.transform)
+            
+            if let backgroundView = backgroundView {
+                // backgroundView的frame跟contentView一样，contentView里面的subviews如果需要在视觉上跟backgroundView有个padding，那么就自己在自定义的contentView里面做。
+                backgroundView.frame = contentView.frame
+            }
         }
     }
 }
@@ -253,7 +335,7 @@ extension QMUIToastView {
         var returnFlag = false
         for toastView in toastViews {
             toastView.removeFromSuperViewWhenHide = true
-            toastView.hideAnimated(animated)
+            toastView.hide(animated)
             returnFlag = true
         }
         return returnFlag

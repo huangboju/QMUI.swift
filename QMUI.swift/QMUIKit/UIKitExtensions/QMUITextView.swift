@@ -137,7 +137,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             return super.text
         }
         set {
-            let textBeforeChange = self.text
+            let textBeforeChange = self.text ?? ""
             let textDifferent = isCurrentTextDifferentOfText(newValue)
 
             // 如果前后文字没变化，则什么都不做
@@ -149,7 +149,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             // 前后文字发生变化，则要根据是否主动接管 delegate 来决定是否要询问 delegate
             if shouldResponseToProgrammaticallyTextChanges {
                 
-                let shouldChangeText = delegate?.textView?(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange!.length), replacementText: newValue) ?? true
+                let shouldChangeText = delegate?.textView?(self, shouldChangeTextIn: NSMakeRange(0, textBeforeChange.length), replacementText: newValue) ?? true
 
                 if !shouldChangeText {
                     // 不应该改变文字，所以连 super 都不调用，直接结束方法
@@ -242,8 +242,20 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     }
 
     override var delegate: UITextViewDelegate? {
-        didSet {
-            originalDelegate = delegate as? QMUITextViewDelegate
+        get {
+            return super.delegate
+        }
+        set {
+            if newValue as? NSObject != self {
+                originalDelegate = newValue as? QMUITextViewDelegate
+            } else {
+                originalDelegate = nil
+            }
+            if newValue != nil {
+                super.delegate = self
+            } else {
+                super.delegate = nil
+            }
         }
     }
 
@@ -407,8 +419,8 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             print("textView.text(\(textView.text.length) | \(textView.text.qmui_lengthWhenCountingNonASCIICharacterAsTwo) = \(textView.text)\nmarkedTextRange = \(String(describing: textView.markedTextRange))\nrange = \(NSStringFromRange(range))\ntext = \(text)")
         }
 
-        if text.isEqual("\n") && delegate?.responds(to: #selector(QMUITextViewDelegate.textViewShouldReturn(_:))) ?? false {
-            let shouldReturn = (delegate as? QMUITextViewDelegate)?.textViewShouldReturn!(self) ?? false
+        if text == "\n" {
+            let shouldReturn = originalDelegate?.textViewShouldReturn?(self) ?? false
             if shouldReturn {
                 return false
             }
@@ -428,11 +440,9 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 if textWillOutofMaximumTextLength {
                     // 当输入的文本达到最大长度限制后，此时继续点击 return 按钮（相当于尝试插入“\n”），就会认为总文字长度已经超过最大长度限制，所以此次 return 按钮的点击被拦截，外界无法感知到有这个 return 事件发生，所以这里为这种情况做了特殊保护
                     if lengthWithString(textView.text) - rangeLength == textView.maximumTextLength && text.isEqual("\n") {
-                        if textView.originalDelegate?.responds(to: #function) ?? false {
-                            // 不管外面 return YES 或 NO，都不允许输入了，否则会超出 maximumTextLength。
-                            _ = textView.originalDelegate!.textView!(textView, shouldChangeTextIn: range, replacementText: text)
-                            return false
-                        }
+                        // 不管外面 return YES 或 NO，都不允许输入了，否则会超出 maximumTextLength。
+                        _ = textView.originalDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text)
+                        return false
                     }
 
                     // 将要插入的文字裁剪成多长，就可以让它插入了

@@ -51,16 +51,18 @@ class QMUITips: QMUIToastView {
 
     private func showTip(with text: String?, detailText: String?, hideAfterDelay delay: TimeInterval) {
 
-        let contentView = self.contentView as? QMUIToastContentView
-        contentView?.customView = contentCustomView
-
-        contentView?.textLabelText = text ?? ""
-        contentView?.detailTextLabelText = detailText ?? ""
-
-        showAnimated(true)
-
+        guard let contentView = contentView as? QMUIToastContentView else {
+            return
+        }
+        
+        contentView.customView = contentCustomView
+        contentView.textLabelText = text ?? ""
+        contentView.detailTextLabelText = detailText ?? ""
+        
+        show(true)
+        
         if delay > 0 {
-            hideAnimated(true, afterDelay: delay)
+            hide(true, afterDelay: delay)
         }
     }
 

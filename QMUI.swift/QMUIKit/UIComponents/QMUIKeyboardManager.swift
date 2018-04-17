@@ -437,7 +437,7 @@ class QMUIKeyboardManager {
     /**
      *  键盘面板所在的私有window，可能为nil
      */
-    class func keyboardWindow() -> UIWindow? {
+    static var keyboardWindow: UIWindow? {
         for window in UIApplication.shared.windows {
             if let _ = getKeyboardView(from: window) {
                 return window
@@ -465,7 +465,7 @@ class QMUIKeyboardManager {
     /**
      *  是否有键盘在显示
      */
-    class func isKeyboardVisible() -> Bool {
+    static var isKeyboardVisible: Bool {
         guard let keyboardView = self.keyboardView(),
             let keyboardWindow = keyboardView.window else {
             return false
@@ -482,7 +482,7 @@ class QMUIKeyboardManager {
     /**
      *  当期那键盘相对于屏幕的frame
      */
-    class func currentKeyboardFrame() -> CGRect {
+    static var currentKeyboardFrame: CGRect {
         guard let keyboardView = keyboardView() else {
             return CGRect.null
         }

@@ -78,13 +78,13 @@ extension QDTextViewController: QMUITextViewDelegate {
     }
     
     func textView(_ textView: QMUITextView, didPreventTextChangeInRange range: NSRange, replacementText: String?) {
-        let _ = QMUITips.show(with: "文字不能超过 \(textView.maximumTextLength) 个字符", in: view, hideAfterDelay: 2)
+        _ = QMUITips.show(with: "文字不能超过 \(textView.maximumTextLength) 个字符", in: view, hideAfterDelay: 2)
     }
     
     // 可以利用这个 delegate 来监听发送按钮的事件，当然，如果你习惯以前的方式的话，也可以继续在 textView:shouldChangeTextInRange:replacementText: 里处理
     func textViewShouldReturn(_ textView: QMUITextView) -> Bool {
-        let _ = QMUITips.showSucceed("成功发送文字：\(textView.text)", in: view, hideAfterDelay: 3)
-        textView.text = nil
+        _ = QMUITips.showSucceed("成功发送文字：\(textView.text)", in: view, hideAfterDelay: 3)
+        textView.text = ""
         // return true 表示这次 return 按钮的点击是为了触发“发送”，而不是为了输入一个换行符
         return true;
     }

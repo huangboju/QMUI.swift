@@ -63,7 +63,7 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDTextViewController()
         }
         if title == "QMUITextField" {
-            viewController = QDSliderViewController()
+            viewController = QDTextFieldViewController()
         }
         if title == "QMUISlider" {
             viewController = QDSliderViewController()

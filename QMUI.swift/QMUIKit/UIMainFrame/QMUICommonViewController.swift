@@ -313,7 +313,7 @@ extension QMUIViewControllerHideKeyboardDelegateObject: UIGestureRecognizerDeleg
             return true
         }
         
-        if !QMUIKeyboardManager.isKeyboardVisible() {
+        if !QMUIKeyboardManager.isKeyboardVisible {
             return false
         }
         
