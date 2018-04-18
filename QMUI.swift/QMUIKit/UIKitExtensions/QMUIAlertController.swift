@@ -395,11 +395,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
     convenience init(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
         self.init(nibName: nil, bundle: nil)
-        self.title = title
-        self.message = message
-        self.preferredStyle = preferredStyle
 
-        didInitialized()
+        didInitialized(title: title, message: message, preferredStyle: preferredStyle)
         
         updateHeaderBackgrondColor()
         updateEffectBackgroundColor()
@@ -407,7 +404,11 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         updateExtendLayerAppearance()
     }
     
-    private func didInitialized() {
+    private func didInitialized(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
+        self.title = title
+        self.message = message
+        self.preferredStyle = preferredStyle
+        
         alertContentMargin = QMUIAlertController.appearance().alertContentMargin
         alertContentMaximumWidth = QMUIAlertController.appearance().alertContentMaximumWidth
         alertSeperatorColor = QMUIAlertController.appearance().alertSeperatorColor
@@ -507,8 +508,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
                 contentOriginY = customView!.frame.maxY + contentPaddingBottom
             }
             // 内容scrollView的布局
-            buttonScrollView.frame = buttonScrollView.frame.setHeight(contentOriginY)
-            buttonScrollView.contentSize = CGSize(width: buttonScrollView.bounds.width, height: contentOriginY)
+            headerScrollView.frame = headerScrollView.frame.setHeight(contentOriginY)
+            headerScrollView.contentSize = CGSize(width: headerScrollView.bounds.width, height: contentOriginY)
             contentOriginY = headerScrollView.frame.maxY
             // 按钮布局
             buttonScrollView.frame = CGRect(x: 0, y: contentOriginY, width: containerView.bounds.width, height: 0)
@@ -1177,7 +1178,7 @@ class QMUIAlertAction: NSObject {
     fileprivate var buttonDisabledAttributes: [NSAttributedStringKey: Any]?
 
     /// `QMUIAlertAction`对应的 button 对象
-    fileprivate var button: QMUIButton {
+    var button: QMUIButton {
         return buttonWrapView.button
     }
 

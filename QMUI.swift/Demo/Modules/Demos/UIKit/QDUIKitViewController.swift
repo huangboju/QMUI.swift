@@ -69,7 +69,7 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDSliderViewController()
         }
         if title == "QMUITableView" {
-            viewController = QDSliderViewController()
+            viewController = QDTableViewController()
         }
         if title == "QMUICollectionViewLayout" {
             viewController = QDSliderViewController()
@@ -81,7 +81,7 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDSliderViewController()
         }
         if title == "QMUIAlertController" {
-            viewController = QDSliderViewController()
+            viewController = QDAlertController()
         }
         if title == "ViewController Orientation" {
             viewController = QDSliderViewController()

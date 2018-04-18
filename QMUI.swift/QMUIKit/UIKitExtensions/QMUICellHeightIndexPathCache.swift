@@ -10,8 +10,8 @@
  *  通过 NSIndexPath 来缓存 cell 的高度，需搭配 UITableView 或 UICollectionView 使用。
  */
 class QMUICellHeightIndexPathCache {
-    private lazy var heightsBySectionForPortrait: [[CGFloat]] = []
-    private lazy var heightsBySectionForLandscape: [[CGFloat]] = []
+    private var heightsBySectionForPortrait: [[CGFloat]] = []
+    private var heightsBySectionForLandscape: [[CGFloat]] = []
 
     // Enable automatically if you're using index path driven height cache
     var automaticallyInvalidateEnabled = false
@@ -61,8 +61,10 @@ class QMUICellHeightIndexPathCache {
 
     func buildSectionsIfNeeded(_ targetSection: Int) {
         enumerateAllOrientations { heightsBySection in
-            for section in 0 ... targetSection where section >= heightsBySection.count {
-                heightsBySection[safe: section] = []
+            for section in 0...targetSection {
+                if section >= heightsBySection.count {
+                    heightsBySection[safe: section] = []
+                }
             }
         }
     }
@@ -78,9 +80,15 @@ class QMUICellHeightIndexPathCache {
     private func buildRowsIfNeeded(targetRow: Int, inExist section: Int) {
         enumerateAllOrientations { heightsBySection in
             let heightsByRow = heightsBySection[section]
-            for row in 0..<targetRow where row >= heightsByRow.count {
-                heightsBySection[safe: section][safe: row] = -1
+            for row in 0...targetRow {
+                if row >= heightsByRow.count {
+                    heightsBySection[safe: section][safe: row] = -1
+                }
             }
         }
+    }
+    
+    var description: String {
+        return "heightsBySectionForPortrait = \(heightsBySectionForPortrait), heightsBySectionForLandscape = \(heightsBySectionForLandscape)"
     }
 }
