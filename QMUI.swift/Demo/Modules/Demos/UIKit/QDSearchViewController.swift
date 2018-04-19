@@ -124,7 +124,7 @@ class QDRecentSearchView: UIView {
         let floatLayoutView = QMUIFloatLayoutView()
         floatLayoutView.padding = .zero
         floatLayoutView.itemMargins = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 10)
-        floatLayoutView.minimumItemSize = CGSize(width: 69, height: 69)
+        floatLayoutView.minimumItemSize = CGSize(width: 69, height: 29)
         return floatLayoutView
     }()
     
