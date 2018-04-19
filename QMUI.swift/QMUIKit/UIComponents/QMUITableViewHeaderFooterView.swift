@@ -108,8 +108,8 @@ class QMUITableViewHeaderFooterView: UITableViewHeaderFooterView {
         super.layoutSubviews()
         
         if let accessoryView = accessoryView {
-            accessoryView.qmui_right = contentView.qmui_width - contentEdgeInsets.right - accessoryViewMargins.right
-            accessoryView.qmui_top = contentEdgeInsets.top + (contentView.qmui_height - contentEdgeInsets.verticalValue).center(accessoryView.qmui_height) + accessoryViewMargins.top - accessoryViewMargins.bottom
+            accessoryView.frame = accessoryView.frame.setX(contentView.qmui_width - contentEdgeInsets.right - accessoryViewMargins.right - accessoryView.qmui_width)
+            accessoryView.frame = accessoryView.frame.setY(contentEdgeInsets.top + (contentView.qmui_height - contentEdgeInsets.verticalValue).center(accessoryView.qmui_height) + accessoryViewMargins.top - accessoryViewMargins.bottom)
         }
         
         titleLabel.sizeToFit()
