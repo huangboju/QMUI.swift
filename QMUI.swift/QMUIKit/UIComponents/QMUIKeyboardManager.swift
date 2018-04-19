@@ -103,7 +103,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardWillShow(_ notification: Notification) {
-        print("keyboardWillShowNotification - \(self)")
+//        print("keyboardWillShowNotification - \(self)")
 
         if shouldReceiveShowNotification() {
             return
@@ -122,7 +122,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardDidShow(_ notification: Notification) {
-        print("keyboardDidShowNotification - \(self)")
+//        print("keyboardDidShowNotification - \(self)")
 
         let userInfo = newUserInfoWithNotification(notification)
         userInfo.targetResponder = kCurrentResponder
@@ -142,7 +142,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardWillHide(_ notification: Notification) {
-        print("keyboardWillHideNotification - \(self)")
+//        print("keyboardWillHideNotification - \(self)")
 
         if !shouldReceiveHideNotification() {
             return
@@ -161,7 +161,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardDidHide(_ notification: Notification) {
-        print("keyboardDidHideNotification - \(self)")
+//        print("keyboardDidHideNotification - \(self)")
 
         let userInfo = newUserInfoWithNotification(notification)
         userInfo.targetResponder = kCurrentResponder
@@ -184,7 +184,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-        print("keyboardWillChangeFrameNotification - \(self)")
+//        print("keyboardWillChangeFrameNotification - \(self)")
         let userInfo = newUserInfoWithNotification(notification)
         if shouldReceiveShowNotification() {
             userInfo.targetResponder = kCurrentResponder
@@ -204,7 +204,7 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardDidChangeFrame(_ notification: Notification) {
-        print("keyboardDidChangeFrameNotification - \(self)")
+//        print("keyboardDidChangeFrameNotification - \(self)")
 
         let userInfo = newUserInfoWithNotification(notification)
         if shouldReceiveShowNotification() {
@@ -310,7 +310,7 @@ class QMUIKeyboardManager {
         aKeyboardMoveUserInfo.beginFrame = keyboardMoveBeginRect
         aKeyboardMoveUserInfo.endFrame = endFrame
 
-        print("keyboardDidMoveNotification - \(self)")
+//        print("keyboardDidMoveNotification - \(self)")
 
         delegate?.keyboardWillChangeFrame!(with: aKeyboardMoveUserInfo)
         keyboardMoveBeginRect = endFrame

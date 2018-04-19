@@ -7,17 +7,17 @@
 //
 
 struct QMUIBorderViewPosition: OptionSet {
-    public let rawValue: Int
+    let rawValue: Int
 
-    public init(rawValue: Int) {
+    init(rawValue: Int) {
         self.rawValue = rawValue
     }
 
-    public static let none = QMUIBorderViewPosition(rawValue: 0)
-    public static let top = QMUIBorderViewPosition(rawValue: 1 << 0)
-    public static let left = QMUIBorderViewPosition(rawValue: 1 << 1)
-    public static let bottom = QMUIBorderViewPosition(rawValue: 1 << 2)
-    public static let right = QMUIBorderViewPosition(rawValue: 1 << 3)
+    static let none = QMUIBorderViewPosition(rawValue: 0)
+    static let top = QMUIBorderViewPosition(rawValue: 1 << 0)
+    static let left = QMUIBorderViewPosition(rawValue: 1 << 1)
+    static let bottom = QMUIBorderViewPosition(rawValue: 1 << 2)
+    static let right = QMUIBorderViewPosition(rawValue: 1 << 3)
 }
 
 

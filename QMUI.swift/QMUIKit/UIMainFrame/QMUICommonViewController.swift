@@ -124,7 +124,7 @@ class QMUICommonViewController: UIViewController {
      *  @see QMUIEmptyView
      *  @warning 如果是用在TableViewController的tableFooterView中，确保此时tableView的numberOfRows为空
      */
-    func showEmptyView() {
+    @objc func showEmptyView() {
         if emptyView == nil {
             emptyView = QMUIEmptyView(frame: view.bounds)
         }
@@ -134,7 +134,7 @@ class QMUICommonViewController: UIViewController {
     /**
      *  隐藏emptyView
      */
-    func hideEmptyView() {
+    @objc func hideEmptyView() {
         emptyView?.removeFromSuperview()
     }
 
@@ -150,13 +150,13 @@ class QMUICommonViewController: UIViewController {
         emptyView.setDetailTextLabel(nil)
         emptyView.setActionButtonTitle(nil)
         
-        showEmptyView(text: nil, detailText: nil, buttonTitle: nil, buttonAction: nil)
+        showEmptyViewWith(text: nil, detailText: nil, buttonTitle: nil, buttonAction: nil)
     }
     
     /**
-     *  显示带loading、image、text、detailText、button的emptyView
+     *  显示带loading、image、text、detailText、button的emptyView，带了with 防止与 showEmptyView() 混淆
      */
-    func showEmptyView(showLoading: Bool = false, image: UIImage? = nil, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector?) {
+    func showEmptyViewWith(showLoading: Bool = false, image: UIImage? = nil, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector?) {
         showEmptyView()
         guard let emptyView = emptyView else { return }
         emptyView.setLoadingViewHidden(!showLoading)

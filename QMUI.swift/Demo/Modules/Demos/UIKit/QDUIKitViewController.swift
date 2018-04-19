@@ -78,7 +78,7 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDButtonViewController()
         }
         if title == "QMUISearchController" {
-            viewController = QDSliderViewController()
+            viewController = QDSearchViewController()
         }
         if title == "QMUIAlertController" {
             viewController = QDAlertController()
