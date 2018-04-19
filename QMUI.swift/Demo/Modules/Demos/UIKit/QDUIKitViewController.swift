@@ -72,7 +72,7 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDTableViewController()
         }
         if title == "QMUICollectionViewLayout" {
-            viewController = QDSliderViewController()
+            viewController = QDCollectionListViewController()
         }
         if title == "QMUIButton" {
             viewController = QDButtonViewController()
