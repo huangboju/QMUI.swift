@@ -17,26 +17,27 @@ extension UINavigationBar: SelfAware2 {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationBar.self
             
-//            ReplaceMethod(clazz, #selector(setter: UINavigationBar.shadowImage), #selector(UINavigationBar.NavigationBarTransition_setShadowImage(_:)))
-//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(NavigationBarTransition_setBarTintColor))
-//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(NavigationBarTransition_setBackgroundImage(_:for:)))
+            // MARK: TODO 使用 UINavigationBar.appearance() 时，交换会发生崩溃
+//            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(UINavigationBar.qmui_setShadowImage(_:)))
+//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(UINavigationBar.qmui_setBarTintColor(_:)))
+//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(UINavigationBar.qmui_setBackgroundImage(_:for:)))
             
-            ReplaceMethod(clazz, #selector(layoutSubviews), #selector(titleView_navigationBarLayoutSubviews))
+            ReplaceMethod(clazz, #selector(UINavigationBar.layoutSubviews), #selector(UINavigationBar.titleView_navigationBarLayoutSubviews))
         }
     }
     
-    @objc func NavigationBarTransition_setShadowImage(_ image: UIImage) {
-        NavigationBarTransition_setShadowImage(image)
+    @objc func qmui_setShadowImage(_ image: UIImage?) {
+        qmui_setShadowImage(image)
         transitionNavigationBar?.shadowImage = image
     }
     
-    @objc func NavigationBarTransition_setBarTintColor(_ tintColor: UIColor) {
-        NavigationBarTransition_setBarTintColor(tintColor)
+    @objc func qmui_setBarTintColor(_ tintColor: UIColor?) {
+        qmui_setBarTintColor(tintColor)
         transitionNavigationBar?.barTintColor = tintColor
     }
     
-    @objc func NavigationBarTransition_setBackgroundImage(_ backgroundImage: UIImage, for barMetrics: UIBarMetrics) {
-        NavigationBarTransition_setBackgroundImage(backgroundImage, for: barMetrics)
+    @objc func qmui_setBackgroundImage(_ backgroundImage: UIImage?, for barMetrics: UIBarMetrics) {
+        qmui_setBackgroundImage(backgroundImage, for: barMetrics)
         transitionNavigationBar?.setBackgroundImage(backgroundImage, for: barMetrics)
     }
 

@@ -28,14 +28,23 @@ class QDLabViewController: QDCommonListViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        
+        let viewController = QDAboutViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
-        //        if title == "UIColor+QMUI" {
-        viewController = QDColorViewController()
-        //        }
+        if title == "All System Fonts" {
+            viewController = QDAllSystemFontsViewController()
+        } else if title == "Default Line Height" {
+            viewController = QDAllSystemFontsViewController()
+        } else if title == "Theme" {
+            viewController = QDThemeViewController()
+        } else if title == "Animation" {
+            viewController = QDAllSystemFontsViewController()
+        } else if title == "Log Manager" {
+            viewController = QDAllSystemFontsViewController()
+        }
         
         if let viewController = viewController {
             viewController.title = title

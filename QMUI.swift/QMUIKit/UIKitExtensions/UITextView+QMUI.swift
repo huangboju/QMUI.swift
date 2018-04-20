@@ -11,7 +11,7 @@ extension UITextView {
     /**
      *  convert UITextRange to NSRangefor example, [self qmui_convertNSRangeFromUITextRange:self.markedTextRange]
      */
-    public func qmui_convertNSRange(from textRange: UITextRange) -> NSRange {
+    func qmui_convertNSRange(from textRange: UITextRange) -> NSRange {
         let location = offset(from: beginningOfDocument, to: textRange.start)
         let length = offset(from: textRange.start, to: textRange.end)
         return NSMakeRange(location, length)
@@ -20,7 +20,7 @@ extension UITextView {
     /**
      *  设置 text 会让 selectedTextRange 跳到最后一个字符，导致在中间修改文字后光标会跳到末尾，所以设置前要保存一下，设置后恢复过来
      */
-    public func qmui_setTextKeepingSelectedRange(_ text: String) {
+    func qmui_setTextKeepingSelectedRange(_ text: String) {
         let selectedTextRange = self.selectedTextRange
         self.text = text
         self.selectedTextRange = selectedTextRange
@@ -29,7 +29,7 @@ extension UITextView {
     /**
      *  设置 attributedText 会让 selectedTextRange 跳到最后一个字符，导致在中间修改文字后光标会跳到末尾，所以设置前要保存一下，设置后恢复过来
      */
-    public func qmui_setAttributedTextKeepingSelectedRange(_ attributedText: NSAttributedString) {
+    func qmui_setAttributedTextKeepingSelectedRange(_ attributedText: NSAttributedString) {
         let selectedTextRange = self.selectedTextRange
         self.attributedText = attributedText
         self.selectedTextRange = selectedTextRange
@@ -38,7 +38,7 @@ extension UITextView {
     /**
      *  UITextView.scrollRangeToVisible() 并不会考虑 textContainerInset.bottom，所以使用这个方法来代替
      */
-    public func qmui_scrollCaretVisibleAnimated(_ animated: Bool) {
+    func qmui_scrollCaretVisibleAnimated(_ animated: Bool) {
         if bounds.isEmpty {
             return
         }

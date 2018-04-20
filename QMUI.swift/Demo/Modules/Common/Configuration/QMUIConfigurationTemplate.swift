@@ -14,6 +14,7 @@
  *  @warning 配置表的 class 名必须以 QMUIConfigurationTemplate 开头，并且实现 <QMUIConfigurationTemplateProtocol>，因为这两者是 QMUI 识别该 NSObject 是否为一份配置表的条件。
  *  @warning QMUI 2.3.0 之后，配置表改为自动运行，不需要再在某个地方手动运行了。
  */
+@objc(QMUIConfigurationTemplate)
 class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     
     override required init() {
@@ -220,10 +221,14 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
     
     // QMUI 2.3.0 版本里，配置表新增这个方法，返回 true 表示在 App 启动时要自动应用这份配置表。仅当你的 App 里存在多份配置表时，才需要把除默认配置表之外的其他配置表的返回值改为 false。
     func shouldApplyTemplateAutomatically() -> Bool {
-        let result = QDThemeManager.shared.currentTheme == nil ||  UserDefaults.standard.string(forKey: QDSelectedThemeClassName) == String(describing: self)
-        if result {
-            QDThemeManager.shared.currentTheme = self
+        if let themeName = UserDefaults.standard.string(forKey: QDSelectedThemeClassName) {
+            let result = themeName == String(describing: type(of: self))
+            if result {
+                QDThemeManager.shared.currentTheme = self
+            }
+            return result
         }
-        return result
+        QDThemeManager.shared.currentTheme = self
+        return true
     }
 }

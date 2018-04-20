@@ -364,81 +364,90 @@ extension CGRect {
         return CGRect(x: newX, y: newY, width: newWidth, height: newHeight)
     }
 
-    mutating func float(top: CGFloat) -> CGRect {
-        origin.y = top
-        return self
+    func float(top: CGFloat) -> CGRect {
+        var result = self
+        result.origin.y = top
+        return result
     }
 
-    mutating func float(bottom: CGFloat) -> CGRect {
-        origin.y = bottom - height
-        return self
+    func float(bottom: CGFloat) -> CGRect {
+        var result = self
+        result.origin.y = bottom - height
+        return result
     }
 
-    mutating func float(right: CGFloat) -> CGRect {
-        origin.x = right - width
-        return self
+    func float(right: CGFloat) -> CGRect {
+        var result = self
+        result.origin.x = right - width
+        return result
     }
 
-    mutating func float(left: CGFloat) -> CGRect {
-        origin.x = left
-        return self
+    func float(left: CGFloat) -> CGRect {
+        var result = self
+        result.origin.x = left
+        return result
     }
 
     /// 保持rect的左边缘不变，改变其宽度，使右边缘靠在right上
-    mutating func limit(right: CGFloat) -> CGRect {
-        size.width = right - minX
-        return self
+    func limit(right: CGFloat) -> CGRect {
+        var result = self
+        result.size.width = right - minX
+        return result
     }
 
     /// 保持rect右边缘不变，改变其宽度和origin.x，使其左边缘靠在left上。只适合那种右边缘不动的view
     /// 先改变origin.x，让其靠在offset上
     /// 再改变size.width，减少同样的宽度，以抵消改变origin.x带来的view移动，从而保证view的右边缘是不动的
-    mutating func limit(left: CGFloat) -> CGRect {
+    func limit(left: CGFloat) -> CGRect {
+        var result = self
         let subOffset = left - minX
-        origin.x = left
-        size.width -= subOffset
-        return self
+        result.origin.x = left
+        result.size.width -= subOffset
+        return result
     }
 
     /// 限制rect的宽度，超过最大宽度则截断，否则保持rect的宽度不变
-    mutating func limit(maxWidth: CGFloat) -> CGRect {
-        size.width = width > maxWidth ? maxWidth : width
-        return self
+    func limit(maxWidth: CGFloat) -> CGRect {
+        var result = self
+        result.size.width = width > maxWidth ? maxWidth : width
+        return result
     }
 
-    mutating func setX(_ x: CGFloat) -> CGRect {
-        origin.x = flat(x)
-        return self
+    func setX(_ x: CGFloat) -> CGRect {
+        var result = self
+        result.origin.x = flat(x)
+        return result
     }
 
-    @discardableResult
-    mutating func setY(_ y: CGFloat) -> CGRect {
-        origin.y = flat(y)
-        return self
+    func setY(_ y: CGFloat) -> CGRect {
+        var result = self
+        result.origin.y = flat(y)
+        return result
     }
 
-    @discardableResult
-    mutating func setXY(_ x: CGFloat, _ y: CGFloat) -> CGRect {
-        origin.x = flat(x)
-        origin.y = flat(y)
-        return self
+    func setXY(_ x: CGFloat, _ y: CGFloat) -> CGRect {
+        var result = self
+        result.origin.x = flat(x)
+        result.origin.y = flat(y)
+        return result
     }
 
-    @discardableResult
-    mutating func setWidth(_ width: CGFloat) -> CGRect {
-        size.width = flat(width)
-        return self
+    func setWidth(_ width: CGFloat) -> CGRect {
+        var result = self
+        result.size.width = flat(width)
+        return result
     }
 
-    @discardableResult
-    mutating func setHeight(_ height: CGFloat) -> CGRect {
-        size.height = flat(height)
-        return self
+    func setHeight(_ height: CGFloat) -> CGRect {
+        var result = self
+        result.size.height = flat(height)
+        return result
     }
 
-    mutating func setSize(size: CGSize) -> CGRect {
-        self.size = size.flatted
-        return self
+    func setSize(size: CGSize) -> CGRect {
+        var result = self
+        result.size = size.flatted
+        return result
     }
     
     func fixed(_ precision: Int) -> CGRect {

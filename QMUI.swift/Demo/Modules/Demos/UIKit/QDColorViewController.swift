@@ -10,7 +10,7 @@ import UIKit
 
 class QDColorViewController: QDCommonTableViewController {
 
-    override func initTableView() {
+    @objc override func initTableView() {
         super.initTableView()
         tableView.separatorStyle = .none
         

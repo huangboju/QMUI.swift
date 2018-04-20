@@ -11,13 +11,13 @@ extension Array {
     // Further adapted to work with Swift 3
     /// Removes objects at indexes that are in the specified `NSIndexSet`.
     /// - parameter indexes: the index set containing the indexes of objects that will be removed
-    public mutating func remove(at indexes: IndexSet) {
+    mutating func remove(at indexes: IndexSet) {
         for i in indexes.reversed() {
             remove(at: i)
         }
     }
 
-    public subscript(safe index: Int) -> Element {
+    subscript(safe index: Int) -> Element {
         get {
             return self[index]
         }

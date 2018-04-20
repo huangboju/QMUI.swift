@@ -7,17 +7,17 @@
 //
 
 struct QMUIBorderViewPosition: OptionSet {
-    public let rawValue: Int
+    let rawValue: Int
 
-    public init(rawValue: Int) {
+    init(rawValue: Int) {
         self.rawValue = rawValue
     }
 
-    public static let none = QMUIBorderViewPosition(rawValue: 0)
-    public static let top = QMUIBorderViewPosition(rawValue: 1 << 0)
-    public static let left = QMUIBorderViewPosition(rawValue: 1 << 1)
-    public static let bottom = QMUIBorderViewPosition(rawValue: 1 << 2)
-    public static let right = QMUIBorderViewPosition(rawValue: 1 << 3)
+    static let none = QMUIBorderViewPosition(rawValue: 0)
+    static let top = QMUIBorderViewPosition(rawValue: 1 << 0)
+    static let left = QMUIBorderViewPosition(rawValue: 1 << 1)
+    static let bottom = QMUIBorderViewPosition(rawValue: 1 << 2)
+    static let right = QMUIBorderViewPosition(rawValue: 1 << 3)
 }
 
 
@@ -478,7 +478,7 @@ extension UIView {
 
 /**
  *  对 view.frame 操作的简便封装，注意 view 与 view 之间互相计算时，需要保证处于同一个坐标系内。
- *  siwft 虽然支持 view.frame.minY 等属性，调用已经很方便，但是 view.frame.minY 都是只读，并不方便
+ *  siwft 虽然支持 view.frame.minY 等属性，调用已经很方便，但是 view.frame.minY 都是只读
  */
 extension UIView {
     
@@ -488,55 +488,55 @@ extension UIView {
             return frame.minY
         }
         set {
-            frame = frame.setY(qmui_top)
+            frame = frame.setY(newValue)
         }
     }
-    
+
     /// 等价于 CGRectGetMinX(frame)
     var qmui_left: CGFloat {
         get {
             return frame.minX
         }
         set {
-            frame = frame.setX(qmui_left)
+            frame = frame.setX(newValue)
         }
     }
-    
+
     /// 等价于 CGRectGetMaxY(frame)
     var qmui_bottom: CGFloat {
         get {
             return frame.maxY
         }
         set {
-            frame = frame.setY(qmui_bottom - frame.height)
+            frame = frame.setY(newValue - frame.height)
         }
     }
-    
+
     /// 等价于 CGRectGetMaxX(frame)
     var qmui_right: CGFloat {
         get {
             return frame.maxX
         }
         set {
-            frame = frame.setX(qmui_right - frame.width)
+            frame = frame.setX(newValue - frame.width)
         }
     }
-    
+
     var qmui_width: CGFloat {
         get {
             return frame.width
         }
         set {
-            frame = frame.setWidth(qmui_width)
+            frame = frame.setWidth(newValue)
         }
     }
-    
+
     var qmui_height: CGFloat {
         get {
             return frame.height
         }
         set {
-            frame = frame.setHeight(qmui_height)
+            frame = frame.setHeight(newValue)
         }
     }
     

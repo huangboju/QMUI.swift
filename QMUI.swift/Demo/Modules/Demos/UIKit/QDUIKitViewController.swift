@@ -44,9 +44,8 @@ class QDUIKitViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-//        let viewController = QDAboutViewController()
-//        navigationController?.pushViewController(viewController, animated: true)
-        print(self.scrollView)
+        let viewController = QDAboutViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func didSelectCell(_ title: String) {
@@ -58,31 +57,31 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDSliderViewController()
         }
         if title == "QMUILabel" {
-            viewController = QDSliderViewController()
+            viewController = QDLabelViewController()
         }
         if title == "QMUITextView" {
-            viewController = QDSliderViewController()
+            viewController = QDTextViewController()
         }
         if title == "QMUITextField" {
-            viewController = QDSliderViewController()
+            viewController = QDTextFieldViewController()
         }
         if title == "QMUISlider" {
             viewController = QDSliderViewController()
         }
         if title == "QMUITableView" {
-            viewController = QDSliderViewController()
+            viewController = QDTableViewController()
         }
         if title == "QMUICollectionViewLayout" {
-            viewController = QDSliderViewController()
+            viewController = QDCollectionListViewController()
         }
         if title == "QMUIButton" {
             viewController = QDButtonViewController()
         }
         if title == "QMUISearchController" {
-            viewController = QDSliderViewController()
+            viewController = QDSearchViewController()
         }
         if title == "QMUIAlertController" {
-            viewController = QDSliderViewController()
+            viewController = QDAlertController()
         }
         if title == "ViewController Orientation" {
             viewController = QDSliderViewController()

@@ -21,7 +21,7 @@ func QMUICMI() -> QMUIConfiguration {
 
 // MARK: - Global Color
 
-// MARK: TODO 这里的声明全是 let 常量，但实际上，QMUICMI()里的属性时可变的，是不是要改为可变的，比如说 TabBarTintColor
+// MARK: TODO 这里的声明全是 let 常量，但实际上，QMUICMI()里的属性时可变的，是否要改为可变的，比如说 TabBarTintColor
 
 // 基础颜色
 let UIColorClear = QMUICMI().clear
@@ -90,11 +90,11 @@ let NavBarHighlightedAlpha = QMUICMI().navBarHighlightedAlpha
 let NavBarDisabledAlpha = QMUICMI().navBarDisabledAlpha
 let NavBarButtonFont = QMUICMI().navBarButtonFont
 let NavBarButtonFontBold = QMUICMI().navBarButtonFontBold
-let NavBarBackgroundImage = QMUICMI().navBarBackgroundImage
-let NavBarShadowImage = QMUICMI().navBarShadowImage
+var NavBarBackgroundImage: UIImage? { return QMUICMI().navBarBackgroundImage }
+var NavBarShadowImage: UIImage? { return QMUICMI().navBarShadowImage }
 let NavBarBarTintColor = QMUICMI().navBarBarTintColor
 let NavBarTintColor = QMUICMI().navBarTintColor
-let NavBarTitleColor = QMUICMI().navBarTitleColor
+var NavBarTitleColor: UIColor? { return QMUICMI().navBarTitleColor }
 let NavBarTitleFont = QMUICMI().navBarTitleFont
 let NavBarLargeTitleColor = QMUICMI().navBarLargeTitleColor
 let NavBarLargeTitleFont = QMUICMI().navBarLargeTitleFont

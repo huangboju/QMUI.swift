@@ -44,23 +44,8 @@ class QDComponentsViewController: QDCommonGridViewController {
     }
     
     @objc private func handleAboutItemEvent() {
-        let alertController = QMUIAlertController(title: "水平对齐方式", message: nil, preferredStyle: .sheet)
-        alertController.title = "12345"
-        var action = QMUIAlertAction(title: "左对齐", style: .default) { (_) in
-            print("左对齐")
-        }
-        alertController.add(action: action)
-        action = QMUIAlertAction(title: "居中对齐", style: .default) { (_) in
-            print("居中对齐")
-        }
-        alertController.add(action: action)
-        action = QMUIAlertAction(title: "右对齐", style: .default) { (_) in
-            print("右对齐")
-        }
-        alertController.add(action: action)
-        action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
-        alertController.add(action: action)
-        alertController.show(true)
+        let viewController = QDAboutViewController()
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func didSelectCell(_ title: String) {
@@ -87,7 +72,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDSliderViewController()
         }
         if title == "QMUIMoreOperationController" {
-            viewController = QDSliderViewController()
+            viewController = QDMoreOperationViewController()
         }
         if title == "QMUIEmotionView" {
             viewController = QDButtonViewController()

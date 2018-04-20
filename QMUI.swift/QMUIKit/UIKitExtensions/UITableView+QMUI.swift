@@ -259,7 +259,7 @@ extension UITableView {
         }
 
         if tableHeaderView is UISearchBar {
-            let canScroll = qmui_realContentSize.height + contentInset.verticalValue > bounds.height
+            let canScroll = qmui_realContentSize.height + qmui_contentInset.verticalValue > bounds.height
             return canScroll
         } else {
             return super.qmui_canScroll
@@ -540,7 +540,7 @@ extension UITableView {
 // MARK: - QMUILayoutCell
 extension UITableView {
     func templateCell(forReuseIdentifier identifier: String) -> UITableViewCell {
-        assert(identifier.isEmpty, "Expect a valid identifier - \(identifier)")
+        assert(!identifier.isEmpty, "Expect a valid identifier - \(identifier)")
         var templateCellsByIdentifiers = objc_getAssociatedObject(self, &Keys.templateCellsByIdentifiers) as? [String: UITableViewCell]
         if templateCellsByIdentifiers == nil {
             templateCellsByIdentifiers = [:]
@@ -557,9 +557,8 @@ extension UITableView {
                 templateCell = dequeueReusableCell(withIdentifier: identifier)
                 assert(templateCell != nil, "Cell must be registered to table view for identifier - \(identifier)")
             }
-            templateCell?.contentView.translatesAutoresizingMaskIntoConstraints = false
+            templateCell!.contentView.translatesAutoresizingMaskIntoConstraints = false
             templateCellsByIdentifiers?[identifier] = templateCell
-            print("layout cell created - \(identifier)")
         }
         return templateCell!
     }
@@ -569,7 +568,7 @@ extension UITableView {
      *  @param  identifier cell 的 identifier
      *  @param  configuration 用于渲染 cell 的block，一般与 tableView:cellForRowAtIndexPath: 里渲染 cell 的代码一样
      */
-    public func qmui_heightForCell(withIdentifier identifier: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -593,7 +592,7 @@ extension UITableView {
     }
 
     // 通过indexPath缓存高度
-    public func qmui_heightForCell(withIdentifier identifier: String, cacheBy indexPath: IndexPath, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, cacheBy indexPath: IndexPath, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -608,7 +607,7 @@ extension UITableView {
     }
 
     // 通过key缓存高度
-    public func qmui_heightForCell(withIdentifier identifier: String, cacheByKey key: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, cacheByKey key: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }

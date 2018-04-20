@@ -98,7 +98,7 @@ extension UIViewController: SelfAware {
         
         // 用私有接口修改过方向，但下一个界面和当前界面方向不相同，则要把修改前记录下来的那个设备方向考虑进来
         deviceOrientationToRotate = interfaceOrientationMask(supportedInterfaceOrientations, contains: deviceOrientationBeforeChangingByHelper) ? deviceOrientationBeforeChangingByHelper : deviceOrientationWithInterfaceOrientationMask(supportedInterfaceOrientations)
-        let _ = QMUIHelper.rotateToDeviceOrientation(deviceOrientationToRotate)
+        QMUIHelper.rotateToDeviceOrientation(deviceOrientationToRotate)
     }
     
     private func deviceOrientationWithInterfaceOrientationMask(_ mask: UIInterfaceOrientationMask) -> UIDeviceOrientation {

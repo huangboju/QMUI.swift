@@ -9,7 +9,7 @@
 extension UICollectionView {
 
     /// 清除所有已选中的item的选中状态
-    public func qmui_clearsSelection() {
+    func qmui_clearsSelection() {
         guard let selectedItemIndexPaths = indexPathsForSelectedItems else {
             return
         }
@@ -19,7 +19,7 @@ extension UICollectionView {
     }
 
     /// 重新`reloadData`，同时保持`reloadData`前item的选中状态
-    public func qmui_reloadDataKeepingSelection() {
+    func qmui_reloadDataKeepingSelection() {
         guard let selectedIndexPaths = indexPathsForSelectedItems else {
             return
         }
@@ -44,7 +44,7 @@ extension UICollectionView {
      *
      *  @warning 注意返回的indexPath有可能为nil，要做保护。
      */
-    public func qmui_indexPathForItem(at view: UIView) -> IndexPath? {
+    func qmui_indexPathForItem(at view: UIView) -> IndexPath? {
         if let parentCell = parentCell(for: view) {
             return indexPath(for: parentCell)
         }
@@ -52,7 +52,7 @@ extension UICollectionView {
     }
 
     /// 判断当前 indexPath 的 item 是否为可视的 item
-    public func qmui_itemVisible(at indexPath: IndexPath) -> Bool {
+    func qmui_itemVisible(at indexPath: IndexPath) -> Bool {
         for visibleIndexPath in indexPathsForVisibleItems {
             if indexPath == visibleIndexPath {
                 return true
@@ -68,7 +68,7 @@ extension UICollectionView {
      *
      *  @warning 若可视区域为CGRectZero，则返回nil
      */
-    public func qmui_indexPathForFirstVisibleCell() -> IndexPath? {
+    func qmui_indexPathForFirstVisibleCell() -> IndexPath? {
         let visibleIndexPaths = indexPathsForVisibleItems
         if visibleIndexPaths.isEmpty {
             return nil
@@ -295,7 +295,7 @@ extension UICollectionView: SelfAware3 {
 
 /// QMUILayoutCell
 extension UICollectionView {
-    public func templateCell(for identifier: String, cellClass: UICollectionViewCell.Type) -> UICollectionViewCell? {
+    func templateCell(for identifier: String, cellClass: UICollectionViewCell.Type) -> UICollectionViewCell? {
         assert(identifier.length > 0, "Expect a valid identifier - \(identifier)")
         assert(collectionViewLayout is UICollectionViewFlowLayout, "only flow layout accept")
         var templateCellsByIdentifiers = objc_getAssociatedObject(self, &Keys.qmui_templateCell) as? [String: UICollectionViewCell]
@@ -307,16 +307,15 @@ extension UICollectionView {
         if templateCell == nil {
             // CollecionView 跟 TableView 不太一样，无法通过 dequeueReusableCellWithReuseIdentifier:forIndexPath: 来拿到cell（如果这样做，首先indexPath不知道传什么值，其次是这样做会已知crash，说数组越界），所以只能通过传一个class来通过init方法初始化一个cell，但是也有缓存来复用cell。
             // templateCell = [self dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]
-            templateCell = cellClass.init()
+            templateCell = cellClass.init(frame: .zero)
             assert(templateCell != nil, "Cell must be registered to collection view for identifier - \(identifier)")
         }
-        templateCell?.contentView.translatesAutoresizingMaskIntoConstraints = false
+        templateCell!.contentView.translatesAutoresizingMaskIntoConstraints = false
         templateCellsByIdentifiers?[identifier] = templateCell
-        print("layout cell created - \(identifier)")
         return templateCell
     }
 
-    public func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -336,7 +335,7 @@ extension UICollectionView {
     }
 
     // 通过indexPath缓存高度
-    public func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, cacheBy indexPath: IndexPath, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, cacheBy indexPath: IndexPath, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -349,7 +348,7 @@ extension UICollectionView {
     }
 
     // 通过key缓存高度
-    public func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, cacheBy key: String, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(with identifier: String, cellClass: UICollectionViewCell.Type, itemWidth: CGFloat, cacheBy key: String, configuration: ((UICollectionViewCell?) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }

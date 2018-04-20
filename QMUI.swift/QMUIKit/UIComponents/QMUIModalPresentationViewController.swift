@@ -12,14 +12,14 @@
     case slide // 从下往上升起
 }
 
-@objc protocol QMUIModalPresentationContentViewControllerProtocol {
+protocol QMUIModalPresentationContentViewControllerProtocol {
     /**
      *  当浮层以 UIViewController 的形式展示（而非 UIView），并且使用 modalController 提供的默认布局时，则可通过这个方法告诉 modalController 当前浮层期望的大小
      *  @param  controller  当前的modalController
      *  @param  limitSize   浮层最大的宽高，由当前 modalController 的大小及 `contentViewMargins`、`maximumContentViewWidth` 决定
      *  @return 返回浮层在 `limitSize` 限定内的大小，如果业务自身不需要限制宽度/高度，则为 width/height 返回 `CGFLOAT_MAX` 即可
      */
-    @objc optional func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
+    func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
 }
 
 @objc protocol QMUIModalPresentationViewControllerDelegate {
@@ -99,7 +99,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @warning 当设置了`contentViewController`时，`contentViewController.view`会被当成`contentView`使用，因此不要再自行设置`contentView`
      *  @warning 注意`contentViewController`是强引用，容易导致循环引用，使用时请注意
      */
-    weak var contentViewController: (UIViewController & QMUIModalPresentationContentViewControllerProtocol)? {
+    var contentViewController: (UIViewController & QMUIModalPresentationContentViewControllerProtocol)? {
         didSet {
             contentView = contentViewController?.view
         }
@@ -304,8 +304,8 @@ class QMUIModalPresentationViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
 
         if contentViewController != nil {
-            contentViewController?.qmui_modalPresentationViewController = self
-            contentViewController?.beginAppearanceTransition(true, animated: _animated)
+            contentViewController!.qmui_modalPresentationViewController = self
+            contentViewController!.beginAppearanceTransition(true, animated: _animated)
         }
         
         // 如果是因为 present 了新的界面再从那边回来，导致走到 viewWillAppear，则后面那些升起浮层的操作都可以不用做了，因为浮层从来没被降下去过
@@ -314,10 +314,10 @@ class QMUIModalPresentationViewController: UIViewController {
             return
         }
 
-        if isShownInWindowMode{
+        if isShownInWindowMode {
             QMUIHelper.dimmedApplicationWindow()
         }
-
+        
         let didShownCompletion: (Bool) -> Void = {
             self.contentViewController?.endAppearanceTransition()
 
@@ -635,8 +635,8 @@ class QMUIModalPresentationViewController: UIViewController {
         let contentViewContainerSize = CGSize(width: view.bounds.width - contentViewMargins.horizontalValue, height: view.bounds.height - keyboardHeight - contentViewMargins.verticalValue)
         let contentViewLimitSize = CGSize(width: min(maximumContentViewWidth, contentViewContainerSize.width), height: contentViewContainerSize.height)
         var contentViewSize = CGSize.zero
-        if let contentViewController = contentViewController, (contentViewController.preferredContentSize != nil) {
-            contentViewSize = contentViewController.preferredContentSize!(inModalPresentationViewController: self, limitSize: contentViewLimitSize)
+        if let contentViewController = contentViewController {
+            contentViewSize = contentViewController.preferredContentSize(inModalPresentationViewController: self, limitSize: contentViewLimitSize)
         } else {
             contentViewSize = contentView!.sizeThatFits(contentViewLimitSize)
         }

@@ -256,7 +256,7 @@ class QMUIZoomImageView: UIView {
         scrollView.delegate = self
         addSubview(scrollView)
 
-        emptyView.loadingView?.color = UIColorWhite
+        emptyView.loadingView.color = UIColorWhite
         emptyView.isHidden = true
         addSubview(emptyView)
 

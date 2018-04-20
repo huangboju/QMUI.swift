@@ -12,40 +12,40 @@ enum QMUICollectionViewPagingLayoutStyle {
     case rotation // 旋转模式，围绕底部某个点为中心旋转
 }
 
-public let QMUICollectionViewPagingLayoutRotationRadiusAutomatic: CGFloat = -1.0
+let QMUICollectionViewPagingLayoutRotationRadiusAutomatic: CGFloat = -1.0
 
 class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
 
-    public private(set) var style: QMUICollectionViewPagingLayoutStyle
+    private(set) var style: QMUICollectionViewPagingLayoutStyle
 
     /**
      *  规定超过这个滚动速度就强制翻页，从而使翻页更容易触发。默认为 0.4
      */
-    public var velocityForEnsurePageDown: CGFloat = 0.4
+    var velocityForEnsurePageDown: CGFloat = 0.4
 
     /**
      *  是否支持一次滑动可以滚动多个 item，默认为 true
      */
-    public var allowsMultipleItemScroll = true
+    var allowsMultipleItemScroll = true
 
     /**
      *  规定了当支持一次滑动允许滚动多个 item 的时候，滑动速度要达到多少才会滚动多个 item，默认为 0.7
      *
      *  仅当 allowsMultipleItemScroll 为 YES 时生效
      */
-    public var mutipleItemScrollVelocityLimit: CGFloat = 0.7
+    var mutipleItemScrollVelocityLimit: CGFloat = 0.7
 
     // MARK: - ScaleStyle
 
     /**
      *  中间那张卡片基于初始大小的缩放倍数，默认为 1.0
      */
-    public var maximumScale: CGFloat = 1.0
+    var maximumScale: CGFloat = 1.0
 
     /**
      *  除了中间之外的其他卡片基于初始大小的缩放倍数，默认为 0.9
      */
-    public var minimumScale: CGFloat = 0.9
+    var minimumScale: CGFloat = 0.9
 
     // MARK: - RotationStyle
 
@@ -56,7 +56,7 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
      *  @warning 仅当 style 为 QMUICollectionViewPagingLayoutStyleRotation 时才生效
      */
     private var _rotationRatio: CGFloat = 0
-    public var rotationRatio: CGFloat {
+    var rotationRatio: CGFloat {
         get {
             return validated(rotationRatio: _rotationRatio)
         }
@@ -65,10 +65,10 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
         }
     }
 
-    public var rotationRadius: CGFloat = QMUICollectionViewPagingLayoutRotationRadiusAutomatic
+    var rotationRadius: CGFloat = QMUICollectionViewPagingLayoutRotationRadiusAutomatic
 
     private var finalItemSize: CGSize = .zero
-
+    
     init(with style: QMUICollectionViewPagingLayoutStyle = .default) {
         self.style = style
         super.init()
@@ -86,13 +86,8 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
         super.prepare()
 
         var itemSize = self.itemSize
-        guard let layoutDelegate = self.collectionView?.delegate as? UICollectionViewDelegateFlowLayout,
-            let collectionView = self.collectionView else {
-            return
-        }
-        if layoutDelegate.responds(to: #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))) {
-            itemSize = layoutDelegate
-                .collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(row: 0, section: 0)) ?? .zero
+        if let collectionView = collectionView, let layoutDelegate = collectionView.delegate as? UICollectionViewDelegateFlowLayout {
+            itemSize = layoutDelegate.collectionView?(collectionView, layout: self, sizeForItemAt: IndexPath(row: 0, section: 0)) ?? self.itemSize
         }
 
         finalItemSize = itemSize
@@ -115,7 +110,7 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
         }
 
         var resultAttributes = super.layoutAttributesForElements(in: rect)
-        let offset = collectionView?.bounds.midX ?? 0
+        let offset = collectionView?.bounds.midX ?? 0 // 当前滚动位置的可视区域的中心点
         let itemSize = finalItemSize
 
         if style == .scale {
@@ -149,23 +144,25 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
             var centerAttribute: UICollectionViewLayoutAttributes?
             var centerMin: CGFloat = 10000
 
-            resultAttributes = resultAttributes?.map { attribute in
-                let distance = self.collectionView?.contentOffset.x ?? 0 +
-                    (self.collectionView?.bounds.width ?? 0) / 2.0 -
-                    attribute.center.x
-                let degress = -90 * self.rotationRatio * (distance / (self.collectionView?.bounds.width ?? 1))
-
-                let cosValue = abs(cos(AngleWithDegrees(degress)))
-                let translateY = self.rotationRadius - self.rotationRadius * cosValue
-                var transform = CGAffineTransform(translationX: 0, y: translateY)
-                transform = transform.rotated(by: AngleWithDegrees(degress))
-                attribute.transform = transform
-                attribute.zIndex = 1
-                if fabs(distance) < centerMin {
-                    centerMin = fabs(distance)
-                    centerAttribute = attribute
+            if let collectionView = collectionView {
+                resultAttributes = resultAttributes?.map { attribute in
+                    let distance = collectionView.contentOffset.x +
+                        collectionView.bounds.width / 2.0 -
+                        attribute.center.x
+                    let degress = -90 * self.rotationRatio * (distance / collectionView.bounds.width)
+                    
+                    let cosValue = abs(cos(AngleWithDegrees(degress)))
+                    let translateY = self.rotationRadius - self.rotationRadius * cosValue
+                    var transform = CGAffineTransform(translationX: 0, y: translateY)
+                    transform = transform.rotated(by: AngleWithDegrees(degress))
+                    attribute.transform = transform
+                    attribute.zIndex = 1
+                    if fabs(distance) < centerMin {
+                        centerMin = fabs(distance)
+                        centerAttribute = attribute
+                    }
+                    return attribute
                 }
-                return attribute
             }
             centerAttribute?.zIndex = 10
             return resultAttributes

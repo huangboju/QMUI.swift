@@ -37,13 +37,13 @@ class QMUITableViewCell: UITableViewCell {
     var isEnabled: Bool = true {
         willSet {
             if newValue {
-                self.isUserInteractionEnabled = true
-                self.textLabel?.textColor = TableViewCellTitleLabelColor
-                self.detailTextLabel?.textColor = TableViewCellDetailLabelColor
+                isUserInteractionEnabled = true
+                textLabel?.textColor = TableViewCellTitleLabelColor
+                detailTextLabel?.textColor = TableViewCellDetailLabelColor
             } else {
-                self.isUserInteractionEnabled = false
-                self.textLabel?.textColor = UIColorDisabled
-                self.detailTextLabel?.textColor = UIColorDisabled
+                isUserInteractionEnabled = false
+                textLabel?.textColor = UIColorDisabled
+                detailTextLabel?.textColor = UIColorDisabled
             }
         }
     }
@@ -59,21 +59,22 @@ class QMUITableViewCell: UITableViewCell {
      */
     fileprivate(set) var cellPosition: QMUITableViewCellPosition = .none
 
-    private lazy var defaultAccessoryImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .center
-        return imageView
-    }()
+    private var defaultAccessoryImageView: UIImageView?
 
-    private lazy var defaultAccessoryButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(handleAccessoryButtonEvent(_:)), for: .touchUpInside)
-        return button
-    }()
+    private var defaultAccessoryButton: UIButton?
 
-    private var defaultDetailDisclosureView: UIView = {
-        UIView()
-    }()
+    private var defaultDetailDisclosureView: UIView?
+    
+    override var backgroundColor: UIColor? {
+        get {
+            return super.backgroundColor
+        }
+        set {
+            if newValue != nil {
+                backgroundView?.backgroundColor = backgroundColor
+            }
+        }
+    }
 
     /**
      *  首选初始化方法
@@ -113,60 +114,81 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
 
+    // 重写accessoryType，如果是UITableViewCellAccessoryDisclosureIndicator类型的，则使用 QMUIConfigurationTemplate.m 配置表里的图片
     override var accessoryType: UITableViewCellAccessoryType {
         didSet {
             if accessoryType == .disclosureIndicator {
-                self.defaultAccessoryImageView.image = TableViewCellDisclosureIndicatorImage
-                self.defaultAccessoryImageView.sizeToFit()
-                self.accessoryView = self.defaultAccessoryImageView
-                return
+                if let indicatorImage = TableViewCellDisclosureIndicatorImage {
+                    initDefaultAccessoryImageViewIfNeeded()
+                    defaultAccessoryImageView!.image = indicatorImage
+                    defaultAccessoryImageView!.sizeToFit()
+                    accessoryView = defaultAccessoryImageView
+                    return
+                }
             }
 
             if accessoryType == .checkmark {
-
-                self.defaultAccessoryImageView.image = TableViewCellCheckmarkImage
-                self.defaultAccessoryImageView.sizeToFit()
-                self.accessoryView = self.defaultAccessoryImageView
-                return
+                if let checkmarkImage = TableViewCellCheckmarkImage {
+                    initDefaultAccessoryImageViewIfNeeded()
+                    defaultAccessoryImageView!.image = checkmarkImage
+                    defaultAccessoryImageView!.sizeToFit()
+                    accessoryView = defaultAccessoryImageView
+                    return
+                }
             }
 
             if accessoryType == .detailButton {
-                defaultAccessoryButton.setImage(TableViewCellDetailButtonImage, for: .normal)
-                self.defaultAccessoryButton.sizeToFit()
-                self.accessoryView = self.defaultAccessoryButton
-                return
+                if let detailButtonImage = TableViewCellDetailButtonImage {
+                    initDefaultAccessoryButtonIfNeeded()
+                    defaultAccessoryButton!.setImage(detailButtonImage, for: .normal)
+                    defaultAccessoryButton!.sizeToFit()
+                    accessoryView = defaultAccessoryButton
+                    return
+                }
             }
 
             if accessoryType == .detailDisclosureButton {
-
-                defaultAccessoryButton.setImage(TableViewCellDetailButtonImage, for: .normal)
-                defaultAccessoryButton.sizeToFit()
-                if self.accessoryView == self.defaultAccessoryButton {
-                    self.accessoryView = nil
+                if let detailButtonImage = TableViewCellDetailButtonImage {
+                    assert(TableViewCellDisclosureIndicatorImage != nil, "TableViewCellDetailButtonImage 和 TableViewCellDisclosureIndicatorImage 必须同时使用，但目前后者为 nil")
+                    initDefaultDetailDisclosureViewIfNeeded()
+                    initDefaultAccessoryButtonIfNeeded()
+                    defaultAccessoryButton!.setImage(detailButtonImage, for: .normal)
+                    defaultAccessoryButton!.sizeToFit()
+                    if accessoryView == defaultAccessoryButton {
+                        accessoryView = nil
+                    }
+                    defaultDetailDisclosureView!.addSubview(defaultAccessoryButton!)
                 }
-                defaultDetailDisclosureView.addSubview(defaultAccessoryButton)
-
-                self.defaultAccessoryImageView.image = TableViewCellDisclosureIndicatorImage
-                self.defaultAccessoryImageView.sizeToFit()
-                if self.accessoryView == self.defaultAccessoryImageView {
-                    self.accessoryView = nil
+                
+                if let indicatorImage = TableViewCellDisclosureIndicatorImage {
+                    assert(TableViewCellDetailButtonImage != nil, "TableViewCellDetailButtonImage 和 TableViewCellDisclosureIndicatorImage 必须同时使用，但目前前者为 nil")
+                    initDefaultDetailDisclosureViewIfNeeded()
+                    initDefaultAccessoryImageViewIfNeeded()
+                    defaultAccessoryImageView!.image = indicatorImage
+                    defaultAccessoryImageView!.sizeToFit()
+                    if accessoryView == defaultAccessoryImageView {
+                        accessoryView = nil
+                    }
+                    defaultDetailDisclosureView!.addSubview(defaultAccessoryImageView!)
                 }
-                defaultDetailDisclosureView.addSubview(defaultAccessoryImageView)
-
-                let spacingBetweenDetailButtonAndIndicatorImage = TableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator
-                self.defaultDetailDisclosureView.frame = CGRectFlat(self.defaultDetailDisclosureView.frame.minX,
-                                                                    self.defaultDetailDisclosureView.frame.minY,
-                                                                    self.defaultAccessoryButton.frame.width + spacingBetweenDetailButtonAndIndicatorImage + self.defaultAccessoryImageView.frame.width,
-                                                                    fmax(self.defaultAccessoryButton.frame.height, self.defaultAccessoryImageView.frame.height))
-
-                self.defaultAccessoryButton.frame = self.defaultAccessoryButton.frame.setXY(0, self.defaultDetailDisclosureView.frame.minYVerticallyCenter(self.defaultAccessoryButton.frame))
-
-                self.defaultAccessoryImageView.frame = self.defaultAccessoryImageView.frame.setXY(self.defaultAccessoryButton.frame.maxX + spacingBetweenDetailButtonAndIndicatorImage, self.defaultDetailDisclosureView.frame.minYVerticallyCenter(self.defaultAccessoryImageView.frame))
-                self.accessoryView = self.defaultDetailDisclosureView
-                return
+                
+                if let _ = TableViewCellDetailButtonImage, let _ = TableViewCellDisclosureIndicatorImage {
+                    
+                    let spacingBetweenDetailButtonAndIndicatorImage = TableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator
+                    defaultDetailDisclosureView!.frame = CGRectFlat(
+                        defaultDetailDisclosureView!.frame.minX,
+                        defaultDetailDisclosureView!.frame.minY,
+                        defaultAccessoryButton!.frame.width + spacingBetweenDetailButtonAndIndicatorImage + defaultAccessoryImageView!.frame.width,
+                        fmax(defaultAccessoryButton!.frame.height, defaultAccessoryImageView!.frame.height))
+                    
+                    defaultAccessoryButton!.frame = defaultAccessoryButton!.frame.setXY(0, defaultDetailDisclosureView!.frame.minYVerticallyCenter(defaultAccessoryButton!.frame))
+                    
+                    defaultAccessoryImageView!.frame = defaultAccessoryImageView!.frame.setXY(defaultAccessoryButton!.frame.maxX + spacingBetweenDetailButtonAndIndicatorImage, defaultAccessoryImageView!.frame.minYVerticallyCenter(defaultDetailDisclosureView!.frame))
+                    accessoryView = defaultDetailDisclosureView
+                    return
+                }
             }
-
-            self.accessoryView = nil
+            accessoryView = nil
         }
     }
 
@@ -271,10 +293,31 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
     
+    /// 用于继承的接口，设置一些cell相关的UI，需要自 cellForRowAtIndexPath 里面调用。默认实现是设置当前cell在哪个position。
     func updateCellAppearance(_ indexPath: IndexPath) {
         // 子类继承
         if let parentTableView = parentTableView {
             cellPosition = parentTableView.qmui_positionForRow(at: indexPath)
+        }
+    }
+    
+    private func initDefaultAccessoryImageViewIfNeeded() {
+        if defaultAccessoryImageView == nil {
+            defaultAccessoryImageView = UIImageView()
+            defaultAccessoryImageView!.contentMode = .center
+        }
+    }
+    
+    private func initDefaultAccessoryButtonIfNeeded() {
+        if defaultAccessoryButton == nil {
+            defaultAccessoryButton = QMUIButton()
+            defaultAccessoryButton!.addTarget(self, action: #selector(handleAccessoryButtonEvent(_:)), for: .touchUpInside)
+        }
+    }
+    
+    private func initDefaultDetailDisclosureViewIfNeeded() {
+        if defaultDetailDisclosureView == nil {
+            defaultDetailDisclosureView = UIView()
         }
     }
 }
@@ -302,7 +345,7 @@ extension QMUITableViewCell {
         if let accessoryView = self.accessoryView,
             accessoryView.isHidden,
             accessoryView.isUserInteractionEnabled,
-            !self.isEditing,
+            !isEditing,
             // UISwitch被点击时，[super hitTest:point withEvent:event]返回的不是UISwitch，而是它的一个subview，如果这里直接返回UISwitch会导致控件无法使用，因此对UISwitch做特殊屏蔽
             !accessoryView.isKind(of: UISwitch.self) {
 
@@ -313,7 +356,7 @@ extension QMUITableViewCell {
             responseEventFrame.size.width = accessoryViewFrame.width + accessoryHitTestEdgeInsets.horizontalValue
             responseEventFrame.size.height = accessoryViewFrame.height + accessoryHitTestEdgeInsets.verticalValue
             if responseEventFrame.contains(point) {
-                return self.accessoryView
+                return accessoryView
             }
         }
         return view

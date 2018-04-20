@@ -355,15 +355,15 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     private var cancelAction: QMUIAlertAction?
 
     private lazy var alertActions: [QMUIAlertAction] = {
-        []
+        return []
     }()
 
     private lazy var destructiveActions: [QMUIAlertAction] = {
-        []
+        return []
     }()
 
     private lazy var alertTextFields: [UITextField] = {
-        []
+        return []
     }()
 
     private var keyboardHeight: CGFloat = 0
@@ -395,11 +395,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
     convenience init(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
         self.init(nibName: nil, bundle: nil)
-        self.title = title
-        self.message = message
-        self.preferredStyle = preferredStyle
 
-        didInitialized()
+        didInitialized(title: title, message: message, preferredStyle: preferredStyle)
         
         updateHeaderBackgrondColor()
         updateEffectBackgroundColor()
@@ -407,7 +404,11 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         updateExtendLayerAppearance()
     }
     
-    private func didInitialized() {
+    private func didInitialized(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
+        self.title = title
+        self.message = message
+        self.preferredStyle = preferredStyle
+        
         alertContentMargin = QMUIAlertController.appearance().alertContentMargin
         alertContentMaximumWidth = QMUIAlertController.appearance().alertContentMaximumWidth
         alertSeperatorColor = QMUIAlertController.appearance().alertSeperatorColor
@@ -474,8 +475,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
             let contentPaddingTop = (hasTitle || hasMessage || hasTextField || hasCustomView) ? alertHeaderInsets.top : 0
             let contentPaddingBottom = (hasTitle || hasMessage || hasTextField || hasCustomView) ? alertHeaderInsets.bottom : 0
-            containerView.frame.setWidth(fmin(alertContentMaximumWidth, view.bounds.width - alertContentMargin.horizontalValue))
-            scrollWrapView.frame.setWidth(containerView.bounds.width)
+            containerView.qmui_width = fmin(alertContentMaximumWidth, view.bounds.width - alertContentMargin.horizontalValue)
+            scrollWrapView.qmui_width = containerView.bounds.width
             headerScrollView.frame = CGRect(x: 0, y: 0, width: scrollWrapView.bounds.width, height: 0)
             contentOriginY = contentPaddingTop
             // 标题和副标题布局
@@ -507,8 +508,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
                 contentOriginY = customView!.frame.maxY + contentPaddingBottom
             }
             // 内容scrollView的布局
-            buttonScrollView.frame = buttonScrollView.frame.setHeight(contentOriginY)
-            buttonScrollView.contentSize = CGSize(width: buttonScrollView.bounds.width, height: contentOriginY)
+            headerScrollView.frame = headerScrollView.frame.setHeight(contentOriginY)
+            headerScrollView.contentSize = CGSize(width: headerScrollView.bounds.width, height: contentOriginY)
             contentOriginY = headerScrollView.frame.maxY
             // 按钮布局
             buttonScrollView.frame = CGRect(x: 0, y: contentOriginY, width: containerView.bounds.width, height: 0)
@@ -581,8 +582,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
             let contentPaddingTop = (hasTitle || hasMessage || hasTextField) ? sheetHeaderInsets.top : 0
             let contentPaddingBottom = (hasTitle || hasMessage || hasTextField) ? sheetHeaderInsets.bottom : 0
-            containerView.frame.setWidth(fmin(sheetContentMaximumWidth, view.bounds.width - sheetContentMargin.horizontalValue))
-            scrollWrapView.frame.setWidth(containerView.bounds.width)
+            containerView.qmui_width = fmin(sheetContentMaximumWidth, view.bounds.width - sheetContentMargin.horizontalValue)
+            scrollWrapView.qmui_width = containerView.bounds.width
             headerScrollView.frame = CGRect(x: 0, y: 0, width: containerView.bounds.width, height: 0)
             contentOriginY = contentPaddingTop
             // 标题和副标题布局
@@ -752,7 +753,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         modalPresentationViewController!.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
         modalPresentationViewController!.contentViewMargins = UIEdgeInsets.zero
         modalPresentationViewController!.dimmingView = nil
-        modalPresentationViewController!.contentViewController = self as? (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
+        modalPresentationViewController!.contentViewController = self as (UIViewController & QMUIModalPresentationContentViewControllerProtocol)
         customModalPresentationControllerAnimation()
     }
 
@@ -1177,7 +1178,7 @@ class QMUIAlertAction: NSObject {
     fileprivate var buttonDisabledAttributes: [NSAttributedStringKey: Any]?
 
     /// `QMUIAlertAction`对应的 button 对象
-    fileprivate var button: QMUIButton {
+    var button: QMUIButton {
         return buttonWrapView.button
     }
 
@@ -1197,8 +1198,7 @@ class QMUIAlertAction: NSObject {
         isEnabled = true
         buttonWrapView = QMUIAlertButtonWrapView()
         super.init()
-        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
-        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
+        didInitialized()
     }
 
     /// 初始化`QMUIAlertController`的按钮
@@ -1212,6 +1212,11 @@ class QMUIAlertAction: NSObject {
         self.title = title
         self.style = style
         self.handler = handler
+    }
+    
+    private func didInitialized() {
+        button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
+        button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
     }
 
     @objc func handleAlertActionEvent(_ sender: Any) {

@@ -35,7 +35,20 @@ class QMUICommonTableViewController: QMUICommonViewController {
     private(set) var style: UITableViewStyle = .plain
 
     /// 获取当前的 tableView
-    fileprivate(set) var tableView: QMUITableView!
+    fileprivate var _tableView: QMUITableView?
+    fileprivate(set) var tableView: QMUITableView! {
+        get {
+            if #available(iOS 9.0, *) {
+                loadViewIfNeeded()
+            } else {
+                view.alpha = 1
+            }
+            return _tableView!
+        }
+        set {
+            _tableView = newValue
+        }
+    }
 
     private var hasHideTableHeaderViewInitial = false
     private var hasSetInitialContentInset = false
@@ -103,11 +116,6 @@ class QMUICommonTableViewController: QMUICommonViewController {
         if let backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor {
             view.backgroundColor = backgroundColor
         }
-        
-        DispatchQueue.main.async {
-            self.tableView.delegate = self
-            self.tableView.reloadData()
-        }
     }
 
     override func initSubviews() {
@@ -146,7 +154,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     func hideTableHeaderViewInitialIfCan(animated: Bool, force: Bool) {
         if let tableHeaderView = tableView.tableHeaderView, shouldHideTableHeaderViewInitial && (force || !hasHideTableHeaderViewInitial) {
-            let contentOffset = CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + tableHeaderView.frame.height)
+            let contentOffset = CGPoint(x: tableView.contentOffset.x, y: -tableView.qmui_contentInset.top + tableHeaderView.frame.height )
             tableView.setContentOffset(contentOffset, animated: animated)
             hasHideTableHeaderViewInitial = true
         }
@@ -168,7 +176,6 @@ class QMUICommonTableViewController: QMUICommonViewController {
     }
 
     // MARK: - 空列表视图 QMUIEmptyView
-
     override func showEmptyView() {
         if emptyView == nil {
             emptyView = QMUIEmptyView()
@@ -294,27 +301,19 @@ extension QMUICommonTableViewController {
      */
     @objc func initTableView() {
         
-        if #available(iOS 9.0, *) {
-            loadViewIfNeeded()
-        }
-        else {
-            // _ = self.view works but some Swift compiler genius could optimize what seems like a noop out
-            // hence this perversion from this recipe http://stackoverflow.com/questions/17279604/clean-way-to-force-view-to-load-subviews-early
-            view.alpha = 1
-        }
-        
         tableView = QMUITableView(frame: view.bounds, style: style)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionHeaderIdentifier)
         tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionFooterIdentifier)
-        view.addSubview(tableView)
         
         if #available(iOS 11, *) {
             if shouldAdjustTableViewContentInsetsInitially {
                 tableView.contentInsetAdjustmentBehavior = .never
             }
         }
+        
+        view.addSubview(tableView)
     }
     
     /**

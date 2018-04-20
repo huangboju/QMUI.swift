@@ -19,36 +19,47 @@ extension UIActivityIndicatorView: QMUIEmptyViewLoadingViewProtocol {
 class QMUIEmptyView: UIView {
 
     // 布局顺序从上到下依次为：imageView, loadingView, textLabel, detailTextLabel, actionButton
-    public var loadingView: UIActivityIndicatorView! {
-        didSet {
-            if loadingView != oldValue {
-                oldValue.removeFromSuperview()
-                contentView.addSubview(loadingView)
+    private var _loadingView: UIActivityIndicatorView?
+    var loadingView: UIActivityIndicatorView {
+        get {
+            if _loadingView == nil {
+                _loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+                _loadingView!.hidesWhenStopped = false // 此控件是通过loadingView.hidden属性来控制显隐的，如果UIActivityIndicatorView的hidesWhenStopped属性设置为true的话，则手动设置它的hidden属性就会失效，因此这里要置为false
+            }
+            return _loadingView!
+        }
+        set {
+            if _loadingView != newValue {
+                if _loadingView != nil {
+                    _loadingView!.removeFromSuperview()
+                }
+                _loadingView = newValue
+                contentView.addSubview(newValue)
             }
             setNeedsLayout()
         }
     } // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
-    public private(set) lazy var imageView: UIImageView = {
+    private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .center
         return imageView
     }()
 
-    public private(set) lazy var textLabel: UILabel = {
+    private(set) lazy var textLabel: UILabel = {
         let textLabel = UILabel()
         textLabel.textAlignment = .center
         textLabel.numberOfLines = 0
         return textLabel
     }()
 
-    public private(set) var detailTextLabel: UILabel = {
+    private(set) var detailTextLabel: UILabel = {
         let detailTextLabel = UILabel()
         detailTextLabel.textAlignment = .center
         detailTextLabel.numberOfLines = 0
         return detailTextLabel
     }()
 
-    public private(set) var actionButton: UIButton = {
+    private(set) var actionButton: UIButton = {
         let actionButton = UIButton()
         actionButton.qmui_outsideEdge = UIEdgeInsets(top: -20, left: -20, bottom: -20, right: -20)
         return actionButton
@@ -57,38 +68,38 @@ class QMUIEmptyView: UIView {
     // 可通过调整这些insets来控制间距
 
     /// 默认为(0, 0, 36, 0)
-    public var imageViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 36, right: 0) {
+    var imageViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 36, right: 0) {
         didSet {
             setNeedsLayout()
         }
     }
 
     /// 默认为(0, 0, 36, 0)
-    public var loadingViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 36, right: 0)
+    var loadingViewInsets = UIEdgeInsets(top: 0, left: 0, bottom: 36, right: 0)
 
     /// 默认为(0, 0, 10, 0)
-    public var textLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
+    var textLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
         didSet {
             setNeedsLayout()
         }
     }
 
     /// 默认为(0, 0, 10, 0)
-    public var detailTextLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
+    var detailTextLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0) {
         didSet {
             setNeedsLayout()
         }
     }
 
     /// 默认为(0, 0, 0, 0)
-    public var actionButtonInsets = UIEdgeInsets.zero {
+    var actionButtonInsets = UIEdgeInsets.zero {
         didSet {
             setNeedsLayout()
         }
     }
 
     /// 如果不想要内容整体垂直居中，则可通过调整此属性来进行垂直偏移。默认为-30，即内容比中间略微偏上
-    public var verticalOffset: CGFloat = -30 {
+    var verticalOffset: CGFloat = -30 {
         didSet {
             setNeedsLayout()
         }
@@ -96,7 +107,7 @@ class QMUIEmptyView: UIView {
 
     // 字体
     /// 默认为15pt系统字体
-    public var textLabelFont = UIFontMake(15) {
+    var textLabelFont = UIFontMake(15) {
         didSet {
             textLabel.font = textLabelFont
             setNeedsLayout()
@@ -104,14 +115,14 @@ class QMUIEmptyView: UIView {
     }
 
     /// 默认为14pt系统字体
-    public var detailTextLabelFont = UIFontMake(14) {
+    var detailTextLabelFont = UIFontMake(14) {
         didSet {
             updateDetailTextLabel(with: detailTextLabel.text)
         }
     }
 
     /// 默认为15pt系统字体
-    public var actionButtonFont = UIFontMake(15) {
+    var actionButtonFont = UIFontMake(15) {
         didSet {
             actionButton.titleLabel?.font = actionButtonFont
             setNeedsLayout()
@@ -121,21 +132,21 @@ class QMUIEmptyView: UIView {
     // 颜色
 
     /// 默认为(93, 100, 110)
-    public var textLabelTextColor = UIColorMake(93, 100, 110) {
+    var textLabelTextColor = UIColorMake(93, 100, 110) {
         didSet {
             textLabel.textColor = textLabelTextColor
         }
     }
 
     /// 默认为(133, 140, 150)
-    public var detailTextLabelTextColor = UIColorMake(133, 140, 150) {
+    var detailTextLabelTextColor = UIColorMake(133, 140, 150) {
         didSet {
             updateDetailTextLabel(with: detailTextLabel.text)
         }
     }
 
     /// 默认为QMUICMI().buttonTintColor
-    public var actionButtonTitleColor = QMUICMI().buttonTintColor {
+    var actionButtonTitleColor = QMUICMI().buttonTintColor {
         didSet {
             actionButton.setTitleColor(actionButtonTitleColor, for: .normal)
         }
@@ -146,7 +157,7 @@ class QMUIEmptyView: UIView {
      *  1. 像其它自带 view 一样添加到 contentView 上
      *  2. 重写sizeThatContentViewFits
      */
-    public private(set) lazy var contentView: UIView = {
+    private(set) lazy var contentView: UIView = {
         UIView()
     }()
 
@@ -175,8 +186,6 @@ class QMUIEmptyView: UIView {
 
         scrollView.addSubview(contentView)
 
-        loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        loadingView.hidesWhenStopped = false // 此控件是通过loadingView.hidden属性来控制显隐的，如果UIActivityIndicatorView的hidesWhenStopped属性设置为true的话，则手动设置它的hidden属性就会失效，因此这里要置为false
         contentView.addSubview(loadingView)
 
         contentView.addSubview(imageView)

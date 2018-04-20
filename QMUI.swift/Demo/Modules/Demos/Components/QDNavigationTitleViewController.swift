@@ -101,26 +101,23 @@ class QDNavigationTitleViewController: QDCommonListViewController {
         case 4:
             // 水平对齐方式
             let alertController = QMUIAlertController(title: "水平对齐方式", message: nil, preferredStyle: .sheet)
-            var action = QMUIAlertAction(title: "左对齐", style: .default) { (_) in
+            let action = QMUIAlertAction(title: "左对齐", style: .default) { (_) in
                 self.titleView.contentHorizontalAlignment = .left
                 self.horizontalAlignment = self.titleView.contentHorizontalAlignment
                 self.tableView.reloadData()
             }
             alertController.add(action: action)
-            action = QMUIAlertAction(title: "居中对齐", style: .default) { (_) in
+            alertController.add(action: QMUIAlertAction(title: "居中对齐", style: .default) { (_) in
                 self.titleView.contentHorizontalAlignment = .center
                 self.horizontalAlignment = self.titleView.contentHorizontalAlignment
                 self.tableView.reloadData()
-            }
-            alertController.add(action: action)
-            action = QMUIAlertAction(title: "右对齐", style: .default) { (_) in
+            })
+            alertController.add(action: QMUIAlertAction(title: "右对齐", style: .default) { (_) in
                 self.titleView.contentHorizontalAlignment = .right
                 self.horizontalAlignment = self.titleView.contentHorizontalAlignment
                 self.tableView.reloadData()
-            }
-            alertController.add(action: action)
-            action = QMUIAlertAction(title: "取消", style: .cancel, handler: nil)
-            alertController.add(action: action)
+            })
+            alertController.add(action: QMUIAlertAction(title: "取消", style: .cancel, handler: nil))
             alertController.show(true)
             break
         case 5:

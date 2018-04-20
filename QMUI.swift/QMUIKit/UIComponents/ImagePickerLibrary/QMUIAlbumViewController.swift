@@ -135,7 +135,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
         navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelSelectAlbum))
     }
 
-    override func initTableView() {
+    @objc override func initTableView() {
         super.initTableView()
         tableView.separatorStyle = .none
     }
@@ -154,7 +154,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
                 }
                 tipString = "请在设备的\"设置-隐私-照片\"选项中，允许\(appName!)访问你的手机相册"
             }
-            showEmptyView(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
+            showEmptyViewWith(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
         } else {
             albumViewControllerDelegate?.albumViewControllerWillStartLoad(self)
             // 获取相册列表较为耗时，交给子线程去处理，因此这里需要显示 Loading
@@ -176,7 +176,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
     func refreshAlbumAndShowEmptyTipIfNeed() {
         if _albumsArray.isEmpty {
             let tipString = tipTextWhenPhotosEmpty ?? "空照片"
-            showEmptyView(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
+            showEmptyViewWith(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
         } else {
             albumViewControllerDelegate?.albumViewControllerWillStartLoad(self)
             if shouldShowDefaultLoadingView {

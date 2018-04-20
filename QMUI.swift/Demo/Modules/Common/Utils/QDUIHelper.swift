@@ -57,28 +57,30 @@ extension QDUIHelper {
 // MARK: - Button
 extension QDUIHelper {
     static func generateDarkFilledButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.adjustsButtonWhenHighlighted = true
         button.titleLabel?.font = UIFontBoldMake(14)
         button.setTitleColor(UIColorWhite, for: .normal)
-        button.backgroundColor = themeTintColor
-        button.highlightedBackgroundColor = themeTintColor.qmui_transition(to: UIColorBlack, progress: 0.15)// 高亮时的背景色
+        if let themeTintColor = QDThemeManager.shared.currentTheme?.themeTintColor {
+            button.backgroundColor = themeTintColor
+            button.highlightedBackgroundColor = themeTintColor.qmui_transition(to: UIColorBlack, progress: 0.15)// 高亮时的背景色
+        }
         button.layer.cornerRadius = 4
         return button
     }
     
     static func generateLightBorderedButton() -> QMUIButton {
-        let themeTintColor = QDThemeManager.shared.currentTheme!.themeTintColor
         let button = QMUIButton(size: CGSize(width: 200, height: 40))
         button.titleLabel?.font = UIFontBoldMake(14)
-        button.setTitleColor(themeTintColor, for: .normal)
-        button.backgroundColor = themeTintColor.qmui_transition(to: UIColorWhite, progress: 0.9)
-        button.highlightedBackgroundColor = themeTintColor.qmui_transition(to: UIColorWhite, progress: 0.75) // 高亮时的背景色
-        button.layer.borderColor = button.backgroundColor?.qmui_transition(to: themeTintColor, progress: 0.5).cgColor
-        button.layer.borderWidth = 1
-        button.layer.cornerRadius = 4
-        button.highlightedBorderColor = button.backgroundColor?.qmui_transition(to: themeTintColor, progress: 0.9) // 高亮时的边框颜色
+        if let themeTintColor = QDThemeManager.shared.currentTheme?.themeTintColor {
+            button.setTitleColor(themeTintColor, for: .normal)
+            button.backgroundColor = themeTintColor.qmui_transition(to: UIColorWhite, progress: 0.9)
+            button.highlightedBackgroundColor = themeTintColor.qmui_transition(to: UIColorWhite, progress: 0.75) // 高亮时的背景色
+            button.layer.borderColor = button.backgroundColor?.qmui_transition(to: themeTintColor, progress: 0.5).cgColor
+            button.layer.borderWidth = 1
+            button.layer.cornerRadius = 4
+            button.highlightedBorderColor = button.backgroundColor?.qmui_transition(to: themeTintColor, progress: 0.9) // 高亮时的边框颜色
+        }
         return button
     }
 }

@@ -71,7 +71,7 @@ class QMUIQQEmotionManager {
         }
 
         emotionView.didSelectDeleteButtonBlock = { [weak self] in
-            _ = self?.deleteEmotionDisplayNameAtCurrentSelectedRange(force: true)
+            self?.deleteEmotionDisplayNameAtCurrentSelectedRange(force: true)
         }
     }
 
@@ -90,6 +90,7 @@ class QMUIQQEmotionManager {
      *  @param forceDelete 当没有删除掉表情的情况下（可能光标前面并不是一个表情字符），要不要强制删掉光标前的字符。YES表示强制删掉，NO表示不删，交给系统键盘处理
      *  @return 表示是否成功删除了文字（如果并不是删除表情，而是删除普通字符，也是返回YES）
      */
+    @discardableResult
     func deleteEmotionDisplayNameAtCurrentSelectedRange(force: Bool) -> Bool {
         guard let notNilBoundInputView = self.boundInputView() else {
             return false
