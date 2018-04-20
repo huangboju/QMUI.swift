@@ -475,8 +475,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
             let contentPaddingTop = (hasTitle || hasMessage || hasTextField || hasCustomView) ? alertHeaderInsets.top : 0
             let contentPaddingBottom = (hasTitle || hasMessage || hasTextField || hasCustomView) ? alertHeaderInsets.bottom : 0
-            containerView.frame.setWidth(fmin(alertContentMaximumWidth, view.bounds.width - alertContentMargin.horizontalValue))
-            scrollWrapView.frame.setWidth(containerView.bounds.width)
+            containerView.qmui_width = fmin(alertContentMaximumWidth, view.bounds.width - alertContentMargin.horizontalValue)
+            scrollWrapView.qmui_width = containerView.bounds.width
             headerScrollView.frame = CGRect(x: 0, y: 0, width: scrollWrapView.bounds.width, height: 0)
             contentOriginY = contentPaddingTop
             // 标题和副标题布局
@@ -582,8 +582,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
             let contentPaddingTop = (hasTitle || hasMessage || hasTextField) ? sheetHeaderInsets.top : 0
             let contentPaddingBottom = (hasTitle || hasMessage || hasTextField) ? sheetHeaderInsets.bottom : 0
-            containerView.frame.setWidth(fmin(sheetContentMaximumWidth, view.bounds.width - sheetContentMargin.horizontalValue))
-            scrollWrapView.frame.setWidth(containerView.bounds.width)
+            containerView.qmui_width = fmin(sheetContentMaximumWidth, view.bounds.width - sheetContentMargin.horizontalValue)
+            scrollWrapView.qmui_width = containerView.bounds.width
             headerScrollView.frame = CGRect(x: 0, y: 0, width: containerView.bounds.width, height: 0)
             contentOriginY = contentPaddingTop
             // 标题和副标题布局

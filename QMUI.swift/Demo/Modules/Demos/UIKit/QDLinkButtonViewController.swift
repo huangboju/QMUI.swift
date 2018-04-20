@@ -61,11 +61,9 @@ class QDLinkButtonViewController: QDCommonViewController {
         
         separatorLayer1.frame = CGRect(x: 0, y: contentMinY + buttonSpacingHeight - PixelOne, width: view.bounds.width, height: PixelOne)
         
-        var frame = separatorLayer1.frame
-        separatorLayer2.frame = frame.setY(contentMinY + buttonSpacingHeight * 2 - PixelOne)
+        separatorLayer2.frame = separatorLayer1.frame.setY(contentMinY + buttonSpacingHeight * 2 - PixelOne)
         
-        frame = separatorLayer1.frame
-        separatorLayer3.frame = frame.setY(contentMinY + buttonSpacingHeight * 3 - PixelOne)
+        separatorLayer3.frame = separatorLayer1.frame.setY(contentMinY + buttonSpacingHeight * 3 - PixelOne)
         
         linkButton1.frame = linkButton1.frame.setXY(linkButton1.frame.minXHorizontallyCenter(in: view.bounds), contentMinY + buttonSpacingHeight.center(linkButton1.frame.height))
         

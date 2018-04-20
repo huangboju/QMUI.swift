@@ -168,7 +168,7 @@ class QDAlertController: QDCommonGroupListViewController {
         
         // 展示系统的效果
         guard let _ = NSClassFromString("UIAlertController") else {
-            _ = QMUITips.showInfo("iOS 版本过低，不支持 UIAlertController", in: view, hideAfterDelay: 2)
+            QMUITips.showInfo("iOS 版本过低，不支持 UIAlertController", in: view, hideAfterDelay: 2)
             return
         }
         
@@ -232,7 +232,7 @@ class QDAlertController: QDCommonGroupListViewController {
 
         let positionAnimation = CAKeyframeAnimation()
         positionAnimation.keyPath = "position.x"
-        positionAnimation.values = [-5, 0, 10, 40, 80, 75]
+        positionAnimation.values = [-5, 0, 10, 40, 70, 80, 75]
         positionAnimation.keyTimes = [0, 5/90.0, 15/90.0, 45/90.0, 75/90.0, 85/90.0, 1] as [NSNumber]
         positionAnimation.isAdditive = true
         
@@ -248,9 +248,15 @@ class QDAlertController: QDCommonGroupListViewController {
         
         let group = CAAnimationGroup()
         group.animations = [positionAnimation, scaleAnimation, alphaAnimation]
-        group.timingFunction = CAMediaTimingFunction()
+        group.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
         group.repeatCount = Float.infinity
         group.duration = 1.3
+        
+        shapeView1.layer.add(group, forKey:"basic1")
+        group.timeOffset = 0.43
+        shapeView2.layer.add(group, forKey:"basic2")
+        group.timeOffset = 0.86
+        shapeView3.layer.add(group, forKey:"basic3")
         
         return animationView
     }

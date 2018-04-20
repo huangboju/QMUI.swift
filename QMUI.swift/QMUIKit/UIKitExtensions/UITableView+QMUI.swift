@@ -259,7 +259,7 @@ extension UITableView {
         }
 
         if tableHeaderView is UISearchBar {
-            let canScroll = qmui_realContentSize.height + contentInset.verticalValue > bounds.height
+            let canScroll = qmui_realContentSize.height + qmui_contentInset.verticalValue > bounds.height
             return canScroll
         } else {
             return super.qmui_canScroll

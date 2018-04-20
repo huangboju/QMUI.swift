@@ -6,36 +6,67 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-private let TagOffset = 999
+private let kQMUIMoreOperationItemViewTagOffset = 999
 
 /// 操作面板上item的类型，QMUIMoreOperationItemTypeImportant类型的item会放到第一行的scrollView，QMUIMoreOperationItemTypeNormal类型的item会放到第二行的scrollView。
-enum QMUIMoreOperationItemType {
-    case important // 将item放在第一行显示
-    case normal // 将item放在第二行显示
+@objc enum QMUIMoreOperationItemType: Int {
+    case important = 0 // 将item放在第一行显示
+    case normal = 1 // 将item放在第二行显示
 }
 
 /// 更多操作面板的delegate。
-protocol QMUIMoreOperationDelegate: class {
+@objc protocol QMUIMoreOperationControllerDelegate {
     /// 即将显示操作面板
-    func willPresentMoreOperationController(_ moreOperationController: QMUIMoreOperationController)
+    @objc optional func willPresent(_ moreOperationController: QMUIMoreOperationController)
     /// 已经显示操作面板
-    func didPresentMoreOperationController(_ moreOperationController: QMUIMoreOperationController)
+    @objc optional func didPresent(_ moreOperationController: QMUIMoreOperationController)
     /// 即将降下操作面板，cancelled参数是用来区分是否触发了maskView或者cancelButton按钮降下面板还是手动调用hide方法来降下面板。
-    func willDismissMoreOperationController(_ moreOperationController: QMUIMoreOperationController, cancelled: Bool)
+    @objc optional func willDismiss(_ moreOperationController: QMUIMoreOperationController, cancelled: Bool)
     /// 已经降下操作面板，cancelled参数是用来区分是否触发了maskView或者cancelButton按钮降下面板还是手动调用hide方法来降下面板。
-    func didDismissMoreOperationController(_ moreOperationController: QMUIMoreOperationController, cancelled: Bool)
-    /// 点击了操作面板上的一个item，可以通过参数拿到当前item的index和type
-    func moreOperationController(_ moreOperationController: QMUIMoreOperationController, didSelectItemAt buttonIndex: Int, type: QMUIMoreOperationItemType)
-    /// 点击了操作面板上的一个item，可以通过参数拿到当前item的tag
-    func moreOperationController(_ moreOperationController: QMUIMoreOperationController, didSelectItemAt tag: Int)
+    @objc optional func didDismiss(_ moreOperationController: QMUIMoreOperationController, cancelled: Bool)
+    /// itemView 点击事件，可以与 itemView.handler 共存，可通过 itemView.tag 或者 itemView.indexPath 来区分不同的 itemView
+    @objc optional func moreOperationController(_ moreOperationController: QMUIMoreOperationController, didSelect itemView: QMUIMoreOperationItemView)
 }
 
 class QMUIMoreOperationItemView: QMUIButton {
-    public var itemType: QMUIMoreOperationItemType = .important
+    
+    private var _indexPath: IndexPath?
+    private(set) var indexPath: IndexPath? {
+        get {
+            if moreOperationController != nil {
+                return moreOperationController?.indexPath(with: self)
+            } else {
+                return nil
+            }
+        }
+        set {
+            _indexPath = newValue
+        }
+    }
 
-    private var _tag = 0
-    private let TagOffset = 999
-
+    fileprivate weak var moreOperationController: QMUIMoreOperationController?
+    
+    typealias QMUIMoreOperationItemHandler = (QMUIMoreOperationController, QMUIMoreOperationItemView) -> Void
+    
+    var handler: QMUIMoreOperationItemHandler?
+    
+    override var isHighlighted: Bool {
+        didSet {
+            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha : 1
+        }
+    }
+    
+    private var _tag: Int = 0
+    override var tag: Int {
+        set {
+            _tag = newValue + kQMUIMoreOperationItemViewTagOffset
+        }
+        get {
+            // 为什么这里用-1而不是0：如果一个 itemView 通过带 tag: 参数初始化，那么 itemView.tag 最小值为 0，而如果一个 itemView 不通过带 tag: 的参数初始化，那么 itemView.tag 固定为 0，可见 tag 为 0 代表的意义不唯一，为了消除歧义，这里用 -1 代表那种不使用 tag: 参数初始化的 itemView
+            return max(-1, _tag - kQMUIMoreOperationItemViewTagOffset)
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -45,26 +76,51 @@ class QMUIMoreOperationItemView: QMUIButton {
         titleLabel?.numberOfLines = 0
         titleLabel?.textAlignment = .center
         imageView?.contentMode = .center
-        imageView?.backgroundColor = UIColorClear
     }
-
-    override var isHighlighted: Bool {
-        didSet {
-            imageView?.alpha = isHighlighted ? ButtonHighlightedAlpha : 1
-        }
-    }
-
-    override var tag: Int {
-        set {
-            _tag = newValue + TagOffset
-        }
-        get {
-            return _tag - TagOffset
-        }
-    }
-
+    
+    
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    convenience init(image: UIImage,
+         selectedImage: UIImage? = nil,
+         title: String,
+         selectedTitle: String? = nil,
+         tag: Int = 0,
+         handler: QMUIMoreOperationItemHandler?) {
+        self.init(frame: .zero)
+        setImage(image, for: .normal)
+        setImage(selectedImage, for: .selected)
+        setImage(selectedImage, for: [.highlighted, .selected])
+        setTitle(title, for: .normal)
+        setTitle(selectedTitle, for: [.highlighted, .selected])
+        setTitle(selectedTitle, for: .selected)
+        self.handler = handler
+        self.tag = tag
+    }
+    
+    override var description: String {
+        return "\(type(of: self)):\t\(self)\nimage:\t\t\t\(String(describing: image(for: .normal)))\nselectedImage:\t\(String(describing: image(for: .selected) == image(for: .normal) ? nil : image(for: .selected)))\ntitle:\t\t\t\(String(describing: title(for: .normal)))\nselectedTitle:\t\(String(describing: title(for: .selected) == title(for: .normal) ? nil : title(for: .selected)))\nindexPath:\t\t\(indexPath?.item ?? -1)\ntag:\t\t\t\t\(tag)"
+    }
+    
+    // 被添加到某个 QMUIMoreOperationController 时要调用，用于更新 itemView 的样式，以及 moreOperationController 属性的指针
+    // @param moreOperationController 如果为空，则会自动使用 [QMUIMoreOperationController appearance]
+    fileprivate func formatItemViewStyle(with moreOperationController: QMUIMoreOperationController?) -> QMUIMoreOperationController {
+        var vc: QMUIMoreOperationController
+        if moreOperationController != nil {
+            vc = moreOperationController!
+            // 将事件放到 controller 级别去做，以便实现 delegate 功能
+            addTarget(vc, action: #selector(QMUIMoreOperationController.handleItemViewEvent(_:)), for: .touchUpInside)
+        } else {
+            // 参数 nil 则默认使用 appearance 的样式
+            vc = QMUIMoreOperationController.appearance()
+        }
+        titleLabel?.font = vc.itemTitleFont
+        titleEdgeInsets = UIEdgeInsets(top: vc.itemTitleMarginTop, left: 0, bottom: 0, right: 0)
+        setTitleColor(vc.itemTitleColor, for: .normal)
+        imageView?.backgroundColor = vc.itemBackgroundColor
+        return vc
     }
 }
 
@@ -73,467 +129,667 @@ class QMUIMoreOperationItemView: QMUIButton {
  *  这个控件一般分为上下两行，第一行会显示比较重要的操作入口，第二行是一些次要的操作入口。
  *  QMUIMoreOperationController就是这样的一个控件，可以通过QMUIMoreOperationItemType来设置操作入口要放在第一行还是第二行。
  */
-class QMUIMoreOperationController: UIViewController {
+class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewControllerDelegate {
 
-    public var contentBackgroundColor = UIColorWhite {
+    // 面板上半部分（不包含取消按钮）背景色
+    var contentBackgroundColor = UIColorWhite {
         didSet {
             contentView.backgroundColor = contentBackgroundColor
         }
     }
 
-    public var contentSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
+    // 面板距离屏幕的上下左右间距
+    var contentEdgeMargin: CGFloat = 10 {
         didSet {
-            scrollViewDividingLayer.backgroundColor = contentSeparatorColor.cgColor
+            updateCornerRadius()
+        }
+    }
+    
+    // 面板的最大宽度
+    var contentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - 20
+    
+    // 面板的圆角大小，当值大于 0 时会设置 self.view.clipsToBounds = true
+    var contentCornerRadius: CGFloat = 10 {
+        didSet {
+            updateCornerRadius()
+        }
+    }
+    
+    // 面板内部的 padding，UIScrollView 会布局在除去 padding 之后的区域
+    var contentPaddings: UIEdgeInsets = .zero
+    
+    // 每一行之间的顶部分隔线，对第一行无效
+    var scrollViewSeparatorColor: UIColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
+        didSet {
+            updateScrollViewsBorderStyle()
+        }
+    }
+    
+    // // 每一行内部的 padding
+    var scrollViewContentInsets: UIEdgeInsets = UIEdgeInsetsMake(14, 8, 14, 8) {
+        didSet {
+            for scrollView in mutableScrollViews {
+                scrollView.contentInset = scrollViewContentInsets
+            }
+            setViewNeedsLayoutIfLoaded()
+        }
+    }
+    
+    // 按钮的背景色
+    var itemBackgroundColor = UIColorClear {
+        didSet {
+            for section in mutableItems {
+                for itemView in section {
+                    itemView.imageView?.backgroundColor = itemBackgroundColor
+                }
+            }
+        }
+    }
+    
+    // 按钮的标题颜色
+    var itemTitleColor = UIColorGrayDarken {
+        didSet {
+            for section in mutableItems {
+                for itemView in section {
+                    itemView.setTitleColor(itemTitleColor, for: .normal)
+                }
+            }
+        }
+    }
+    
+    // 按钮的标题字体
+    var itemTitleFont = UIFontMake(11) {
+        didSet {
+            for section in mutableItems {
+                for itemView in section {
+                    itemView.titleLabel?.font = itemTitleFont
+                    itemView.setNeedsLayout()
+                }
+            }
+        }
+    }
+    
+    // 按钮内 imageView 的左右间距（按钮宽度 = 图片宽度 + 左右间距 * 2），通常用来调整文字的宽度
+    var itemPaddingHorizontal: CGFloat = 16 {
+        didSet {
+            setViewNeedsLayoutIfLoaded()
+        }
+    }
+    
+    // 按钮标题距离文字之间的间距
+    var itemTitleMarginTop: CGFloat = 9 {
+        didSet {
+            for section in mutableItems {
+                for itemView in section {
+                    itemView.titleEdgeInsets = UIEdgeInsetsMake(itemTitleMarginTop, 0, 0, 0)
+                    itemView.setNeedsLayout()
+                }
+            }
         }
     }
 
-    public var cancelButtonBackgroundColor = UIColorWhite {
+    // 按钮与按钮之间的最小间距
+    var itemMinimumMarginHorizontal: CGFloat = 0 {
+        didSet {
+            setViewNeedsLayoutIfLoaded()
+        }
+    }
+    
+    // 是否要自动计算默认一行展示多少个 item，true 表示尽量让每一行末尾露出半个 item 暗示后面还有内容，false 表示直接根据 itemMinimumMarginHorizontal 来计算布局。默认为 true。
+    var automaticallyAdjustItemMargins: Bool = true {
+        didSet {
+            setViewNeedsLayoutIfLoaded()
+        }
+    }
+    
+    // 取消按钮的背景色
+    var cancelButtonBackgroundColor = UIColorWhite {
         didSet {
             cancelButton.backgroundColor = cancelButtonBackgroundColor
+            updateExtendLayerAppearance()
         }
     }
-
-    public var cancelButtonTitleColor = UIColorBlue {
+    
+    // 取消按钮的标题颜色
+    var cancelButtonTitleColor = UIColorBlue {
         didSet {
             cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
             cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
         }
     }
-
-    public var cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
+    
+    // 取消按钮的顶部分隔线颜色
+    var cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
         didSet {
-            cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor
+            cancelButton.qmui_borderColor = cancelButtonSeparatorColor
         }
     }
-
-    public var itemBackgroundColor = UIColorClear {
-        didSet {
-            let result = importantItems + normalItems
-            for item in result {
-                item.imageView?.backgroundColor = itemBackgroundColor
-            }
-        }
-    }
-
-    public var itemTitleColor = UIColorGrayDarken {
-        didSet {
-            let result = importantItems + normalItems
-            for item in result {
-                item.setTitleColor(itemTitleColor, for: .normal)
-            }
-        }
-    }
-
-    public var itemTitleFont = UIFontMake(11) {
-        didSet {
-            let result = importantItems + normalItems
-            for item in result {
-                item.titleLabel?.font = itemTitleFont
-            }
-        }
-    }
-
-    public var cancelButtonFont = UIFontBoldMake(17) {
+    
+    // 取消按钮的字体
+    var cancelButtonFont = UIFontBoldMake(17) {
         didSet {
             cancelButton.titleLabel?.font = cancelButtonFont
+            cancelButton.setNeedsLayout()
         }
     }
-
-    public var contentEdgeMargin: CGFloat = 10 {
+    
+    // 取消按钮的高度
+    var cancelButtonHeight: CGFloat = 56
+    
+    // 取消按钮距离内容面板的间距
+    var cancelButtonMarginTop: CGFloat = 0 {
         didSet {
+            cancelButton.qmui_borderPosition = cancelButtonMarginTop > 0 ? .none : .top
             updateCornerRadius()
-        }
-    }
-
-    public var contentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - 20
-    public var contentCornerRadius: CGFloat = 10
-    public var itemTitleMarginTop: CGFloat = 9 {
-        didSet {
-            let result = importantItems + normalItems
-            for item in result {
-                item.titleEdgeInsets = UIEdgeInsets(top: itemTitleMarginTop, left: 0, bottom: 0, right: 0)
-            }
-        }
-    }
-
-    public var topScrollViewInsets = UIEdgeInsets(top: 18, left: 14, bottom: 12, right: 14)
-    public var bottomScrollViewInsets = UIEdgeInsets(top: 18, left: 14, bottom: 12, right: 14)
-    public var cancelButtonHeight: CGFloat = 52
-    public var cancelButtonMarginTop: CGFloat = 0 {
-        didSet {
-            updateCornerRadius()
+            setViewNeedsLayoutIfLoaded()
         }
     }
 
     /// 代理
-    public weak var delegate: QMUIMoreOperationDelegate?
+    weak var delegate: QMUIMoreOperationControllerDelegate?
+    
+    // 放 UIScrollView 的容器，与 cancelButton 区分开
+    private(set) var contentView: UIView!
 
-    /// 获取当前所有的item
-    public var items: [QMUIMoreOperationItemView] {
-        return importantItems + normalItems
+    // 获取当前的所有 UIScrollView
+    var scrollViews: [UIScrollView] {
+        let scrollViews = mutableScrollViews
+        return scrollViews
     }
-
-    /// 获取取消按钮
-    public let cancelButton = QMUIButton()
+    
+    /// 取消按钮，如果不需要，则自行设置其 hidden 为 true
+    private(set) var cancelButton: QMUIButton!
+    
+    /// 在 iPhoneX 机器上是否延伸底部背景色。因为在 iPhoneX 上我们会把整个面板往上移动 safeArea 的距离，如果你的面板本来就配置成撑满全屏的样式，那么就会露出底部的空隙，isExtendBottomLayout 可以帮助你把空暇填补上。默认为false。
+    var isExtendBottomLayout: Bool = false {
+        didSet {
+            if isExtendBottomLayout {
+                extendLayer.isHidden = false
+                updateExtendLayerAppearance()
+            } else {
+                extendLayer.isHidden = true
+            }
+        }
+    }
+    
+    /// 获取当前所有的item
+    var items: [[QMUIMoreOperationItemView]] {
+        get {
+            let items = mutableItems
+            return items
+        }
+        set {
+            for section in mutableItems {
+                for itemView in section {
+                    itemView.removeFromSuperview()
+                }
+            }
+            mutableItems.removeAll()
+            mutableItems = newValue
+            for scrollView in mutableScrollViews {
+                scrollView.removeFromSuperview()
+            }
+            mutableScrollViews.removeAll()
+            for (index, itemViewSection) in mutableItems.enumerated() {
+                let scrollView = addScrollView(at: index)
+                for itemView in itemViewSection {
+                    _add(itemView, to: scrollView)
+                }
+            }
+            setViewNeedsLayoutIfLoaded()
+        }
+    }
+    
+    private var mutableScrollViews: [UIScrollView] = []
+    
+    private var mutableItems: [[QMUIMoreOperationItemView]] = [[]]
 
     /// 更多操作面板是否正在显示
-    public private(set) var isShowing = false
-    public private(set) var isAnimating = false
-
-    private let containerView = UIView()
-    private let contentView = UIView()
-    private let maskView = UIControl()
-    private let importantItemsScrollView = UIScrollView()
-    private let normalItemsScrollView = UIScrollView()
-
-    private let scrollViewDividingLayer = CALayer()
-    private let cancelButtonDividingLayer = CALayer()
-
-    private var importantItems: [QMUIMoreOperationItemView] = []
-    private var normalItems: [QMUIMoreOperationItemView] = []
-    private var importantShowingItems: [QMUIMoreOperationItemView] = []
-    private var normalShowingItems: [QMUIMoreOperationItemView] = []
-
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-
+    private(set) var isShowing = false
+    private(set) var isAnimating = false
+    
+    private var extendLayer: CALayer!
+    
+    // 是否通过点击取消按钮或者遮罩来隐藏面板，默认为 false
+    private var hideByCancel: Bool = false
+    
+    convenience init() {
+        self.init(nibName: nil, bundle: nil)
         didInitialized()
     }
 
+    override init(nibName _: String?, bundle _: Bundle?) {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-
-        didInitialized()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func didInitialized() {
-        initSubviewsIfNeeded()
+        
+        if #available(iOS 9.0, *) {
+            loadViewIfNeeded()
+        } else {
+            view.alpha = 1
+        }
+        
+        contentBackgroundColor = QMUIMoreOperationController.appearance().contentBackgroundColor
+        contentEdgeMargin = QMUIMoreOperationController.appearance().contentEdgeMargin
+        contentMaximumWidth = QMUIMoreOperationController.appearance().contentMaximumWidth
+        contentCornerRadius = QMUIMoreOperationController.appearance().contentCornerRadius
+        contentPaddings = QMUIMoreOperationController.appearance().contentPaddings
+        scrollViewSeparatorColor = QMUIMoreOperationController.appearance().scrollViewSeparatorColor
+        scrollViewContentInsets = QMUIMoreOperationController.appearance().scrollViewContentInsets
+        
+        itemBackgroundColor = QMUIMoreOperationController.appearance().itemBackgroundColor
+        itemTitleColor = QMUIMoreOperationController.appearance().itemTitleColor
+        itemTitleFont = QMUIMoreOperationController.appearance().itemTitleFont
+        itemPaddingHorizontal = QMUIMoreOperationController.appearance().itemPaddingHorizontal
+        itemTitleMarginTop = QMUIMoreOperationController.appearance().itemTitleMarginTop
+        itemMinimumMarginHorizontal = QMUIMoreOperationController.appearance().itemMinimumMarginHorizontal
+        automaticallyAdjustItemMargins = QMUIMoreOperationController.appearance().automaticallyAdjustItemMargins
+        
+        cancelButtonBackgroundColor = QMUIMoreOperationController.appearance().cancelButtonBackgroundColor
+        cancelButtonTitleColor = QMUIMoreOperationController.appearance().cancelButtonTitleColor
+        cancelButtonSeparatorColor = QMUIMoreOperationController.appearance().cancelButtonSeparatorColor
+        cancelButtonFont = QMUIMoreOperationController.appearance().cancelButtonFont
+        cancelButtonHeight = QMUIMoreOperationController.appearance().cancelButtonHeight
+        cancelButtonMarginTop = QMUIMoreOperationController.appearance().cancelButtonMarginTop
+        
+        isExtendBottomLayout = QMUIMoreOperationController.appearance().isExtendBottomLayout
     }
 
-    private func initSubviewsIfNeeded() {
-        maskView.alpha = 0
-        maskView.backgroundColor = UIColorMask
-        maskView.addTarget(self, action: #selector(handleMaskControlEvent), for: .touchUpInside)
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        containerView.clipsToBounds = true
-
-        contentView.clipsToBounds = true
+        contentView = UIView()
         contentView.backgroundColor = contentBackgroundColor
-
-        scrollViewDividingLayer.isHidden = true
-        scrollViewDividingLayer.backgroundColor = contentSeparatorColor.cgColor
-        scrollViewDividingLayer.qmui_removeDefaultAnimations()
-
-        importantItemsScrollView.showsHorizontalScrollIndicator = false
-        importantItemsScrollView.showsVerticalScrollIndicator = false
-
-        normalItemsScrollView.showsHorizontalScrollIndicator = false
-        normalItemsScrollView.showsVerticalScrollIndicator = false
-        normalItemsScrollView.isHidden = true
-
+        view.addSubview(contentView)
+        
+        cancelButton = QMUIButton()
+        cancelButton.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
         cancelButton.adjustsButtonWhenHighlighted = false
         cancelButton.titleLabel?.font = cancelButtonFont
         cancelButton.backgroundColor = cancelButtonBackgroundColor
         cancelButton.setTitle("取消", for: .normal)
         cancelButton.setTitleColor(cancelButtonTitleColor, for: .normal)
         cancelButton.setTitleColor(cancelButtonTitleColor.withAlphaComponent(ButtonHighlightedAlpha), for: .highlighted)
-        cancelButton.addTarget(self, action: #selector(handleCancelButtonEvent), for: .touchUpInside)
-
-        cancelButtonDividingLayer.backgroundColor = cancelButtonSeparatorColor.cgColor
-        cancelButtonDividingLayer.qmui_removeDefaultAnimations()
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.addSubview(maskView)
-        view.addSubview(containerView)
-        containerView.addSubview(contentView)
-        contentView.layer.addSublayer(scrollViewDividingLayer)
-        contentView.addSubview(importantItemsScrollView)
-        contentView.addSubview(normalItemsScrollView)
-        containerView.addSubview(cancelButton)
-        containerView.layer.addSublayer(cancelButtonDividingLayer)
+        cancelButton.qmui_borderPosition = .bottom
+        cancelButton.qmui_borderColor = cancelButtonSeparatorColor
+        cancelButton.addTarget(self, action: #selector(handleCancelButtonEvent(_:)), for: .touchUpInside)
+        view.addSubview(cancelButton)
+        
+        extendLayer = CALayer()
+        extendLayer.isHidden = !self.isExtendBottomLayout
+        extendLayer.qmui_removeDefaultAnimations()
+        view.layer.addSublayer(extendLayer)
+        updateExtendLayerAppearance()
+        
         updateCornerRadius()
-    }
-
-    private func resetShowingItemsArray() {
-        importantShowingItems.removeAll()
-        normalShowingItems.removeAll()
-        for item in importantItems where !item.isHidden {
-            importantShowingItems.append(item)
-        }
-        for item in normalItems where !item.isHidden {
-            normalShowingItems.append(item)
-        }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        resetShowingItemsArray()
-
-        maskView.frame = view.bounds
-
-        var layoutOriginY: CGFloat = 0
-        let contentWidth: CGFloat = min(view.bounds.width - contentEdgeMargin * 2, contentMaximumWidth)
-
-        var importantScrollViewInsets = topScrollViewInsets
-        var normaltScrollViewInsets = bottomScrollViewInsets
-
-        // 当两个scrollView其中一个没有的时候，需要调整对应的insets
-        if importantShowingItems.isEmpty {
-            normaltScrollViewInsets.setTop(importantScrollViewInsets.top)
-            bottomScrollViewInsets = normaltScrollViewInsets
-        }
-        if normalShowingItems.isEmpty {
-            importantScrollViewInsets.setBottom(bottom: normaltScrollViewInsets.bottom)
-            topScrollViewInsets = importantScrollViewInsets
-        }
-
-        let isLargeSreen = view.bounds.width > QMUIHelper.screenSizeFor40Inch.width
-        let maxItemCountInScrollView = CGFloat(max(importantShowingItems.count, normalShowingItems.count))
-        let itemCountForTotallyVisibleItem: CGFloat = isLargeSreen ? 4 : 3
-
-        let itemWidth = flat((contentWidth - max(importantScrollViewInsets.horizontalValue, normaltScrollViewInsets.horizontalValue)) / itemCountForTotallyVisibleItem) - (maxItemCountInScrollView > itemCountForTotallyVisibleItem ? 11.0 : 0.0)
-
-        var itemMaxHeight: CGFloat = 0
-        var itemMaxX: CGFloat = 0
-        if !importantShowingItems.isEmpty {
-            importantItemsScrollView.isHidden = false
-            for i in 0 ..< importantShowingItems.count {
-                let itemView = importantShowingItems[i]
-                itemView.sizeToFit()
-                itemView.frame = CGRect(x: itemWidth * CGFloat(i), y: 0, width: itemWidth, height: itemView.bounds.height).flatted
-                itemMaxX = itemView.frame.maxX
-                itemMaxHeight = max(itemView.bounds.height, itemMaxHeight)
+        var layoutY = view.bounds.height
+        
+        if !extendLayer.isHidden {
+            extendLayer.frame = CGRect(x: 0, y: layoutY, width: view.bounds.width, height: IPhoneXSafeAreaInsets.bottom)
+            if view.clipsToBounds {
+                print("QMUIMoreOperationController，\(type(of: self)) 需要显示 extendLayer，但却被父级 clip 掉了，可能看不到")
             }
-            importantItemsScrollView.contentSize = CGSize(width: itemMaxX, height: itemMaxHeight).flatted
-            importantItemsScrollView.contentInset = importantScrollViewInsets
-            importantItemsScrollView.contentOffset = CGPoint(x: -importantItemsScrollView.contentInset.left, y: -importantItemsScrollView.contentInset.top)
-            importantItemsScrollView.frame = CGSize(width: contentWidth, height: importantItemsScrollView.contentInset.verticalValue + importantItemsScrollView.contentSize.height).rect.flatted
-            layoutOriginY = importantItemsScrollView.frame.maxY
-        } else {
-            importantItemsScrollView.isHidden = true
         }
+        
+        let isCancelButtonShowing = !cancelButton.isHidden
+        if isCancelButtonShowing {
+            cancelButton.frame = CGRect(x: 0, y: layoutY - cancelButtonHeight, width: view.bounds.width, height: cancelButtonHeight)
+            cancelButton.setNeedsLayout()
+            layoutY = cancelButton.frame.minY - cancelButtonMarginTop
+        }
+        
+        contentView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: layoutY)
+        layoutY = contentPaddings.top
 
-        itemMaxHeight = 0
-        itemMaxX = 0
-        if !normalShowingItems.isEmpty {
-            normalItemsScrollView.isHidden = false
-            scrollViewDividingLayer.isHidden = importantShowingItems.isEmpty
-            scrollViewDividingLayer.frame = CGRectFlat(0, layoutOriginY, contentWidth, PixelOne)
-            layoutOriginY = scrollViewDividingLayer.frame.maxY
-            for i in 0 ..< normalShowingItems.count {
-                let itemView = normalShowingItems[i]
-                itemView.sizeToFit()
-                itemView.frame = CGRect(x: itemWidth * CGFloat(i), y: 0, width: itemWidth, height: itemView.bounds.height).flatted
-                itemMaxX = itemView.frame.maxX
-                itemMaxHeight = max(itemMaxHeight, itemView.bounds.height)
+        let contentWidth: CGFloat = contentView.bounds.width - contentPaddings.horizontalValue
+
+        for (index, scrollView) in mutableScrollViews.enumerated() {
+            scrollView.frame = CGRect(x: contentPaddings.left, y: layoutY, width: contentWidth, height: scrollView.frame.height)
+            // 要保护 safeAreaInsets 的区域，而这里不使用 scrollView.qmui_safeAreaInsets 是因为此时 scrollView 的 safeAreaInsets 仍然为 0，但 scrollView.superview.safeAreaInsets 已经正确了，所以使用 scrollView.superview 也即 self.view 的
+            // 底部的 insets 暂不考虑
+            //        UIEdgeInsets scrollViewSafeAreaInsets = scrollView.qmui_safeAreaInsets;
+            let scrollViewSafeAreaInsets = UIEdgeInsets(top: fmax(view.qmui_safeAreaInsets.top - scrollView.qmui_top, 0), left: fmax(view.qmui_safeAreaInsets.left - scrollView.qmui_left, 0), bottom: 0, right: fmax(view.qmui_safeAreaInsets.right - (view.qmui_width - scrollView.qmui_right), 0))
+            
+            let itemSection = mutableItems[index]
+            var exampleItemWidth: CGFloat = 0
+            if let exampleItemView = itemSection.first, let width = exampleItemView.imageView?.image?.size.width {
+                exampleItemWidth = width  + itemPaddingHorizontal * 2
             }
-
-            normalItemsScrollView.contentSize = CGSize(width: itemMaxX, height: itemMaxHeight).flatted
-            normalItemsScrollView.contentInset = normaltScrollViewInsets
-            normalItemsScrollView.frame = CGRect(x: 0, y: layoutOriginY, width: contentWidth, height: normalItemsScrollView.contentInset.verticalValue + normalItemsScrollView.contentSize.height).flatted
-            normalItemsScrollView.contentOffset = CGPoint(x: -normalItemsScrollView.contentInset.left, y: -normalItemsScrollView.contentInset.top)
-            layoutOriginY = normalItemsScrollView.frame.maxY
-        } else {
-            normalItemsScrollView.isHidden = true
-            scrollViewDividingLayer.isHidden = true
+            let scrollViewVisibleWidth = contentWidth - scrollView.contentInset.left - scrollViewSafeAreaInsets.left // 注意计算列数时不需要考虑 contentInset.right 的
+            var columnCount = (scrollViewVisibleWidth + itemMinimumMarginHorizontal) / (exampleItemWidth + itemMinimumMarginHorizontal)
+            
+            // 让初始状态下在 scrollView 右边露出半个 item
+            if automaticallyAdjustItemMargins {
+                columnCount = suitableColumnCount(columnCount)
+            }
+            
+            let finalItemMarginHorizontal = (scrollViewVisibleWidth - exampleItemWidth * columnCount) / columnCount
+            
+            var maximumItemHeight: CGFloat = 0
+            var itemViewMinX: CGFloat = scrollViewSafeAreaInsets.left
+            for itemView in itemSection {
+                let itemSize = itemView.sizeThatFits(CGSize(width: exampleItemWidth, height: CGFloat.greatestFiniteMagnitude)).flatted
+                maximumItemHeight = fmax(maximumItemHeight, itemSize.height)
+                itemView.frame = CGRect(x: itemViewMinX, y: 0, width: exampleItemWidth, height: itemSize.height)
+                itemViewMinX = itemView.frame.maxX + finalItemMarginHorizontal
+            }
+            
+            scrollView.contentSize = CGSize(width: itemViewMinX - finalItemMarginHorizontal + scrollViewSafeAreaInsets.right, height: maximumItemHeight)
+            scrollView.frame = scrollView.frame.setHeight(scrollView.contentSize.height + scrollView.contentInset.verticalValue)
+            layoutY = scrollView.frame.maxY
         }
-
-        contentView.frame = CGSize(width: contentWidth, height: layoutOriginY).rect.flatted
-        layoutOriginY = contentView.frame.maxY
-
-        cancelButtonDividingLayer.isHidden = cancelButtonMarginTop > 0
-        cancelButtonDividingLayer.frame = CGRect(x: 0, y: layoutOriginY + cancelButtonMarginTop, width: contentWidth, height: PixelOne).flatted
-        cancelButton.frame = CGRect(x: 0.0, y: cancelButtonDividingLayer.frame.minY, width: contentWidth, height: cancelButtonHeight).flatted
-
-        containerView.frame = CGRect(x: (view.bounds.width - contentWidth) / 2,
-                                     y: view.bounds.height - cancelButton.frame.maxY - contentEdgeMargin,
-                                     width: contentWidth,
-                                     height: cancelButton.frame.maxY).flatted
+    }
+    
+    private func suitableColumnCount(_ columnCount: CGFloat) -> CGFloat {
+        // 根据精准的列数，找到一个合适的、能让半个 item 刚好露出来的列数。例如 3.6 会被转换成 3.5，3.2 会被转换成 2.5。
+        var result: CGFloat = 0
+        if (CGFloat(Int(columnCount)) + 0.5) == CGFloat(Int(columnCount)) {
+            result = (CGFloat(Int(columnCount)) - 1) + 0.5
+        }
+        result = CGFloat(Int(columnCount)) + 0.5
+        return result
+    }
+    
+    /// 弹出面板，一般在 init 完并且设置好 items 之后就调用这个接口来显示面板
+    func showFromBottom() {
+        if isShowing || isAnimating {
+            return
+        }
+        
+        hideByCancel = true
+        
+        let modalPresentationViewController = QMUIModalPresentationViewController()
+        modalPresentationViewController.delegate = self
+        modalPresentationViewController.maximumContentViewWidth = contentMaximumWidth
+        modalPresentationViewController.contentViewMargins = UIEdgeInsets(top: contentEdgeMargin, left: contentEdgeMargin, bottom: contentEdgeMargin, right: contentEdgeMargin)
+        modalPresentationViewController.contentViewController = self
+        
+        
+        modalPresentationViewController.layoutClosure = { (containerBounds, keyboardHeight, contentViewDefaultFrame) in
+            modalPresentationViewController.contentView?.frame = contentViewDefaultFrame.setY(containerBounds.height - modalPresentationViewController.contentViewMargins.bottom - contentViewDefaultFrame.height - modalPresentationViewController.view.qmui_safeAreaInsets.bottom)
+        }
+        modalPresentationViewController.showingAnimationClosure =  { [weak self] (dimmingView: UIView?, containerBounds: CGRect, _: CGFloat, contentViewFrame: CGRect, _ completion: ((Bool) -> Void)?) in
+            if let strongSelf = self {
+                strongSelf.delegate?.willPresent?(strongSelf)
+            }
+            dimmingView?.alpha = 0
+            modalPresentationViewController.contentView?.frame = contentViewFrame.setY(containerBounds.height)
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
+                dimmingView?.alpha = 1
+                modalPresentationViewController.contentView?.frame = contentViewFrame
+            }, completion: { (finished) in
+                if let strongSelf = self {
+                    strongSelf.isShowing = true
+                    strongSelf.isAnimating = false
+                    strongSelf.delegate?.didPresent?(strongSelf)
+                }
+                completion?(finished)
+            })
+        }
+        
+        modalPresentationViewController.hidingAnimationClosure =  { (dimmingView: UIView?, containerBounds: CGRect, _ : CGFloat, _ completion: ((_ finished: Bool) -> Void)?) in
+            UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
+                dimmingView?.alpha = 0
+                if let contentView = modalPresentationViewController.contentView {
+                    contentView.frame = contentView.frame.setY(containerBounds.height)
+                }
+            }, completion: { (finished) in
+                completion?(finished)
+            })
+        }
+        
+        isAnimating = true
+        modalPresentationViewController.show(true, completion: nil)
+    }
+    
+    /// 隐藏面板
+    func hideToBottom() {
+        if !isShowing || isAnimating {
+            return
+        }
+        hideByCancel = false
+        qmui_modalPresentationViewController?.hide(true, completion: nil)
     }
 
+    @objc func handleCancelButtonEvent(_ button: QMUIButton) {
+        if !isShowing || isAnimating {
+            return
+        }
+        qmui_modalPresentationViewController?.hide(true, completion: nil)
+    }
+    
+    @objc func handleItemViewEvent(_ itemView: QMUIMoreOperationItemView) {
+        delegate?.moreOperationController?(self, didSelect: itemView)
+        itemView.handler?(self, itemView)
+    }
+
+    /// 添加一个 itemView 到指定 section 的末尾
+    func add(_ itemView: QMUIMoreOperationItemView, in section: Int) {
+        if section == mutableItems.count {
+            // 创建新的 itemView section
+            mutableItems.append([itemView])
+        } else {
+            mutableItems[section].append(itemView)
+        }
+        itemView.moreOperationController = self
+        if (section == mutableScrollViews.count) {
+            // 创建新的 section
+            addScrollView(at: section)
+        }
+        if section < mutableScrollViews.count {
+            _add(itemView, to: mutableScrollViews[section])
+        }
+        setViewNeedsLayoutIfLoaded()
+    }
+
+    /// 插入一个 itemView 到指定的位置，NSIndexPath 请使用 section-item 组合，其中 section 表示行，item 表示 section 里的元素序号
+    func insert(_ itemView: QMUIMoreOperationItemView, at indexPath: IndexPath) {
+        if indexPath.section == mutableItems.count {
+            // 创建新的 itemView section
+            mutableItems.append([itemView])
+        } else {
+            mutableItems[indexPath.section].insert(itemView, at: indexPath.item)
+        }
+        itemView.moreOperationController = self
+        if (indexPath.section == mutableScrollViews.count) {
+            // 创建新的 section
+            addScrollView(at: indexPath.section)
+        }
+        if indexPath.section < mutableScrollViews.count {
+            itemView.moreOperationController = itemView.formatItemViewStyle(with: self)
+            mutableScrollViews[indexPath.section].insertSubview(itemView, at:indexPath.item)
+        }
+        setViewNeedsLayoutIfLoaded()
+    }
+
+    /// 移除指定位置的 itemView，NSIndexPath 请使用 section-item 组合，其中 section 表示行，item 表示 section 里的元素序号
+    func removeItemView(at indexPath: IndexPath) {
+        let itemView = mutableScrollViews[indexPath.section].subviews[indexPath.item] as! QMUIMoreOperationItemView
+        itemView.moreOperationController = nil
+        itemView.removeFromSuperview()
+        var itemViewSection = mutableItems[indexPath.section]
+        itemViewSection.remove(object: itemView)
+        mutableItems[indexPath.section] = itemViewSection
+        if itemViewSection.count == 0 {
+            mutableItems.remove(object: itemViewSection)
+            mutableScrollViews[indexPath.section].removeFromSuperview()
+            mutableScrollViews.remove(at: indexPath.section)
+            updateScrollViewsBorderStyle()
+        }
+        setViewNeedsLayoutIfLoaded()
+    }
+    
+    /// 获取指定 tag 的 itemView，如果不存在则返回 nil
+    func itemView(with tag: Int) -> QMUIMoreOperationItemView? {
+        var result: QMUIMoreOperationItemView?
+        for section in mutableItems {
+            for itemView in section {
+                if itemView.tag == tag {
+                    result = itemView
+                    break
+                }
+            }
+        }
+        return result
+    }
+    
+    /// 获取指定 itemView 在当前控件里的 indexPath，如果不存在则返回 nil
+    func indexPath(with itemView: QMUIMoreOperationItemView) -> IndexPath? {
+        for section in 0..<mutableItems.count {
+            if let index = mutableItems[section].index(of: itemView) {
+                return IndexPath(item: index, section: section)
+            }
+        }
+        return nil
+    }
+    
+    @discardableResult
+    private func addScrollView(at index: Int) -> UIScrollView {
+        let scrollView = generateScrollView(index)
+        contentView.addSubview(scrollView)
+        mutableScrollViews.append(scrollView)
+        updateScrollViewsBorderStyle()
+        return scrollView
+    }
+    
+    private func _add(_ itemView: QMUIMoreOperationItemView, to scrollView: UIScrollView) {
+        itemView.moreOperationController = itemView.formatItemViewStyle(with: self)
+        scrollView.addSubview(itemView)
+    }
+    
+    private func generateScrollView(_ index: Int) -> UIScrollView {
+        let scrollView = UIScrollView()
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.alwaysBounceHorizontal = true
+        scrollView.qmui_borderColor = scrollViewSeparatorColor
+        scrollView.qmui_borderPosition = index != 0 ? .top : .none
+        scrollView.scrollsToTop = false
+        if #available(iOS 11, *) {
+            scrollView.contentInsetAdjustmentBehavior = .never
+        }
+        scrollView.contentInset = scrollViewContentInsets
+        scrollView.qmui_scrollToTopForce(true, animated: false)
+        return scrollView
+    }
+    
+    private func updateScrollViewsBorderStyle() {
+        for (idx, scrollView) in mutableScrollViews.enumerated() {
+            scrollView.qmui_borderColor = scrollViewSeparatorColor
+            scrollView.qmui_borderPosition = idx != 0 ? .top : .none
+        }
+    }
+    
+    private func setViewNeedsLayoutIfLoaded() {
+        if isShowing {
+            qmui_modalPresentationViewController?.updateLayout()
+            view.setNeedsLayout()
+        } else if isViewLoaded {
+            view.setNeedsLayout()
+        }
+    }
+    
+    private func updateExtendLayerAppearance() {
+        extendLayer.backgroundColor = cancelButtonBackgroundColor.cgColor
+    }
+    
     private func updateCornerRadius() {
         if cancelButtonMarginTop > 0 {
+            view.layer.cornerRadius = 0
+            view.clipsToBounds = false
+            
             contentView.layer.cornerRadius = contentCornerRadius
-            containerView.layer.cornerRadius = 0
             cancelButton.layer.cornerRadius = contentCornerRadius
         } else {
-            containerView.layer.cornerRadius = contentCornerRadius
+            view.layer.cornerRadius = contentCornerRadius
+            view.clipsToBounds = view.layer.cornerRadius > 0 // 有圆角才需要 clip
             contentView.layer.cornerRadius = 0
             cancelButton.layer.cornerRadius = 0
         }
     }
-
-    /// 弹出更多操作面板，一般在init完并且设置好item之后就调用这个接口来显示面板
-    public func showFromBottom() {
-        if isShowing || isAnimating {
-            return
-        }
-
-        let modalPresentationViewController = QMUIModalPresentationViewController()
-        modalPresentationViewController.maximumContentViewWidth = CGFloat.greatestFiniteMagnitude
-        modalPresentationViewController.contentViewMargins = .zero
-        modalPresentationViewController.dimmingView = nil
-        modalPresentationViewController.contentViewController = self
-
-        modalPresentationViewController.showingAnimationClosure = { [weak self] _, _, _, _, completion in
-            self?.delegate?.willPresentMoreOperationController(self!)
-            self?.containerView.frame.setY(self?.view.bounds.height ?? 0)
-            UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
-                self?.maskView.alpha = 1
-                self?.containerView.frame.setY((self?.view.bounds.height ?? 0) - (self?.containerView.frame.height ?? 0) - (self?.contentEdgeMargin ?? 0))
-            }, completion: { finished in
-                self?.isShowing = true
-                self?.isAnimating = false
-                self?.delegate?.didPresentMoreOperationController(self!)
-                completion?(finished)
-            })
-        }
-
-        modalPresentationViewController.hidingAnimationClosure = { [weak self] _, containerBounds, _, completion in
-            UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
-                self?.maskView.alpha = 0
-                self?.containerView.frame.setY(containerBounds.height)
-            }, completion: completion)
-        }
-
-        isAnimating = true
-        modalPresentationViewController.show(true, completion: nil)
-    }
-
-    /// 与showFromBottom相反
-    public func hideToBottom() {
-        hideToBottomCancelled(false)
-    }
-
-    private func hideToBottomCancelled(_ cancelled: Bool) {
-
-        if !isShowing || isAnimating {
-            return
-        }
-        isAnimating = true
-
-        delegate?.willDismissMoreOperationController(self, cancelled: cancelled)
-
-        qmui_modalPresentationViewController?.hide(true, completion: { [weak self] _ in
-            self?.isShowing = false
-            self?.isAnimating = false
-            self?.delegate?.didDismissMoreOperationController(self!, cancelled: cancelled)
-        })
-    }
-
-    @objc func handleMaskControlEvent(_: UIControl) {
-        hideToBottomCancelled(true)
-    }
-
-    @objc func handleCancelButtonEvent(_: QMUIButton) {
-        hideToBottomCancelled(true)
-    }
-
-    /// 下面几个`addItem`方法，是用来往面板里面增加item的
-    public func addItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int = -1) -> Int {
-        let itemView = createItem(with: title, selectedTitle: selectedTitle, image: image, selectedImage: selectedImage, type: type, tag: tag)
-        if itemView.itemType == .important {
-            return insertItem(itemView, to: importantItems.count) ? importantItems.index(of: itemView) ?? -1 : -1
-        } else if itemView.itemType == .normal {
-            return insertItem(itemView, to: normalItems.count) ? normalItems.index(of: itemView) ?? -1 : -1
-        }
-        return -1
-    }
-
-    public func addItem(with title: String, selectedTitle: String, image: UIImage, selectedImage _: UIImage, type: QMUIMoreOperationItemType) -> Int {
-        return addItem(with: title, selectedTitle: selectedTitle, image: image, selectedImage: image, type: type)
-    }
-
-    public func addItem(with title: String, image: UIImage, type: QMUIMoreOperationItemType) -> Int {
-        return addItem(with: title, selectedTitle: title, image: image, selectedImage: image, type: type)
-    }
-
-    /// 初始化一个item，并通过下面的`insertItem`来将item插入到面板的某个位置
-    public func createItem(with title: String, selectedTitle: String, image: UIImage, selectedImage: UIImage, type: QMUIMoreOperationItemType, tag: Int) -> QMUIMoreOperationItemView {
-        let itemView = QMUIMoreOperationItemView(frame: .zero)
-        itemView.itemType = type
-        itemView.titleLabel?.font = itemTitleFont
-        itemView.titleEdgeInsets.top = itemTitleMarginTop
-        itemView.setImage(image, for: .normal)
-        itemView.setImage(selectedImage, for: .selected)
-        itemView.setImage(selectedImage, for: [.highlighted, .selected])
-        itemView.setTitle(title, for: .normal)
-        itemView.setTitle(selectedTitle, for: [.highlighted, .selected])
-        itemView.setTitle(selectedTitle, for: .selected)
-        itemView.setTitleColor(itemTitleColor, for: .normal)
-        itemView.imageView?.backgroundColor = itemBackgroundColor
-        itemView.tag = tag
-        itemView.addTarget(self, action: #selector(handleButtonClick), for: .touchUpInside)
-        return itemView
-    }
-
-    /// 将通过上面初始化的一个item插入到某个位置
-    public func insertItem(_ itemView: QMUIMoreOperationItemView, to index: Int) -> Bool {
-        if itemView.itemType == .important {
-            importantItems.insert(itemView, at: index)
-            importantItemsScrollView.addSubview(itemView)
-            return true
-        } else if itemView.itemType == .normal {
-            normalItems.insert(itemView, at: index)
-            normalItemsScrollView.addSubview(itemView)
-            return true
-        }
-        return false
-    }
-
-    /// 获取某种类型上的item
-    public func item(at index: Int, type: QMUIMoreOperationItemType) -> QMUIMoreOperationItemView {
-        if type == .important {
-            return importantItems[index]
-        } else {
-            return normalItems[index]
-        }
-    }
-
-    /// 获取某个tag的item
-    func item(at tag: Int) -> QMUIMoreOperationItemView {
-        var item = importantItemsScrollView.viewWithTag(tag + TagOffset) as? QMUIMoreOperationItemView
-        if item == nil {
-            item = normalItemsScrollView.viewWithTag(tag + TagOffset) as? QMUIMoreOperationItemView
-        }
-        return item!
-    }
-
-    /// 下面两个`setItemHidden`方法可以隐藏某一个item
-    public func setItemHidden(_ hidden: Bool, index: Int, type: QMUIMoreOperationItemType) {
-        let item = self.item(at: index, type: type)
-        item.isHidden = hidden
-    }
-
-    /// 同上
-    public func setItemHidden(_ hidden: Bool, tag: Int) {
-        let item = self.item(at: tag)
-        item.isHidden = hidden
-    }
-
-    @objc func handleButtonClick(_ sender: QMUIMoreOperationItemView) {
-        let item = sender
-        var index = 0
-        let itemType: QMUIMoreOperationItemType
-        if item.superview == importantItemsScrollView {
-            index = importantItems.index(of: item) ?? 0
-            itemType = .important
-        } else {
-            index = normalItems.index(of: item) ?? 0
-            itemType = .normal
-        }
-        let tag = item.tag
-        delegate?.moreOperationController(self, didSelectItemAt: index, type: itemType)
-        delegate?.moreOperationController(self, didSelectItemAt: tag)
-    }
 }
 
 extension QMUIMoreOperationController: QMUIModalPresentationContentViewControllerProtocol {
-    func preferredContentSize(in modalPresentationViewController: QMUIModalPresentationViewController, limitSize _: CGSize) -> CGSize {
-        return modalPresentationViewController.view.bounds.size
+    
+    func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+        var resultSize = limitSize
+        var contentHeight = cancelButton.isHidden ? 0 : cancelButtonHeight + cancelButtonMarginTop
+        for (idx, scrollView) in mutableScrollViews.enumerated() {
+            let itemSection = mutableItems[idx]
+            var exampleItemWidth: CGFloat = 0
+            if let exampleItemView = itemSection.first, let width = exampleItemView.imageView?.image?.size.width {
+                exampleItemWidth = width + itemPaddingHorizontal * 2
+            }
+            var maximumItemHeight: CGFloat = 0
+            for itemView in itemSection {
+                let itemSize = itemView.sizeThatFits(CGSize(width: exampleItemWidth, height: CGFloat.greatestFiniteMagnitude))
+                maximumItemHeight = fmax(maximumItemHeight, itemSize.height)
+            }
+            contentHeight += maximumItemHeight + scrollView.contentInset.verticalValue
+        }
+        if mutableScrollViews.count > 0 {
+            contentHeight += contentPaddings.verticalValue
+        }
+        resultSize.height = contentHeight;
+        return resultSize
+    }
+}
+
+extension QMUIMoreOperationController {
+    
+    static func appearance() -> QMUIMoreOperationController {
+        DispatchQueue.once(token: QMUIMoreOperationController._onceToken) {
+            QMUIMoreOperationController.resetAppearance()
+        }
+        return QMUIMoreOperationController.moreOperationViewControllerAppearance!
+    }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    static var moreOperationViewControllerAppearance: QMUIMoreOperationController?
+    
+    private static func resetAppearance() {
+        let moreOperationViewControllerAppearance = QMUIMoreOperationController(nibName: nil, bundle: nil)
+        if #available(iOS 9.0, *) {
+            moreOperationViewControllerAppearance.loadViewIfNeeded()
+        } else {
+            moreOperationViewControllerAppearance.view.alpha = 1
+        }
+        moreOperationViewControllerAppearance.contentBackgroundColor = UIColorWhite
+        moreOperationViewControllerAppearance.contentEdgeMargin = 10
+        moreOperationViewControllerAppearance.contentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - moreOperationViewControllerAppearance.contentEdgeMargin * 2
+        moreOperationViewControllerAppearance.contentCornerRadius = 10
+        moreOperationViewControllerAppearance.contentPaddings = UIEdgeInsetsMake(10, 0, 5, 0)
+        moreOperationViewControllerAppearance.scrollViewSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15)
+        moreOperationViewControllerAppearance.scrollViewContentInsets = UIEdgeInsetsMake(14, 8, 14, 8)
+        
+        moreOperationViewControllerAppearance.itemBackgroundColor = UIColorClear
+        moreOperationViewControllerAppearance.itemTitleColor = UIColorGrayDarken
+        moreOperationViewControllerAppearance.itemTitleFont = UIFontMake(11)
+        moreOperationViewControllerAppearance.itemPaddingHorizontal = 16
+        moreOperationViewControllerAppearance.itemTitleMarginTop = 9
+        moreOperationViewControllerAppearance.itemMinimumMarginHorizontal = 0
+        moreOperationViewControllerAppearance.automaticallyAdjustItemMargins = true
+        
+        moreOperationViewControllerAppearance.cancelButtonBackgroundColor = UIColorWhite
+        moreOperationViewControllerAppearance.cancelButtonTitleColor = UIColorBlue
+        moreOperationViewControllerAppearance.cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15)
+        moreOperationViewControllerAppearance.cancelButtonFont = UIFontBoldMake(16)
+        moreOperationViewControllerAppearance.cancelButtonHeight = 56.0
+        moreOperationViewControllerAppearance.cancelButtonMarginTop = 0
+        
+        moreOperationViewControllerAppearance.isExtendBottomLayout = false
+        
+        QMUIMoreOperationController.moreOperationViewControllerAppearance = moreOperationViewControllerAppearance
     }
 }

@@ -145,7 +145,7 @@ class QMUIEmotionView: UIView {
         collectionViewLayout.minimumInteritemSpacing = 0
         collectionViewLayout.sectionInset = UIEdgeInsets.zero
 
-        collectionView = UICollectionView(frame: frame.size.rect, collectionViewLayout: collectionViewLayout)
+        collectionView = UICollectionView(frame: CGRect(x: qmui_safeAreaInsets.left, y: qmui_safeAreaInsets.top, width: frame.width - qmui_safeAreaInsets.horizontalValue, height: frame.height - qmui_safeAreaInsets.verticalValue), collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = UIColorClear
         collectionView.scrollsToTop = false
         collectionView.isPagingEnabled = true
@@ -168,18 +168,24 @@ class QMUIEmotionView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let collectionViewSizeChanged = bounds.size != collectionView.bounds.size
-        collectionView.frame = bounds
-        collectionViewLayout.itemSize = collectionView.bounds.size
-
+        let collectionViewFrame = bounds.insetEdges(qmui_safeAreaInsets)
+        let collectionViewSizeChanged = bounds.size != collectionViewFrame.size
+        collectionViewLayout.itemSize = collectionView.bounds.size // 先更新 itemSize 再设置 collectionView.frame，否则会触发系统的 UICollectionViewFlowLayoutBreakForInvalidSizes 断点
+        collectionView.frame = collectionViewFrame
+        
         if collectionViewSizeChanged {
             pageEmotions()
         }
+        
+        sendButton.qmui_right = qmui_width - qmui_safeAreaInsets.right - sendButtonMargins.right
+        sendButton.qmui_bottom = qmui_height - qmui_safeAreaInsets.bottom - sendButtonMargins.bottom
+        
 
         let pageControlHeight: CGFloat = 16
-        pageControl.frame = CGRect(x: 0, y: bounds.height - pageControlMarginBottom - pageControlHeight, width: bounds.width, height: pageControlHeight)
-
-        sendButton.frame.setXY(bounds.width - sendButtonMargins.right - sendButton.frame.width, bounds.height - sendButtonMargins.bottom - sendButton.frame.height)
+        let pageControlMaxX: CGFloat = sendButton.qmui_left
+        let pageControlMinX: CGFloat = qmui_width - pageControlMaxX
+        
+        pageControl.frame = CGRect(x: pageControlMinX, y: qmui_height - qmui_safeAreaInsets.bottom - pageControlMarginBottom - pageControlHeight, width: pageControlMaxX - pageControlMinX, height: pageControlHeight)
     }
 
     func pageEmotions() {

@@ -39,9 +39,9 @@ extension QDTableViewHeaderFooterViewController {
         // 通过这个方法获取到点击的按钮所处的 sectionHeader，可兼容 sectionHeader 停靠在列表顶部的场景
         let sectionIndexForView = tableView.qmui_indexForSectionHeader(at: view)
         if sectionIndexForView != -1 {
-            _ = QMUITips.show(with: "点击了 section\(sectionIndexForView) 上的按钮", in: view, hideAfterDelay: 1.2)
+            QMUITips.show(with: "点击了 section\(sectionIndexForView) 上的按钮", in: view, hideAfterDelay: 1.2)
         } else {
-            _ = QMUITips.showError("无法定位被点击的按钮所处的 section", in: view, hideAfterDelay: 1.2)
+            QMUITips.showError("无法定位被点击的按钮所处的 section", in: view, hideAfterDelay: 1.2)
         }
     }
     

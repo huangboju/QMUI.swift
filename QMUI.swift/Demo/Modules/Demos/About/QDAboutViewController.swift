@@ -130,8 +130,7 @@ class QDAboutViewController: QDCommonViewController {
         let versionLabelMarginTop: CGFloat = 10
         let buttonHeight = TableViewCellNormalHeight
         
-        var frame = view.bounds
-        scrollView.frame = frame.setHeight(frame.height)
+        scrollView.frame = view.bounds.setHeight(view.bounds.height)
         
         if IS_IPHONE && IS_LANDSCAPE {
             let leftWidth = flat(scrollView.bounds.width / 2)
@@ -144,10 +143,8 @@ class QDAboutViewController: QDCommonViewController {
             
             let contentWidthInRight = rightWidth - padding.horizontalValue
             websiteButton.frame = CGRect(x: leftWidth + padding.left, y: logoImageView.frame.minY + 10, width: contentWidthInRight, height: buttonHeight)
-            var frame = websiteButton.frame
-            documentButton.frame = frame.setY(websiteButton.frame.maxY)
-            frame = documentButton.frame
-            gitHubButton.frame = frame.setY(documentButton.frame.maxY)
+            documentButton.frame = websiteButton.frame.setY(websiteButton.frame.maxY)
+            gitHubButton.frame = websiteButton.frame.setY(documentButton.frame.maxY)
             
             let copyrightLabelHeight = copyrightLabel.sizeThatFits(CGSize(width: contentWidthInRight, height: CGFloat.greatestFiniteMagnitude)).height
             copyrightLabel.frame = CGRectFlat(leftWidth + padding.left, scrollView.bounds.height - navigationBarHeight - padding.bottom - copyrightLabelHeight, contentWidthInRight, copyrightLabelHeight)
@@ -165,10 +162,8 @@ class QDAboutViewController: QDCommonViewController {
             versionButton.frame = versionButton.frame.setXY(versionButton.frame.minXHorizontallyCenter(in: scrollView.bounds), logoImageView.frame.maxY + versionLabelMarginTop)
             
             websiteButton.frame = CGRect(x: 0, y: versionButton.frame.maxY + buttonMarginTop, width: scrollView.bounds.width, height: buttonHeight)
-            var frame = websiteButton.frame
-            documentButton.frame = frame.setY(websiteButton.frame.maxY)
-            frame = documentButton.frame
-            gitHubButton.frame = frame.setY(documentButton.frame.maxY)
+            documentButton.frame = websiteButton.frame.setY(websiteButton.frame.maxY)
+            gitHubButton.frame = documentButton.frame.setY(documentButton.frame.maxY)
             
             let copyrightLabelWidth = scrollView.bounds.width - padding.horizontalValue
             let copyrightLabelHeight = copyrightLabel.sizeThatFits(CGSize(width: copyrightLabelWidth, height: CGFloat.greatestFiniteMagnitude)).height

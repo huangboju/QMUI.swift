@@ -47,9 +47,9 @@ class QDCommonGridViewController: QDCommonViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.frame = view.bounds
-        
+
         let gridViewWidth = scrollView.bounds.width - scrollView.qmui_safeAreaInsets.horizontalValue
-        
+
         if view.bounds.width <= QMUIHelper.screenSizeFor55Inch.width {
             gridView.columnCount = 3
             let itemWidth = flat(gridViewWidth / CGFloat(gridView.columnCount))
@@ -70,10 +70,10 @@ class QDCommonGridViewController: QDCommonViewController {
                 gridView.rowHeight = itemWidth
             }
         }
-        
+
         for (index, item) in gridView.subviews.enumerated() {
             item.qmui_borderPosition = [.left, .top]
-            
+
             if (index % gridView.columnCount == gridView.columnCount - 1) || (index == gridView.subviews.count - 1) {
                 // 每行最后一个，或者所有的最后一个（因为它可能不是所在行的最后一个）
                 item.qmui_borderPosition = item.qmui_borderPosition.union([.right])
@@ -82,9 +82,9 @@ class QDCommonGridViewController: QDCommonViewController {
                 // 那些下方没有其他 item 的 item，底部都加个边框
                 item.qmui_borderPosition = item.qmui_borderPosition.union([.bottom])
             }
-            
+
         }
-        
+
         let gridViewHeight = gridView.sizeThatFits(CGSize(width: gridViewWidth, height: CGFloat.greatestFiniteMagnitude)).height
         gridView.frame = CGRect(x: scrollView.qmui_safeAreaInsets.left, y: 0, width: gridViewWidth, height: gridViewHeight)
         let contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)

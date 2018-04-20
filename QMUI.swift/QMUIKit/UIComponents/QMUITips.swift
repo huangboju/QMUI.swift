@@ -67,7 +67,7 @@ class QMUITips: QMUIToastView {
     }
 
     /// 类方法：主要用在局部一次性使用的场景，hide之后会自动removeFromSuperView
-
+    
     static func createTips(to view: UIView) -> QMUITips {
         let tips = QMUITips(view: view)
         view.addSubview(tips)
@@ -75,30 +75,35 @@ class QMUITips: QMUIToastView {
         return tips
     }
 
+    @discardableResult
     static func show(with text: String?, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.show(with: text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
+    @discardableResult
     static func showLoading(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showLoading(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
+    @discardableResult
     static func showSucceed(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showSucceed(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
+    @discardableResult
     static func showError(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showError(text, detailText: detailText, hideAfterDelay: delay)
         return tips
     }
 
+    @discardableResult
     static func showInfo(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
         let tips = createTips(to: view)
         tips.showInfo(text, detailText: detailText, hideAfterDelay: delay)

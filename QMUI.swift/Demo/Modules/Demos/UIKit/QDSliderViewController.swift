@@ -75,7 +75,6 @@ class QDSliderViewController: QDCommonViewController {
         label2.frame = label2.frame.setXY(padding.left, slider.frame.maxY + 64)
         
         systemSlider.sizeToFit()
-        var frame = slider.frame
-        systemSlider.frame = frame.setY(label2.frame.maxY + 16)
+        systemSlider.frame = slider.frame.setY(label2.frame.maxY + 16)
     }
 }

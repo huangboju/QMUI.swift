@@ -154,7 +154,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
 
     func hideTableHeaderViewInitialIfCan(animated: Bool, force: Bool) {
         if let tableHeaderView = tableView.tableHeaderView, shouldHideTableHeaderViewInitial && (force || !hasHideTableHeaderViewInitial) {
-            let contentOffset = CGPoint(x: tableView.contentOffset.x, y: tableView.contentOffset.y + tableHeaderView.frame.height)
+            let contentOffset = CGPoint(x: tableView.contentOffset.x, y: -tableView.qmui_contentInset.top + tableHeaderView.frame.height )
             tableView.setContentOffset(contentOffset, animated: animated)
             hasHideTableHeaderViewInitial = true
         }
