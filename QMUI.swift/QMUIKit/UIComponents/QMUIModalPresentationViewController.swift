@@ -12,14 +12,14 @@
     case slide // 从下往上升起
 }
 
-protocol QMUIModalPresentationContentViewControllerProtocol {
+@objc protocol QMUIModalPresentationContentViewControllerProtocol {
     /**
      *  当浮层以 UIViewController 的形式展示（而非 UIView），并且使用 modalController 提供的默认布局时，则可通过这个方法告诉 modalController 当前浮层期望的大小
      *  @param  controller  当前的modalController
      *  @param  limitSize   浮层最大的宽高，由当前 modalController 的大小及 `contentViewMargins`、`maximumContentViewWidth` 决定
      *  @return 返回浮层在 `limitSize` 限定内的大小，如果业务自身不需要限制宽度/高度，则为 width/height 返回 `CGFLOAT_MAX` 即可
      */
-    func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
+    @objc optional func preferredContentSize(inModalPresentationViewController controller: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize
 }
 
 @objc protocol QMUIModalPresentationViewControllerDelegate {
@@ -636,7 +636,7 @@ class QMUIModalPresentationViewController: UIViewController {
         let contentViewLimitSize = CGSize(width: min(maximumContentViewWidth, contentViewContainerSize.width), height: contentViewContainerSize.height)
         var contentViewSize = CGSize.zero
         if let contentViewController = contentViewController {
-            contentViewSize = contentViewController.preferredContentSize(inModalPresentationViewController: self, limitSize: contentViewLimitSize)
+            contentViewSize = contentViewController.preferredContentSize?(inModalPresentationViewController: self, limitSize: contentViewLimitSize) ?? .zero
         } else {
             contentViewSize = contentView!.sizeThatFits(contentViewLimitSize)
         }

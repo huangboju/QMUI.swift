@@ -433,7 +433,7 @@ extension QMUIHelper {
             UIViewController.attemptRotationToDeviceOrientation()
             return false
         }
-        UIDevice.current.setValue(orientation, forKey: "orientation")
+        UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
         return true
     }
     

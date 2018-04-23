@@ -156,6 +156,8 @@
 		D8F01FB5204F8AF1003BCC8A /* QDUIKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB4204F8AF1003BCC8A /* QDUIKitViewController.swift */; };
 		D8F01FB7204F8B53003BCC8A /* QDNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB6204F8B53003BCC8A /* QDNavigationController.swift */; };
 		D8F01FB9204F8C3F003BCC8A /* QDUIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F01FB8204F8C3F003BCC8A /* QDUIHelper.swift */; };
+		D8F88626208D6F0B00014CCF /* QDOrientationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F88625208D6F0B00014CCF /* QDOrientationViewController.swift */; };
+		D8F8862B208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F8862A208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift */; };
 		D8F8F8F32071D6AD00ECC2DD /* QDComponentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F8F8F22071D6AD00ECC2DD /* QDComponentsViewController.swift */; };
 		D8F8F8F62071D76D00ECC2DD /* QDLabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F8F8F52071D76D00ECC2DD /* QDLabViewController.swift */; };
 		D8F8F8F82071D7A700ECC2DD /* QDCommonListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F8F8F72071D7A700ECC2DD /* QDCommonListViewController.swift */; };
@@ -329,6 +331,8 @@
 		D8F01FB4204F8AF1003BCC8A /* QDUIKitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDUIKitViewController.swift; sourceTree = "<group>"; };
 		D8F01FB6204F8B53003BCC8A /* QDNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDNavigationController.swift; sourceTree = "<group>"; };
 		D8F01FB8204F8C3F003BCC8A /* QDUIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDUIHelper.swift; sourceTree = "<group>"; };
+		D8F88625208D6F0B00014CCF /* QDOrientationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDOrientationViewController.swift; sourceTree = "<group>"; };
+		D8F8862A208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIStaticTableViewCellDataSource.swift; sourceTree = "<group>"; };
 		D8F8F8F22071D6AD00ECC2DD /* QDComponentsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QDComponentsViewController.swift; sourceTree = "<group>"; };
 		D8F8F8F52071D76D00ECC2DD /* QDLabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDLabViewController.swift; sourceTree = "<group>"; };
 		D8F8F8F72071D7A700ECC2DD /* QDCommonListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDCommonListViewController.swift; sourceTree = "<group>"; };
@@ -436,6 +440,7 @@
 		D831FC331E2E04BA009CFB28 /* UIComponents */ = {
 			isa = PBXGroup;
 			children = (
+				D8F88627208D705D00014CCF /* StaticTableView */,
 				BEB72CBD1F13A769006426D3 /* AssetLibrary */,
 				BEB72CC41F13A7F1006426D3 /* ImagePickerLibrary */,
 				BEB72CCF1F13A878006426D3 /* QMUIDialogViewController.swift */,
@@ -580,6 +585,7 @@
 				D86BBC8320883E3B00CAF107 /* QDCollectionDemoViewController.swift */,
 				D86BBC85208843DF00CAF107 /* QDCollectionViewDemoCell.swift */,
 				D86BBC87208866C600CAF107 /* QDSearchViewController.swift */,
+				D8F88625208D6F0B00014CCF /* QDOrientationViewController.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -698,6 +704,14 @@
 				D86895552085F24700359F81 /* QMUIResources.bundle */,
 			);
 			path = QMUIResources;
+			sourceTree = "<group>";
+		};
+		D8F88627208D705D00014CCF /* StaticTableView */ = {
+			isa = PBXGroup;
+			children = (
+				D8F8862A208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift */,
+			);
+			path = StaticTableView;
 			sourceTree = "<group>";
 		};
 		D8F8F8F42071D74A00ECC2DD /* Lab */ = {
@@ -934,6 +948,7 @@
 				3E6BE4D11F13C5270089DC6D /* QMUICellHeightKeyCache.swift in Sources */,
 				D84FC0AA20898A6000372786 /* QDMoreOperationViewController.swift in Sources */,
 				D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */,
+				D8F88626208D6F0B00014CCF /* QDOrientationViewController.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
 				BEB72CF21F13AA6F006426D3 /* QMUIToastContentView.swift in Sources */,
 				3E6BE4DB1F13C5270089DC6D /* QMUITextField.swift in Sources */,
@@ -941,6 +956,7 @@
 				3E6BE4D51F13C5270089DC6D /* QMUISearchController.swift in Sources */,
 				3E6BE4D81F13C5270089DC6D /* QMUITableView.swift in Sources */,
 				3E6BE4CE1F13C5270089DC6D /* QMUIAlertController.swift in Sources */,
+				D8F8862B208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift in Sources */,
 				3E6BE4DE1F13C5270089DC6D /* UIActivityIndicatorView+QMUI.swift in Sources */,
 				D864A5F5204E72F10036C164 /* QDThemeProtocol.swift in Sources */,
 				3E6BE4CD1F13C5270089DC6D /* NSParagraphStyle+QMUI.swift in Sources */,

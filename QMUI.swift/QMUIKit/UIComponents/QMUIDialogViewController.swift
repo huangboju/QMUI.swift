@@ -286,7 +286,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 }
 
 extension QMUIDialogViewController: QMUIModalPresentationContentViewControllerProtocol {
-    @objc func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+    @objc func preferredContentSize(inModalPresentationViewController _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         if !hasCustomContentView {
             return limitSize
         }
@@ -470,7 +470,7 @@ extension QMUIDialogSelectionViewController {
 
     // MARK: - QMUIModalPresentationContentViewControllerProtocol
 
-    override func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+    override func preferredContentSize(inModalPresentationViewController _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         let footerViewHeight = !footerView.isHidden ? footerView.frame.height : 0
         let tableViewLimitHeight = limitSize.height - headerView.frame.height - footerViewHeight
         let tableViewSize = tableView.sizeThatFits(CGSize(width: limitSize.width, height: tableViewLimitHeight))
@@ -561,7 +561,7 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
         updateSubmitButtonEnables()
     }
 
-    override func preferredContentSize(in _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
+    override func preferredContentSize(inModalPresentationViewController _: QMUIModalPresentationViewController, limitSize: CGSize) -> CGSize {
         let textFieldHeight: CGFloat = 56
         return CGSize(width: limitSize.width, height: headerView.frame.height + textFieldHeight + (!footerView.isHidden ? footerView.frame.height : 0))
     }
