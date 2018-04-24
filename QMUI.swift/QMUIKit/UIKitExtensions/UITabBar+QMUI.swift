@@ -7,7 +7,7 @@
 //
 extension UITabBar: SelfAware2 {
     
-    // MARK: TODO 比较奇怪，UITabBar 无法执行，在 harmlessFunction 遍历类时就没有找到。
+    // MARK: TODO 比较奇怪，UITabBar 无法执行，在 harmlessFunction 遍历类时竟然没有实现 SelfAware2
 
     private static let kLastTouchedTabBarItemIndexNone = -1
 
