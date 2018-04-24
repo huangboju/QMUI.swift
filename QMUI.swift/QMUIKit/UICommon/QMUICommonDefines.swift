@@ -146,16 +146,18 @@ let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
 let UIFontItalicMake: (CGFloat) -> UIFont = { UIFont.italicSystemFont(ofSize: $0) }
 let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
+
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
-let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: false) }
+let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .normal, italic: false) }
 let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
-    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: false)
+    UIFont.qmui_dynamicFont(ofSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, weight: .normal, italic: false)
 }
-let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: true) }
+let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .bold, italic: false) }
 let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
-    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: true)
+    UIFont.qmui_dynamicFont(ofSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, weight: .bold, italic: true)
 }
+let UIDynamicFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .light, italic: false) }
 
 // UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.swift
 func UIColorMake(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b) }

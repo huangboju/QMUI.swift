@@ -7,7 +7,7 @@
 //
 
 // 使用： let od = QMUIOrderedDictionary(dictionaryLiteral: ("3", "q"), ("2", "w"))
-public struct QMUIOrderedDictionary<K: Hashable, V> {
+struct QMUIOrderedDictionary<K: Hashable, V> {
     var allKeys = [K]()
     private var dict = [K: V]()
 
@@ -34,7 +34,7 @@ public struct QMUIOrderedDictionary<K: Hashable, V> {
 }
 
 extension QMUIOrderedDictionary: Sequence {
-    public func makeIterator() -> AnyIterator<Value> {
+    func makeIterator() -> AnyIterator<Value> {
         var counter = 0
         return AnyIterator {
             guard counter < self.allKeys.count else {
@@ -48,7 +48,7 @@ extension QMUIOrderedDictionary: Sequence {
 }
 
 extension QMUIOrderedDictionary: CustomStringConvertible {
-    public var description: String {
+    var description: String {
         let isString = type(of: allKeys[0]) == String.self
         var result = "["
         for key in allKeys {
@@ -62,7 +62,7 @@ extension QMUIOrderedDictionary: CustomStringConvertible {
 }
 
 extension QMUIOrderedDictionary: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (K, V)...) {
+    init(dictionaryLiteral elements: (K, V)...) {
         self.init()
         for (key, value) in elements {
             self[key] = value
