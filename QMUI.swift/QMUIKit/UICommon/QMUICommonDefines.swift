@@ -160,6 +160,7 @@ let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { po
 // UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.swift
 func UIColorMake(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b) }
 func UIColorMakeWithRGBA(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b, a: a) }
+func UIColorMakeWithHex(_ hex: String) -> UIColor { return UIColor(hexStr: hex) }
 
 /// MARK: - 数学计算
 
@@ -345,14 +346,14 @@ extension CGRect {
         return flat((parentRect.height - height) / 2.0)
     }
 
-    /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持垂直居中时，layoutingRect的originY
+    /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect(self)保持垂直居中时，layoutingRect的originY
     func minYVerticallyCenter(_ layoutingRect: CGRect) -> CGFloat {
-        return minY + minYVerticallyCenter(in: layoutingRect)
+        return minY + layoutingRect.minYVerticallyCenter(in: self)
     }
 
     /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持水平居中时，layoutingRect的originX
     func minXHorizontallyCenter(_ layoutingRect: CGRect) -> CGFloat {
-        return minX + minXHorizontallyCenter(in: layoutingRect)
+        return minX + layoutingRect.minXHorizontallyCenter(in: self)
     }
 
     /// 为给定的rect往内部缩小insets的大小

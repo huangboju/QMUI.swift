@@ -17,15 +17,15 @@ class QMUIGridView: UIView {
 
     /// 指定要显示的列数，默认为 0
     @IBInspectable
-    public var columnCount = 0
+    var columnCount = 0
 
     /// 指定每一行的高度，默认为 0
     @IBInspectable
-    public var rowHeight: CGFloat = 0
+    var rowHeight: CGFloat = 0
 
     /// 指定 item 之间的分隔线宽度，默认为 0
     @IBInspectable
-    public var separatorWidth: CGFloat = 0 {
+    var separatorWidth: CGFloat = 0 {
         didSet {
             separatorLayer.lineWidth = separatorWidth
             separatorLayer.isHidden = separatorWidth <= 0
@@ -34,7 +34,7 @@ class QMUIGridView: UIView {
 
     /// 指定 item 之间的分隔线颜色，默认为 UIColorSeparator
     @IBInspectable
-    public var separatorColor = UIColorSeparator {
+    var separatorColor = UIColorSeparator {
         didSet {
             separatorLayer.strokeColor = separatorColor.cgColor
         }
@@ -42,7 +42,7 @@ class QMUIGridView: UIView {
 
     /// item 之间的分隔线是否要用虚线显示，默认为 false
     @IBInspectable
-    public var separatorDashed = false
+    var separatorDashed = false
 
     private let separatorLayer = CAShapeLayer()
 
