@@ -59,6 +59,6 @@ class QDTextFieldViewController: QDCommonViewController {
 extension QDTextFieldViewController: QMUITextFieldDelegate {
     
     func textField(_ textField: QMUITextField, didPreventTextChangeInRange range: NSRange, replacementString: String?) {
-        QMUITips.showSucceed("文字不能超过 \(textField.maximumTextLength)个字符", in: view, hideAfterDelay: 2)
+        QMUITips.showSucceed(text: "文字不能超过 \(textField.maximumTextLength)个字符", in: view, hideAfterDelay: 2)
     }
 }

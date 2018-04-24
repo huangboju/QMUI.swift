@@ -168,7 +168,7 @@ class QDAlertController: QDCommonGroupListViewController {
         
         // 展示系统的效果
         guard let _ = NSClassFromString("UIAlertController") else {
-            QMUITips.showInfo("iOS 版本过低，不支持 UIAlertController", in: view, hideAfterDelay: 2)
+            QMUITips.showInfo(text: "iOS 版本过低，不支持 UIAlertController", in: view, hideAfterDelay: 2)
             return
         }
         

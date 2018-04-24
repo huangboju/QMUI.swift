@@ -42,6 +42,6 @@ class QDTableViewCellAccessoryTypeViewController: QDCommonTableViewController {
 
     
     func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        QMUITips.show(with: "点击了第 \(indexPath.row) 行的按钮", in: view, hideAfterDelay: 1.2)
+        QMUITips.show(text: "点击了第 \(indexPath.row) 行的按钮", in: view, hideAfterDelay: 1.2)
     }
 }

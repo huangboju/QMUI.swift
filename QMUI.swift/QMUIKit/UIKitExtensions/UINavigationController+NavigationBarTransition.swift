@@ -253,7 +253,7 @@ extension UIViewController {
             
             // 导航栏的背景
             if let backgroundImage = vc.navigationBarBackgroundImage {
-                    navigationBar.setBackgroundImage(backgroundImage, for: .default)
+                navigationBar.setBackgroundImage(backgroundImage, for: .default)
             } else {
                 if let backgroundImage = NavBarBackgroundImage {
                     navigationBar.setBackgroundImage(backgroundImage, for: .default)

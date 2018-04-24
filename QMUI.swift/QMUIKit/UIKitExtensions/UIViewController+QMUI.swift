@@ -7,9 +7,9 @@
 //
 
 extension Notification {
-    fileprivate class QMUI {
+    class QMUI {
         /// 当主题发生变化时，会发送这个通知
-        public static let TabBarStyleChanged = Notification.Name("Notification.QMUI.TabBarStyleChanged")
+        static let TabBarStyleChanged = Notification.Name("Notification.QMUI.TabBarStyleChanged")
     }
 }
 
