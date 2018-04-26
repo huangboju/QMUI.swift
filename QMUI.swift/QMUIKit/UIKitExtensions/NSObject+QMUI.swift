@@ -59,7 +59,35 @@ extension NSObject {
     //    func qmui_performSelectorToSuperclass(aSelector: Selector, with object: Any) -> Any {
     //
     //    }
-
+    
+    /**
+     遍历当前实例的所有方法，父类的方法不包含在内
+     */
+    func qmui_enumrateInstanceMethods(using handle: ((_ selector: Selector?) -> Void)?) {
+        NSObject.qmui_enumrateInstanceMethods(of: type(of: self),using: handle)
+    }
+    
+    /**
+     遍历指定的某个类的实例方法，该类的父类方法不包含在内
+     *  @param aClass   要遍历的某个类
+     *  @param block    遍历时使用的 block，参数为某一个方法
+     */
+    static func qmui_enumrateInstanceMethods(of aClass: AnyClass, using handle: ((_ selector: Selector?) -> Void)?) {
+        var count:UInt32 = 0
+        let methods = class_copyMethodList(NSObject.self , &count)
+        for i in 0..<Int(count){
+            if let method = methods?[i] {
+                let sel = method_getName(method)
+                handle?(sel)
+                let name = String(cString: sel_getName(sel))
+                print(name)
+            } else {
+                handle?(nil)
+            }
+        }
+    }
+    
+    
     /**
      遍历某个 protocol 里的所有方法
 

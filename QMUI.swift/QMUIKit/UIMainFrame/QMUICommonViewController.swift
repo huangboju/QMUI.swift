@@ -156,7 +156,12 @@ class QMUICommonViewController: UIViewController {
     /**
      *  显示带loading、image、text、detailText、button的emptyView，带了with 防止与 showEmptyView() 混淆
      */
-    func showEmptyViewWith(showLoading: Bool = false, image: UIImage? = nil, text: String?, detailText: String?, buttonTitle: String?, buttonAction: Selector?) {
+    func showEmptyViewWith(showLoading: Bool = false,
+                           image: UIImage? = nil,
+                           text: String?,
+                           detailText: String?,
+                           buttonTitle: String?,
+                           buttonAction: Selector?) {
         showEmptyView()
         guard let emptyView = emptyView else { return }
         emptyView.setLoadingViewHidden(!showLoading)
