@@ -70,8 +70,9 @@ class QMUITableViewCell: UITableViewCell {
             return super.backgroundColor
         }
         set {
-            if newValue != nil {
-                backgroundView?.backgroundColor = backgroundColor
+            super.backgroundColor = newValue
+            if let backgroundView = self.backgroundView {
+                backgroundView.backgroundColor = newValue
             }
         }
     }

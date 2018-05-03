@@ -37,6 +37,9 @@ class QDUIKitViewController: QDCommonGridViewController {
         }
     }
     
+    // 图片+文字按钮
+    private var imagePositionButton: QMUIButton?
+    
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "QMUIKit"
@@ -45,7 +48,27 @@ class QDUIKitViewController: QDCommonGridViewController {
     
     @objc private func handleAboutItemEvent() {
         let viewController = QDAboutViewController()
-        navigationController?.pushViewController(viewController, animated: true)
+//        navigationController?.pushViewController(viewController, animated: true)
+        
+        if imagePositionButton != nil {
+            imagePositionButton?.removeFromSuperview()
+            imagePositionButton = nil
+        } else {
+            imagePositionButton = QMUIButton()
+            imagePositionButton!.tintColorAdjustsTitleAndImage = (QDThemeManager.shared.currentTheme?.themeTintColor)!
+            imagePositionButton!.imagePosition = .top // 将图片位置改为在文字上方
+            imagePositionButton!.spacingBetweenImageAndTitle = 8
+            imagePositionButton!.setImage(UIImageMake("icon_emotion"), for: .normal)
+            imagePositionButton!.setTitle("图片在上方的按钮", for: .normal)
+            imagePositionButton!.titleLabel?.font = UIFontMake(11)
+            imagePositionButton!.qmui_borderPosition = [.top, .bottom]
+            
+            view.addSubview(imagePositionButton!)
+            // 图片+文字按钮
+            imagePositionButton!.frame = CGRectFlat(50, 200, view.bounds.width / 2, 50)
+        }
+        
+        
     }
     
     override func didSelectCell(_ title: String) {

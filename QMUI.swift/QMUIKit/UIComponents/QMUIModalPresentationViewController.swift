@@ -585,8 +585,8 @@ class QMUIModalPresentationViewController: UIViewController {
      *  @warning 这里的`completion`只会在你显式调用`hideWithAnimated:completion:`方法来隐藏浮层时会被调用，如果你通过点击`dimmingView`来触发`hideWithAnimated:completion:`，则completion是不会被调用的，那种情况下如果你要在浮层隐藏后做一些事情，请使用`delegate`提供的`didHideModalPresentationViewController:`方法。
      */
     func hide(_ animated: Bool, completion: ((Bool) -> Void)?) {
-        self.disappearAnimated = animated
-        self.disappearCompletionClosure = completion
+        disappearAnimated = animated
+        disappearCompletionClosure = completion
 
         let shouldHide = delegate?.shouldHide?(modalPresentationViewController: self) ?? true
 

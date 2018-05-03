@@ -93,7 +93,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDModalPresentationViewController(style: .grouped)
         }
         if title == "QMUIDialogViewController" {
-            viewController = QDSliderViewController()
+            viewController = QDDialogViewController()
         }
         if title == "QMUIKeyboardManager" {
             viewController = QDSliderViewController()

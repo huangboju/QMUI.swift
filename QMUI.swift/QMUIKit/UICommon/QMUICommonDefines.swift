@@ -57,6 +57,8 @@ let IS_47INCH_SCREEN = QMUIHelper.is47InchScreen
 let IS_40INCH_SCREEN = QMUIHelper.is40InchScreen
 /// iPhone4/4s
 let IS_35INCH_SCREEN = QMUIHelper.is35InchScreen
+// iPhone4/4s/5/5s/SE
+let IS_320WIDTH_SCREEN = (IS_35INCH_SCREEN || IS_40INCH_SCREEN)
 
 /// 是否Retina
 let IS_RETINASCREEN = UIScreen.main.scale >= 2.0
