@@ -11,9 +11,9 @@ class QMUIToastBackgroundView: UIView {
     /**
      * 是否需要磨砂，默认NO。仅支持iOS8及以上版本。可以通过修改`styleColor`来控制磨砂的效果。
      */
-    var showldBulrBackgroundView: Bool = false {
+    var showldBlurBackgroundView: Bool = false {
         didSet {
-            if showldBulrBackgroundView {
+            if showldBlurBackgroundView {
                 let effect = UIBlurEffect(style: .light)
                 let effectView = UIVisualEffectView(effect: effect)
                 effectView.layer.cornerRadius = cornerRadius

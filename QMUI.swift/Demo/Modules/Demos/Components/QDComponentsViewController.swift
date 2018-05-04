@@ -57,7 +57,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDEmptyViewController()
         }
         if title == "QMUIToastView" {
-            viewController = QDLabelViewController()
+            viewController = QDToastListViewController()
         }
         if title == "QMUIStaticTableView" {
             viewController = QDTextViewController()
