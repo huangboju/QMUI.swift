@@ -29,9 +29,9 @@ extension UIButton: SelfAware3 {
             ReplaceMethod(clazz, #selector(UIButton.setTitle(_:for:)), #selector(UIButton.qmui_setTitle(_:for:)))
             ReplaceMethod(clazz, #selector(UIButton.setTitleColor(_:for:)), #selector(UIButton.qmui_setTitleColor(_:for:)))
             ReplaceMethod(clazz, #selector(UIButton.setTitleShadowColor(_:for:)), #selector(UIButton.qmui_setTitleShadowColor(_:for:)))
-//            ReplaceMethod(clazz, #selector(UIButton.setImage(_:for:)), #selector(UIButton.qmui_setImage(_:for:)))
-//            ReplaceMethod(clazz, #selector(UIButton.setBackgroundImage(_:for:)), #selector(UIButton.qmui_setBackgroundImage(_:for:)))
-//            ReplaceMethod(clazz, #selector(UIButton.setAttributedTitle(_:for:)), #selector(UIButton.qmui_setAttributedTitle(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setImage(_:for:)), #selector(UIButton.qmui_setImage(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setBackgroundImage(_:for:)), #selector(UIButton.qmui_setBackgroundImage(_:for:)))
+            ReplaceMethod(clazz, #selector(UIButton.setAttributedTitle(_:for:)), #selector(UIButton.qmui_setAttributedTitle(_:for:)))
         }
     }
  }
