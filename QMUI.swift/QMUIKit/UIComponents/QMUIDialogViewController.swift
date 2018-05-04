@@ -252,7 +252,6 @@ class QMUIDialogViewController: QMUICommonViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
         let isFooterViewShowing = !footerView.isHidden
 
         headerView.frame = CGSize(width: view.bounds.width, height: headerViewHeight).rect
@@ -292,7 +291,7 @@ class QMUIDialogViewController: QMUICommonViewController {
             return
         }
         
-        footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+        footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: footerViewHeight))
         footerView.backgroundColor = footerViewBackgroundColor
         footerView.isHidden = true
 
@@ -441,19 +440,23 @@ class QMUIDialogSelectionViewController: QMUIDialogViewController {
     /// 表示单选模式下已选中的item序号，默认为QMUIDialogSelectionViewControllerSelectedItemIndexNone。此属性与 `selectedItemIndexes` 互斥。
     var selectedItemIndex: Int! {
         didSet {
-            selectedItemIndexes.removeAll()
+            if selectedItemIndexes != nil && selectedItemIndexes.count > 0 {
+                selectedItemIndexes.removeAll()
+            }
         }
     }
 
     /// 表示多选模式下已选中的item序号，默认为nil。此属性与 `selectedItemIndex` 互斥。
     var selectedItemIndexes: Set<Int>! {
         didSet {
-            selectedItemIndex = QMUIDialogSelectionViewControllerSelectedItemIndexNone
+            if selectedItemIndex != QMUIDialogSelectionViewControllerSelectedItemIndexNone {
+                selectedItemIndex = QMUIDialogSelectionViewControllerSelectedItemIndexNone
+            }
         }
     }
 
     /// 控制是否允许多选，默认为false。
-    var allowsMultipleSelection: Int! {
+    var allowsMultipleSelection: Bool = false {
         didSet {
             selectedItemIndex = QMUIDialogSelectionViewControllerSelectedItemIndexNone
         }
@@ -526,7 +529,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDataSource {
         }
         cell?.textLabel?.text = items[indexPath.row]
 
-        if allowsMultipleSelection != 0 {
+        if allowsMultipleSelection {
             // 多选
             if selectedItemIndexes.contains(indexPath.row) {
                 cell?.accessoryType = .checkmark
@@ -558,7 +561,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 单选情况下如果重复选中已被选中的cell，则什么都不做
-        if allowsMultipleSelection != 0 && selectedItemIndex == indexPath.row {
+        if !allowsMultipleSelection && selectedItemIndex == indexPath.row {
             tableView.deselectRow(at: indexPath, animated: true)
             return
         }
@@ -569,7 +572,7 @@ extension QMUIDialogSelectionViewController: QMUITableViewDelegate {
             return
         }
 
-        if allowsMultipleSelection != 0 {
+        if allowsMultipleSelection {
 
             if selectedItemIndexes.contains(indexPath.row) {
                 // 当前的cell已经被选中，则取消选中
@@ -656,7 +659,7 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
     /// 是否自动控制提交按钮的enabled状态，默认为YES，则当输入框内容为空时禁用提交按钮
     var enablesSubmitButtonAutomatically: Bool! {
         didSet {
-            textField.enablesReturnKeyAutomatically = enablesSubmitButtonAutomatically
+            textField?.enablesReturnKeyAutomatically = enablesSubmitButtonAutomatically
             if enablesSubmitButtonAutomatically {
                 updateSubmitButtonEnables()
             }
@@ -664,10 +667,6 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
     }
 
     var shouldEnableSubmitButtonClosure: ((QMUIDialogTextFieldViewController) -> Bool)?
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func didInitialized() {
         super.didInitialized()
@@ -773,12 +772,36 @@ class QMUIDialogTextFieldViewController: QMUIDialogViewController {
         let textFieldHeight: CGFloat = textFieldLabel.isHidden ? 56 : 25
         // 25.0 考虑了行高导致的 offsetoffset
         let textFieldTitleHeight: CGFloat = 29
-        return CGSize(width: limitSize.width, height: headerView.frame.height + contentViewMargins.verticalValue +  textFieldHeight + (!textFieldLabel.isHidden ? textFieldTitleHeight : 0) + textFieldHeight + (!footerView.isHidden ?  footerView.frame.height : 0))
+        let result = CGSize(width: limitSize.width, height: headerView.frame.height + contentViewMargins.verticalValue +  textFieldHeight + (!textFieldLabel.isHidden ? textFieldTitleHeight : 0) + textFieldHeight + (!footerView.isHidden ?  footerView.frame.height : 0))
+        return result
     }
 }
 
 extension QMUIDialogTextFieldViewController: QMUITextFieldDelegate {
     
-    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if !shouldManageTextFieldsReturnEventAutomatically {
+            return false
+        }
+        
+        if textField != self.textField {
+            return false
+        }
+        
+        // 有 submitButton 则响应它，没有的话响应 cancel，再没有就降下键盘即可（体验与 UIAlertController 一致）
+        
+        if submitButton != nil && submitButton!.isEnabled {
+            submitButton!.sendActions(for: .touchUpInside)
+            return false
+        }
+        
+        if cancelButton != nil {
+            cancelButton!.sendActions(for: .touchUpInside)
+            return false
+        }
+        
+        view.endEditing(true)
+        return false
+    }
     
 }
