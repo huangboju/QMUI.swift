@@ -165,13 +165,13 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         let topToolbarPaddingTop = UIApplication.shared.isStatusBarHidden ? 0 : StatusBarHeight
         let topToolbarContentHeight = topToolBarView.bounds.height - topToolbarPaddingTop
 
-        backButton.frame.setXY(8, topToolbarPaddingTop + topToolbarContentHeight.center(backButton.frame.height))
+        backButton.frame = backButton.frame.setXY(8, topToolbarPaddingTop + topToolbarContentHeight.center(backButton.frame.height))
         if !checkboxButton.isHidden {
-            checkboxButton.frame.setXY(topToolBarView.frame.width - 10 - checkboxButton.frame.width, topToolbarContentHeight.center(checkboxButton.frame.height))
+            checkboxButton.frame = checkboxButton.frame.setXY(topToolBarView.frame.width - 10 - checkboxButton.frame.width, topToolbarContentHeight.center(checkboxButton.frame.height))
         }
 
         let downloadRetryImageSize = downloadRetryButton.image(for: .normal)?.size ?? .zero
-        downloadRetryButton.frame.setXY(topToolBarView.frame.width - 10 - downloadRetryImageSize.width, topToolbarPaddingTop + topToolbarContentHeight.center(downloadRetryButton.frame.height))
+        downloadRetryButton.frame = downloadRetryButton.frame.setXY(topToolBarView.frame.width - 10 - downloadRetryImageSize.width, topToolbarPaddingTop + topToolbarContentHeight.center(downloadRetryButton.frame.height))
         /* 理论上 progressView 作为进度按钮，应该需要跟错误重试按钮 downloadRetryButton 的 frame 保持一致，但这里并没有直接使用
          * self.progressView.frame = self.downloadRetryButton.frame，这是因为 self.downloadRetryButton 具有 1pt 的 top
          * contentEdgeInsets，因此最终的 frame 是椭圆型，如果按上面的操作，progressView 内部绘制出的饼状图形就会变成椭圆型，

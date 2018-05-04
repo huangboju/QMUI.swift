@@ -149,8 +149,6 @@ class QMUICommonViewController: UIViewController {
         emptyView.setTextLabel(nil)
         emptyView.setDetailTextLabel(nil)
         emptyView.setActionButtonTitle(nil)
-        
-        showEmptyViewWith(text: nil, detailText: nil, buttonTitle: nil, buttonAction: nil)
     }
     
     /**

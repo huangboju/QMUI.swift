@@ -54,7 +54,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDNavigationTitleViewController()
         }
         if title == "QMUIEmptyView" {
-            viewController = QDSliderViewController()
+            viewController = QDEmptyViewController()
         }
         if title == "QMUIToastView" {
             viewController = QDLabelViewController()

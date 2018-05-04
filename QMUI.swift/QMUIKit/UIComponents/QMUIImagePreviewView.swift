@@ -172,7 +172,9 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
         let cell = _cell as? QMUIImagePreviewCell
         let zoomView = cell?.zoomImageView
 
-        zoomView?.emptyView.loadingView.color = loadingColor
+        if let loadingView = zoomView?.emptyView.loadingView as? UIActivityIndicatorView {
+            loadingView.color = loadingColor
+        }
 
         zoomView?.delegate = self
 

@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-protocol QMUIEmptyViewLoadingViewProtocol: class {
+protocol QMUIEmptyViewLoadingViewProtocol: NSObjectProtocol {
     func startAnimating() // 当调用 setLoadingViewHidden:false 时，系统将自动调用此处的 startAnimating
 }
 
@@ -19,26 +19,20 @@ extension UIActivityIndicatorView: QMUIEmptyViewLoadingViewProtocol {
 class QMUIEmptyView: UIView {
 
     // 布局顺序从上到下依次为：imageView, loadingView, textLabel, detailTextLabel, actionButton
-    private var _loadingView: UIActivityIndicatorView?
-    var loadingView: UIActivityIndicatorView {
-        get {
-            if _loadingView == nil {
-                _loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-                _loadingView!.hidesWhenStopped = false // 此控件是通过loadingView.hidden属性来控制显隐的，如果UIActivityIndicatorView的hidesWhenStopped属性设置为true的话，则手动设置它的hidden属性就会失效，因此这里要置为false
-            }
-            return _loadingView!
-        }
-        set {
-            if _loadingView != newValue {
-                if _loadingView != nil {
-                    _loadingView!.removeFromSuperview()
+    
+    // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = YES 之类会使 view.hidden 失效的属性
+    var loadingView: (UIView & QMUIEmptyViewLoadingViewProtocol)! {
+        didSet {
+            if let oldValue = oldValue as? UIActivityIndicatorView, let loadingView = loadingView as? UIActivityIndicatorView {
+                if oldValue != loadingView {
+                    oldValue.removeFromSuperview()
+                    contentView.addSubview(loadingView)
                 }
-                _loadingView = newValue
-                contentView.addSubview(newValue)
+                setNeedsLayout()
             }
-            setNeedsLayout()
         }
-    } // 此控件通过设置 loadingView.hidden 来控制 loadinView 的显示和隐藏，因此请确保你的loadingView 没有类似于 hidesWhenStopped = true 之类会使 view.hidden 失效的属性
+    }
+    
     private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .center
@@ -163,6 +157,9 @@ class QMUIEmptyView: UIView {
 
     private lazy var scrollView: UIScrollView = { // 保证内容超出屏幕时也不至于直接被clip（比如横屏时)
         let scrollView = UIScrollView()
+        if #available(iOS 11, *) {
+            scrollView.contentInsetAdjustmentBehavior = .never
+        }
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.scrollsToTop = false
@@ -202,8 +199,12 @@ class QMUIEmptyView: UIView {
 
         scrollView.addSubview(contentView)
 
-        contentView.addSubview(loadingView)
-
+        loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        if let loadingView = loadingView as? UIActivityIndicatorView {
+            loadingView.hidesWhenStopped = false// 此控件是通过loadingView.hidden属性来控制显隐的，如果UIActivityIndicatorView的hidesWhenStopped属性设置为true的话，则手动设置它的hidden属性就会失效，因此这里要置为false
+            contentView.addSubview(loadingView)
+        }
+        
         contentView.addSubview(imageView)
 
         contentView.addSubview(textLabel)
@@ -228,12 +229,12 @@ class QMUIEmptyView: UIView {
 
         if !imageView.isHidden {
             imageView.sizeToFit()
-            imageView.frame = imageView.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: imageView.frame) + imageViewInsets.left - imageViewInsets.right, originY + imageViewInsets.top)
+            imageView.frame = imageView.frame.setXY(imageView.frame.minXHorizontallyCenter(in: contentView.bounds) + imageViewInsets.left - imageViewInsets.right, originY + imageViewInsets.top)
             originY = imageView.frame.maxY + imageViewInsets.bottom
         }
 
         if !loadingView.isHidden {
-            loadingView.frame = loadingView.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: loadingView.frame) + loadingViewInsets.left - loadingViewInsets.right, originY + loadingViewInsets.top)
+            loadingView.frame = loadingView.frame.setXY(loadingView.frame.minXHorizontallyCenter(in: contentView.bounds) + loadingViewInsets.left - loadingViewInsets.right, originY + loadingViewInsets.top)
             originY = loadingView.frame.maxY + loadingViewInsets.bottom
         }
 
@@ -253,7 +254,7 @@ class QMUIEmptyView: UIView {
 
         if !actionButton.isHidden {
             actionButton.sizeToFit()
-            actionButton.frame.setXY(contentView.bounds.minXHorizontallyCenter(in: actionButton.frame) + actionButtonInsets.left, originY + actionButtonInsets.top)
+            actionButton.frame = actionButton.frame.setXY(actionButton.frame.minXHorizontallyCenter(in: contentView.bounds) + actionButtonInsets.left, originY + actionButtonInsets.top)
             originY = actionButton.frame.maxY + actionButtonInsets.bottom
         }
     }
@@ -303,7 +304,7 @@ class QMUIEmptyView: UIView {
     func setLoadingViewHidden(_ hidden: Bool) {
         loadingView.isHidden = hidden
         if !hidden {
-            loadingView.stopAnimating()
+            loadingView.startAnimating()
         }
         setNeedsLayout()
     }

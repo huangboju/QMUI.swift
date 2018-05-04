@@ -236,7 +236,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         if allowsMultipleSelection {
             operationToolBarView.frame = CGRect(x: 0, y: view.bounds.height - OperationToolBarViewHeight, width: view.bounds.width, height: OperationToolBarViewHeight)
             let height = operationToolBarView.frame.height
-            previewButton.frame.setXY(OperationToolBarViewPaddingHorizontal, height.center(height))
+            previewButton.frame = previewButton.frame.setXY(OperationToolBarViewPaddingHorizontal, height.center(height))
             sendButton.frame = CGRect(x: operationToolBarView.frame.width - OperationToolBarViewPaddingHorizontal - sendButton.frame.width, y: operationToolBarView.frame.height.center(sendButton.frame.height), width: sendButton.frame.width, height: sendButton.frame.height)
             imageCountLabel.frame = CGRect(x: sendButton.frame.minX - ImageCountLabelSize.width - 5, y: sendButton.frame.minY + sendButton.frame.height.center(ImageCountLabelSize.height), width: ImageCountLabelSize.width, height: ImageCountLabelSize.height)
             operationToolBarViewHeight = operationToolBarView.frame.height
