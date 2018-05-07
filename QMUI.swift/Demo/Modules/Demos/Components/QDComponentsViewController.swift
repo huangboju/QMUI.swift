@@ -75,7 +75,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDMoreOperationViewController()
         }
         if title == "QMUIEmotionView" {
-            viewController = QDButtonViewController()
+            viewController = QDEmotionsViewController()
         }
         if title == "QMUIGridView" {
             viewController = QDSliderViewController()
