@@ -84,16 +84,18 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
 
         let textLabelFrame = textLabel?.frame ?? .zero
 
-        textLabel?.frame.setXY(imageView?.frame.maxX ?? 0, flat(textLabel?.qmui_minYWhenCenterInSuperview ?? 0))
-
-        let textLabelMaxWidth = contentView.bounds.width - contentViewPaddingRight - (detailTextLabel?.frame.width ?? 0) - albumNameInsets.right - textLabelFrame.minX
-
-        if textLabelFrame.width > textLabelMaxWidth {
-            textLabel?.frame.setWidth(textLabelMaxWidth)
+        if let label = textLabel {
+            label.frame = label.frame.setXY(imageView?.frame.maxX ?? 0, flat(label.qmui_minYWhenCenterInSuperview))
+            
+            let textLabelMaxWidth = contentView.bounds.width - contentViewPaddingRight - (detailTextLabel?.frame.width ?? 0) - albumNameInsets.right - textLabelFrame.minX
+            
+            if textLabelFrame.width > textLabelMaxWidth {
+                label.frame = label.frame.setWidth(textLabelMaxWidth)
+            }
         }
 
         if let label = detailTextLabel {
-            detailTextLabel?.frame = label.frame.setXY(textLabelFrame.maxX + albumNameInsets.right, flat(detailTextLabel?.qmui_minYWhenCenterInSuperview ?? 0))
+            label.frame = label.frame.setXY(textLabelFrame.maxX + albumNameInsets.right, flat(label.qmui_minYWhenCenterInSuperview))
         }
 
         bottomLineLayer.frame = CGRect(x: 0, y: contentView.bounds.height - PixelOne, width: bounds.width, height: PixelOne)

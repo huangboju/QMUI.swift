@@ -18,6 +18,11 @@ protocol SelfAware3: class {
     static func awake3()
 }
 
+protocol SelfAware4: class {
+    static func awake4()
+}
+
+
 class NothingToSeeHere {
 
     static func harmlessFunction() {
@@ -36,6 +41,7 @@ class NothingToSeeHere {
             }
             (types[index] as? SelfAware2.Type)?.awake2()
             (types[index] as? SelfAware3.Type)?.awake3()
+            (types[index] as? SelfAware4.Type)?.awake4()
         }
         
         types.deallocate()

@@ -88,26 +88,35 @@ extension QDUIHelper {
 // MARK: - Emotion
 extension QDUIHelper {
     
+    static var QMUIEmotionArray: [QMUIEmotion] = []
+    
     static let QMUIEmotionString = "01-[微笑];02-[开心];03-[生气];04-[委屈];05-[亲亲];06-[坏笑];07-[鄙视];08-[啊]"
     
+    @discardableResult
     static func qmuiEmotions() -> [QMUIEmotion] {
+        if QDUIHelper.QMUIEmotionArray.count != 0 {
+            return QDUIHelper.QMUIEmotionArray
+        }
+        
         var emotions = [QMUIEmotion]()
         let emotionStringArray = QMUIEmotionString.components(separatedBy: ";")
         emotionStringArray.forEach { (emotionString) in
             let emotionItems = emotionString.components(separatedBy: "-")
-            let identifier = String("emotion_\(String(describing: emotionItems.first))")
+            let identifier = String("emotion_\(String(describing: emotionItems.first ?? ""))")
             let emotion = QMUIEmotion(identifier: identifier, displayName: emotionItems.last!)
             emotions.append(emotion)
         }
-        asyncLoadImages(emotions)
-        return emotions
+        QDUIHelper.QMUIEmotionArray = emotions
+        asyncLoadImages(QDUIHelper.QMUIEmotionArray)
+        return QDUIHelper.QMUIEmotionArray
     }
     
     private static func asyncLoadImages(_ emotions: [QMUIEmotion]) {
         DispatchQueue.global().async {
             DispatchQueue.main.async {
                 emotions.forEach { (emotion) in
-//                    emotion.image = UIImageMake(emotion.identifier)?.qmui_imblen
+                    let image = UIImageMake(emotion.identifier)
+                    emotion.image = image?.qmui_image(blendColor: QDThemeManager.shared.currentTheme?.themeTintColor ?? UIColorBlue)
                 }
             }
         }

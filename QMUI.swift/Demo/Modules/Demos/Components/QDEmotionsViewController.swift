@@ -42,6 +42,9 @@ class QDEmotionsViewController: QDCommonViewController {
         textField.delegate = self
         
         textField.qmui_keyboardWillShowNotificationClosure = { [weak self] (keyboardUserInfo) in
+            guard let keyboardUserInfo = keyboardUserInfo else {
+                return
+            }
             let keyboardHeight = keyboardUserInfo.height(in: self?.view)
             if keyboardHeight <= 0 {
                 return
@@ -57,6 +60,9 @@ class QDEmotionsViewController: QDCommonViewController {
         }
         
         textField.qmui_keyboardWillHideNotificationClosure = { [weak self] (keyboardUserInfo) in
+            guard let keyboardUserInfo = keyboardUserInfo else {
+                return
+            }
             self?.keyboardVisible = false
             self?.keyboardHeight = 0
             let duration = keyboardUserInfo.animationDuration
@@ -79,11 +85,6 @@ class QDEmotionsViewController: QDCommonViewController {
         emotionInputManager.emotionView.alpha = 0
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        textField.qmui_keyboardManager?.delegateEnabled = false
-    }
-    
     // 布局时依赖 self.view.safeAreaInset.bottom，但由于前一个界面有 tabBar，导致 push 进来后第一次布局，self.view.safeAreaInset.bottom 依然是以存在 tabBar 的方式来计算的，所以会有跳动，简单处理，这里通过动画来掩饰这个跳动，哈哈
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -96,7 +97,6 @@ class QDEmotionsViewController: QDCommonViewController {
             self.toolbar.transform = .identity
             self.emotionInputManager.emotionView.transform = .identity
         }, completion: nil)
-        textField.qmui_keyboardManager?.delegateEnabled = true
     }
     
     override func viewDidLayoutSubviews() {
@@ -129,7 +129,7 @@ class QDEmotionsViewController: QDCommonViewController {
     }
 }
 
-extension QDEmotionsViewController: UITextFieldDelegate {
+extension QDEmotionsViewController: QMUITextFieldDelegate {
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         // 告诉 qqEmotionManager 输入框的光标位置发生变化，以保证表情插入在光标之后
         emotionInputManager.selectedRangeForBoundTextInput = textField.qmui_selectedRange!
