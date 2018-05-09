@@ -24,12 +24,14 @@ class QMUIStaticTableViewCellDataSource: NSObject {
         }
     }
     
-    /// 数据源绑定到的列表，在 UITableView (QMUI_StaticCell) 里会被赋值
+    // 在 UITableView (QMUI_StaticCell) 那边会把 tableView 的 property 改为 readwrite，所以这里补上 setter
     fileprivate(set) var tableView: UITableView? {
         didSet {
             let delegate = tableView?.delegate
+            tableView?.delegate = nil
             tableView?.delegate = delegate
             let dataSource = tableView?.dataSource
+            tableView?.dataSource = nil
             tableView?.dataSource = dataSource
         }
     }
@@ -252,7 +254,7 @@ class QMUIStaticTableViewCellData: NSObject {
          didSelectTarget: Any?,
          didSelectAction: Selector?,
          accessoryType: QMUIStaticTableViewCellAccessoryType = .none,
-         accessoryValueObject: NSObject? = nil,
+         accessoryValueObject: AnyObject? = nil,
          accessoryTarget: Any? = nil,
          accessoryAction: Selector? = nil) {
         self.identifier = identifier
