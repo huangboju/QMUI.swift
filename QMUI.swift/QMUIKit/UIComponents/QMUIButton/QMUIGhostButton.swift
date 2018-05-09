@@ -75,6 +75,10 @@ class QMUIGhostButton: QMUIButton {
         }
     }
     
+    convenience init() {
+        self.init(ghostColor: GhostButtonColorBlue, frame: .zero)
+    }
+    
     convenience init(ghostColor: UIColor) {
         self.init(ghostColor: ghostColor, frame: .zero)
     }

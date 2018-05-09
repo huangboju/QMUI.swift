@@ -60,7 +60,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDToastListViewController()
         }
         if title == "QMUIStaticTableView" {
-            viewController = QDTextViewController()
+            viewController = QDStaticTableViewController()
         }
         if title == "QMUIImagePreviewView" {
             viewController = QDSliderViewController()
@@ -78,10 +78,10 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDEmotionsViewController()
         }
         if title == "QMUIGridView" {
-            viewController = QDSliderViewController()
+            viewController = QDGridViewController()
         }
         if title == "QMUIFloatLayoutView" {
-            viewController = QDSliderViewController()
+            viewController = QDFloatLayoutViewController()
         }
         if title == "QMUIPieProgressView" {
             viewController = QDSliderViewController()
