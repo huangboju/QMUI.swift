@@ -552,20 +552,28 @@ extension UIEdgeInsets {
         return UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
     }
 
-    mutating func setTop(_ top: CGFloat) {
-        self.top = flat(top)
+    func setTop(_ top: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.top = flat(top)
+        return result
     }
 
-    mutating func setLeft(_ left: CGFloat) {
-        self.left = flat(left)
+    func setLeft(_ left: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.left = flat(left)
+        return result
     }
 
-    mutating func setBottom(bottom: CGFloat) {
-        self.bottom = flat(bottom)
+    func setBottom(_ bottom: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.bottom = flat(bottom)
+        return result
     }
 
-    mutating func setRight(_ right: CGFloat) {
-        self.right = flat(right)
+    func setRight(_ right: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.right = flat(right)
+        return result
     }
     
     func fixed(_ precision: Int) -> UIEdgeInsets {

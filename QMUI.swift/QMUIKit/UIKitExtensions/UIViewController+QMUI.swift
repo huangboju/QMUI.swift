@@ -187,7 +187,7 @@ extension UIViewController: SelfAware {
             // 这里直接用 CGRectGetHeight(tabBar.frame) 来计算理论上不准确，但因为系统有这个 bug（https://github.com/QMUI/QMUI_iOS/issues/217），所以暂时用 CGRectGetHeight(tabBar.frame) 来代替
             let correctSafeAreaInsetsBottom = tabBarHidden ? tabBar.safeAreaInsets.bottom : tabBar.frame.height
             let additionalSafeAreaInsetsBottom = correctSafeAreaInsetsBottom - tabBar.safeAreaInsets.bottom
-            additionalSafeAreaInsets.setBottom(bottom: additionalSafeAreaInsetsBottom)
+            additionalSafeAreaInsets.setBottom(additionalSafeAreaInsetsBottom)
         }
     }
 }

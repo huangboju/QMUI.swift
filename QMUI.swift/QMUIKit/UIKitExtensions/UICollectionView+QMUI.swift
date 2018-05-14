@@ -31,10 +31,13 @@ extension UICollectionView {
 
     /// 递归找到view在哪个cell里，不存在则返回nil
     private func parentCell(for view: UIView) -> UICollectionViewCell? {
-        guard let cell = view.superview as? UICollectionViewCell else {
-            return parentCell(for: view)
+        if view.superview == nil {
+            return nil
         }
-        return cell
+        if let cell = view.superview as? UICollectionViewCell {
+            return cell
+        }
+        return parentCell(for: view.superview!)
     }
 
     /**

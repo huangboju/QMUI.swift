@@ -66,7 +66,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDSliderViewController()
         }
         if title == "QMUIPickingImage" {
-            viewController = QDSliderViewController()
+            viewController = QDImagePickerExampleViewController()
         }
         if title == "QMUIAssetsManager" {
             viewController = QDSliderViewController()

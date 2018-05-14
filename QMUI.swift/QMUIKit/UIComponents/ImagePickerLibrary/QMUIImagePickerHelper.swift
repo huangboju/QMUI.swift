@@ -9,44 +9,13 @@
 import AssetsLibrary
 import Photos
 
-let kLastAlbumKeyPrefix = "QMUILastAlbumKeyWith"
-let kContentTypeOfLastAlbumKeyPrefix = "QMUIContentTypeOfLastAlbumKeyWith"
+private let kLastAlbumKeyPrefix = "QMUILastAlbumKeyWith"
+private let kContentTypeOfLastAlbumKeyPrefix = "QMUIContentTypeOfLastAlbumKeyWith"
 
 /**
  *  配合 QMUIImagePickerViewController 使用的工具类
  */
 struct QMUIImagePickerHelper {
-    /**
-     *  判断一个由 QMUIAsset 对象组成的数组中是否包含特定的 QMUIAsset 对象
-     *
-     *  @param imageAssetArray  一个由 QMUIAsset 对象组成的数组
-     *  @param targetImageAsset 需要被判断的 QMUIAsset 对象
-     *
-     */
-    public static func imageAssetArray(_ imageAssetArray: [QMUIAsset], containsImageAsset targetImageAsset: QMUIAsset) -> Bool {
-        let targetAssetIdentify = targetImageAsset.assetIdentity
-        for imageAsset in imageAssetArray {
-            if imageAsset.assetIdentity == targetAssetIdentify {
-                return true
-            }
-        }
-        return false
-    }
-
-    /**
-     *  从一个由 QMUIAsset 对象组成的数组中移除特定的 QMUIAsset 对象（如果这个 QMUIAsset 对象不在该数组中，则不作处理）
-     *
-     *  @param imageAssetArray  一个由 QMUIAsset 对象组成的数组
-     *  @param targetImageAsset 需要被移除的 QMUIAsset 对象
-     */
-    public static func imageAssetArray(_ imageAssetArray: inout [QMUIAsset], removeImageAsset targetImageAsset: QMUIAsset) {
-        let targetAssetIdentify = targetImageAsset.assetIdentity
-        for imageAsset in imageAssetArray {
-            guard imageAsset.assetIdentity == targetAssetIdentify else { continue }
-            imageAssetArray.remove(object: imageAsset)
-            break
-        }
-    }
 
     /**
      *  选中图片数量改变时，展示图片数量的 Label 的动画，动画过程如下：
@@ -57,7 +26,7 @@ struct QMUIImagePickerHelper {
      *
      *  @param label 需要做动画的 UILabel
      */
-    public static func springAnimationOfImageSelectedCountChangeWithCountLabel(_ label: UILabel) {
+    static func springAnimationOfImageSelectedCountChange(with label: UILabel) {
         QMUIHelper.actionSpringAnimation(for: label)
     }
 
@@ -67,14 +36,14 @@ struct QMUIImagePickerHelper {
      *
      *  @param button 需要做动画的 checkbox 按钮
      */
-    public static func springAnimationOfImageChecked(with button: UIButton) {
+    static func springAnimationOfImageChecked(with button: UIButton) {
         QMUIHelper.actionSpringAnimation(for: button)
     }
 
     /**
      * 搭配<i>springAnimationOfImageCheckedWithCheckboxButton:</i>一起使用，添加animation之前建议先remove
      */
-    public static func removeSpringAnimationOfImageChecked(with button: UIButton) {
+    static func removeSpringAnimationOfImageChecked(with button: UIButton) {
         button.layer.removeAnimation(forKey: QMUISpringAnimationKey)
     }
 
@@ -85,13 +54,13 @@ struct QMUIImagePickerHelper {
      *  一个常见的应用场景是选择图片时保存图片所在相册的对应的 QMUIAssetsGroup，并使用用户的 user id 作为区分不同用户的标识，
      *  当用户再次选择图片时可以根据已经保存的 QMUIAssetsGroup 直接进入上次使用过的相册。
      */
-    public static func assetsGroupOfLastestPickerAlbum(with userIdentify: String) -> QMUIAssetsGroup? {
+    static func assetsGroupOfLastPickerAlbum(with userIdentify: String?) -> QMUIAssetsGroup? {
         // 获取 NSUserDefaults，里面储存了所有 updateLastestAlbumWithAssetsGroup 的结果
         let userDefaults = UserDefaults.standard
         // 使用特定的前缀和可以标记不同用户的字符串拼接成 key，用于获取当前用户最近调用 updateLastestAlbumWithAssetsGroup 储存的相册以及对于的 QMUIAlbumContentType 值
 
-        let lastAlbumKey = kLastAlbumKeyPrefix + userIdentify
-        let contentTypeOflastAlbumKey = kContentTypeOfLastAlbumKeyPrefix + userIdentify
+        let lastAlbumKey = kLastAlbumKeyPrefix + (userIdentify ?? "")
+        let contentTypeOflastAlbumKey = kContentTypeOfLastAlbumKeyPrefix + (userIdentify ?? "")
 
         var assetsGroup: QMUIAssetsGroup?
 
@@ -111,14 +80,14 @@ struct QMUIImagePickerHelper {
                 var phFetchOptions: PHFetchOptions?
                 // 旧版本中没有存储 albumContentType，因此为了防止 crash，这里做一下判断
                 if let type = albumContentType {
-                    phFetchOptions = PHPhotoLibrary.createFetchOptionsWithAlbumContentType(type)
+                    phFetchOptions = PHPhotoLibrary.createFetchOptions(withAlbumContentType: type)
                 }
 
                 let phAssetCollection = phFetchResult[0]
                 assetsGroup = QMUIAssetsGroup(phAssetCollection: phAssetCollection, fetchAssetsOptions: phFetchOptions)
             }
         } else {
-            print("Group For localIdentifier is not found!")
+            print("QMUIImagePickerLibrary: Group For localIdentifier is not found! groupIdentifier is \(String(describing: groupIdentifier))")
         }
         return assetsGroup
     }
@@ -130,22 +99,66 @@ struct QMUIImagePickerHelper {
      *  @param albumContentType 相册的内容类型
      *  @param userIdentify 用户标识，由于每个用户可能需要分开储存一个最近调用过的 QMUIAssetsGroup，因此增加一个标识区分用户
      */
-    public static func updateLastestAlbum(with assetsGroup: QMUIAssetsGroup, albumContentType: QMUIAlbumContentType, userIdentify: String) {
+    static func updateLastestAlbum(with assetsGroup: QMUIAssetsGroup, albumContentType: QMUIAlbumContentType, userIdentify: String?) {
         let userDefaults = UserDefaults.standard
         // 使用特定的前缀和可以标记不同用户的字符串拼接成 key，用于为当前用户储存相册对应的 QMUIAssetsGroup 与 QMUIAlbumContentType
 
-        let lastAlbumKey = kLastAlbumKeyPrefix + userIdentify
-        let contentTypeOflastAlbumKey = kContentTypeOfLastAlbumKeyPrefix + userIdentify
-        if let group = assetsGroup.alAssetsGroup {
-            let url = group.value(forProperty: ALAssetsGroupPropertyURL) as? URL
-            userDefaults.set(url, forKey: lastAlbumKey)
-        } else {
-            // 使用 PhotoKit
-            userDefaults.setValue(assetsGroup.phAssetCollection?.localIdentifier, forKey: lastAlbumKey)
-        }
-
+        let lastAlbumKey = kLastAlbumKeyPrefix + (userIdentify ?? "")
+        let contentTypeOflastAlbumKey = kContentTypeOfLastAlbumKeyPrefix + (userIdentify ?? "")
+        
+        userDefaults.setValue(assetsGroup.phAssetCollection?.localIdentifier, forKey: lastAlbumKey)
         userDefaults.set(albumContentType.rawValue, forKey: contentTypeOflastAlbumKey)
-
         userDefaults.synchronize()
+    }
+    
+    /**
+     * 检测一组资源是否全部下载成功，如果有资源仍未从 iCloud 中下载成功，则返回 NO
+     *
+     * 可以用于选择图片后，业务需要自行处理 iCloud 下载的场景。
+     */
+    static func imageAssetsDownloaded(imagesAssetArray: [QMUIAsset]) -> Bool {
+        for asset in imagesAssetArray {
+            if asset.downloadStatus == .succeed {
+                return false
+            }
+        }
+        return true
+    }
+    
+    /**
+     * 检测资源是否已经在本地，如果资源仍未从 iCloud 中成功下载，则会发出请求从 iCloud 加载资源，并通过多次调用 block 返回请求结果
+     *
+     * 可以用于选择图片后，业务需要自行处理 iCloud 下载的场景。
+     */
+    static func requestImageAssetIfNeeded(asset: QMUIAsset, completion: ((QMUIAssetDownloadStatus, NSError?) -> Void)?) {
+        if asset.downloadStatus != .succeed {
+            // 资源加载中
+            completion?(.downloading, nil)
+            
+            asset.requestOriginImage(with: { (result, info) in
+                let cancel = info?[PHImageCancelledKey] as? Bool ?? false//排除取消
+                let error = info?[PHImageErrorKey] as? Bool ?? false//排除错误
+                let resultIsDegraded = info?[PHImageResultIsDegradedKey] as? Bool ?? false
+                let downloadSucceed = (result != nil && info == nil) || (!cancel && !error && !resultIsDegraded)
+                if downloadSucceed {
+                    // 资源资源已经在本地或下载成功
+                    asset.updateDownloadStatus(withDownloadResult: true)
+                    
+                    completion?(.succeed, nil)
+                } else {
+                    // 下载错误
+                    asset.updateDownloadStatus(withDownloadResult: false)
+                    
+                    completion?(.failed, info![PHImageErrorKey] as? NSError)
+                }
+            }) { (progress, error, stop, info) in
+                print("QMUIImagePickerLibrary: current progress is \(progress)")
+                asset.downloadProgress = progress
+            }
+        } else {
+            // 资源资源已经在本地或下载成功
+            completion?(.succeed, nil)
+        }
+        
     }
 }

@@ -269,7 +269,7 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
 
-    private func didInitialized(_ style: UITableViewCellStyle) {
+    func didInitialized(_ style: UITableViewCellStyle) {
         self.style = style
         
         textLabel?.font = UIFontMake(16)
