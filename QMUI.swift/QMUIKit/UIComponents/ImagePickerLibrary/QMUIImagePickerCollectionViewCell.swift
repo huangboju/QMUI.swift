@@ -145,7 +145,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
         checkboxButton.isHidden = true
         contentView.addSubview(checkboxButton)
         
-        checkboxImage = QMUIHelper.image(name: "QMUI_pickerImage_checkbox")?.withRenderingMode(.alwaysTemplate)
+        checkboxImage = QMUIHelper.image(name: "QMUI_pickerImage_checkbox")
         checkboxCheckedImage = QMUIHelper.image(name: "QMUI_pickerImage_checkbox_checked")
     }
 

@@ -472,7 +472,7 @@ class QMUINavigationTitleView: UIControl {
 
     override func layoutSubviews() {
         if bounds.size.isEmpty {
-            print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
+//            print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
             return
         }
 

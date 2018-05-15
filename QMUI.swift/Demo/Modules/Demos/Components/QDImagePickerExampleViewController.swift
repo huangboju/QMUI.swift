@@ -63,7 +63,7 @@ class QDImagePickerExampleViewController: QDCommonGroupListViewController {
         albumViewController.title = title
         if title == "选择单张图片" {
             albumViewController.view.tag = SingleImagePickingTag
-        } else if title == "选择单张图片" {
+        } else if title == "选择多张图片" {
             albumViewController.view.tag = MultipleImagePickingTag
         } else if title == "调整界面" {
             albumViewController.view.tag = ModifiedImagePickingTag
@@ -105,8 +105,10 @@ class QDImagePickerExampleViewController: QDCommonGroupListViewController {
     }
     
     @objc fileprivate func showTipLabel(_ text: String) {
-        stopLoading()
-        QMUITips.show(text: text, in: view, hideAfterDelay: 1.0)
+        DispatchQueue.main.async {
+            self.stopLoading()
+            QMUITips.show(text: text, in: self.view, hideAfterDelay: 1.0)
+        }
     }
     
     fileprivate func hideTipLabel() {
@@ -140,10 +142,12 @@ class QDImagePickerExampleViewController: QDCommonGroupListViewController {
     }
     
     @objc fileprivate func setAvatar(with avatarImage: UIImage) {
-        stopLoading()
-        selectedAvatarImage = avatarImage
-        let indexPath = IndexPath(row: 1, section: 1)
-        tableView.reloadRows(at: [indexPath], with: .fade)
+        DispatchQueue.main.async {
+            self.stopLoading()
+            self.selectedAvatarImage = avatarImage
+            let indexPath = IndexPath(row: 1, section: 1)
+            self.tableView.reloadRows(at: [indexPath], with: .fade)
+        }
     }
 }
 
@@ -185,6 +189,7 @@ extension QDImagePickerExampleViewController: QMUIImagePickerViewControllerDeleg
         } else if imagePickerViewController.view.tag == SingleImagePickingTag {
             let imagePickerPreviewViewController = QDSingleImagePickerPreviewViewController()
             imagePickerPreviewViewController.singleDelegate = self
+            imagePickerPreviewViewController.assetsGroup = imagePickerViewController.assetsGroup
             imagePickerPreviewViewController.view.tag = imagePickerViewController.view.tag
             return imagePickerPreviewViewController
         } else if imagePickerViewController.view.tag == ModifiedImagePickingTag {
@@ -222,7 +227,7 @@ extension QDImagePickerExampleViewController: QMUIImagePickerPreviewViewControll
             guard let customImagePickerPreviewViewController = imagePickerPreviewViewController as? QDMultipleImagePickerPreviewViewController else {
                 return
             }
-            let selectedCount = imagePickerPreviewViewController.selectedImageAssetArray.count
+            let selectedCount = imagePickerPreviewViewController.selectedImageAssetArray.pointee.count
             if selectedCount > 0 {
                 customImagePickerPreviewViewController.imageCountLabel.text = "\(selectedCount)"
                 customImagePickerPreviewViewController.imageCountLabel.isHidden = false

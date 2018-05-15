@@ -75,7 +75,7 @@ class QMUINavigationButton: UIButton {
      *  @param type 按钮类型
      *  @param title 按钮的title
      */
-    init(_ type: QMUINavigationButtonType, title: String?) {
+    init(type: QMUINavigationButtonType, title: String?) {
         super.init(frame: .zero)
         self.type = type
         setTitle(title, for: .normal)
@@ -88,7 +88,7 @@ class QMUINavigationButton: UIButton {
      *  @param type 按钮类型
      */
     convenience init(type: QMUINavigationButtonType) {
-        self.init(type, title: nil)
+        self.init(type: type, title: nil)
     }
     
     /**
@@ -138,24 +138,24 @@ class QMUINavigationButton: UIButton {
         if buttonPosition == .left {
             // 正值表示往左偏移
             if type == .image {
-                insets.setLeft(11)
+                insets = insets.setLeft(11)
             } else {
-                insets.setLeft(8)
+                insets = insets.setLeft(8)
             }
         } else if buttonPosition == .right  {
             // 正值表示往右偏移
             if type == .image {
-                insets.setRight(11)
+                insets = insets.setRight(11)
             } else {
-                insets.setRight(8)
+                insets = insets.setRight(8)
             }
         }
         
         let isBackOrImageType = type == .back || type == .image
         if isBackOrImageType {
-            insets.setTop(PixelOne)
+            insets = insets.setTop(PixelOne)
         } else {
-            insets.setTop(1)
+            insets = insets.setTop(1)
         }
         
         return insets
@@ -341,7 +341,7 @@ class QMUINavigationButton: UIButton {
         switch type {
         case .back:
             // 因为有可能出现有箭头图片又有title的情况，所以这里不适合用barButtonItemWithImage:target:action:的那个接口
-            let button = QMUINavigationButton(.back, title: title)
+            let button = QMUINavigationButton(type: .back, title: title)
             button.buttonPosition = position
             if let action = action {
                 button.addTarget(target, action: action, for: .touchUpInside)

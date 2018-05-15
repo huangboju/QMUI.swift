@@ -118,7 +118,7 @@ struct QMUIImagePickerHelper {
      */
     static func imageAssetsDownloaded(imagesAssetArray: [QMUIAsset]) -> Bool {
         for asset in imagesAssetArray {
-            if asset.downloadStatus == .succeed {
+            if asset.downloadStatus != .succeed {
                 return false
             }
         }

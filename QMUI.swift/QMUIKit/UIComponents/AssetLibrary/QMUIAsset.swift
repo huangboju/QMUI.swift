@@ -412,7 +412,7 @@ class QMUIAsset: NSObject {
     /**
      * 获取 Asset 的体积（数据大小）
      */
-    func assetSize(completion: ((Int64) -> Void)?) {
+    func assetSize(completion: ((Double) -> Void)?) {
         guard let phAssetInfo = phAssetInfo else {
             // PHAsset 的 UIImageOrientation 需要调用过 requestImageDataForAsset 才能获取
             requestPhAssetInfo(completion: { [weak self] phAssetInfo in
@@ -422,12 +422,14 @@ class QMUIAsset: NSObject {
                  *  为了避免这种情况，这里该 block 主动放到主线程执行。
                  */
                 DispatchQueue.main.async {
-                    completion?((phAssetInfo?[kAssetInfoSize] as? Int64) ?? 0)
+                    let result = Double(phAssetInfo?[kAssetInfoSize] as! Int)
+                    completion?(result)
                 }
             })
             return
         }
-        completion?((phAssetInfo[kAssetInfoSize] as? Int64) ?? 0)
+        let result = Double(phAssetInfo[kAssetInfoSize] as! Int)
+        completion?(result)
     }
 
     var duration: TimeInterval {

@@ -137,8 +137,16 @@ extension QDUIHelper {
 
 // MARK: - Calculate
 extension QDUIHelper {
-    static func humanReadableFileSize(_ size: UInt64) {
-        
+    static func humanReadableFileSize(_ size: Double) -> String {
+        var strSize: NSString?
+        if size >= 1048576.0 {
+            strSize = NSString(format: "%.2fM", size / 1048576.0)
+        } else if size >= 1024.0 {
+            strSize = NSString(format: "%.2fK", size / 1024.0)
+        } else {
+            strSize = NSString(format: "%.2fB", size / 1.0)
+        }
+        return strSize as String? ?? ""
     }
 }
 

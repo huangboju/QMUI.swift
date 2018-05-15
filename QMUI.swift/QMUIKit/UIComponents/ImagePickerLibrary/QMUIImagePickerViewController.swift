@@ -361,7 +361,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
     @objc func handlePreviewButtonClick(_: QMUIButton) {
         initPreviewViewControllerIfNeeded()
         // 手工更新图片预览界面
-        imagePickerPreviewViewController?.updateImagePickerPreviewView(with: selectedImageAssetArray, selectedImageAssetArray: selectedImageAssetArray, currentImageIndex: 0, singleCheckMode: false)
+        imagePickerPreviewViewController?.updateImagePickerPreviewView(with: selectedImageAssetArray, selectedImageAssetArray: &selectedImageAssetArray, currentImageIndex: 0, singleCheckMode: false)
         navigationController?.pushViewController(imagePickerPreviewViewController!, animated: true)
     }
 
@@ -569,10 +569,11 @@ extension QMUIImagePickerViewController: UICollectionViewDelegate {
         initPreviewViewControllerIfNeeded()
         if !allowsMultipleSelection {
             // 单选的情况下
-            imagePickerPreviewViewController?.updateImagePickerPreviewView(with: [imageAsset], selectedImageAssetArray: [], currentImageIndex: 0, singleCheckMode: true)
+            var tmpArray = [QMUIAsset]()
+            imagePickerPreviewViewController?.updateImagePickerPreviewView(with: [imageAsset], selectedImageAssetArray: &tmpArray, currentImageIndex: 0, singleCheckMode: true)
         } else {
             // cell 处于编辑状态，即图片允许多选
-            imagePickerPreviewViewController?.updateImagePickerPreviewView(with: imagesAssetArray, selectedImageAssetArray: selectedImageAssetArray, currentImageIndex: indexPath.item, singleCheckMode: false)
+            imagePickerPreviewViewController?.updateImagePickerPreviewView(with: imagesAssetArray, selectedImageAssetArray: &selectedImageAssetArray, currentImageIndex: indexPath.item, singleCheckMode: false)
         }
         navigationController?.pushViewController(imagePickerPreviewViewController!, animated: true)
     }

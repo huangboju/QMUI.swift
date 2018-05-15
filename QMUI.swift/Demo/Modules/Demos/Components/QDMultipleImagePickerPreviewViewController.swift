@@ -87,8 +87,8 @@ class QDMultipleImagePickerPreviewViewController: QMUIImagePickerPreviewViewCont
         if let imagePreviewView = imagePreviewView {
             updateOriginImageCheckboxButton(with: imagePreviewView.currentImageIndex)
         }
-        if selectedImageAssetArray.count > 0 {
-            let selectedCount = selectedImageAssetArray.count
+        if selectedImageAssetArray.pointee.count > 0 {
+            let selectedCount = selectedImageAssetArray.pointee.count
             imageCountLabel.text = "\(selectedCount)"
             imageCountLabel.isHidden = false
         } else {
@@ -134,7 +134,7 @@ class QDMultipleImagePickerPreviewViewController: QMUIImagePickerPreviewViewCont
             originImageCheckboxButton.isHidden = false
             if originImageCheckboxButton.isSelected {
                 asset.assetSize { (size) in
-                    self.originImageCheckboxButton.setTitle("原图(\(QDUIHelper.humanReadableFileSize(UInt64(size)))", for: .normal)
+                    self.originImageCheckboxButton.setTitle("原图(\(QDUIHelper.humanReadableFileSize(size)))", for: .normal)
                     self.originImageCheckboxButton.sizeToFit()
                     self.bottomToolBarView.setNeedsLayout()
                 }
@@ -144,12 +144,12 @@ class QDMultipleImagePickerPreviewViewController: QMUIImagePickerPreviewViewCont
     
     @objc private func handleSendButtonClick(_ sender: Any) {
         navigationController?.dismiss(animated: true, completion: {
-            if self.selectedImageAssetArray.count == 0 , let imagePreviewView = self.imagePreviewView {
+            if self.selectedImageAssetArray.pointee.count == 0 , let imagePreviewView = self.imagePreviewView {
                 // 如果没选中任何一张，则点击发送按钮直接发送当前这张大图
                 let currentAsset = self.imagesAssetArray[imagePreviewView.currentImageIndex]
-                self.selectedImageAssetArray.append(currentAsset)
+                self.selectedImageAssetArray.pointee.append(currentAsset)
             }
-            self.multipleDelegate?.imagePickerPreviewViewController(self, sendImageWithImagesAssetArray: self.selectedImageAssetArray)
+            self.multipleDelegate?.imagePickerPreviewViewController(self, sendImageWithImagesAssetArray: self.selectedImageAssetArray.pointee)
         })
     }
     

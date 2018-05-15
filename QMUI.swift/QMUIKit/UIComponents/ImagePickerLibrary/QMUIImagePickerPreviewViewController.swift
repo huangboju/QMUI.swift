@@ -8,7 +8,7 @@
 
 import Photos
 
-private let TopToolBarViewHeight: CGFloat = 64
+private let TopToolBarViewHeight: CGFloat = 20 + NavigationBarHeight + IPhoneXSafeAreaInsets.top
 
 @objc protocol QMUIImagePickerPreviewViewControllerDelegate: NSObjectProtocol {
     /**
@@ -41,14 +41,14 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     weak var delegate: QMUIImagePickerPreviewViewControllerDelegate?
 
     private(set) var topToolBarView: UIView!
-    private(set) var backButton: QMUIButton!
+    private(set) var backButton: QMUINavigationButton!
     private(set) var checkboxButton: QMUIButton!
 
     /**
      *  由于组件需要通过本地图片的 QMUIAsset 对象读取图片的详细信息，因此这里的需要传入的是包含一个或多个 QMUIAsset 对象的数组
      */
     var imagesAssetArray: [QMUIAsset] = []
-    var selectedImageAssetArray: [QMUIAsset] = []
+    var selectedImageAssetArray: UnsafeMutablePointer<[QMUIAsset]>!
 
     var downloadStatus: QMUIAssetDownloadStatus = .failed {
         didSet {
@@ -74,22 +74,20 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         topToolBarView.tintColor = toolBarTintColor
         view.addSubview(topToolBarView)
 
-        backButton = QMUIButton()
-        backButton.adjustsImageTintColorAutomatically = true
-        backButton.setImage(NavBarBackIndicatorImage, for: .normal)
-        backButton.tintColor = topToolBarView.tintColor
+        backButton = QMUINavigationButton(type: .back)
         backButton.sizeToFit()
         backButton.addTarget(self, action: #selector(handleCancelPreviewImage), for: .touchUpInside)
         backButton.qmui_outsideEdge = UIEdgeInsets(top: -30, left: -20, bottom: -50, right: -80)
         topToolBarView.addSubview(backButton)
 
         checkboxButton = QMUIButton()
+        checkboxButton.adjustsTitleTintColorAutomatically = true
         checkboxButton?.adjustsImageTintColorAutomatically = true
-        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox"), for: .normal)
-        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: .selected)
-        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
-        checkboxButton?.setImage(QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked"), for: [.selected, .highlighted])
-        checkboxButton?.tintColor = topToolBarView.tintColor
+        let checkboxImage = QMUIHelper.image(name: "QMUI_previewImage_checkbox")?.withRenderingMode(.alwaysTemplate)
+        let checkedCheckboxImage = QMUIHelper.image(name: "QMUI_previewImage_checkbox_checked")?.withRenderingMode(.alwaysOriginal)
+        checkboxButton?.setImage(checkboxImage, for: .normal)
+        checkboxButton?.setImage(checkedCheckboxImage, for: .selected)
+        checkboxButton?.setImage(checkboxButton?.image(for: .selected), for: [.selected, .highlighted])
         checkboxButton?.sizeToFit()
         checkboxButton?.addTarget(self, action: #selector(handleCheckButtonClick), for: .touchUpInside)
         checkboxButton?.qmui_outsideEdge = UIEdgeInsets(top: -6, left: -6, bottom: -6, right: -6)
@@ -102,7 +100,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
         if !_singleCheckMode {
             let imageAsset = imagesAssetArray[imagePreviewView!.currentImageIndex]
-            checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
+            checkboxButton.isSelected = selectedImageAssetArray.pointee.contains(imageAsset)
         }
     }
 
@@ -134,7 +132,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
      *  @param currentImageIndex       当前展示的图片在 imageAssetArray 的索引
      *  @param singleCheckMode         是否为单选模式，如果是单选模式，则不显示 checkbox
      */
-    func updateImagePickerPreviewView(with imagesAssetArray: [QMUIAsset], selectedImageAssetArray: [QMUIAsset], currentImageIndex: Int, singleCheckMode: Bool) {
+    func updateImagePickerPreviewView(with imagesAssetArray: [QMUIAsset], selectedImageAssetArray: UnsafeMutablePointer<[QMUIAsset]>, currentImageIndex: Int, singleCheckMode: Bool) {
         self.imagesAssetArray = imagesAssetArray
         self.selectedImageAssetArray = selectedImageAssetArray
         imagePreviewView?.currentImageIndex = currentImageIndex
@@ -160,11 +158,11 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 
             sender.isSelected = false
             let imageAsset = imagesAssetArray[index]
-            selectedImageAssetArray.remove(object: imageAsset)
+            selectedImageAssetArray.pointee.remove(object: imageAsset)
 
             delegate?.imagePickerPreviewViewController?(self, didUncheckImageAtIndex: index)
         } else {
-            if selectedImageAssetArray.count >= maximumSelectImageCount {
+            if selectedImageAssetArray.pointee.count >= maximumSelectImageCount {
                 if alertTitleWhenExceedMaxSelectImageCount == nil {
                     alertTitleWhenExceedMaxSelectImageCount = "你最多只能选择\(maximumSelectImageCount)张图片"
                 }
@@ -183,7 +181,7 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             sender.isSelected = true
             QMUIImagePickerHelper.springAnimationOfImageChecked(with: sender)
             let imageAsset = imagesAssetArray[index]
-            selectedImageAssetArray.append(imageAsset)
+            selectedImageAssetArray.pointee.append(imageAsset)
 
             delegate?.imagePickerPreviewViewController?(self, didCheckImageAt: index)
         }
@@ -234,41 +232,6 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             }
         }
 
-        if #available(iOS 9.1, *) {
-            if imageAsset.assetType == .livePhoto {
-                imageView?.tag = -1
-                imageAsset.requestID = imageAsset.requestLivePhoto(with: { livePhoto, info in
-                    // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
-                    // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
-                    let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
-                    let isCurrentRequest = imageView?.tag == imageAsset.requestID
-                    let loadICloudImageFault = livePhoto == nil || info?[PHImageErrorKey] != nil
-                    if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
-                        // 如果是走 PhotoKit 的逻辑，那么这个 block 会被多次调用，并且第一次调用时返回的图片是一张小图，
-                        // 这时需要把图片放大到跟屏幕一样大，避免后面加载大图后图片的显示会有跳动
-                        DispatchQueue.main.async {
-                            imageView?.livePhoto = livePhoto
-                        }
-                    }
-
-                    let downloadSucceed = (livePhoto != nil && info == nil) || (!(info?[PHLivePhotoInfoCancelledKey] as? Bool ?? false) && info?[PHLivePhotoInfoErrorKey] == nil && !(info?[PHLivePhotoInfoIsDegradedKey] as? Bool ?? false))
-
-                    if downloadSucceed {
-                        // 资源资源已经在本地或下载成功
-                        imageAsset.updateDownloadStatus(withDownloadResult: true)
-                        self.downloadStatus = .succeed
-
-                    } else if info?[PHLivePhotoInfoErrorKey] != nil {
-                        // 下载错误
-                        imageAsset.updateDownloadStatus(withDownloadResult: false)
-                        self.downloadStatus = .failed
-                    }
-                }, with: phProgressHandler)
-                imageView?.tag = imageAsset.requestID
-            }
-            return
-        }
-
         if imageAsset.assetType == .video {
             imageView?.tag = -1
             imageAsset.requestID = imageAsset.requestPlayerItem(with: { playerItem, info in
@@ -285,34 +248,86 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
             }, with: phProgressHandler)
             imageView?.tag = imageAsset.requestID
         } else {
-            imageView?.tag = -1
-            imageAsset.requestID = imageAsset.requestPreviewImage(with: { result, info in
-                // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
-                // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
-                let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
-                let isCurrentRequest = imageView?.tag == imageAsset.requestID
-                let loadICloudImageFault = result == nil || info?[PHImageErrorKey] != nil
-                if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
-                    DispatchQueue.main.async {
-                        imageView?.image = result
+            if imageAsset.assetType != .image {
+                return
+            }
+            
+            // 这么写是为了消除 Xcode 的 API available warning
+            var isLivePhoto = false
+            if #available(iOS 9.1, *) {
+                if imageAsset.assetType == .livePhoto {
+                    isLivePhoto = true
+                }
+            }
+            if isLivePhoto {
+                imageView?.tag = -1
+                if #available(iOS 9.1, *) {
+                    imageAsset.requestID = imageAsset.requestLivePhoto(with: { livePhoto, info in
+                        // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
+                        // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
+                        let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
+                        let isCurrentRequest = imageView?.tag == imageAsset.requestID
+                        let loadICloudImageFault = livePhoto == nil || info?[PHImageErrorKey] != nil
+                        if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
+                            // 如果是走 PhotoKit 的逻辑，那么这个 block 会被多次调用，并且第一次调用时返回的图片是一张小图，
+                            // 这时需要把图片放大到跟屏幕一样大，避免后面加载大图后图片的显示会有跳动
+                            DispatchQueue.main.async {
+                                imageView?.livePhoto = livePhoto
+                            }
+                        }
+                        
+                        let downloadSucceed = (livePhoto != nil && info == nil) || (!(info?[PHLivePhotoInfoCancelledKey] as? Bool ?? false) && info?[PHLivePhotoInfoErrorKey] == nil && !(info?[PHLivePhotoInfoIsDegradedKey] as? Bool ?? false))
+                        
+                        if downloadSucceed {
+                            // 资源资源已经在本地或下载成功
+                            imageAsset.updateDownloadStatus(withDownloadResult: true)
+                            self.downloadStatus = .succeed
+                            imageView?.cloudDownloadStatus = .succeed
+                            
+                        } else if info?[PHLivePhotoInfoErrorKey] != nil {
+                            // 下载错误
+                            imageAsset.updateDownloadStatus(withDownloadResult: false)
+                            self.downloadStatus = .failed
+                            imageView?.cloudDownloadStatus = .failed
+                        }
+                    }, with: phProgressHandler)
+                }
+                imageView?.tag = imageAsset.requestID
+            } else if imageAsset.assetSubType == .gif {
+                imageAsset.requestImageData { (imageData, info, isGIF, isHEIC) in
+                    let resultImage = QMUIImagePickerPreviewViewController.animatedGIF(with: imageData)
+                    imageView?.image = resultImage
+                }
+            } else {
+                imageView?.tag = -1
+                imageAsset.requestID = imageAsset.requestPreviewImage(with: { (result, info) in
+                    // 这里可能因为 imageView 复用，导致前面的请求得到的结果显示到别的 imageView 上，
+                    // 因此判断如果是新请求（无复用问题）或者是当前的请求才把获得的图片结果展示出来
+                    let isNewRequest = (imageView?.tag == -1 && imageAsset.requestID == 0)
+                    let isCurrentRequest = imageView?.tag == imageAsset.requestID
+                    let loadICloudImageFault = result == nil || info?[PHImageErrorKey] != nil
+                    if !loadICloudImageFault && (isNewRequest || isCurrentRequest) {
+                        DispatchQueue.main.async {
+                            imageView?.image = result
+                        }
                     }
-                }
-
-                let downloadSucceed = ((result != nil) && info == nil) || (!(info?[PHImageCancelledKey] as? Bool ?? false) && info?[PHImageErrorKey] == nil && !(info?[PHImageResultIsDegradedKey] as? Bool ?? false))
-
-                if downloadSucceed {
-                    // 资源资源已经在本地或下载成功
-                    imageAsset.updateDownloadStatus(withDownloadResult: true)
-                    self.downloadStatus = .succeed
-
-                } else if info?[PHImageErrorKey] != nil {
-                    // 下载错误
-                    imageAsset.updateDownloadStatus(withDownloadResult: false)
-                    self.downloadStatus = .failed
-                }
-            }, with: phProgressHandler)
-
-            imageView?.tag = imageAsset.requestID
+                    let downloadSucceed = (result != nil && info == nil) || (!(info?[PHImageCancelledKey] as? Bool ?? false) && info?[PHImageErrorKey] == nil && !(info?[PHImageResultIsDegradedKey] as? Bool ?? false))
+                    DispatchQueue.main.async {
+                        if downloadSucceed {
+                            // 资源资源已经在本地或下载成功
+                            imageAsset.updateDownloadStatus(withDownloadResult: true)
+                            self.downloadStatus = .succeed
+                            imageView?.cloudDownloadStatus = .succeed
+                        } else if info?[PHImageErrorKey] != nil {
+                            // 下载错误
+                            imageAsset.updateDownloadStatus(withDownloadResult: false)
+                            self.downloadStatus = .failed
+                            imageView?.cloudDownloadStatus = .failed
+                        }
+                    }
+                }, with: phProgressHandler)
+                imageView?.tag = imageAsset.requestID
+            }
         }
     }
 
@@ -320,6 +335,55 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
 //    override var preferredNavigationBarHiddenState: QMUINavigationBarHiddenState {
 //        return NavigationBarHiddenInitially
 //    }
+    
+    static func animatedGIF(with data: Data?) -> UIImage? {
+        // http://www.jianshu.com/p/767af9c690a3
+        // https://github.com/rs/SDWebImage
+        guard let data = data else {
+            return nil
+        }
+        
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+            return nil
+        }
+        let count = CGImageSourceGetCount(source)
+        var animatedImage: UIImage?
+        if count <= 1 {
+            animatedImage = UIImage(data: data)
+        } else {
+            var images = [UIImage]()
+            var duration: TimeInterval = 0
+            for i in 0 ..< count {
+                if let image = CGImageSourceCreateImageAtIndex(source, i, nil) {
+                    duration += frameDuration(at: i, source: source)
+                    images.append(UIImage(cgImage: image, scale: UIScreen.main.scale, orientation: .up))
+                }
+                if duration == 0 {
+                    duration = (1.0 / 10.0) * Double(count)
+                }
+                animatedImage = UIImage.animatedImage(with: images, duration: duration)
+            }
+        }
+        return animatedImage
+    }
+    
+    static private func frameDuration(at index: Int, source: CGImageSource) -> TimeInterval {
+        // http://www.jianshu.com/p/767af9c690a3
+        // https://github.com/rs/SDWebImage
+        var frameDuration: TimeInterval = 0.1
+        let frameProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as Dictionary?
+        let gifProperties = frameProperties?[kCGImagePropertyGIFDictionary] as? [String: Double]
+        let delayTimeUnclampedProp = gifProperties?[kCGImagePropertyGIFUnclampedDelayTime as String] as Double? ?? 0
+        if delayTimeUnclampedProp > 0 {
+            frameDuration = TimeInterval(delayTimeUnclampedProp)
+        } else {
+            let delayTimeProp = gifProperties?[kCGImagePropertyGIFDelayTime as String] ?? 0
+            if delayTimeProp > 0 {
+                frameDuration = TimeInterval(delayTimeProp)
+            }
+        }
+        return frameDuration
+    }
 }
 
 extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
@@ -350,7 +414,7 @@ extension QMUIImagePickerPreviewViewController: QMUIImagePreviewViewDelegate {
     func imagePreviewView(_: QMUIImagePreviewView, willScrollHalfTo index: Int) {
         if !_singleCheckMode {
             let imageAsset = imagesAssetArray[index]
-            checkboxButton.isSelected = selectedImageAssetArray.contains(imageAsset)
+            checkboxButton.isSelected = selectedImageAssetArray.pointee.contains(imageAsset)
         }
     }
 }
@@ -362,5 +426,12 @@ extension QMUIImagePickerPreviewViewController: QMUIZoomImageViewDelegate {
     
     func zoomImageView(_: QMUIZoomImageView, didHideVideoToolbar didHide: Bool) {
         topToolBarView.isHidden = didHide
+    }
+    
+    func didTouchICloudRetryButton(in zoomImageView: QMUIZoomImageView) {
+        guard let index = imagePreviewView?.index(for: zoomImageView) else {
+            return
+        }
+        imagePreviewView?.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
     }
 }
