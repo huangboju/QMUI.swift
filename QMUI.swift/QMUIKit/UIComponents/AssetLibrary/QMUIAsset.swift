@@ -119,8 +119,6 @@ class QMUIAsset: NSObject {
             resultImage = image
         })
         return resultImage
-
-        return resultImage
     }
 
     /**

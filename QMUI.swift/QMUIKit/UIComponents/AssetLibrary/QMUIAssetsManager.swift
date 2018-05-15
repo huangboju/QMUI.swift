@@ -179,18 +179,18 @@ class QMUIAssetsManager {
         let albumPhAssetCollection = albumAssetsGroup.phAssetCollection
         // 把视频加入到指定的相册对应的 PHAssetCollection
         PHPhotoLibrary.shared().addVideoToAlbum(
-            videoPathURL,
+            videoPathURL: videoPathURL,
             albumAssetCollection: albumPhAssetCollection!,
-            albumAssetCollection: { success, creationDate, error in
-                if success {
+            completionHandler: { success, creationDate, error in
+                if success, let creationDate = creationDate {
                     let fetchOptions = PHFetchOptions()
-                    fetchOptions.predicate = NSPredicate(format: "creationDate = %@", creationDate as CVarArg)
+                    fetchOptions.predicate = NSPredicate(format: "creationDate = %@", creationDate as NSDate)
                     let fetchResult = PHAsset.fetchAssets(in: albumPhAssetCollection!, options: fetchOptions)
                     let phAsset = fetchResult.lastObject
                     let asset = QMUIAsset(phAsset: phAsset!)
                     completionBlock?(asset, error)
                 } else {
-                    print("Get PHAsset of video Error: \(error)")
+                    print("Get PHAsset of video Error: \(String(describing: error))")
                     completionBlock?(nil, error)
                 }
         })
@@ -252,7 +252,7 @@ extension PHPhotoLibrary {
             fetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
         } else {
             // 不允许显示系统的智能相册，但由于在 PhotoKit 中，“相机胶卷”也属于“智能相册”，因此这里从“智能相册”中单独获取到“相机胶卷”
-            fetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .smartAlbumUserLibrary, options: nil)
+            fetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: nil)
         }
         // 循环遍历相册列表
         for i in 0 ..< fetchResult.count {
@@ -318,49 +318,98 @@ extension PHPhotoLibrary {
                          orientation: UIImageOrientation,
                          completionHandler: ((Bool, Date?, Error?) -> Void)?) {
         let targetImage = UIImage(cgImage: imageRef, scale: ScreenScale, orientation: orientation)
+        PHPhotoLibrary.shared().addImageToAlbum(image: targetImage, imagePathURL: nil, albumAssetCollection: albumAssetCollection, completionHandler: completionHandler)
+    }
+    
+    func addImageToAlbum(image: UIImage? = nil,
+                         imagePathURL: URL?,
+                         albumAssetCollection: PHAssetCollection,
+                         completionHandler: ((Bool, Date?, Error?) -> Void)?) {
         var creationDate: Date?
-
+        
         performChanges({
             // 创建一个以图片生成新的 PHAsset，这时图片已经被添加到“相机胶卷”
-
-            let assetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: targetImage)
+            var request: PHAssetChangeRequest?
+            if image != nil {
+                request = PHAssetChangeRequest.creationRequestForAsset(from: image!)
+            } else if imagePathURL != nil {
+                request = PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: imagePathURL!)
+            } else {
+                print("QMUIAssetLibrary, Creating asset with empty data")
+                return
+            }
+            
+            guard let assetChangeRequest = request else {
+                return
+            }
+            
             assetChangeRequest.creationDate = Date()
             creationDate = assetChangeRequest.creationDate
-
+            
             if albumAssetCollection.assetCollectionType == .album {
                 // 如果传入的相册类型为标准的相册（非“智能相册”和“时刻”），则把刚刚创建的 Asset 添加到传入的相册中。
-
+                
                 // 创建一个改变 PHAssetCollection 的请求，并指定相册对应的 PHAssetCollection
                 let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: albumAssetCollection)
-
+                
                 /**
                  *  把 PHAsset 加入到对应的 PHAssetCollection 中，系统推荐的方法是调用 placeholderForCreatedAsset ，
                  *  返回一个的 placeholder 来代替刚创建的 PHAsset 的引用，并把该引用加入到一个 PHAssetCollectionChangeRequest 中。
                  */
-                assetCollectionChangeRequest?.addAssets(assetChangeRequest.placeholderForCreatedAsset as! NSFastEnumeration)
+                if let placeholderForCreatedAsset = assetChangeRequest.placeholderForCreatedAsset {
+                    assetCollectionChangeRequest?.addAssets([placeholderForCreatedAsset] as NSArray)
+                }
             }
         }, completionHandler: { success, error in
             if !success, let error = error {
                 print("Creating asset of image error : \(error)")
             }
-            guard let completionHandler = completionHandler else { return }
+            /**
+             *  performChanges:completionHandler 不在主线程执行，若用户在该 block 中操作 UI 时会产生一些问题，
+             *  为了避免这种情况，这里该 block 主动放到主线程执行。
+             */
+            let creatingSuccess = success && creationDate != nil
             DispatchQueue.main.async {
-                completionHandler(success, creationDate, error)
+                completionHandler?(creatingSuccess, creationDate, error)
             }
         })
     }
-    
-    func addImageToAlbum(imagePathURL: URL,
-                         albumAssetCollection: PHAssetCollection,
-                         completionHandler: ((Bool, Date?, Error?) -> Void)?) {
-    }
-    
-    func addImageToAlbum(image: UIImage,
-                         imagePathURL: URL,
-                         albumAssetCollection: PHAssetCollection,
-                         completionHandler: ((Bool, Date?, Error?) -> Void)?) {
-    }
 
-    func addVideoToAlbum(_: URL, albumAssetCollection _: PHAssetCollection, albumAssetCollection _: ((Bool, Date, NSError) -> Void)?) {
+    func addVideoToAlbum(
+        videoPathURL: URL,
+        albumAssetCollection: PHAssetCollection,
+        completionHandler: ((Bool, Date?, Error?) -> Void)?) {
+        var creationDate: Date?
+        performChanges({
+            // 创建一个以视频生成新的 PHAsset 的请求
+            if let assetChangeRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoPathURL) {
+                assetChangeRequest.creationDate = Date()
+                creationDate = assetChangeRequest.creationDate
+                if albumAssetCollection.assetCollectionType == .album {
+                    // 如果传入的相册类型为标准的相册（非“智能相册”和“时刻”），则把刚刚创建的 Asset 添加到传入的相册中。
+                    
+                    // 创建一个改变 PHAssetCollection 的请求，并指定相册对应的 PHAssetCollection
+                    let assetCollectionChangeRequest = PHAssetCollectionChangeRequest(for: albumAssetCollection)
+                    /**
+                     *  把 PHAsset 加入到对应的 PHAssetCollection 中，系统推荐的方法是调用 placeholderForCreatedAsset ，
+                     *  返回一个的 placeholder 来代替刚创建的 PHAsset 的引用，并把该引用加入到一个 PHAssetCollectionChangeRequest 中。
+                     */
+                    if let placeholderForCreatedAsset = assetChangeRequest.placeholderForCreatedAsset {
+                        assetCollectionChangeRequest?.addAssets([placeholderForCreatedAsset] as NSArray)
+                    }
+                }
+            }
+        }) { (success, error) in
+            if !success {
+                print("QMUIAssetLibrary, Creating asset of video error: \(String(describing: error))")
+            }
+            /**
+             *  performChanges:completionHandler 不在主线程执行，若用户在该 block 中操作 UI 时会产生一些问题，
+             *  为了避免这种情况，这里该 block 主动放到主线程执行。
+             */
+            DispatchQueue.main.async {
+                completionHandler?(success, creationDate, error)
+            }
+        }
     }
 }

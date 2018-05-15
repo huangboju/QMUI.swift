@@ -158,6 +158,9 @@
 		D87A2D73207CC72B00F4BD4A /* QDNavigationTitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87A2D72207CC72B00F4BD4A /* QDNavigationTitleViewController.swift */; };
 		D880BD5F20A94130006017C2 /* QDMultipleImagePickerPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD5E20A94130006017C2 /* QDMultipleImagePickerPreviewViewController.swift */; };
 		D880BD6120A94140006017C2 /* QDSingleImagePickerPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6020A94140006017C2 /* QDSingleImagePickerPreviewViewController.swift */; };
+		D880BD6320AAC13B006017C2 /* QDAssetsManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */; };
+		D880BD6520AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */; };
+		D880BD6720AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */; };
 		D8CEFC592090517700D92BF8 /* QDObjectMethodsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CEFC582090517700D92BF8 /* QDObjectMethodsListViewController.swift */; };
 		D8E08734209B0FAF007F7A60 /* QMUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E08733209B0FAF007F7A60 /* QMUIButton.swift */; };
 		D8E08736209B0FFA007F7A60 /* QMUIFillButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E08735209B0FFA007F7A60 /* QMUIFillButton.swift */; };
@@ -364,6 +367,9 @@
 		D87A2D72207CC72B00F4BD4A /* QDNavigationTitleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDNavigationTitleViewController.swift; sourceTree = "<group>"; };
 		D880BD5E20A94130006017C2 /* QDMultipleImagePickerPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDMultipleImagePickerPreviewViewController.swift; sourceTree = "<group>"; };
 		D880BD6020A94140006017C2 /* QDSingleImagePickerPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSingleImagePickerPreviewViewController.swift; sourceTree = "<group>"; };
+		D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDAssetsManagerViewController.swift; sourceTree = "<group>"; };
+		D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSaveImageToSpecifiedAlbumViewController.swift; sourceTree = "<group>"; };
+		D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSaveVideoToSpecifiedAlbumViewController.swift; sourceTree = "<group>"; };
 		D8CEFC582090517700D92BF8 /* QDObjectMethodsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDObjectMethodsListViewController.swift; sourceTree = "<group>"; };
 		D8E08733209B0FAF007F7A60 /* QMUIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIButton.swift; sourceTree = "<group>"; };
 		D8E08735209B0FFA007F7A60 /* QMUIFillButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIFillButton.swift; sourceTree = "<group>"; };
@@ -685,6 +691,9 @@
 				D809EC0D20A2B0F500BFBBBB /* QDImagePickerExampleViewController.swift */,
 				D880BD5E20A94130006017C2 /* QDMultipleImagePickerPreviewViewController.swift */,
 				D880BD6020A94140006017C2 /* QDSingleImagePickerPreviewViewController.swift */,
+				D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */,
+				D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */,
+				D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -959,6 +968,8 @@
 				D8F8F8F82071D7A700ECC2DD /* QDCommonListViewController.swift in Sources */,
 				D8491C9F208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift in Sources */,
 				D8F01FB9204F8C3F003BCC8A /* QDUIHelper.swift in Sources */,
+				D880BD6720AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift in Sources */,
+				D880BD6520AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift in Sources */,
 				3E6BE4D01F13C5270089DC6D /* QMUICellHeightIndexPathCache.swift in Sources */,
 				3E6BE4EC1F13C5270089DC6D /* UISearchBar+QMUI.swift in Sources */,
 				3E6BE4D61F13C5270089DC6D /* QMUISegmentedControl.swift in Sources */,
@@ -1059,6 +1070,7 @@
 				3E6BE4CB1F13C5270089DC6D /* NSAttributedString+QMUI.swift in Sources */,
 				D831FC6F1E2E4F1B009CFB28 /* QMUICommonDefines.swift in Sources */,
 				BEB72CD21F13A88C006426D3 /* QMUIEmotionView.swift in Sources */,
+				D880BD6320AAC13B006017C2 /* QDAssetsManagerViewController.swift in Sources */,
 				BEB72CE41F13A921006426D3 /* QMUIPopupContainerView.swift in Sources */,
 				BEB72CF01F13AA5F006426D3 /* QMUIToastBackgroundView.swift in Sources */,
 				D8F8865B208EFE8200014CCF /* QDImageViewController.swift in Sources */,

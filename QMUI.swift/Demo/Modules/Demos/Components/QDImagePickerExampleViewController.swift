@@ -20,6 +20,8 @@ class QDImagePickerExampleViewController: QDCommonGroupListViewController {
 
     private var selectedAvatarImage: UIImage?
     
+    private var imagesAsset: QMUIAsset?
+    
     override func initDataSource() {
         super.initDataSource()
         
@@ -254,6 +256,7 @@ extension QDImagePickerExampleViewController: QDSingleImagePickerPreviewViewCont
         QMUIImagePickerHelper.updateLastestAlbum(with: imagePickerPreviewViewController.assetsGroup!, albumContentType: kAlbumContentType, userIdentify: nil)
         // 显示 loading
         startLoading()
+        self.imagesAsset = imagesAsset
         imagesAsset.requestImageData { (imageData, info, isGif, isHEIC) in
             guard let imageData = imageData else {
                 return
