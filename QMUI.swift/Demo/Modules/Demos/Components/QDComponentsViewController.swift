@@ -63,7 +63,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDStaticTableViewController()
         }
         if title == "QMUIImagePreviewView" {
-            viewController = QDSliderViewController()
+            viewController = QDImagePreviewExampleViewController()
         }
         if title == "QMUIPickingImage" {
             viewController = QDImagePickerExampleViewController()

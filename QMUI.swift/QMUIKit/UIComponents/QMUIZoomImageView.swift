@@ -966,10 +966,6 @@ extension QMUIZoomImageView: UIScrollViewDelegate {
     }
 }
 
-extension QMUIZoomImageView {
-    
-}
-
 class QMUIZoomImageViewVideoToolbar: UIView {
     private(set) var playButton: QMUIButton!
     private(set) var pauseButton: QMUIButton!

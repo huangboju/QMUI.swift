@@ -161,6 +161,10 @@
 		D880BD6320AAC13B006017C2 /* QDAssetsManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */; };
 		D880BD6520AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */; };
 		D880BD6720AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */; };
+		D880BD6920AAE49B006017C2 /* QDImagePreviewExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6820AAE49B006017C2 /* QDImagePreviewExampleViewController.swift */; };
+		D880BD6B20AAE6F0006017C2 /* QDImagePreviewViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6A20AAE6EF006017C2 /* QDImagePreviewViewController1.swift */; };
+		D880BD6D20AAE6FD006017C2 /* QDImagePreviewViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6C20AAE6FD006017C2 /* QDImagePreviewViewController2.swift */; };
+		D880BD7020AAEC6D006017C2 /* QDActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D880BD6F20AAEC6D006017C2 /* QDActivityIndicator.swift */; };
 		D8CEFC592090517700D92BF8 /* QDObjectMethodsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CEFC582090517700D92BF8 /* QDObjectMethodsListViewController.swift */; };
 		D8E08734209B0FAF007F7A60 /* QMUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E08733209B0FAF007F7A60 /* QMUIButton.swift */; };
 		D8E08736209B0FFA007F7A60 /* QMUIFillButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E08735209B0FFA007F7A60 /* QMUIFillButton.swift */; };
@@ -370,6 +374,10 @@
 		D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDAssetsManagerViewController.swift; sourceTree = "<group>"; };
 		D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSaveImageToSpecifiedAlbumViewController.swift; sourceTree = "<group>"; };
 		D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDSaveVideoToSpecifiedAlbumViewController.swift; sourceTree = "<group>"; };
+		D880BD6820AAE49B006017C2 /* QDImagePreviewExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDImagePreviewExampleViewController.swift; sourceTree = "<group>"; };
+		D880BD6A20AAE6EF006017C2 /* QDImagePreviewViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDImagePreviewViewController1.swift; sourceTree = "<group>"; };
+		D880BD6C20AAE6FD006017C2 /* QDImagePreviewViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDImagePreviewViewController2.swift; sourceTree = "<group>"; };
+		D880BD6F20AAEC6D006017C2 /* QDActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDActivityIndicator.swift; sourceTree = "<group>"; };
 		D8CEFC582090517700D92BF8 /* QDObjectMethodsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDObjectMethodsListViewController.swift; sourceTree = "<group>"; };
 		D8E08733209B0FAF007F7A60 /* QMUIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIButton.swift; sourceTree = "<group>"; };
 		D8E08735209B0FFA007F7A60 /* QMUIFillButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIFillButton.swift; sourceTree = "<group>"; };
@@ -694,6 +702,9 @@
 				D880BD6220AAC13B006017C2 /* QDAssetsManagerViewController.swift */,
 				D880BD6420AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift */,
 				D880BD6620AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift */,
+				D880BD6820AAE49B006017C2 /* QDImagePreviewExampleViewController.swift */,
+				D880BD6A20AAE6EF006017C2 /* QDImagePreviewViewController1.swift */,
+				D880BD6C20AAE6FD006017C2 /* QDImagePreviewViewController2.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -803,6 +814,14 @@
 			path = QMUIResources;
 			sourceTree = "<group>";
 		};
+		D880BD6E20AAEC55006017C2 /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				D880BD6F20AAEC6D006017C2 /* QDActivityIndicator.swift */,
+			);
+			path = Animation;
+			sourceTree = "<group>";
+		};
 		D8E08732209B0F73007F7A60 /* QMUIButton */ = {
 			isa = PBXGroup;
 			children = (
@@ -827,6 +846,7 @@
 		D8F8F8F42071D74A00ECC2DD /* Lab */ = {
 			isa = PBXGroup;
 			children = (
+				D880BD6E20AAEC55006017C2 /* Animation */,
 				D8F8F8F52071D76D00ECC2DD /* QDLabViewController.swift */,
 				D8491C9A20843B87004D0170 /* QDAllSystemFontsViewController.swift */,
 				D8491C9C20843BD0004D0170 /* QDThemeViewController.swift */,
@@ -1034,6 +1054,7 @@
 				3E6BE4DA1F13C5270089DC6D /* QMUITableViewProtocols.swift in Sources */,
 				D8491C94207EED28004D0170 /* QDCommonGroupListViewController.swift in Sources */,
 				BEB72CF41F13AA7B006426D3 /* QMUIToastView.swift in Sources */,
+				D880BD6B20AAE6F0006017C2 /* QDImagePreviewViewController1.swift in Sources */,
 				BEB72CD41F13A8A5006426D3 /* QMUIFloatLayoutView.swift in Sources */,
 				D83D1EEB2074AA36007BC8B0 /* QDCommonTableViewController.swift in Sources */,
 				3E6BE4D21F13C5270089DC6D /* QMUICollectionViewPagingLayout.swift in Sources */,
@@ -1060,6 +1081,7 @@
 				D87A2D61207B20C800F4BD4A /* QDNormalButtonViewController.swift in Sources */,
 				BEB72CC31F13A7D9006426D3 /* QMUIAssetsManager.swift in Sources */,
 				D83A4AA92072475300E445FA /* QDAboutViewController.swift in Sources */,
+				D880BD6D20AAE6FD006017C2 /* QDImagePreviewViewController2.swift in Sources */,
 				D8F88663208F3B8F00014CCF /* QDUIViewBorderViewController.swift in Sources */,
 				D845BA5A204E981400103B62 /* QDCommonGridViewController.swift in Sources */,
 				D831FC6B1E2E4710009CFB28 /* QMUIConfiguration.swift in Sources */,
@@ -1084,6 +1106,7 @@
 				3E6BE4F01F13C5270089DC6D /* UITextField+QMUI.swift in Sources */,
 				3E6BE4D11F13C5270089DC6D /* QMUICellHeightKeyCache.swift in Sources */,
 				D84FC0AA20898A6000372786 /* QDMoreOperationViewController.swift in Sources */,
+				D880BD6920AAE49B006017C2 /* QDImagePreviewExampleViewController.swift in Sources */,
 				D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */,
 				D8F88626208D6F0B00014CCF /* QDOrientationViewController.swift in Sources */,
 				D831FC101E2E0017009CFB28 /* AppDelegate.swift in Sources */,
@@ -1100,6 +1123,7 @@
 				D8F8862B208D70A500014CCF /* QMUIStaticTableViewCellDataSource.swift in Sources */,
 				3E6BE4DE1F13C5270089DC6D /* UIActivityIndicatorView+QMUI.swift in Sources */,
 				D864A5F5204E72F10036C164 /* QDThemeProtocol.swift in Sources */,
+				D880BD7020AAEC6D006017C2 /* QDActivityIndicator.swift in Sources */,
 				D8536CAA20A044110088B658 /* QMUIKeyboardManager.swift in Sources */,
 				3E6BE4CD1F13C5270089DC6D /* NSParagraphStyle+QMUI.swift in Sources */,
 				D8491C9D20843BD0004D0170 /* QDThemeViewController.swift in Sources */,

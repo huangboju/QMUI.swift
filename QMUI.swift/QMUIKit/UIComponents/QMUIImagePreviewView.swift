@@ -168,7 +168,8 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
         if let loadingView = zoomView?.emptyView.loadingView as? UIActivityIndicatorView {
             loadingView.color = loadingColor
         }
-
+        zoomView?.cloudProgressView?.tintColor = loadingColor
+        zoomView?.cloudDownloadRetryButton?.tintColor = loadingColor
         zoomView?.delegate = self
 
         // 因为 cell 复用的问题，很可能此时会显示一张错误的图片，因此这里要清空所有图片的显示
@@ -176,12 +177,9 @@ extension QMUIImagePreviewView: UICollectionViewDataSource {
         if #available(iOS 9.1, *) {
             zoomView?.livePhoto = nil
         }
-        zoomView?.videoPlayerItem = nil
-        zoomView?.showLoading()
 
         delegate?.imagePreviewView(self, renderZoomImageView: zoomView!, at: indexPath.item)
-
-        zoomView?.hideEmptyView()
+        
         return cell ?? QMUIImagePreviewCell()
     }
 }
