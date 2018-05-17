@@ -118,7 +118,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = title ?? "照片"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelSelectAlbum))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(title: "取消", target: self, action: #selector(handleCancelSelectAlbum))
     }
 
     @objc override func initTableView() {

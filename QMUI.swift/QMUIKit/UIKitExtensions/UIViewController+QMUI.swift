@@ -43,6 +43,8 @@ extension UIViewController: SelfAware {
             ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(NavigationBarTransition_viewWillAppear(_:)))
             ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(NavigationBarTransition_viewDidAppear(_:)))
             ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(NavigationBarTransition_viewDidDisappear(_:)))
+            
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(navigationButton_viewDidAppear(_:)))
         }
     }
     

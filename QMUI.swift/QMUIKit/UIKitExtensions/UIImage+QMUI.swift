@@ -169,7 +169,10 @@ extension UIImage {
      *
      *  @return 与当前图片形状一致但颜色与参数tintColor相同的新图片
      */
-    func qmui_image(tintColor: UIColor) -> UIImage? {
+    func qmui_image(tintColor: UIColor?) -> UIImage? {
+        guard let tintColor = tintColor else {
+            return nil
+        }
         let imageIn = self
         let rect = CGRect(origin: .zero, size: imageIn.size)
         UIGraphicsBeginImageContextWithOptions(imageIn.size, qmui_opaque, imageIn.scale)

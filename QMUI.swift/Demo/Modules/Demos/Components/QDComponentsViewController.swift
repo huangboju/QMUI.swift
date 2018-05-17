@@ -40,7 +40,7 @@ class QDComponentsViewController: QDCommonGridViewController {
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "Components"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(image: UIImageMake("icon_nav_about"), position: .right, target: self, action: #selector(handleAboutItemEvent))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleAboutItemEvent))
     }
     
     @objc private func handleAboutItemEvent() {
@@ -87,7 +87,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDPieProgressViewController()
         }
         if title == "QMUIPopupContainerView" {
-            viewController = QDSliderViewController()
+            viewController = QDPopupContainerViewController()
         }
         if title == "QMUIModalPresentationViewController" {
             viewController = QDModalPresentationViewController(style: .grouped)

@@ -211,7 +211,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
 
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelPickerImage(_:)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(title: "取消", target: self, action: #selector(handleCancelPickerImage(_:)))
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -126,6 +126,7 @@
 		D8536CAA20A044110088B658 /* QMUIKeyboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8536CA920A044110088B658 /* QMUIKeyboardManager.swift */; };
 		D8536CAD20A052B10088B658 /* QMUIEmotionInputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8536CAC20A052B10088B658 /* QMUIEmotionInputManager.swift */; };
 		D8545F1120AC3D64006EC694 /* QDPieProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8545F1020AC3D64006EC694 /* QDPieProgressViewController.swift */; };
+		D8545F1320AD3CED006EC694 /* QDPopupContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8545F1220AD3CED006EC694 /* QDPopupContainerViewController.swift */; };
 		D864A5F3204E52200036C164 /* QDCommonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D864A5F1204E52200036C164 /* QDCommonViewController.swift */; };
 		D864A5F5204E72F10036C164 /* QDThemeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D864A5F4204E72F10036C164 /* QDThemeProtocol.swift */; };
 		D86895412085E43B00359F81 /* QDTextFieldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86895402085E43B00359F81 /* QDTextFieldViewController.swift */; };
@@ -340,6 +341,7 @@
 		D8536CA920A044110088B658 /* QMUIKeyboardManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIKeyboardManager.swift; sourceTree = "<group>"; };
 		D8536CAC20A052B10088B658 /* QMUIEmotionInputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QMUIEmotionInputManager.swift; sourceTree = "<group>"; };
 		D8545F1020AC3D64006EC694 /* QDPieProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDPieProgressViewController.swift; sourceTree = "<group>"; };
+		D8545F1220AD3CED006EC694 /* QDPopupContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDPopupContainerViewController.swift; sourceTree = "<group>"; };
 		D864A5F1204E52200036C164 /* QDCommonViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QDCommonViewController.swift; sourceTree = "<group>"; };
 		D864A5F4204E72F10036C164 /* QDThemeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDThemeProtocol.swift; sourceTree = "<group>"; };
 		D86895402085E43B00359F81 /* QDTextFieldViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDTextFieldViewController.swift; sourceTree = "<group>"; };
@@ -708,6 +710,7 @@
 				D880BD6A20AAE6EF006017C2 /* QDImagePreviewViewController1.swift */,
 				D880BD6C20AAE6FD006017C2 /* QDImagePreviewViewController2.swift */,
 				D8545F1020AC3D64006EC694 /* QDPieProgressViewController.swift */,
+				D8545F1220AD3CED006EC694 /* QDPopupContainerViewController.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -993,6 +996,7 @@
 				D8F01FB9204F8C3F003BCC8A /* QDUIHelper.swift in Sources */,
 				D880BD6720AAC21D006017C2 /* QDSaveVideoToSpecifiedAlbumViewController.swift in Sources */,
 				D880BD6520AAC212006017C2 /* QDSaveImageToSpecifiedAlbumViewController.swift in Sources */,
+				D8545F1320AD3CED006EC694 /* QDPopupContainerViewController.swift in Sources */,
 				3E6BE4D01F13C5270089DC6D /* QMUICellHeightIndexPathCache.swift in Sources */,
 				3E6BE4EC1F13C5270089DC6D /* UISearchBar+QMUI.swift in Sources */,
 				3E6BE4D61F13C5270089DC6D /* QMUISegmentedControl.swift in Sources */,
