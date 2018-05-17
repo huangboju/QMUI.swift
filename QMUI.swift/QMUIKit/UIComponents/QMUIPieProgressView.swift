@@ -21,7 +21,7 @@ class QMUIPieProgressView: UIControl {
      进度动画的时长，默认为 0.5
      */
     @IBInspectable
-    public var progressAnimationDuration: CFTimeInterval = 0.5 {
+    var progressAnimationDuration: CFTimeInterval = 0.5 {
         didSet {
             progressLayer?.progressAnimationDuration = progressAnimationDuration
         }
@@ -31,12 +31,15 @@ class QMUIPieProgressView: UIControl {
      当前进度值，默认为 0.0。调用 `setProgress:` 相当于调用 `setProgress:animated:NO`
      */
     @IBInspectable
-    public var progress: CGFloat = 0 {
-        didSet {
-            if progress == oldValue { return }
+    var progress: Float {
+        get {
+            return _progress
+        }
+        set {
             setProgress(progress, animated: false)
         }
     }
+    private var _progress: Float = 0
 
     override class var layerClass: AnyClass {
         return QMUIPieProgressLayer.self
@@ -66,8 +69,14 @@ class QMUIPieProgressView: UIControl {
         layer.setNeedsDisplay()
     }
 
-    public func setProgress(_ progress: CGFloat, animated: Bool) {
-        self.progress = max(0.0, min(1.0, progress))
+    /**
+     修改当前的进度，会触发 UIControlEventValueChanged 事件
+     
+     @param progress 当前的进度，取值范围 [0.0-1.0]
+     @param animated 是否以动画来表现
+     */
+    func setProgress(_ progress: Float, animated: Bool) {
+        _progress = max(0.0, min(1.0, progress))
         let layer = self.layer as? QMUIPieProgressLayer
         layer?.shouldChangeProgressWithAnimation = animated
         layer?.progress = progress
@@ -87,8 +96,8 @@ class QMUIPieProgressView: UIControl {
 }
 
 class QMUIPieProgressLayer: CALayer {
-    var fillColor: UIColor?
-    var progress: CGFloat = 0
+    @NSManaged var fillColor: UIColor?
+    @NSManaged var progress: Float
     var progressAnimationDuration: CFTimeInterval = 0
     var shouldChangeProgressWithAnimation = true // default is YES
 
@@ -114,13 +123,13 @@ class QMUIPieProgressLayer: CALayer {
         // 绘制扇形进度区域
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
         let radius = min(center.x, center.y)
-        let startAngle = -CGFloat.pi / 2
+        let startAngle = -Float.pi / 2
         let endAngle = .pi * 2 * progress + startAngle
         if let cgColor = fillColor?.cgColor {
             ctx.setFillColor(cgColor)
         }
         ctx.move(to: center)
-        ctx.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
+        ctx.addArc(center: center, radius: radius, startAngle: CGFloat(startAngle), endAngle: CGFloat(endAngle), clockwise: false)
         ctx.closePath()
         ctx.fillPath()
 

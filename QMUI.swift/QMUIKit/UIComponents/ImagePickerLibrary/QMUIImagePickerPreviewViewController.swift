@@ -217,11 +217,11 @@ class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
                         imageView?.cloudProgressView?.setProgress(0, animated: false)
                     }
                     // 拉取资源的初期，会有一段时间没有进度，猜测是发出网络请求以及与 iCloud 建立连接的耗时，这时预先给个 0.02 的进度值，看上去好看些
-                    let targetProgress = fmax(0.02, CGFloat(progress))
+                    let targetProgress = Float(fmax(0.02, progress))
                     if targetProgress < imageView?.cloudProgressView?.progress ?? 0 {
                         imageView?.cloudProgressView?.setProgress(targetProgress, animated: false)
                     } else {
-                        imageView?.cloudProgressView?.progress = fmax(0.02, CGFloat(progress))
+                        imageView?.cloudProgressView?.progress = Float(fmax(0.02, progress))
                     }
                     if error != nil {
                         print("Download iCloud image Failed, current progress is: \(progress)")

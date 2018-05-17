@@ -84,7 +84,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDFloatLayoutViewController()
         }
         if title == "QMUIPieProgressView" {
-            viewController = QDSliderViewController()
+            viewController = QDPieProgressViewController()
         }
         if title == "QMUIPopupContainerView" {
             viewController = QDSliderViewController()
