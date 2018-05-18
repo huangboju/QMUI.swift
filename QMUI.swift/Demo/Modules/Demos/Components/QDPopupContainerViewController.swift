@@ -62,7 +62,7 @@ class QDPopupContainerViewController: QDCommonViewController {
         view.layer.addSublayer(separatorLayer2)
         
         button1 = QDUIHelper.generateLightBorderedButton()
-        button1.addTarget(self, action: #selector(handleButtonEvent), for: .touchUpInside)
+        button1.addTarget(self, action: #selector(handleButtonEvent(_:)), for: .touchUpInside)
         button1.setTitle("显示默认浮层", for: .normal)
         view.addSubview(button1)
         
@@ -130,22 +130,84 @@ class QDPopupContainerViewController: QDCommonViewController {
     
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem.
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleRightBarButtonItemEvent(_:)))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         // popupView3 使用方法 2 显示，并且没有打开 automaticallyHidesWhenUserTap，则需要手动隐藏
+        if popupView3.isShowing {
+            popupView3.hide(with: animated)
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         
+        let minY = qmui_navigationBarMaxYInViewCoordinator
+        let viewportHeight = view.bounds.height - minY
+        let sectionHeight = viewportHeight / 3
+        
+        button1.frame = button1.frame.setXY(view.bounds.width.center(button1.frame.width), minY + (sectionHeight - button1.frame.height) / 2)
+        popupView1.safetyMarginsOfSuperview = popupView1.safetyMarginsOfSuperview.setTop(qmui_navigationBarMaxYInViewCoordinator + 10)
+        popupView1.layout(with: button1) // 相对于 button1 布局
+        
+        separatorLayer1.frame = CGRectFlat(0, minY + sectionHeight, view.bounds.width, PixelOne)
+        
+        button2.frame = button1.frame.setY(button1.frame.maxY + sectionHeight - button2.frame.height)
+        popupView2.layout(with: button2) // 相对于 button2 布局
+        
+        separatorLayer2.frame = separatorLayer1.frame.setY(minY + sectionHeight * 2)
+        
+        button3.frame = button1.frame.setY(button2.frame.maxY + sectionHeight - button3.frame.height)
+        popupView3.layoutWithTargetRectInScreenCoordinate(button3.convert(button3.bounds, to: nil)) // 将 button3 的坐标转换到相对于 UIWindow 的坐标系里，然后再传给浮层布局
+        
+        // 在横竖屏旋转时，viewDidLayoutSubviews 这个时机还无法获取到正确的 navigationItem 的 frame，所以直接隐藏掉
+        if popupView4.isShowing {
+            popupView4.hide(with: false)
+        }
     }
 
-    @objc private func handleRightBarButtonItemEvent() {
-        
+    @objc private func handleRightBarButtonItemEvent(_ button: QMUIButton) {
+        if popupView4.isShowing {
+            popupView4.hide(with: true)
+        } else {
+            // 相对于右上角的按钮布局，显示前重新对准布局，避免横竖屏导致位置不准确
+            if let qmui_view = navigationItem.rightBarButtonItem?.qmui_view {
+                popupView4.layout(with: qmui_view)
+                popupView4.show(with: true)
+            }
+        }
     }
 
-    @objc private func handleButtonEvent() {
+    @objc private func handleButtonEvent(_ button: QMUIButton) {
+        if button == button1 {
+            if popupView1.isShowing {
+                popupView1.hide(with: true)
+                button1.setTitle("显示默认浮层", for: .normal)
+            } else {
+                popupView1.show(with: true)
+                button1.setTitle("隐藏默认浮层", for: .normal)
+            }
+            return
+        }
         
+        if button == button2 {
+            popupView2.show(with: true)
+            button2.setTitle("隐藏菜单浮层", for: .normal)
+            return
+        }
+        
+        if button == button3 {
+            if popupView3.isShowing {
+                popupView3.hide(with: true)
+            } else {
+                popupView3.show(with: true)
+                button3.setTitle("隐藏自定义浮层", for: .normal)
+            }
+            return
+        }
     }
 
 }
