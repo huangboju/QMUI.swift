@@ -96,7 +96,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDDialogViewController()
         }
         if title == "QMUIKeyboardManager" {
-            viewController = QDSliderViewController()
+            viewController = QDKeyboardViewController()
         }
         if title == "QMUIMarqueeLabel" {
             viewController = QDSliderViewController()
