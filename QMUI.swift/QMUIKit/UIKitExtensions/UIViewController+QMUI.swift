@@ -7,9 +7,9 @@
 //
 
 extension Notification {
-    fileprivate class QMUI {
+    class QMUI {
         /// 当主题发生变化时，会发送这个通知
-        public static let TabBarStyleChanged = Notification.Name("Notification.QMUI.TabBarStyleChanged")
+        static let TabBarStyleChanged = Notification.Name("Notification.QMUI.TabBarStyleChanged")
     }
 }
 
@@ -43,6 +43,8 @@ extension UIViewController: SelfAware {
             ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(NavigationBarTransition_viewWillAppear(_:)))
             ReplaceMethod(clazz, #selector(viewDidAppear(_:)), #selector(NavigationBarTransition_viewDidAppear(_:)))
             ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(NavigationBarTransition_viewDidDisappear(_:)))
+            
+            ReplaceMethod(clazz, #selector(viewDidDisappear(_:)), #selector(navigationButton_viewDidAppear(_:)))
         }
     }
     
@@ -187,7 +189,7 @@ extension UIViewController: SelfAware {
             // 这里直接用 CGRectGetHeight(tabBar.frame) 来计算理论上不准确，但因为系统有这个 bug（https://github.com/QMUI/QMUI_iOS/issues/217），所以暂时用 CGRectGetHeight(tabBar.frame) 来代替
             let correctSafeAreaInsetsBottom = tabBarHidden ? tabBar.safeAreaInsets.bottom : tabBar.frame.height
             let additionalSafeAreaInsetsBottom = correctSafeAreaInsetsBottom - tabBar.safeAreaInsets.bottom
-            additionalSafeAreaInsets.setBottom(bottom: additionalSafeAreaInsetsBottom)
+            additionalSafeAreaInsets.setBottom(additionalSafeAreaInsetsBottom)
         }
     }
 }

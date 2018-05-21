@@ -433,7 +433,7 @@ extension QMUIHelper {
             UIViewController.attemptRotationToDeviceOrientation()
             return false
         }
-        UIDevice.current.setValue(orientation, forKey: "orientation")
+        UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
         return true
     }
     
@@ -506,18 +506,18 @@ extension QMUIHelper {
      * 把App的主要window置灰，用于浮层弹出时，请注意要在适当时机调用`resetDimmedApplicationWindow`恢复到正常状态
      */
     static func dimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .dimmed
-        window?.tintColorDidChange()
+        let window = UIApplication.shared.delegate?.window
+        window??.tintAdjustmentMode = .dimmed
+        window??.tintColorDidChange()
     }
 
     /**
      * 恢复对App的主要window的置灰操作，与`dimmedApplicationWindow`成对调用
      */
     static func resetDimmedApplicationWindow() {
-        let window = UIApplication.shared.keyWindow
-        window?.tintAdjustmentMode = .normal
-        window?.tintColorDidChange()
+        let window = UIApplication.shared.delegate?.window
+        window??.tintAdjustmentMode = .normal
+        window??.tintColorDidChange()
     }
 }
 

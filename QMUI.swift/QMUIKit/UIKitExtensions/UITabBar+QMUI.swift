@@ -5,8 +5,9 @@
 //  Created by xnxin on 2017/7/10.
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
-
 extension UITabBar: SelfAware2 {
+    
+    // MARK: TODO 比较奇怪，UITabBar 无法执行，在 harmlessFunction 遍历类时竟然没有实现 SelfAware2
 
     private static let kLastTouchedTabBarItemIndexNone = -1
 
@@ -20,14 +21,33 @@ extension UITabBar: SelfAware2 {
                 #selector(setItems(_:animated:)),
                 #selector(setter: selectedItem),
                 #selector(setter: frame),
-                #selector(setter: backgroundImage),
-                #selector(setter: isTranslucent),
-                #selector(setter: isHidden),
             ]
-            selectors.forEach({
-                //                print("qmui_" + $0.description)
-                ReplaceMethod(clazz, $0, Selector("qmui_" + $0.description))
-            })
+            let qmui_selectors = [
+                #selector(UITabBar.qmui_setItems(_:animated:)),
+                #selector(UITabBar.qmui_setSelectedItem(_:)),
+                #selector(UITabBar.qmui_setFrame(_:)),
+                ]
+            for index in 0..<selectors.count {
+                ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
+            }
+            
+            if #available(iOS 11, *) {
+                let selectors = [
+                    #selector(setter: backgroundImage),
+                    #selector(setter: isTranslucent),
+                    #selector(setter: isHidden),
+                    #selector(setter: frame),
+                    ]
+                let qmui_selectors = [
+                    #selector(UITabBar.qmui_setBackgroundImage),
+                    #selector(UITabBar.qmui_setTranslucent),
+                    #selector(UITabBar.qmui_setHidden),
+                    #selector(UITabBar.qmui_nav_setFrame(_:)),
+                    ]
+                for index in 0..<selectors.count {
+                    ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
+                }
+            }
         }
     }
 
@@ -63,6 +83,38 @@ extension UITabBar: SelfAware2 {
             }
         }
         qmui_setFrame(newFrame)
+    }
+    
+    @objc func qmui_setBackgroundImage(_ image: UIImage?) {
+        let shouldNotify = self.backgroundImage != image
+        qmui_setBackgroundImage(image)
+        if shouldNotify {
+            NotificationCenter.default.post(name: Notification.QMUI.TabBarStyleChanged, object: self)
+        }
+    }
+    
+    @objc func qmui_setTranslucent(_ translucent: Bool) {
+        let shouldNotify = self.isTranslucent != translucent
+        qmui_setTranslucent(translucent)
+        if shouldNotify {
+            NotificationCenter.default.post(name: Notification.QMUI.TabBarStyleChanged, object: self)
+        }
+    }
+    
+    @objc func qmui_setHidden(_ hidden: Bool) {
+        let shouldNotify = self.isHidden != hidden
+        qmui_setHidden(hidden)
+        if shouldNotify {
+            NotificationCenter.default.post(name: Notification.QMUI.TabBarStyleChanged, object: self)
+        }
+    }
+    
+    @objc func qmui_nav_setFrame(_ frame: CGRect) {
+        let shouldNotify = self.frame.minY != frame.minY
+        qmui_nav_setFrame(frame)
+        if shouldNotify {
+            NotificationCenter.default.post(name: Notification.QMUI.TabBarStyleChanged, object: self)
+        }
     }
 
     @objc private func handleTabBarItemViewEvent(_: UIControl) {
@@ -111,7 +163,7 @@ extension UITabBar: SelfAware2 {
         static var kTabBarItemViewTouchCount = "kTabBarItemViewTouchCount"
     }
 
-    public var canItemRespondDoubleTouch: Bool {
+    fileprivate var canItemRespondDoubleTouch: Bool {
         get {
             guard let canItemRespondDoubleTouch = objc_getAssociatedObject(self, &AssociatedKeys.kCanItemRespondDoubleTouch) else {
                 return false
@@ -123,7 +175,7 @@ extension UITabBar: SelfAware2 {
         }
     }
 
-    public var lastTouchedTabBarItemViewIndex: Int {
+    fileprivate var lastTouchedTabBarItemViewIndex: Int {
         get {
             guard let lastTouchedTabBarItemViewIndex = objc_getAssociatedObject(self, &AssociatedKeys.kLastTouchedTabBarItemViewIndex) else {
                 return UITabBar.kLastTouchedTabBarItemIndexNone
@@ -135,7 +187,7 @@ extension UITabBar: SelfAware2 {
         }
     }
 
-    public var tabBarItemViewTouchCount: Int {
+    fileprivate var tabBarItemViewTouchCount: Int {
         get {
             guard let tabBarItemViewTouchCount = objc_getAssociatedObject(self, &AssociatedKeys.kTabBarItemViewTouchCount) else {
                 return 0

@@ -18,9 +18,9 @@ extension UINavigationBar: SelfAware2 {
             let clazz = UINavigationBar.self
             
             // MARK: TODO 使用 UINavigationBar.appearance() 时，交换会发生崩溃
-//            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(UINavigationBar.qmui_setShadowImage(_:)))
-//            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(UINavigationBar.qmui_setBarTintColor(_:)))
-//            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(UINavigationBar.qmui_setBackgroundImage(_:for:)))
+            ReplaceMethod(clazz, #selector(setter: shadowImage), #selector(UINavigationBar.qmui_setShadowImage(_:)))
+            ReplaceMethod(clazz, #selector(setter: barTintColor), #selector(UINavigationBar.qmui_setBarTintColor(_:)))
+            ReplaceMethod(clazz, #selector(UINavigationBar.setBackgroundImage(_:for:)), #selector(UINavigationBar.qmui_setBackgroundImage(_:for:)))
             
             ReplaceMethod(clazz, #selector(UINavigationBar.layoutSubviews), #selector(UINavigationBar.titleView_navigationBarLayoutSubviews))
         }

@@ -24,7 +24,7 @@ class QDLabViewController: QDCommonListViewController {
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "Lab"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(image: UIImageMake("icon_nav_about"), position: .right, target: self, action: #selector(handleAboutItemEvent))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleAboutItemEvent))
     }
     
     @objc private func handleAboutItemEvent() {
@@ -37,11 +37,11 @@ class QDLabViewController: QDCommonListViewController {
         if title == "All System Fonts" {
             viewController = QDAllSystemFontsViewController()
         } else if title == "Default Line Height" {
-            viewController = QDAllSystemFontsViewController()
+            viewController = QDFontPointSizeAndLineHeightViewController()
         } else if title == "Theme" {
             viewController = QDThemeViewController()
         } else if title == "Animation" {
-            viewController = QDAllSystemFontsViewController()
+            viewController = QDAnimationViewController()
         } else if title == "Log Manager" {
             viewController = QDAllSystemFontsViewController()
         }

@@ -42,7 +42,7 @@ class QMUIQQEmotionManager {
     let emotionView: QMUIEmotionView = QMUIEmotionView()
 
     init() {
-        emotionView.didSelectEmotionBlock = { [weak self] _, emotion in
+        emotionView.didSelectEmotionClosure = { [weak self] _, emotion in
             guard let strongSelf = self else {
                 return
             }
@@ -70,7 +70,7 @@ class QMUIQQEmotionManager {
             strongSelf.selectedRangeForBoundTextInput = selectedRange
         }
 
-        emotionView.didSelectDeleteButtonBlock = { [weak self] in
+        emotionView.didSelectDeleteButtonClosure = { [weak self] in
             self?.deleteEmotionDisplayNameAtCurrentSelectedRange(force: true)
         }
     }

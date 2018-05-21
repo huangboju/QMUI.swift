@@ -6,6 +6,14 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
+// 自动计算秒数的标志符，在 delay 里面赋值 QMUITipsAutomaticallyHideToastSeconds 即可通过自动计算 tips 消失的秒数
+private let QMUITipsAutomaticallyHideToastSeconds: TimeInterval = -1
+
+/// 默认的 parentView
+private var DefaultTipsParentView: UIView {
+    return UIApplication.shared.delegate!.window!!
+}
+
 /**
  * 简单封装了 QMUIToastView，支持弹出纯文本、loading、succeed、error、info 等五种 tips。如果这些接口还满足不了业务的需求，可以通过 QMUITips 的分类自行添加接口。
  * 注意用类方法显示 tips 的话，会导致父类的 willShowBlock 无法正常工作，具体请查看 willShowBlock 的注释。
@@ -18,38 +26,56 @@ class QMUITips: QMUIToastView {
 
     /// 实例方法：需要自己addSubview，hide之后不会自动removeFromSuperView
 
-    func show(with text: String?, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func show(text: String?,
+              detailText: String? = nil,
+              hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
         contentCustomView = nil
-        showTip(with: text, detailText: detailText, hideAfterDelay: delay)
+        showTip(text: text,
+                detailText: detailText,
+                hideAfterDelay: delay)
     }
 
-    func showLoadingHideAfterDelay(_ delay: TimeInterval) {
-        showLoading(hideAfterDelay: delay)
-    }
-
-    func showLoading(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showLoading(text: String? = nil,
+                     detailText: String? = nil,
+                     hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         indicator.startAnimating()
         contentCustomView = indicator
-        showTip(with: text, detailText: detailText, hideAfterDelay: delay)
+        showTip(text: text,
+                detailText: detailText,
+                hideAfterDelay: delay)
     }
 
-    func showSucceed(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showSucceed(text: String? = nil,
+                     detailText: String? = nil,
+                     hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_done"))
-        showTip(with: text, detailText: detailText, hideAfterDelay: delay)
+        showTip(text: text,
+                detailText: detailText,
+                hideAfterDelay: delay)
     }
 
-    func showError(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showError(text: String? = nil,
+                   detailText: String? = nil,
+                   hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_error"))
-        showTip(with: text, detailText: detailText, hideAfterDelay: delay)
+        showTip(text: text,
+                detailText: detailText,
+                hideAfterDelay: delay)
     }
 
-    func showInfo(_ text: String? = nil, detailText: String? = nil, hideAfterDelay delay: TimeInterval = 0) {
+    func showInfo(text: String? = nil,
+                  detailText: String? = nil,
+                  hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
         contentCustomView = UIImageView(image: QMUIHelper.image(name: "QMUI_tips_info"))
-        showTip(with: text, detailText: detailText, hideAfterDelay: delay)
+        showTip(text: text,
+                detailText: detailText,
+                hideAfterDelay: delay)
     }
 
-    private func showTip(with text: String?, detailText: String?, hideAfterDelay delay: TimeInterval) {
+    private func showTip(text: String?,
+                         detailText: String?,
+                         hideAfterDelay delay: TimeInterval) {
 
         guard let contentView = contentView as? QMUIToastContentView else {
             return
@@ -61,7 +87,9 @@ class QMUITips: QMUIToastView {
         
         show(true)
         
-        if delay > 0 {
+        if delay == QMUITipsAutomaticallyHideToastSeconds {
+            hide(true, afterDelay: QMUITips.smartDelaySeconds(for: text ?? ""))
+        } else if delay > 0 {
             hide(true, afterDelay: delay)
         }
     }
@@ -76,37 +104,84 @@ class QMUITips: QMUIToastView {
     }
 
     @discardableResult
-    static func show(with text: String?, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func show(text: String?,
+                     detailText: String? = nil,
+                     in view: UIView = DefaultTipsParentView,
+                     hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) -> QMUITips {
         let tips = createTips(to: view)
-        tips.show(with: text, detailText: detailText, hideAfterDelay: delay)
+        tips.show(text: text,
+                  detailText: detailText,
+                  hideAfterDelay: delay)
         return tips
     }
 
     @discardableResult
-    static func showLoading(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showLoading(text: String? = nil,
+                            detailText: String? = nil,
+                            in view: UIView = DefaultTipsParentView,
+                            hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) -> QMUITips {
         let tips = createTips(to: view)
-        tips.showLoading(text, detailText: detailText, hideAfterDelay: delay)
+        tips.showLoading(text: text,
+                         detailText: detailText,
+                         hideAfterDelay: delay)
         return tips
     }
 
     @discardableResult
-    static func showSucceed(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showSucceed(text: String? = nil,
+                            detailText: String? = nil,
+                            in view: UIView = DefaultTipsParentView,
+                            hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) -> QMUITips {
         let tips = createTips(to: view)
-        tips.showSucceed(text, detailText: detailText, hideAfterDelay: delay)
+        tips.showSucceed(text: text,
+                         detailText: detailText,
+                         hideAfterDelay: delay)
         return tips
     }
 
     @discardableResult
-    static func showError(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showError(text: String? = nil,
+                          detailText: String? = nil,
+                          in view: UIView = DefaultTipsParentView,
+                          hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) -> QMUITips {
         let tips = createTips(to: view)
-        tips.showError(text, detailText: detailText, hideAfterDelay: delay)
+        tips.showError(text: text,
+                       detailText: detailText,
+                       hideAfterDelay: delay)
         return tips
     }
 
     @discardableResult
-    static func showInfo(_ text: String? = nil, detailText: String? = nil, in view: UIView, hideAfterDelay delay: TimeInterval = 0) -> QMUITips {
+    static func showInfo(text: String? = nil,
+                         detailText: String? = nil,
+                         in view: UIView = DefaultTipsParentView,
+                         hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) -> QMUITips {
         let tips = createTips(to: view)
-        tips.showInfo(text, detailText: detailText, hideAfterDelay: delay)
+        tips.showInfo(text: text,
+                      detailText: detailText,
+                      hideAfterDelay: delay)
         return tips
+    }
+    
+    /// 隐藏 tips
+    static func hideAllTips(in view: UIView) {
+        QMUITips.hideAllToast(in: view, animated: true)
+    }
+    
+    static func hideAllTips() {
+        QMUITips.hideAllToast(in: DefaultTipsParentView, animated: true)
+    }
+    
+    static func smartDelaySeconds(for tipsText: String) -> TimeInterval {
+        let length = tipsText.qmui_lengthWhenCountingNonASCIICharacterAsTwo
+        if length <= 20 {
+            return 1.5
+        } else if length <= 40 {
+            return 2.0
+        } else if length <= 50 {
+            return 2.5
+        } else {
+            return 3.0
+        }
     }
 }

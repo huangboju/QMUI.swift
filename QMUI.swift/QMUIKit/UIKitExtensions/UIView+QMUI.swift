@@ -324,7 +324,7 @@ extension UIView {
     
     @objc func qmui_debug_addSubview(_ view: UIView) {
         assert(view != self, "把自己作为 subview 添加到自己身上！\n\(Thread.callStackSymbols)")
-        qmui_debug_addSubview(view)
+        self.qmui_debug_addSubview(view)
     }
     
     @objc func qmui_debug_becomeFirstResponder() -> Bool {

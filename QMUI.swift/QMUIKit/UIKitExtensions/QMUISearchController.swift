@@ -273,14 +273,14 @@ extension QMUICommonTableViewController: SelfAware2, QMUISearchControllerDelegat
      *
      *  @warning `self.shouldShowSearchBar` 默认为 NO，需要 searchBar 的界面必须手动将其置为 `YES`。
      */
-    func initSearchController() {
+    @objc func initSearchController() {
         if isViewLoaded && shouldShowSearchBar && searchController == nil {
             searchController = QMUISearchController(contentsViewController: self)
             searchController?.searchResultsDelegate = self
             searchController?.searchBar?.placeholder = "搜索"
             searchController?.searchBar?.qmui_usedAsTableHeaderView = true // 以 tableHeaderView 的方式使用 searchBar 的话，将其置为 YES，以辅助兼容一些系统 bug
             tableView.tableHeaderView = searchController?.searchBar
-            searchBar = searchController?.searchBar as? QMUISearchBar ?? nil
+            searchBar = searchController?.searchBar
         }
     }
     
@@ -387,12 +387,13 @@ extension QMUICommonTableViewController: SelfAware2, QMUISearchControllerDelegat
      *
      *  @see QMUITableViewDelegate
      */
-    var searchBar: QMUISearchBar? {
+    var searchBar: UISearchBar? {
         set {
             objc_setAssociatedObject(self, &Keys.searchBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get {
-            return objc_getAssociatedObject(self, &Keys.searchBar) as? QMUISearchBar
+            let result = objc_getAssociatedObject(self, &Keys.searchBar)
+            return result as? UISearchBar
         }
     }
     

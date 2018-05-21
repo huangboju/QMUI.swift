@@ -197,7 +197,7 @@ extension QDNavigationTitleViewController: QMUINavigationTitleViewDelegate {
     func didChanged(_ active: Bool, for titleView: QMUINavigationTitleView) {
         if active {
             popupMenuView.layout(with: titleView)
-            popupMenuView.show(true)
+            popupMenuView.show(with: true)
         }
     }
 }

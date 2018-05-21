@@ -22,19 +22,53 @@ extension UIView {
     }
 }
 
-// 原项目这里hook了UIResponder的isFirstResponder，这里觉得没必要暂时不需要hook
+/// 注意：由于某些Bug（例如 iOS 8 的 iPad 修改切换键盘类型，delegate 回调键盘高度值错误），QMUIKeyboardManager 不再支持 iPad 的浮动键盘了 - 更新于 2017.12.8 ///
 
-fileprivate var kCurrentResponder: UIResponder?
-
-class QMUIKeyboardManager {
-
-    private var targetResponderValues = [NSValue]()
+/**
+ *  `QMUIKeyboardManager` 提供了方便管理键盘事件的方案，使用的场景是需要跟随键盘的显示或者隐藏来更改界面的 UI，例如输入框跟随在键盘的顶部。
+ *  由于键盘通知是整个 App 全局的，所以经常会遇到 A 的键盘监听回调里接收到 B 的键盘事件，这样的情况往往不是我们想要的，即使可以通过判断当前的 firstResponder 来区分，但还是不能完美的解决问题或者有时候解决起来非常麻烦。`QMUIKeyboardManager` 通过 `delegateEnabled` 和 `targetResponder` 等属性来方便地控制 firstResponder，从而可以实现某个键盘监听回调方法只响应某个 UIResponder 或者某几个 UIResponder 触发的键盘通知。
+ *  使用方式：
+ *  1. 使用 initWithDelegate: 方法初始化
+ *  2. 通过 addTargetResponder: 的方式将要监听的输入框添加进来
+ *  3. 在 delegate 方法里（一般用 keyboardWillChangeFrameWithUserInfo:）处理键盘位置变化时的布局
+ *
+ *  另外 QMUIKeyboardManager 同时集成在了 UITextField(QMUI) 和 UITextView(QMUI) 里，具体请查看对应文件。
+ *  @see UITextField(QMUI)
+ *  @see UITextView(QMUI)
+ */
+class QMUIKeyboardManager: NSObject {
+    
+    static var kCurrentResponder: UIResponder?
+    
+    // 1、系统键盘app启动第一次使用键盘的时候，会调用两轮键盘通知事件，之后就只会调用一次。而搜狗等第三方输入法的键盘，目前发现每次都会调用三次键盘通知事件。总之，键盘的通知事件是不确定的。
+    
+    // 2、搜狗键盘可以修改键盘的高度，在修改键盘高度之后，会调用键盘的keyboardWillChangeFrameNotification和keyboardWillShowNotification通知。
+    
+    // 3、如果从一个聚焦的输入框直接聚焦到另一个输入框，会调用前一个输入框的keyboardWillChangeFrameNotification，在调用后一个输入框的keyboardWillChangeFrameNotification，最后调用后一个输入框的keyboardWillShowNotification（如果此时是浮动键盘，那么后一个输入框的keyboardWillShowNotification不会被调用；）。
+    
+    // 4、iPad可以变成浮动键盘，固定->浮动：会调用keyboardWillChangeFrameNotification和keyboardWillHideNotification；浮动->固定：会调用keyboardWillChangeFrameNotification和keyboardWillShowNotification；浮动键盘在移动的时候只会调用keyboardWillChangeFrameNotification通知，并且endFrame为zero，fromFrame不为zero，而是移动前键盘的frame。浮动键盘在聚焦和失焦的时候只会调用keyboardWillChangeFrameNotification，不会调用show和hide的notification。
+    
+    // 5、iPad可以拆分为左右的小键盘，小键盘的通知具体基本跟浮动键盘一样。
+    
+    // 6、iPad可以外接键盘，外接键盘之后屏幕上就没有虚拟键盘了，但是当我们输入文字的时候，发现底部还是有一条灰色的候选词，条东西也是键盘，它也会触发跟虚拟键盘一样的通知事件。如果点击这条候选词右边的向下箭头，则可以完全隐藏虚拟键盘，这个时候如果失焦再聚焦发现还是没有这条候选词，也就是键盘完全不出来了，如果输入文字，候选词才会重新出来。总结来说就是这条候选词是可以关闭的，关闭之后只有当下次输入才会重新出现。（聚焦和失焦都只调用keyboardWillChangeFrameNotification和keyboardWillHideNotification通知，而且frame始终不变，都是在屏幕下面）
+    
+    // 7、iOS8 hide 之后高度变成0了，keyboardWillHideNotification还是正常的，所以建议不要使用键盘高度来做动画，而是用键盘的y值；在show和hide的时候endFrame会出现一些奇怪的中间值，最终值是对的；两个输入框切换聚焦，iOS8不会触发任何键盘通知；iOS8的浮动切换正常；
+    
+    // 8、iOS8在 固定->浮动 的过程中，后面的keyboardWillChangeFrameNotification和keyboardWillHideNotification里面的endFrame是正确的，而iOS10和iOS9是错的，iOS9的y值是键盘的MaxY，而iOS10的y值是隐藏状态下的y，也就是屏幕高度。所以iOS9和iOS10需要在keyboardDidChangeFrameNotification里面重新刷新一下。
+    
+    private var targetResponderValues: [NSValue] = []
     private var keyboardMoveUserInfo: QMUIKeyboardUserInfo?
     private var keyboardMoveBeginRect: CGRect = .zero
+    
+    fileprivate weak var currentResponder: UIResponder?
+    fileprivate weak var currentResponderWhenResign: UIResponder?
+    
+    private var isDebug: Bool = false
 
     init(with delegate: QMUIKeyboardManagerDelegate) {
         self.delegate = delegate
         delegateEnabled = true
+        super.init()
         addKeyboardNotification()
     }
 
@@ -51,12 +85,13 @@ class QMUIKeyboardManager {
      *  是否允许触发delegate的回调，某些场景可能要主动停止对键盘事件的响应。
      *  默认为 YES。
      */
-    private(set) var delegateEnabled = true
+    var delegateEnabled: Bool = true
 
     /**
      *  添加触发键盘事件的 UIResponder，一般是 UITextView 或者 UITextField ，不添加 targetResponder 的话，则默认接受任何 UIResponder 产生的键盘通知。
-     *  添加成功将会返回YES，否则返回NO。
+     *  添加成功将会返回 true，否则返回 false。
      */
+    @discardableResult
     func add(targetResponder: UIResponder) -> Bool {
 
         if !targetResponder.isKind(of: UIResponder.self) {
@@ -76,8 +111,18 @@ class QMUIKeyboardManager {
                 targetResponders.append(responder)
             }
         }
-
         return targetResponders
+    }
+    
+    /**
+     *  移除 targetResponder 跟 keyboardManager 的关系，如果成功会返回 YES
+     */
+    func remove(targetResponder: UIResponder) -> Bool {
+        if targetResponderValues.contains(packageTargetResponder(targetResponder)) {
+            targetResponderValues.remove(object: packageTargetResponder(targetResponder))
+            return true
+        }
+        return false
     }
 
     private func packageTargetResponder(_ targetResponder: UIResponder) -> NSValue {
@@ -103,125 +148,155 @@ class QMUIKeyboardManager {
     }
 
     @objc private func keyboardWillShow(_ notification: Notification) {
-//        print("keyboardWillShowNotification - \(self)")
-
-        if shouldReceiveShowNotification() {
+        if isDebug {
+            print("keyboardWillShowNotification - \(self)")
+        }
+        
+        if !shouldReceiveShowNotification() {
             return
         }
 
         let userInfo = newUserInfoWithNotification(notification)
-        userInfo.targetResponder = kCurrentResponder
+        userInfo.targetResponder = QMUIKeyboardManager.kCurrentResponder
 
-        delegate?.keyBoardWillShow!(userInfo)
+        if delegateEnabled {
+            delegate?.keyBoardWillShow?(userInfo)
+        }
 
         // 额外处理iPad浮动键盘
-        if IS_IPAD {
-            keyboardMoveUserInfo = userInfo
-            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
-        }
+//        if IS_IPAD {
+//            keyboardMoveUserInfo = userInfo
+//            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+//        }
     }
 
     @objc private func keyboardDidShow(_ notification: Notification) {
-//        print("keyboardDidShowNotification - \(self)")
+        
+        if isDebug {
+            print("keyboardDidShowNotification - \(self)")
+        }
 
         let userInfo = newUserInfoWithNotification(notification)
-        userInfo.targetResponder = kCurrentResponder
+        userInfo.targetResponder = currentResponder
 
         let firstResponder = UIApplication.shared.keyWindow?.qmui_findFirstResponder()
-        let shouldReceiveDidShowNotification = targetResponderValues.count <= 0 || firstResponder == kCurrentResponder
+        let shouldReceiveDidShowNotification = targetResponderValues.count <= 0 || firstResponder == QMUIKeyboardManager.kCurrentResponder
 
         if shouldReceiveDidShowNotification {
-            delegate?.keyBoardDidShow?(nil)
-
-            // 额外处理iPad浮动键盘
-            if IS_IPAD {
-                keyboardMoveUserInfo = userInfo
-                keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+            if delegateEnabled {
+                delegate?.keyBoardDidShow?(nil)
             }
+            
+            // 额外处理iPad浮动键盘
+//            if IS_IPAD {
+//                keyboardMoveUserInfo = userInfo
+//                keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+//            }
         }
     }
 
     @objc private func keyboardWillHide(_ notification: Notification) {
-//        print("keyboardWillHideNotification - \(self)")
+        
+        if isDebug {
+            print("keyboardWillHideNotification - \(self)")
+        }
 
         if !shouldReceiveHideNotification() {
             return
         }
 
         let userInfo = newUserInfoWithNotification(notification)
-        userInfo.targetResponder = kCurrentResponder
+        userInfo.targetResponder = QMUIKeyboardManager.kCurrentResponder
 
-        delegate?.keyboardWillHide!(userInfo)
-
-        // 额外处理iPad浮动键盘
-        if IS_IPAD {
-            keyboardMoveUserInfo = userInfo
-            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+        if delegateEnabled {
+            delegate?.keyboardWillHide?(userInfo)
         }
+        
+        // 额外处理iPad浮动键盘
+//        if IS_IPAD {
+//            keyboardMoveUserInfo = userInfo
+//            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+//        }
     }
 
     @objc private func keyboardDidHide(_ notification: Notification) {
-//        print("keyboardDidHideNotification - \(self)")
-
-        let userInfo = newUserInfoWithNotification(notification)
-        userInfo.targetResponder = kCurrentResponder
-
-        if shouldReceiveHideNotification() {
-            delegate?.keyboardDidHide?(userInfo)
+        
+        if isDebug {
+            print("keyboardDidHideNotification - \(self)")
         }
 
-        if kCurrentResponder?.isFirstResponder ?? false && !IS_IPAD {
-            kCurrentResponder = nil
+        let userInfo = newUserInfoWithNotification(notification)
+        userInfo.targetResponder = QMUIKeyboardManager.kCurrentResponder
+
+        if shouldReceiveHideNotification() {
+            if delegateEnabled {
+                delegate?.keyboardDidHide?(userInfo)
+            }
+        }
+
+        if QMUIKeyboardManager.kCurrentResponder != nil && QMUIKeyboardManager.kCurrentResponder!.isFirstResponder && !IS_IPAD {
+            QMUIKeyboardManager.kCurrentResponder = nil
         }
 
         // 额外处理iPad浮动键盘
-        if IS_IPAD {
-            if targetResponderValues.count <= 0 || kCurrentResponder != nil {
-                keyboardMoveUserInfo = userInfo
-                keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
-            }
-        }
+//        if IS_IPAD {
+//            if targetResponderValues.count <= 0 || kCurrentResponder != nil {
+//                keyboardMoveUserInfo = userInfo
+//                keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+//            }
+//        }
     }
 
     @objc private func keyboardWillChangeFrame(_ notification: Notification) {
-//        print("keyboardWillChangeFrameNotification - \(self)")
+        
+        if isDebug {
+            print("keyboardWillChangeFrameNotification - \(self)")
+        }
+
         let userInfo = newUserInfoWithNotification(notification)
         if shouldReceiveShowNotification() {
-            userInfo.targetResponder = kCurrentResponder
+            userInfo.targetResponder = currentResponder
         } else if shouldReceiveHideNotification() {
-            userInfo.targetResponder = kCurrentResponder
+            userInfo.targetResponder = currentResponder
         } else {
             return
         }
 
-        delegate?.keyboardWillChangeFrame?(with: userInfo)
-
-        // 额外处理iPad浮动键盘
-        if IS_IPAD {
-            keyboardMoveUserInfo = userInfo
-            addFrameObserverIfNeeded()
+        if delegateEnabled {
+            delegate?.keyboardWillChangeFrame?(with: userInfo)
         }
+        
+        // 额外处理iPad浮动键盘
+//        if IS_IPAD {
+//            keyboardMoveUserInfo = userInfo
+//            addFrameObserverIfNeeded()
+//        }
     }
 
     @objc private func keyboardDidChangeFrame(_ notification: Notification) {
-//        print("keyboardDidChangeFrameNotification - \(self)")
+        
+        if isDebug {
+            print("keyboardDidChangeFrameNotification - \(self)")
+        }
 
         let userInfo = newUserInfoWithNotification(notification)
         if shouldReceiveShowNotification() {
-            userInfo.targetResponder = kCurrentResponder
+            userInfo.targetResponder = QMUIKeyboardManager.kCurrentResponder
         } else if shouldReceiveHideNotification() {
-            userInfo.targetResponder = kCurrentResponder
+            userInfo.targetResponder = QMUIKeyboardManager.kCurrentResponder
         } else {
             return
         }
 
-        delegate?.keyboardDidChangeFrame?(with: userInfo)
+        if delegateEnabled {
+            delegate?.keyboardDidChangeFrame?(with: userInfo)
+        }
 
         // 额外处理iPad浮动键盘
-        if IS_IPAD {
-            keyboardMoveUserInfo = userInfo
-            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
-        }
+//        if IS_IPAD {
+//            keyboardMoveUserInfo = userInfo
+//            keyboardDidChangeFrame(keyboardView: type(of: self).keyboardView())
+//        }
     }
 
     private func newUserInfoWithNotification(_ notification: Notification) -> QMUIKeyboardUserInfo {
@@ -232,16 +307,15 @@ class QMUIKeyboardManager {
     }
 
     private func shouldReceiveShowNotification() -> Bool {
-        kCurrentResponder = UIApplication.shared.keyWindow?.qmui_findFirstResponder()
+        
+        // 这里有BUG，如果点击了webview导致键盘下降，这个时候运行shouldReceiveHideNotification就会判断错误
+        QMUIKeyboardManager.kCurrentResponder = currentResponderWhenResign ??  UIApplication.shared.keyWindow?.qmui_findFirstResponder()
+        currentResponderWhenResign = nil
 
         if targetResponderValues.count <= 0 {
             return true
         } else {
-            if let currentResponder = kCurrentResponder {
-                return targetResponderValues.contains(packageTargetResponder(currentResponder))
-            }
-
-            return false
+            return QMUIKeyboardManager.kCurrentResponder != nil && targetResponderValues.contains(packageTargetResponder(QMUIKeyboardManager.kCurrentResponder!))
         }
     }
 
@@ -249,7 +323,7 @@ class QMUIKeyboardManager {
         if targetResponderValues.count <= 0 {
             return true
         } else {
-            if let currentResponder = kCurrentResponder {
+            if let currentResponder = QMUIKeyboardManager.kCurrentResponder {
                 return targetResponderValues.contains(packageTargetResponder(currentResponder))
             }
 
@@ -259,7 +333,7 @@ class QMUIKeyboardManager {
 
     // MARK: - iPad浮动键盘
     private func addFrameObserverIfNeeded() {
-        guard let keyboardView = type(of: self).keyboardView() else {
+        guard let keyboardView = type(of: self).keyboardView else {
             return
         }
 
@@ -268,16 +342,16 @@ class QMUIKeyboardManager {
         }
 
         let observer = QMUIKeyboardViewFrameObserver()
-        observer.keyboardViewChangeFrameBlock = { [weak self] keyboardView in
-            self?.keyboardDidChangeFrame(keyboardView: keyboardView)
+        observer.keyboardViewChangeFrameClosure = { [weak self] keyboardView in
+            self?.keyboardDidChangedFrame(keyboardView: keyboardView)
         }
         observer.addToKeyboardView(aKeyboardView: keyboardView)
         // 手动调用第一次
-        keyboardDidChangeFrame(keyboardView: keyboardView)
+        keyboardDidChangedFrame(keyboardView: keyboardView)
     }
 
-    private func keyboardDidChangeFrame(keyboardView: UIView?) {
-        if keyboardView != type(of: self).keyboardView() {
+    private func keyboardDidChangedFrame(keyboardView: UIView?) {
+        if keyboardView != type(of: self).keyboardView {
             return
         }
 
@@ -286,48 +360,52 @@ class QMUIKeyboardManager {
             return
         }
 
-        let keyboardWindow = keyboardView?.window
-        if keyboardMoveBeginRect.size.width == 0 &&
-            keyboardMoveBeginRect.size.height == 0 {
-            // 第一次需要初始化
-            keyboardMoveBeginRect = CGRect(x: 0, y: keyboardWindow?.bounds.size.height ?? 0, width: keyboardWindow?.bounds.size.width ?? 0, height: 0)
-        }
-
-        var endFrame = CGRect.zero
-        if let notNilKeyboardWindow = keyboardWindow {
-            endFrame = notNilKeyboardWindow.convert(keyboardView?.frame ?? .zero, to: nil)
-        } else {
-            endFrame = keyboardView?.frame ?? .zero
-        }
-
-        // 自己构造一个QMUIKeyboardUserInfo，一些属性使用之前最后一个keyboardUserInfo的值
-        let aKeyboardMoveUserInfo = QMUIKeyboardUserInfo()
-        aKeyboardMoveUserInfo.keyboardManager = self
-        aKeyboardMoveUserInfo.targetResponder = keyboardMoveUserInfo?.targetResponder
-        aKeyboardMoveUserInfo.animationDuration = keyboardMoveUserInfo?.animationDuration ?? 0
-        aKeyboardMoveUserInfo.animationCurve = keyboardMoveUserInfo?.animationCurve ?? UIViewAnimationCurve.easeIn
-        aKeyboardMoveUserInfo.animationOptions = keyboardMoveUserInfo?.animationOptions ?? []
-        aKeyboardMoveUserInfo.beginFrame = keyboardMoveBeginRect
-        aKeyboardMoveUserInfo.endFrame = endFrame
-
-//        print("keyboardDidMoveNotification - \(self)")
-
-        delegate?.keyboardWillChangeFrame!(with: aKeyboardMoveUserInfo)
-        keyboardMoveBeginRect = endFrame
-
-        if let notNilCurrentResponder = kCurrentResponder {
-            let mainWindow = UIApplication.shared.keyWindow ?? UIApplication.shared.windows.first!
-            let keyboardRect = keyboardMoveUserInfo?.endFrame ?? .zero
-            let distanceFromBottom = QMUIKeyboardManager.distanceFromMinYTo(bottomView: mainWindow, keyboardRect: keyboardRect)
-            if distanceFromBottom < keyboardRect.size.height {
-                if !notNilCurrentResponder.isFirstResponder {
-                    // will hide
-                    kCurrentResponder = nil
-                }
-            } else if distanceFromBottom > keyboardRect.size.height {
-                if !notNilCurrentResponder.isFirstResponder {
-                    // 浮动
-                    kCurrentResponder = nil
+        if delegateEnabled {
+            
+            let keyboardWindow = keyboardView?.window
+            if keyboardMoveBeginRect.size.width == 0 && keyboardMoveBeginRect.size.height == 0 {
+                // 第一次需要初始化
+                keyboardMoveBeginRect = CGRect(x: 0, y: keyboardWindow?.bounds.size.height ?? 0, width: keyboardWindow?.bounds.size.width ?? 0, height: 0)
+            }
+            
+            var endFrame = CGRect.zero
+            if keyboardWindow != nil {
+                endFrame = keyboardWindow!.convert(keyboardView?.frame ?? .zero, to: nil)
+            } else {
+                endFrame = keyboardView?.frame ?? .zero
+            }
+            
+            // 自己构造一个QMUIKeyboardUserInfo，一些属性使用之前最后一个keyboardUserInfo的值
+            let aKeyboardMoveUserInfo = QMUIKeyboardUserInfo()
+            aKeyboardMoveUserInfo.keyboardManager = self
+            aKeyboardMoveUserInfo.targetResponder = keyboardMoveUserInfo?.targetResponder
+            aKeyboardMoveUserInfo.animationDuration = keyboardMoveUserInfo?.animationDuration ?? 0.25
+            aKeyboardMoveUserInfo.animationCurve = keyboardMoveUserInfo?.animationCurve ?? UIViewAnimationCurve.easeIn
+            aKeyboardMoveUserInfo.animationOptions = keyboardMoveUserInfo?.animationOptions ?? []
+            aKeyboardMoveUserInfo.beginFrame = keyboardMoveBeginRect
+            aKeyboardMoveUserInfo.endFrame = endFrame
+            
+            if isDebug {
+                print("keyboardDidMoveNotification - \(self)")
+            }
+            
+            delegate?.keyboardWillChangeFrame?(with: aKeyboardMoveUserInfo)
+            keyboardMoveBeginRect = endFrame
+            
+            if let notNilCurrentResponder = QMUIKeyboardManager.kCurrentResponder {
+                let mainWindow = UIApplication.shared.keyWindow ?? UIApplication.shared.windows.first!
+                let keyboardRect = keyboardMoveUserInfo?.endFrame ?? .zero
+                let distanceFromBottom = QMUIKeyboardManager.distanceFromMinYToBottom(in: mainWindow, keyboardRect: keyboardRect)
+                if distanceFromBottom < keyboardRect.size.height {
+                    if !notNilCurrentResponder.isFirstResponder {
+                        // will hide
+                        QMUIKeyboardManager.kCurrentResponder = nil
+                    }
+                } else if distanceFromBottom > keyboardRect.size.height {
+                    if !notNilCurrentResponder.isFirstResponder {
+                        // 浮动
+                        QMUIKeyboardManager.kCurrentResponder = nil
+                    }
                 }
             }
         }
@@ -340,7 +418,7 @@ class QMUIKeyboardManager {
      *  @param rect 键盘的rect，一般拿 keyboardUserInfo.endFrame
      *  @param view 一个特定的view或者window，如果传入nil则相对有当前的 mainWindow
      */
-    class func convert(keyboardRect: CGRect, to view: UIView?) -> CGRect {
+    static func convert(keyboardRect: CGRect, to view: UIView?) -> CGRect {
         var keyboardRect = keyboardRect
         if keyboardRect == CGRect.null || keyboardRect == CGRect.infinite {
             return keyboardRect
@@ -383,23 +461,21 @@ class QMUIKeyboardManager {
     /**
      *  获取键盘到顶部到相对于view底部的距离，这个值在某些情况下会等于endFrame.size.height或者visiableKeyboardHeight，不过在iPad浮动键盘的时候就包括了底部的空隙。所以建议使用这个方法。
      */
-    class func distanceFromMinYTo(bottomView: UIView, keyboardRect: CGRect) -> CGFloat {
-        let rect = convert(keyboardRect: keyboardRect, to: bottomView)
-        let distance = bottomView.bounds.height - rect.minY
+    static func distanceFromMinYToBottom(in view: UIView, keyboardRect: CGRect) -> CGFloat {
+        let rect = convert(keyboardRect: keyboardRect, to: view)
+        let distance = view.bounds.height - rect.minY
         return distance
     }
 
     /**
      *  根据键盘的动画参数自己构建一个动画，调用者只需要设置view的位置即可
      */
-    class func animate(with animated: Bool, keyboardUserInfo: QMUIKeyboardUserInfo, animations: @escaping (() -> Void), completion: ((Bool) -> Void)?) {
+    static func animate(with animated: Bool, keyboardUserInfo: QMUIKeyboardUserInfo, animations: @escaping (() -> Void), completion: ((Bool) -> Void)?) {
         if animated {
             UIView.animate(withDuration: keyboardUserInfo.animationDuration, delay: 0, options: [.beginFromCurrentState, keyboardUserInfo.animationOptions], animations: animations, completion: completion)
         } else {
             animations()
-            if let notNilCompletion = completion {
-                notNilCompletion(true)
-            }
+            completion?(true)
         }
     }
 
@@ -408,23 +484,19 @@ class QMUIKeyboardManager {
      *  @param showBlock 键盘显示回调的block，不能把showBlock理解为系统的show通知，而是你有输入框聚焦了并且期望键盘显示出来。
      *  @param hideBlock 键盘隐藏回调的block，不能把hideBlock理解为系统的hide通知，而是键盘即将消失在界面上并且你期望跟随键盘变化的UI回到默认状态。
      */
-    class func handleKeyboardNotification(with userInfo: QMUIKeyboardUserInfo, showBlock: ((_ keyboardUserInfo: QMUIKeyboardUserInfo) -> Void)?, hideBlock: ((_ keyboardUserInfo: QMUIKeyboardUserInfo) -> Void)?) {
+    static func handleKeyboardNotification(with userInfo: QMUIKeyboardUserInfo, showClosure: ((_ keyboardUserInfo: QMUIKeyboardUserInfo) -> Void)?, hideClosure: ((_ keyboardUserInfo: QMUIKeyboardUserInfo) -> Void)?) {
         // 专门处理 iPad Pro 在键盘完全不显示的情况（不会调用willShow，所以通过是否focus来判断）
-        if QMUIKeyboardManager.visiableKeyboardHeight() <= 0 && userInfo.isTargetResponderFocused {
-            if let notNilHideBlock = hideBlock {
-                notNilHideBlock(userInfo)
-            }
+        if QMUIKeyboardManager.visiableKeyboardHeight <= 0 && !userInfo.isTargetResponderFocused {
+            hideClosure?(userInfo)
         } else {
-            if let notNilShowBlock = showBlock {
-                notNilShowBlock(userInfo)
-            }
+            showClosure?(userInfo)
         }
     }
 
     /**
      *  键盘面板的私有view，可能为nil
      */
-    class func keyboardView() -> UIView? {
+    static var keyboardView: UIView? {
         for window in UIApplication.shared.windows {
             if let view = getKeyboardView(from: window) {
                 return view
@@ -449,24 +521,28 @@ class QMUIKeyboardManager {
             let windowName = String(describing: type(of: window))
             if IOS_VERSION < 9 {
                 // UITextEffectsWindow
-                if windowName == "UITextEffectsWindow" {
+                if windowName.length == 19 && windowName.hasPrefix("UI") && windowName.hasSuffix("TextEffectsWindow") {
                     kbWindows.append(window)
                 }
             } else {
-                if windowName == "UIRemoteKeyboardWindow" {
+                // UIRemoteKeyboardWindow
+                if windowName.length == 22 && windowName.hasPrefix("UI") && windowName.hasSuffix("RemoteKeyboardWindow") {
                     kbWindows.append(window)
                 }
             }
         }
 
-        return kbWindows.first
+        if kbWindows.count == 1 {
+            return kbWindows.first
+        }
+        return nil
     }
 
     /**
      *  是否有键盘在显示
      */
     static var isKeyboardVisible: Bool {
-        guard let keyboardView = self.keyboardView(),
+        guard let keyboardView = self.keyboardView,
             let keyboardWindow = keyboardView.window else {
             return false
         }
@@ -483,7 +559,7 @@ class QMUIKeyboardManager {
      *  当期那键盘相对于屏幕的frame
      */
     static var currentKeyboardFrame: CGRect {
-        guard let keyboardView = keyboardView() else {
+        guard let keyboardView = self.keyboardView else {
             return CGRect.null
         }
 
@@ -497,8 +573,8 @@ class QMUIKeyboardManager {
     /**
      *  当前键盘高度键盘的可见高度
      */
-    class func visiableKeyboardHeight() -> CGFloat {
-        guard let keyboardView = keyboardView(),
+    static var visiableKeyboardHeight: CGFloat {
+        guard let keyboardView = keyboardView,
             let keyboardWindow = keyboardView.window else {
             return 0
         }
@@ -511,7 +587,9 @@ class QMUIKeyboardManager {
         return visiableRect.size.height
     }
 
-    private class func getKeyboardView(from window: UIWindow) -> UIView? {
+    private class func getKeyboardView(from window: UIWindow?) -> UIView? {
+        guard let window = window else { return nil }
+    
         let windowName = String(describing: type(of: window))
         if IOS_VERSION < 9 {
             if windowName != "UITextEffectsWindow" {
@@ -523,28 +601,18 @@ class QMUIKeyboardManager {
             }
         }
 
-        if IOS_VERSION < 8 {
-            for view in window.subviews {
-                let viewName = String(describing: type(of: view))
-                if viewName != "UIPeripheralHostView" {
-                    continue
-                }
-                return view
+        for view in window.subviews {
+            let viewName = String(describing: type(of: view))
+            if viewName != "UIInputSetContainerView" {
+                continue
             }
-        } else {
-            for view in window.subviews {
-                let viewName = String(describing: type(of: view))
-                if viewName != "UIInputSetContainerView" {
+            
+            for subview in view.subviews {
+                let subviewName = String(describing: type(of: subview))
+                if subviewName != "UIInputSetHostView" {
                     continue
                 }
-
-                for subview in view.subviews {
-                    let subviewName = String(describing: type(of: subview))
-                    if subviewName != "UIInputSetHostView" {
-                        continue
-                    }
-                    return subview
-                }
+                return subview
             }
         }
 
@@ -560,7 +628,7 @@ class QMUIKeyboardViewFrameObserver: NSObject {
 
     private weak var keyboardView: UIView!
 
-    var keyboardViewChangeFrameBlock: ((_ keyboardView: UIView) -> Void)?
+    var keyboardViewChangeFrameClosure: ((_ keyboardView: UIView) -> Void)?
 
     override init() {
     }
@@ -605,7 +673,7 @@ class QMUIKeyboardViewFrameObserver: NSObject {
             return
         }
 
-        if let notNilKeyboardViewChangeFrameBlock = keyboardViewChangeFrameBlock {
+        if let notNilKeyboardViewChangeFrameBlock = keyboardViewChangeFrameClosure {
             notNilKeyboardViewChangeFrameBlock(keyboardView)
         }
     }
@@ -643,6 +711,7 @@ extension UIViewAnimationCurve {
 class QMUIKeyboardUserInfo: NSObject {
 
     override init() {
+        super.init()
     }
 
     fileprivate var isTargetResponderFocused: Bool = false
@@ -685,7 +754,7 @@ class QMUIKeyboardUserInfo: NSObject {
      */
     fileprivate(set) var targetResponder: UIResponder? {
         didSet {
-            isTargetResponderFocused = targetResponder?.isFirstResponder ?? false
+            isTargetResponderFocused = targetResponder?.keyboardManager_isFirstResponder ?? false
         }
     }
 
@@ -778,4 +847,330 @@ class QMUIKeyboardUserInfo: NSObject {
      *  键盘frame已经发生变化。
      */
     @objc optional func keyboardDidChangeFrame(with userInfo: QMUIKeyboardUserInfo?)
+}
+
+extension UIResponder: SelfAware4 {
+    
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake4() {
+        DispatchQueue.once(token: _onceToken) {
+            let clazz = UIResponder.self
+            ReplaceMethod(clazz, #selector(becomeFirstResponder), #selector(keyboardManager_becomeFirstResponder))
+            ReplaceMethod(clazz, #selector(resignFirstResponder), #selector(keyboardManager_resignFirstResponder))
+        }
+    }
+    
+    @objc func keyboardManager_becomeFirstResponder() -> Bool {
+        keyboardManager_isFirstResponder = true
+        return keyboardManager_becomeFirstResponder()
+    }
+    
+    @objc func keyboardManager_resignFirstResponder() -> Bool {
+        keyboardManager_isFirstResponder = false
+        return keyboardManager_resignFirstResponder()
+    }
+    
+    fileprivate struct Keys {
+        static var isFirstResponder = "isFirstResponder"
+    }
+    
+    var keyboardManager_isFirstResponder: Bool {
+        get {
+            return (objc_getAssociatedObject(self, &Keys.isFirstResponder) as? Bool) ?? false
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.isFirstResponder, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+}
+
+/// 键盘相关Closure，搭配QMUIKeyboardManager一起使用
+extension UITextField: QMUIKeyboardManagerDelegate {
+    
+    fileprivate struct Keys {
+        static var keyboardWillShowNotificationClosure = "keyboardWillShowNotificationClosure"
+        static var keyboardDidShowNotificationClosure = "keyboardDidShowNotificationClosure"
+        static var keyboardWillHideNotificationClosure = "keyboardWillHideNotificationClosure"
+        static var keyboardDidHideNotificationClosure = "keyboardDidHideNotificationClosure"
+        static var keyboardWillChangeFrameNotificationnClosure = "keyboardWillHideNotificationClosure"
+        static var keyboardDidChangeFrameNotificationClosure = "keyboardDidHideNotificationClosure"
+        static var keyboardManager = "keyboardManager"
+    }
+    
+    typealias KeyboardNotificationClosureType = (QMUIKeyboardUserInfo?) -> Void
+    
+    var qmui_keyboardWillShowNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillShowNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillShowNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidShowNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidShowNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidShowNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardWillHideNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillHideNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillHideNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidHideNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidHideNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidHideNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardWillChangeFrameNotificationnClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillChangeFrameNotificationnClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillChangeFrameNotificationnClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidChangeFrameNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidChangeFrameNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidChangeFrameNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    private func initKeyboardManagerIfNeeded() {
+        if qmui_keyboardManager == nil {
+            qmui_keyboardManager = QMUIKeyboardManager(with: self)
+            qmui_keyboardManager?.add(targetResponder: self)
+        }
+    }
+    
+    var qmui_keyboardManager: QMUIKeyboardManager? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardManager) as? QMUIKeyboardManager
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardManager, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    func keyBoardWillShow(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillShowNotificationClosure?(userInfo)
+    }
+
+    
+    /**
+     *  键盘即将隐藏
+     */
+    func keyboardWillHide(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillHideNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘已经显示
+     */
+    func keyBoardDidShow(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidShowNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘已经隐藏
+     */
+    func keyboardDidHide(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidHideNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘frame即将发生变化。
+     *  这个delegate除了对应系统的willChangeFrame通知外，在iPad下还增加了监听键盘frame变化的KVO来处理浮动键盘，所以调用次数会比系统默认多。需要让界面或者某个view跟随键盘运动，建议在这个通知delegate里面实现，因为willShow和willHide在手机上是准确的，但是在iPad的浮动键盘下是不准确的。另外，如果不需要跟随浮动键盘运动，那么在逻辑代码里面可以通过判断键盘的位置来过滤这种浮动的情况。
+     */
+    func keyboardWillChangeFrame(with userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillChangeFrameNotificationnClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘frame已经发生变化。
+     */
+    func keyboardDidChangeFrame(with userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidChangeFrameNotificationClosure?(userInfo)
+    }
+}
+
+/// 键盘相关Closure，搭配QMUIKeyboardManager一起使用
+extension UITextView: QMUIKeyboardManagerDelegate {
+    
+    fileprivate struct Keys {
+        static var keyboardWillShowNotificationClosure = "keyboardWillShowNotificationClosure"
+        static var keyboardDidShowNotificationClosure = "keyboardDidShowNotificationClosure"
+        static var keyboardWillHideNotificationClosure = "keyboardWillHideNotificationClosure"
+        static var keyboardDidHideNotificationClosure = "keyboardDidHideNotificationClosure"
+        static var keyboardWillChangeFrameNotificationnClosure = "keyboardWillHideNotificationClosure"
+        static var keyboardDidChangeFrameNotificationClosure = "keyboardDidHideNotificationClosure"
+        static var keyboardManager = "keyboardManager"
+    }
+    
+    typealias KeyboardNotificationClosureType = (QMUIKeyboardUserInfo?) -> Void
+    
+    var qmui_keyboardWillShowNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillShowNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillShowNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidShowNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidShowNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidShowNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardWillHideNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillHideNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillHideNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidHideNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidHideNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidHideNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardWillChangeFrameNotificationnClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardWillChangeFrameNotificationnClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardWillChangeFrameNotificationnClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    var qmui_keyboardDidChangeFrameNotificationClosure: KeyboardNotificationClosureType? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardDidChangeFrameNotificationClosure) as? KeyboardNotificationClosureType
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardDidChangeFrameNotificationClosure, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+            if newValue != nil {
+                initKeyboardManagerIfNeeded()
+            }
+        }
+    }
+    
+    private func initKeyboardManagerIfNeeded() {
+        if qmui_keyboardManager == nil {
+            qmui_keyboardManager = QMUIKeyboardManager(with: self)
+            qmui_keyboardManager?.add(targetResponder: self)
+        }
+    }
+    
+    var qmui_keyboardManager: QMUIKeyboardManager? {
+        get {
+            return objc_getAssociatedObject(self, &Keys.keyboardManager) as? QMUIKeyboardManager
+        }
+        set {
+            objc_setAssociatedObject(self, &Keys.keyboardManager, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    func keyBoardWillShow(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillShowNotificationClosure?(userInfo)
+    }
+    
+    
+    /**
+     *  键盘即将隐藏
+     */
+    func keyboardWillHide(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillHideNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘已经显示
+     */
+    func keyBoardDidShow(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidShowNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘已经隐藏
+     */
+    func keyboardDidHide(_ userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidHideNotificationClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘frame即将发生变化。
+     *  这个delegate除了对应系统的willChangeFrame通知外，在iPad下还增加了监听键盘frame变化的KVO来处理浮动键盘，所以调用次数会比系统默认多。需要让界面或者某个view跟随键盘运动，建议在这个通知delegate里面实现，因为willShow和willHide在手机上是准确的，但是在iPad的浮动键盘下是不准确的。另外，如果不需要跟随浮动键盘运动，那么在逻辑代码里面可以通过判断键盘的位置来过滤这种浮动的情况。
+     */
+    func keyboardWillChangeFrame(with userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardWillChangeFrameNotificationnClosure?(userInfo)
+    }
+    
+    /**
+     *  键盘frame已经发生变化。
+     */
+    func keyboardDidChangeFrame(with userInfo: QMUIKeyboardUserInfo?) {
+        qmui_keyboardDidChangeFrameNotificationClosure?(userInfo)
+    }
 }

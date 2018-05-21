@@ -133,8 +133,8 @@ class QMUIConfiguration {
     var navBarBackgroundImage: UIImage? {
         didSet {
             guard let navBarBackgroundImage = navBarBackgroundImage else { return }
-            let appearance = UINavigationBar.appearance()
-            appearance.setBackgroundImage(navBarBackgroundImage, for: .default)
+//            let appearance = UINavigationBar.appearance()
+//            appearance.setBackgroundImage(navBarBackgroundImage, for: .default)
             QMUIHelper.visibleViewController?.navigationController?
                 .navigationBar.setBackgroundImage(navBarBackgroundImage, for: .default)
         }
@@ -142,14 +142,15 @@ class QMUIConfiguration {
     var navBarShadowImage: UIImage? {
         didSet {
             guard let navBarShadowImage = navBarShadowImage else { return }
-            UINavigationBar.appearance().shadowImage = navBarShadowImage
+//                let appearance = UINavigationBar.appearance()
+//                appearance.shadowImage = navBarShadowImage
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.shadowImage = navBarShadowImage
         }
     }
     var navBarBarTintColor: UIColor? {
         didSet {
             guard let navBarBarTintColor = navBarBarTintColor else { return }
-            UINavigationBar.appearance().barTintColor = navBarBarTintColor
+//            UINavigationBar.appearance().barTintColor = navBarBarTintColor
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.barTintColor = navBarBarTintColor
         }
     }

@@ -6,8 +6,10 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-public enum QMUIFontWeight {
-    case light, normal, bold
+enum QMUIFontWeight {
+    case light
+    case normal
+    case bold
 }
 
 extension UIFont {
@@ -19,7 +21,7 @@ extension UIFont {
      *
      * @return 变细的系统字体的UIFont对象
      */
-    public static func qmui_lightSystemFont(ofSize fontSize: CGFloat) -> UIFont {
+    static func qmui_lightSystemFont(ofSize fontSize: CGFloat) -> UIFont {
         return UIFont(name: IOS_VERSION >= 9.0 ? ".SFUIText-Light" : "HelveticaNeue-Light", size: fontSize)!
     }
 
@@ -29,7 +31,9 @@ extension UIFont {
      *  @param weight   字体粗细
      *  @param italic   是否斜体
      */
-    public static func qmui_systemFont(ofSize size: CGFloat, weight: QMUIFontWeight, italic: Bool) -> UIFont {
+    static func qmui_systemFont(ofSize fontSize: CGFloat,
+                                weight: QMUIFontWeight,
+                                italic: Bool) -> UIFont {
         let isLight = weight == .light
         let isBold = weight == .bold
 
@@ -38,7 +42,7 @@ extension UIFont {
             let name = IOS_VERSION < 9.0 ? "HelveticaNeue" : ".SFUIText"
             let fontSuffix = (isLight ? "Light" : (isBold ? "Bold" : "")) + (italic ? "Italic" : "")
             let fontName = name + (fontSuffix.length > 0 ? "-" : "") + fontSuffix
-            let font = UIFont(name: fontName, size: size)
+            let font = UIFont(name: fontName, size: fontSize)
             return font!
         }
 
@@ -46,9 +50,13 @@ extension UIFont {
         var font: UIFont!
 
         if #available(iOS 8.2, *) {
-            font = UIFont.systemFont(ofSize: size, weight: isLight ? UIFont.Weight.light : (isBold ? UIFont.Weight.bold : UIFont.Weight.regular))
+            font = UIFont.systemFont(ofSize: fontSize, weight: isLight ? UIFont.Weight.light : (isBold ? UIFont.Weight.bold : UIFont.Weight.regular))
+            // 后面那些都是对斜体的操作，所以如果不需要斜体就直接 return
+            if !italic {
+                return font
+            }
         } else {
-            font = UIFont.systemFont(ofSize: size)
+            font = UIFont.systemFont(ofSize: fontSize)
         }
 
         var fontDescriptor = font.fontDescriptor
@@ -62,78 +70,33 @@ extension UIFont {
         font = UIFont(descriptor: fontDescriptor, size: 0)
         return font
     }
-
+    
     /**
-     * 返回支持动态字体的UIFont，支持定义最小和最大字号
+     *  返回支持动态字体的UIFont，支持定义最小和最大字号
      *
-     * @param pointSize 默认的size
-     * @param upperLimitSize 最大的字号限制
-     * @param lowerLimitSize 最小的字号显示
-     * @param bold 是否加粗
+     *  @param pointSize        默认的size
+     *  @param upperLimitSize   最大的字号限制
+     *  @param lowerLimitSize   最小的字号显示
+     *  @param weight           字重
+     *  @param italic           是否斜体
      *
-     * @return 支持动态字体的UIFont对象
+     *  @return                 支持响应动态字体大小调整的 UIFont 对象
      */
-    public static func qmui_dynamicFont(withSize pointSize: CGFloat, upperLimitSize: CGFloat, lowerLimitSize: CGFloat, bold: Bool) -> UIFont {
-        var font: UIFont
-        var descriptor: UIFontDescriptor
-
-        // 如果是系统的字号，先映射到系统提供的UIFontTextStyle，否则用UIFontDescriptor来做偏移计算
-        let dict: [CGFloat: UIFontTextStyle] = [
-            17: .body,
-            15: .subheadline,
-            13: .footnote,
-            12: .caption1,
-            11: .caption2,
-        ]
-        var textStyle: UIFontTextStyle? = dict[pointSize]
-
-        if let textStyle = textStyle {
-            descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: textStyle)
-            if bold {
-                descriptor = descriptor.withSymbolicTraits(.traitBold)!
-                font = UIFont(descriptor: descriptor, size: 0)
-                if upperLimitSize > 0 && font.pointSize > upperLimitSize {
-                    font = UIFont(descriptor: descriptor, size: upperLimitSize)
-                } else if lowerLimitSize > 0 && font.pointSize < lowerLimitSize {
-                    font = UIFont(descriptor: descriptor, size: lowerLimitSize)
-                }
-            } else {
-                font = UIFont.preferredFont(forTextStyle: textStyle)
-                if upperLimitSize > 0 && font.pointSize > upperLimitSize {
-                    font = UIFont.systemFont(ofSize: upperLimitSize)
-                } else if lowerLimitSize > 0 && font.pointSize < lowerLimitSize {
-                    font = UIFont.systemFont(ofSize: lowerLimitSize)
-                }
-            }
-        } else {
-            textStyle = UIFontTextStyle.body
-            descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: textStyle!)
-            // 对于非系统默认字号的情况，用body类型去做偏移计算
-            font = UIFont.preferredFont(forTextStyle: textStyle!) // default fontSize = 17
-            let offsetPointSize = font.pointSize - 17
-            descriptor = descriptor.withSize(pointSize + offsetPointSize)
-            if bold {
-                descriptor = descriptor.withSymbolicTraits(.traitBold)!
-            }
-            font = UIFont(descriptor: descriptor, size: 0)
-            if upperLimitSize > 0 && font.pointSize > upperLimitSize {
-                font = UIFont(descriptor: descriptor, size: upperLimitSize)
-            } else if lowerLimitSize > 0 && font.pointSize < lowerLimitSize {
-                font = UIFont(descriptor: descriptor, size: lowerLimitSize)
-            }
+    static func qmui_dynamicFont(ofSize fontSize: CGFloat,
+                                 upperLimitSize: CGFloat = 0,
+                                 lowerLimitSize: CGFloat = 0,
+                                 weight: QMUIFontWeight,
+                                 italic: Bool) -> UIFont {
+        // 计算出 body 类型比默认的大小要变化了多少，然后在 pointSize 的基础上叠加这个变化
+        var tmpUpperLimitSize: CGFloat = 0
+        if upperLimitSize == 0 {
+            tmpUpperLimitSize = fontSize + 5
         }
+        var font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
+        let offsetPointSize = font.pointSize - 17 // default UIFontTextStyleBody fontSize is 17
+        var finalPointSize = fontSize + offsetPointSize
+        finalPointSize = max(min(finalPointSize, tmpUpperLimitSize), lowerLimitSize)
+        font = UIFont.qmui_systemFont(ofSize: finalPointSize, weight: weight, italic: false)
         return font
-    }
-
-    /**
-     * 返回支持动态字体的UIFont
-     *
-     * @param pointSize 默认的size
-     * @param bold 是否加粗
-     *
-     * @return 支持动态字体的UIFont对象
-     */
-    public static func qmui_dynamicFont(withSize size: CGFloat, bold: Bool) -> UIFont {
-        return UIFont.qmui_dynamicFont(withSize: size, upperLimitSize: size + 3, lowerLimitSize: 0, bold: bold)
     }
 }

@@ -304,6 +304,7 @@ extension UITableView {
         static var keyedHeightCache = "keyedHeightCache"
         static var indexPathHeightCache = "indexPathHeightCache"
         static var templateCellsByIdentifiers = "templateCellsByIdentifiers"
+        static var staticCellDataSource = "staticCellDataSource"
     }
 
     var qmui_keyedHeightCache: QMUICellHeightKeyCache {
@@ -348,6 +349,8 @@ extension UITableView: SelfAware3 {
                 #selector(UITableView.reloadRows(at:with:)),
                 #selector(UITableView.moveRow(at:to:)),
                 #selector(UITableView.sizeThatFits(_:)),
+                #selector(setter: dataSource),
+                #selector(setter: delegate),
             ]
             
             let qmui_selectors = [
@@ -361,6 +364,8 @@ extension UITableView: SelfAware3 {
                 #selector(UITableView.qmui_reloadRows(at:with:)),
                 #selector(UITableView.qmui_moveRow(at:to:)),
                 #selector(UITableView.qmui_sizeThatFits(_:)),
+                #selector(UITableView.staticCell_setDataSource),
+                #selector(UITableView.staticCell_setDelegate),
             ]
             
             for index in 0..<selectors.count {

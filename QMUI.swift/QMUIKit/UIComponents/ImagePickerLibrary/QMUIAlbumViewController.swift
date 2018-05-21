@@ -7,63 +7,60 @@
 //
 
 // 相册预览图的大小默认值
-let QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight: CGFloat = 57
+private let QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight: CGFloat = 67
+// 相册预览大小（正方形），如果想要跟图片一样高，则设置成跟 QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight 一样的值就好了
+private let QMUIAlbumViewControllerDefaultAlbumImageSize: CGFloat = 57
+// 相册缩略图的 left，默认 -1，表示和上下一样大
+private let QMUIAlbumViewControllerDefaultAlbumImageLeft: CGFloat = -1
 // 相册名称的字号默认值
-let QMUIAlbumTableViewCellDefaultAlbumNameFontSize: CGFloat = 16
+private let QMUIAlbumTableViewCellDefaultAlbumNameFontSize: CGFloat = 16
 // 相册资源数量的字号默认值
-let QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize: CGFloat = 16
+private let QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize: CGFloat = 16
 // 相册名称的 insets 默认值
-let QMUIAlbumTableViewCellDefaultAlbumNameInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 4)
+private let QMUIAlbumTableViewCellDefaultAlbumNameInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 4)
 
-protocol QMUIAlbumViewControllerDelegate: class {
+@objc protocol QMUIAlbumViewControllerDelegate: NSObjectProtocol {
     /// 点击相簿里某一行时，需要给一个 QMUIImagePickerViewController 对象用于展示九宫格图片列表
-    func imagePickerViewController(for albumViewController: QMUIAlbumViewController) -> QMUIImagePickerViewController
+    @objc optional func imagePickerViewController(for albumViewController: QMUIAlbumViewController) -> QMUIImagePickerViewController
 
     /**
      *  取消查看相册列表后被调用
      */
-    func albumViewControllerDidCancel(_ albumViewController: QMUIAlbumViewController)
+    @objc optional func albumViewControllerDidCancel(_ albumViewController: QMUIAlbumViewController)
 
     /**
      *  即将需要显示 Loading 时调用
      *
      *  @see shouldShowDefaultLoadingView
      */
-    func albumViewControllerWillStartLoad(_ albumViewController: QMUIAlbumViewController)
+    @objc optional func albumViewControllerWillStartLoad(_ albumViewController: QMUIAlbumViewController)
 
     /**
      *  即将需要隐藏 Loading 时调用
      *
      *  @see shouldShowDefaultLoadingView
      */
-    func albumViewControllerWillFinishLoad(_ albumViewController: QMUIAlbumViewController)
-}
-
-extension QMUIAlbumViewControllerDelegate {
-    func albumViewControllerDidCancel(_: QMUIAlbumViewController) {}
-
-    func albumViewControllerWillStartLoad(_: QMUIAlbumViewController) {}
-
-    func albumViewControllerWillFinishLoad(_: QMUIAlbumViewController) {}
+    @objc optional func albumViewControllerWillFinishLoad(_ albumViewController: QMUIAlbumViewController)
 }
 
 class QMUIAlbumTableViewCell: QMUITableViewCell {
+    
+    var albumImageSize: CGFloat = QMUIAlbumViewControllerDefaultAlbumImageSize // 相册缩略图的 insets
+    var albumImageMarginLeft: CGFloat = QMUIAlbumViewControllerDefaultAlbumImageLeft // 相册缩略图的 left
     var albumNameFontSize = QMUIAlbumTableViewCellDefaultAlbumNameFontSize // 相册名称的字号
     var albumAssetsNumberFontSize = QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize // 相册资源数量的字号
     var albumNameInsets = QMUIAlbumTableViewCellDefaultAlbumNameInsets // 相册名称的 insets
 
-    private let bottomLineLayer = CALayer()
-
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+    
+    override func didInitialized(_ style: UITableViewCellStyle) {
+        super.didInitialized(style)
 
         imageView?.contentMode = .scaleAspectFill
         imageView?.clipsToBounds = true
         detailTextLabel?.textColor = UIColorGrayDarken
-
-        bottomLineLayer.backgroundColor = UIColorSeparator.cgColor
-        // 让分隔线垫在背后
-        layer.insertSublayer(bottomLineLayer, at: 0)
     }
 
     override func updateCellAppearance(_ indexPath: IndexPath) {
@@ -74,35 +71,24 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        // 避免iOS7下seletedBackgroundView会往上下露出1px（以盖住系统分隔线，但我们的分隔线是自定义的）
-        selectedBackgroundView?.frame = bounds
-
-        let contentViewPaddingRight: CGFloat = 10
-        let height = contentView.bounds.height
-
-        imageView?.frame = CGSize(width: height, height: height).rect
-
-        let textLabelFrame = textLabel?.frame ?? .zero
-
-        textLabel?.frame.setXY(imageView?.frame.maxX ?? 0, flat(textLabel?.qmui_minYWhenCenterInSuperview ?? 0))
-
-        let textLabelMaxWidth = contentView.bounds.width - contentViewPaddingRight - (detailTextLabel?.frame.width ?? 0) - albumNameInsets.right - textLabelFrame.minX
-
-        if textLabelFrame.width > textLabelMaxWidth {
-            textLabel?.frame.setWidth(textLabelMaxWidth)
+        
+        let imageEdgeTop = contentView.bounds.height.center(albumImageSize)
+        let imageEdgeLeft = albumImageMarginLeft == QMUIAlbumViewControllerDefaultAlbumImageLeft ? imageEdgeTop : albumImageMarginLeft
+        
+        guard let imageView = imageView, let textLabel = textLabel, let detailTextLabel = detailTextLabel else {
+            return
         }
-
-        if let label = detailTextLabel {
-            detailTextLabel?.frame = label.frame.setXY(textLabelFrame.maxX + albumNameInsets.right, flat(detailTextLabel?.qmui_minYWhenCenterInSuperview ?? 0))
+        
+        imageView.frame = CGRect(x: imageEdgeLeft, y: imageEdgeTop, width: albumImageSize, height: albumImageSize)
+        
+        textLabel.frame = textLabel.frame.setXY(imageView.frame.maxX + albumNameInsets.left, textLabel.qmui_minYWhenCenterInSuperview)
+        
+        let textLabelMaxWidth = contentView.bounds.width - textLabel.frame.minX - detailTextLabel.bounds.width - albumNameInsets.right
+        if textLabel.bounds.width > textLabelMaxWidth {
+            textLabel.frame = textLabel.frame.setWidth(textLabelMaxWidth)
         }
-
-        bottomLineLayer.frame = CGRect(x: 0, y: contentView.bounds.height - PixelOne, width: bounds.width, height: PixelOne)
-    }
-
-    override var isHighlighted: Bool {
-        didSet {
-            bottomLineLayer.isHidden = isHighlighted
-        }
+        
+        detailTextLabel.frame = detailTextLabel.frame.setXY(textLabel.frame.maxX + albumNameInsets.right, detailTextLabel.qmui_minYWhenCenterInSuperview)
     }
 
     required init?(coder _: NSCoder) {
@@ -112,27 +98,27 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
 
 class QMUIAlbumViewController: QMUICommonTableViewController {
 
-    public var albumTableViewCellHeight: CGFloat = QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight // 相册列表 cell 的高度，同时也是相册预览图的宽高
+    var albumTableViewCellHeight: CGFloat = QMUIAlbumViewControllerDefaultAlbumTableViewCellHeight // 相册列表 cell 的高度，同时也是相册预览图的宽高
 
-    public weak var albumViewControllerDelegate: QMUIAlbumViewControllerDelegate?
+    weak var albumViewControllerDelegate: QMUIAlbumViewControllerDelegate?
 
-    public var contentType = QMUIAlbumContentType.all // 相册展示内容的类型，可以控制只展示照片、视频或音频（仅 iOS 8.0 及以上版本支持）的其中一种，也可以同时展示所有类型的资源，默认展示所有类型的资源。
+    var contentType = QMUIAlbumContentType.all // 相册展示内容的类型，可以控制只展示照片、视频或音频（仅 iOS 8.0 及以上版本支持）的其中一种，也可以同时展示所有类型的资源，默认展示所有类型的资源。
 
-    public var tipTextWhenNoPhotosAuthorization: String?
-    public var tipTextWhenPhotosEmpty: String?
+    var tipTextWhenNoPhotosAuthorization: String?
+    var tipTextWhenPhotosEmpty: String?
     /**
      *  加载相册列表时会出现 loading，若需要自定义 loading 的形式，可将该属性置为 NO，默认为 YES。
      *  @see albumViewControllerWillStartLoad: & albumViewControllerWillFinishLoad:
      */
-    public var shouldShowDefaultLoadingView = true
+    var shouldShowDefaultLoadingView = true
 
-    private var _albumsArray: [QMUIAssetsGroup] = []
-    private var _imagePickerViewController: QMUIImagePickerViewController?
+    private var albumsArray: [QMUIAssetsGroup] = []
+    private var imagePickerViewController: QMUIImagePickerViewController?
 
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = title ?? "照片"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "取消", position: .right, target: self, action: #selector(handleCancelSelectAlbum))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(title: "取消", target: self, action: #selector(handleCancelSelectAlbum))
     }
 
     @objc override func initTableView() {
@@ -156,17 +142,23 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
             }
             showEmptyViewWith(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
         } else {
-            albumViewControllerDelegate?.albumViewControllerWillStartLoad(self)
+            albumViewControllerDelegate?.albumViewControllerWillStartLoad?(self)
             // 获取相册列表较为耗时，交给子线程去处理，因此这里需要显示 Loading
             if shouldShowDefaultLoadingView {
                 showEmptyViewWithLoading()
             }
             DispatchQueue.global().async {
-                QMUIAssetsManager.shared.enumerateAllAlbumsWithAlbumContentType(self.contentType, usingBlock: { resultAssetsGroup in
-                    if let asset = resultAssetsGroup {
-                        self._albumsArray.append(asset)
-                    } else {
-                        self.refreshAlbumAndShowEmptyTipIfNeed()
+                QMUIAssetsManager.shared.enumerateAllAlbums(withAlbumContentType: self.contentType, usingBlock: {[weak self] resultAssetsGroup in
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    // 这里需要对 UI 进行操作，因此放回主线程处理
+                    DispatchQueue.main.async {
+                        if let asset = resultAssetsGroup {
+                            strongSelf.albumsArray.append(asset)
+                        } else {
+                            strongSelf.refreshAlbumAndShowEmptyTipIfNeed()
+                        }
                     }
                 })
             }
@@ -174,20 +166,42 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
     }
 
     func refreshAlbumAndShowEmptyTipIfNeed() {
-        if _albumsArray.isEmpty {
+        if albumsArray.isEmpty {
             let tipString = tipTextWhenPhotosEmpty ?? "空照片"
             showEmptyViewWith(text: tipString, detailText: nil, buttonTitle: nil, buttonAction: nil)
         } else {
-            albumViewControllerDelegate?.albumViewControllerWillStartLoad(self)
+            albumViewControllerDelegate?.albumViewControllerWillStartLoad?(self)
             if shouldShowDefaultLoadingView {
                 hideEmptyView()
             }
             tableView.reloadData()
         }
     }
+    
+    /// 在 QMUIAlbumViewController 被放到 UINavigationController 里之后，可通过调用这个方法，来尝试直接进入上一次选中的相册列表
+    func pickLastAlbumGroupDirectlyIfCan() {
+        let assetsGroup = QMUIImagePickerHelper.assetsGroupOfLastPickerAlbum(with: nil)
+        pickAlbumsGroup(assetsGroup, animated: false)
+    }
+    
+    private func pickAlbumsGroup(_ assetsGroup: QMUIAssetsGroup?, animated: Bool) {
+        guard let assetsGroup = assetsGroup else {
+            return
+        }
+        
+        if imagePickerViewController == nil  {
+            imagePickerViewController = albumViewControllerDelegate?.imagePickerViewController?(for: self)
+        }
+        
+        assert(imagePickerViewController != nil, "albumViewControllerDelegate 必须实现 imagePickerViewController(for:) 并返回一个 \(NSStringFromClass(QMUIImagePickerViewController.self)) 对象")
+        
+        imagePickerViewController?.refresh(with: assetsGroup)
+        imagePickerViewController?.title = assetsGroup.name
+        navigationController?.pushViewController(imagePickerViewController!, animated: animated)
+    }
 
     override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return _albumsArray.count
+        return albumsArray.count
     }
 
     override func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
@@ -201,7 +215,7 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
             cell = QMUIAlbumTableViewCell(tableView: tableView, style: .subtitle, reuseIdentifier: "cell")
             cell?.accessoryType = .disclosureIndicator
         }
-        let assetsGroup = _albumsArray[indexPath.row]
+        let assetsGroup = albumsArray[indexPath.row]
         // 显示相册缩略图
 
         cell?.imageView?.image = assetsGroup.posterImage(with: CGSize(width: albumTableViewCellHeight, height: albumTableViewCellHeight))
@@ -212,25 +226,17 @@ class QMUIAlbumViewController: QMUICommonTableViewController {
 
         cell?.updateCellAppearance(indexPath)
 
-        return cell!
+        return cell ?? UITableViewCell()
     }
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if _imagePickerViewController == nil {
-            _imagePickerViewController = albumViewControllerDelegate?.imagePickerViewController(for: self)
-        }
-
-        assert(_imagePickerViewController != nil, "albumViewControllerDelegate 必须实现 imagePickerViewControllerForAlbumViewController 并返回一个 \(NSStringFromClass(QMUIImagePickerViewController.self)) 对象")
-
-        let assetsGroup = _albumsArray[indexPath.row]
-        _imagePickerViewController?.refresh(with: assetsGroup)
-        _imagePickerViewController?.title = assetsGroup.name
-        navigationController?.pushViewController(_imagePickerViewController!, animated: true)
+        pickAlbumsGroup(albumsArray[indexPath.row], animated: true)
     }
 
     @objc func handleCancelSelectAlbum() {
         navigationController?.dismiss(animated: true, completion: {
-            self.albumViewControllerDelegate?.albumViewControllerDidCancel(self)
+            self.albumViewControllerDelegate?.albumViewControllerDidCancel?(self)
+            self.imagePickerViewController?.selectedImageAssetArray.removeAll()
         })
     }
 }

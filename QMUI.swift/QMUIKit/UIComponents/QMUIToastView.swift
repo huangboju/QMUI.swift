@@ -330,6 +330,7 @@ extension QMUIToastView {
      *
      * @return 如果成功隐藏一个ToastView则返回YES，失败则NO。
      */
+    @discardableResult
     static func hideAllToast(in view: UIView, animated: Bool) -> Bool {
         let toastViews = allToast(in: view)
         var returnFlag = false
@@ -347,6 +348,7 @@ extension QMUIToastView {
      * @param view ToastView的superView。
      * @return 返回一个QMUIToastView的实例。
      */
+    @discardableResult
     static func toast(in view: UIView) -> QMUIToastView? {
         for subview in view.subviews.reversed() {
             if let toastView = subview as? QMUIToastView {
@@ -362,6 +364,7 @@ extension QMUIToastView {
      * @param view ToastView的superView。
      * @return 包含所有QMUIToastView的数组。
      */
+    @discardableResult
     static func allToast(in view: UIView) -> [QMUIToastView] {
         var toastViews: [QMUIToastView] = []
         for subview in view.subviews {

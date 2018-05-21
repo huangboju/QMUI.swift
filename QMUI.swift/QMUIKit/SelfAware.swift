@@ -18,6 +18,11 @@ protocol SelfAware3: class {
     static func awake3()
 }
 
+protocol SelfAware4: class {
+    static func awake4()
+}
+
+
 class NothingToSeeHere {
 
     static func harmlessFunction() {
@@ -27,8 +32,16 @@ class NothingToSeeHere {
         objc_getClassList(autoreleasingTypes, Int32(typeCount))
         for index in 0 ..< typeCount {
             (types[index] as? SelfAware.Type)?.awake()
+            if let type = types[index] {
+                // MARK: TODO 比较奇怪，在 harmlessFunction 遍历类时，UITabBar 竟然没有实现 SelfAware2
+                let typeString = NSStringFromClass(type)
+                if typeString == "UITabBar" {
+                    UITabBar.awake2()
+                }
+            }
             (types[index] as? SelfAware2.Type)?.awake2()
             (types[index] as? SelfAware3.Type)?.awake3()
+            (types[index] as? SelfAware4.Type)?.awake4()
         }
         
         types.deallocate()

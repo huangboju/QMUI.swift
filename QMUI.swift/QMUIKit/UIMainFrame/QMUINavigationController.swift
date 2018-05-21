@@ -387,12 +387,12 @@ class QMUINavigationController: UINavigationController {
         
         if let currentViewController = topViewController {
             if !NeedsBackBarButtonItemTitle {
-                currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: "", position: .left, target: nil, action: nil)
+                currentViewController.navigationItem.backBarButtonItem = UIBarButtonItem.item(title: "", target: nil, action: nil)
             } else {
                 if let vc = viewController as? QMUINavigationControllerAppearanceDelegate {
                     if vc.responds(to: #selector(QMUINavigationControllerAppearanceDelegate.backBarButtonItemTitle(_:))) {
                         if let title = vc.backBarButtonItemTitle!(currentViewController) {
-                            currentViewController.navigationItem.backBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: title, position: .left, target: nil, action: nil)
+                            currentViewController.navigationItem.backBarButtonItem = UIBarButtonItem.item(title: title, target: nil, action: nil)
                         }
                     }
                 }
@@ -481,11 +481,11 @@ class QMUINavigationController: UINavigationController {
 // MARK: UISubclassingHooks
 extension QMUINavigationController {
     
-    public func willShow(_ viewController: UIViewController, animated: Bool) {
+    func willShow(_ viewController: UIViewController, animated: Bool) {
         // 子类可以重写
     }
     
-    public func didShow(_ viewController: UIViewController, animated: Bool) {
+    func didShow(_ viewController: UIViewController, animated: Bool) {
         // 子类可以重写
     }
 }
@@ -516,15 +516,27 @@ extension UIViewController {
         static var poppingByInteractivePopGestureRecognizer = "poppingByInteractivePopGestureRecognizer"
         static var willAppearByInteractivePopGestureRecognizer = "willAppearByInteractivePopGestureRecognizer"
         static var qmuiNavIsViewWillAppear = "qmuiNavIsViewWillAppear"
+        static var navigationControllerPopGestureRecognizerChanging = "navigationControllerPopGestureRecognizerChanging"
     }
     
     /// 判断当前 viewController 是否处于手势返回中，仅对当前手势返回涉及到的前后两个 viewController 有效
-    public var qmui_navigationControllerPoppingInteracted: Bool {
+    var qmui_navigationControllerPoppingInteracted: Bool {
         return qmui_poppingByInteractivePopGestureRecognizer || qmui_willAppearByInteractivePopGestureRecognizer
     }
     
+    /// 基本与上一个属性 qmui_navigationControllerPoppingInteracted 相同，只不过 qmui_navigationControllerPoppingInteracted 是在 began 时就为 YES，而这个属性仅在 changed 时才为 YES。
+    /// @note viewController 会在走完 viewWillAppear: 之后才将这个值置为 YES。
+    fileprivate(set) var qmui_navigationControllerPopGestureRecognizerChanging: Bool {
+        set {
+            objc_setAssociatedObject(self, &Keys.navigationControllerPopGestureRecognizerChanging, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return (objc_getAssociatedObject(self, &Keys.navigationControllerPopGestureRecognizerChanging) as? Bool) ?? false
+        }
+    }
+    
     /// 当前 viewController 是否正在被手势返回 pop
-    public fileprivate(set) var qmui_poppingByInteractivePopGestureRecognizer: Bool {
+    fileprivate(set) var qmui_poppingByInteractivePopGestureRecognizer: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.poppingByInteractivePopGestureRecognizer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
@@ -534,7 +546,7 @@ extension UIViewController {
     }
     
     /// 当前 viewController 是否是手势返回中，背后的那个界面
-    public fileprivate(set) var qmui_willAppearByInteractivePopGestureRecognizer: Bool {
+    fileprivate(set) var qmui_willAppearByInteractivePopGestureRecognizer: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.willAppearByInteractivePopGestureRecognizer, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }

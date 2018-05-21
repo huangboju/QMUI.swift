@@ -40,7 +40,7 @@ class QDComponentsViewController: QDCommonGridViewController {
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "Components"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(image: UIImageMake("icon_nav_about"), position: .right, target: self, action: #selector(handleAboutItemEvent))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleAboutItemEvent))
     }
     
     @objc private func handleAboutItemEvent() {
@@ -54,52 +54,52 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDNavigationTitleViewController()
         }
         if title == "QMUIEmptyView" {
-            viewController = QDSliderViewController()
+            viewController = QDEmptyViewController()
         }
         if title == "QMUIToastView" {
-            viewController = QDLabelViewController()
+            viewController = QDToastListViewController()
         }
         if title == "QMUIStaticTableView" {
-            viewController = QDTextViewController()
+            viewController = QDStaticTableViewController()
         }
         if title == "QMUIImagePreviewView" {
-            viewController = QDSliderViewController()
+            viewController = QDImagePreviewExampleViewController()
         }
         if title == "QMUIPickingImage" {
-            viewController = QDSliderViewController()
+            viewController = QDImagePickerExampleViewController()
         }
         if title == "QMUIAssetsManager" {
-            viewController = QDSliderViewController()
+            viewController = QDAssetsManagerViewController()
         }
         if title == "QMUIMoreOperationController" {
             viewController = QDMoreOperationViewController()
         }
         if title == "QMUIEmotionView" {
-            viewController = QDButtonViewController()
+            viewController = QDEmotionsViewController()
         }
         if title == "QMUIGridView" {
-            viewController = QDSliderViewController()
+            viewController = QDGridViewController()
         }
         if title == "QMUIFloatLayoutView" {
-            viewController = QDSliderViewController()
+            viewController = QDFloatLayoutViewController()
         }
         if title == "QMUIPieProgressView" {
-            viewController = QDSliderViewController()
+            viewController = QDPieProgressViewController()
         }
         if title == "QMUIPopupContainerView" {
-            viewController = QDSliderViewController()
+            viewController = QDPopupContainerViewController()
         }
         if title == "QMUIModalPresentationViewController" {
             viewController = QDModalPresentationViewController(style: .grouped)
         }
         if title == "QMUIDialogViewController" {
-            viewController = QDSliderViewController()
+            viewController = QDDialogViewController()
         }
         if title == "QMUIKeyboardManager" {
-            viewController = QDSliderViewController()
+            viewController = QDKeyboardViewController()
         }
         if title == "QMUIMarqueeLabel" {
-            viewController = QDSliderViewController()
+            viewController = QDMarqueeLabelViewController()
         }
         
         if let viewController = viewController {

@@ -27,7 +27,7 @@ class QDNormalButtonViewController: QDCommonViewController {
     // 图片+文字按钮
     private lazy var imagePositionButton1: QMUIButton = {
         let imagePositionButton = QMUIButton()
-        imagePositionButton.tintColorAdjustsTitleAndImage = QDThemeManager.shared.currentTheme?.themeTintColor
+        imagePositionButton.tintColorAdjustsTitleAndImage = (QDThemeManager.shared.currentTheme?.themeTintColor)!
         imagePositionButton.imagePosition = .top // 将图片位置改为在文字上方
         imagePositionButton.spacingBetweenImageAndTitle = 8
         imagePositionButton.setImage(UIImageMake("icon_emotion"), for: .normal)
@@ -39,7 +39,7 @@ class QDNormalButtonViewController: QDCommonViewController {
     
     private lazy var imagePositionButton2: QMUIButton = {
         let imagePositionButton = QMUIButton()
-        imagePositionButton.tintColorAdjustsTitleAndImage = QDThemeManager.shared.currentTheme?.themeTintColor
+        imagePositionButton.tintColorAdjustsTitleAndImage = (QDThemeManager.shared.currentTheme?.themeTintColor)!
         imagePositionButton.imagePosition = .bottom // 将图片位置改为在文字下方
         imagePositionButton.spacingBetweenImageAndTitle = 8
         imagePositionButton.setImage(UIImageMake("icon_emotion"), for: .normal)

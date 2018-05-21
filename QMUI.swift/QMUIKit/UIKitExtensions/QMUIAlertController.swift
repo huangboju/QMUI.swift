@@ -36,7 +36,6 @@ enum QMUIAlertActionStyle: Int {
  *  `QMUIAlertController`是模仿系统`UIAlertController`的控件，所以系统有的功能在QMUIAlertController里面基本都有。同时`QMUIAlertController`还提供了一些扩展功能，例如：它的每个 button 都是开放出来的，可以对默认的按钮进行二次处理（比如加一个图片）；可以通过 QMUIAlertController.appearance() 在 app 启动的时候修改整个`QMUIAlertController`的主题样式。
  */
 class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalPresentationViewControllerDelegate, QMUIModalPresentationContentViewControllerProtocol {
-    
 
     /// alert距离屏幕四边的间距，默认UIEdgeInsetsMake(0, 0, 0, 0)。alert的宽度最终是通过屏幕宽度减去水平的 alertContentMargin 和 alertContentMaximumWidth 决定的。
     @objc dynamic var alertContentMargin: UIEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0)

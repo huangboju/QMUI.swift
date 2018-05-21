@@ -22,7 +22,7 @@ let CGContextInspectSize: (CGSize) -> Void = {
     QMUIHelper.inspectContext(size: $0)
 }
 
-public enum QMUIImageShape {
+enum QMUIImageShape {
     case oval // 椭圆
     case triangle // 三角形
     case disclosureIndicator // 列表cell右边的箭头
@@ -32,12 +32,14 @@ public enum QMUIImageShape {
     case navClose // 导航栏的关闭icon
 }
 
-public enum QMUIImageBorderPosition: Int {
-    case all = 0
-    case top
-    case left
-    case bottom
-    case right
+struct QMUIImageBorderPosition: OptionSet {
+    let rawValue: Int
+    
+    static let all = QMUIImageBorderPosition(rawValue: 1)
+    static let top = QMUIImageBorderPosition(rawValue: 2)
+    static let left = QMUIImageBorderPosition(rawValue: 4)
+    static let bottom = QMUIImageBorderPosition(rawValue: 8)
+    static let right = QMUIImageBorderPosition(rawValue: 32)
 }
 
 extension CGSize {
@@ -50,7 +52,7 @@ extension CGSize {
 extension UIImage {
     
     /// 获取当前图片的像素大小，如果是多倍图，会被放大到一倍来算
-    public var qmui_sizeInPixel: CGSize {
+    var qmui_sizeInPixel: CGSize {
         let size = CGSize(width: self.size.width * scale, height: self.size.height * scale)
         return size
     }
@@ -62,26 +64,32 @@ extension UIImage {
      *
      *  @return 代表图片平均颜色的UIColor对象
      */
-    public var qmui_averageColor: UIColor {
-        var rgba: [CGFloat] = Array(repeating: 0, count: 4)
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-
-        guard let context = CGContext(data: &rgba, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue) else {
-            print("context is nil")
-            return .black
-        }
-        CGContextInspectContext(context)
-        context.draw(cgImage!, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+    var qmui_averageColor: UIColor {
+        let rgba = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: 4)
+        let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
+        let info = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        
+        let context: CGContext = CGContext(data: rgba, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: info.rawValue)!
+        
+        context.draw(self.cgImage!, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+        
         if rgba[3] > 0 {
-            return UIColor(red: rgba[0] / rgba[3],
-                           green: rgba[1] / rgba[3],
-                           blue: rgba[2] / rgba[3],
-                           alpha: rgba[3] / 255.0)
+            let alpha: CGFloat = CGFloat(rgba[3])/255.0
+            let multiplier: CGFloat = alpha/255.0
+            
+            return UIColor(
+                red: CGFloat(rgba[0]) * multiplier,
+                green: CGFloat(rgba[1]) * multiplier,
+                blue: CGFloat(rgba[2]) * multiplier,
+                alpha: alpha
+            )
         } else {
-            return UIColor(red: rgba[0] / 255.0,
-                           green: rgba[1] / 255.0,
-                           blue: rgba[2] / 255.0,
-                           alpha: rgba[3] / 255.0)
+            return UIColor(
+                red: CGFloat(rgba[0])/255.0,
+                green: CGFloat(rgba[1])/255.0,
+                blue: CGFloat(rgba[2])/255.0,
+                alpha: CGFloat(rgba[3])/255.0
+            )
         }
     }
 
@@ -90,7 +98,7 @@ extension UIImage {
      *
      *  @return 已经置灰的图片
      */
-    public var qmui_grayImage: UIImage? {
+    var qmui_grayImage: UIImage? {
         // CGBitmapContextCreate 是无倍数的，所以要自己换算成1倍
         let width = size.width * scale
         let height = size.height * scale
@@ -131,7 +139,7 @@ extension UIImage {
      *
      *  @return 设置了透明度之后的图片
      */
-    public func qmui_image(alpha: CGFloat) -> UIImage? {
+    func qmui_image(alpha: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         // TODO: 这个没有用到需不需要取？
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
@@ -146,7 +154,7 @@ extension UIImage {
     /**
      *  判断一张图是否不存在 alpha 通道，注意 “不存在 alpha 通道” 不等价于 “不透明”。一张不透明的图有可能是存在 alpha 通道但 alpha 值为 1。
      */
-    public var qmui_opaque: Bool {
+    var qmui_opaque: Bool {
         let alphaInfo = cgImage!.alphaInfo
         let opaque = alphaInfo == .noneSkipLast
             || alphaInfo == .noneSkipFirst
@@ -161,7 +169,10 @@ extension UIImage {
      *
      *  @return 与当前图片形状一致但颜色与参数tintColor相同的新图片
      */
-    public func qmui_image(tintColor: UIColor) -> UIImage? {
+    func qmui_image(tintColor: UIColor?) -> UIImage? {
+        guard let tintColor = tintColor else {
+            return nil
+        }
         let imageIn = self
         let rect = CGRect(origin: .zero, size: imageIn.size)
         UIGraphicsBeginImageContextWithOptions(imageIn.size, qmui_opaque, imageIn.scale)
@@ -187,7 +198,7 @@ extension UIImage {
      *
      *  @warning 这个方法可能比较慢，会卡住主线程，建议异步使用
      */
-    public func qmui_image(blendColor: UIColor) -> UIImage? {
+    func qmui_image(blendColor: UIColor) -> UIImage? {
         guard let coloredImage = qmui_image(tintColor: blendColor) else { return nil }
         guard let filter = CIFilter(name: "CIColorBlendMode")  else { return nil }
         filter.setValue(CIImage(cgImage: cgImage!), forKey: kCIInputBackgroundImageKey)
@@ -212,7 +223,7 @@ extension UIImage {
      *
      *  @return 返回一张与原图大小一致的图片，所叠加的图片若超出原图大小，则超出部分被截掉
      */
-    public func qmui_image(imageAbove: UIImage, at point: CGPoint) -> UIImage? {
+    func qmui_image(imageAbove: UIImage, at point: CGPoint) -> UIImage? {
         let imageIn = self
         var imageOut: UIImage?
         UIGraphicsBeginImageContextWithOptions(imageIn.size, qmui_opaque, imageIn.scale)
@@ -244,7 +255,7 @@ extension UIImage {
      *
      *  @return 切割后的新图片
      */
-    public func qmui_image(clippedRect: CGRect) -> UIImage {
+    func qmui_image(clippedRect: CGRect) -> UIImage {
         CGContextInspectSize(clippedRect.size)
         let imageRect = size.rect
         if clippedRect.contains(imageRect) {
@@ -260,43 +271,26 @@ extension UIImage {
     }
     
     /**
-     *  将原图以 UIViewContentModeScaleAspectFit 的策略缩放，使其缩放后的大小不超过指定的大小，并返回缩放后的图片，缩放后的图片的倍数保持与原图一致。
-     *  @param size 在这个约束的 size 内进行缩放后的大小，处理后返回的图片的 size 会根据 contentMode 不同而不同，但必定不会超过 size。
-     *
-     *  @return 处理完的图片
-     *  @see qmui_imageResizedInLimitedSize:contentMode:scale:
-     */
-    public func qmui_imageResized(in limitedSize: CGSize) -> UIImage? {
-        return qmui_imageResized(in: limitedSize, contentMode: .scaleAspectFill)
-    }
-    
-    /**
-     *  将原图按指定的 UIViewContentMode 缩放，使其缩放后的大小不超过指定的大小，并返回缩放后的图片，缩放后的图片的倍数保持与原图一致。
-     *  @param size 在这个约束的 size 内进行缩放后的大小，处理后返回的图片的 size 会根据 contentMode 不同而不同，但必定不会超过 size。
-     *  @param contentMode 希望使用的缩放模式，目前仅支持 UIViewContentModeScaleToFill、UIViewContentModeScaleAspectFill、UIViewContentModeScaleAspectFit（默认）
-     *
-     *  @return 处理完的图片
-     *  @see qmui_imageResizedInLimitedSize:contentMode:scale:
-     */
-    public func qmui_imageResized(in limitedSize: CGSize, contentMode: UIViewContentMode) -> UIImage? {
-        return qmui_imageResized(in: limitedSize, contentMode: contentMode, scale:scale)
-    }
-    
-    /**
      *  将原图按指定的 UIViewContentMode 缩放，使其缩放后的大小不超过指定的大小，并返回缩放后的图片。
      *  @param size 在这个约束的 size 内进行缩放后的大小，处理后返回的图片的 size 会根据 contentMode 不同而不同，但必定不会超过 size。
-     *  @param contentMode 希望使用的缩放模式，目前仅支持 UIViewContentModeScaleToFill、UIViewContentModeScaleAspectFill、UIViewContentModeScaleAspectFit（默认）
-     *  @param scale 用于指定缩放后的图片的倍数
+     *  @param contentMode 希望使用的缩放模式，目前仅支持 .scaleToFill、.scaleAspectFill、.scaleAspectFill（默认）
+     *  @param scale 用于指定缩放后的图片的倍数，默认为 self.scale
      *
      *  @return 处理完的图片
      */
-    public func qmui_imageResized(in limitedSize: CGSize, contentMode: UIViewContentMode, scale:CGFloat) -> UIImage? {
-        let size = limitedSize.flatSpecific(scale: scale)
+    func qmui_imageResized(in limitedSize: CGSize,
+                           contentMode: UIViewContentMode = .scaleAspectFit,
+                           scale:CGFloat = 0) -> UIImage? {
+        var tmpScale = scale
+        if scale == 0 {
+            tmpScale = self.scale
+        }
+        let size = limitedSize.flatSpecific(scale: tmpScale)
         CGContextInspectSize(size)
         let imageSize = self.size
         var drawingRect = CGRect.zero // 图片绘制的 rect
         var contextSize = CGSize.zero // 画布的大小
-        if size == imageSize && scale == self.scale {
+        if size == imageSize && tmpScale == self.scale {
             return self
         }
         if contentMode == .scaleToFill {
@@ -312,13 +306,13 @@ extension UIImage {
                 // 默认按 UIViewContentModeScaleAspectFit
                 ratio = fmin(horizontalRatio, verticalRatio)
             }
-            let resizedSize = CGSize(width: flatSpecificScale(imageSize.width * ratio, scale), height: flatSpecificScale(imageSize.height * ratio, scale))
+            let resizedSize = CGSize(width: flatSpecificScale(imageSize.width * ratio, tmpScale), height: flatSpecificScale(imageSize.height * ratio, tmpScale))
             contextSize = CGSize(width: fmin(size.width, resizedSize.width), height: fmin(size.height, resizedSize.height))
             drawingRect.origin.x = contextSize.width.center(resizedSize.width)
             drawingRect.origin.y = contextSize.height.center(resizedSize.height)
             drawingRect.size = resizedSize
         }
-        UIGraphicsBeginImageContextWithOptions(contextSize, qmui_opaque, scale)
+        UIGraphicsBeginImageContextWithOptions(contextSize, qmui_opaque, tmpScale)
         guard let context = UIGraphicsGetCurrentContext() else { return self }
         CGContextInspectContext(context)
         draw(in: drawingRect)
@@ -334,7 +328,7 @@ extension UIImage {
      *
      *  @return 处理完的图片
      */
-    public func qmui_image(orientation: UIImageOrientation) -> UIImage {
+    func qmui_image(orientation: UIImageOrientation) -> UIImage {
         if orientation == .up {
             return self
         }
@@ -396,7 +390,7 @@ extension UIImage {
      *  @return 带border的UIImage
      *  @warning 注意通过`path.lineWidth`设置边框大小，同时注意路径要考虑像素对齐（`path.lineWidth / 2.0`）
      */
-    public func qmui_image(borderColor: UIColor, path: UIBezierPath) -> UIImage {
+    func qmui_image(borderColor: UIColor, path: UIBezierPath) -> UIImage {
         let oldImage = self
         var resultImage: UIImage?
         let rect = oldImage.size.rect
@@ -423,7 +417,7 @@ extension UIImage {
      *
      *  @return 带border的UIImage
      */
-    public func qmui_image(borderColor: UIColor, borderWidth: CGFloat, cornerRadius: CGFloat, dashedLengths: CGFloat...) -> UIImage {
+    func qmui_image(borderColor: UIColor, borderWidth: CGFloat, cornerRadius: CGFloat, dashedLengths: [CGFloat]?) -> UIImage {
         var path: UIBezierPath
 
         let rect = size.rect.insetBy(dx: borderWidth / 2, dy: borderWidth / 2) // 调整rect，从而保证绘制描边时像素对齐
@@ -434,13 +428,15 @@ extension UIImage {
         }
 
         path.lineWidth = borderWidth
-        path.setLineDash(dashedLengths, count: 2, phase: 0)
+        if let dashedLengths = dashedLengths {
+            path.setLineDash(dashedLengths, count: 2, phase: 0)
+        }
         
         return qmui_image(borderColor: borderColor, path: path)
     }
 
-    public func qmui_image(borderColor: UIColor, borderWidth: CGFloat, cornerRadius: CGFloat) -> UIImage {
-        return qmui_image(borderColor: borderColor, borderWidth: borderWidth, cornerRadius: cornerRadius, dashedLengths: 0)
+    func qmui_image(borderColor: UIColor, borderWidth: CGFloat, cornerRadius: CGFloat) -> UIImage {
+        return qmui_image(borderColor: borderColor, borderWidth: borderWidth, cornerRadius: cornerRadius, dashedLengths: nil)
     }
 
     /**
@@ -453,24 +449,24 @@ extension UIImage {
      *  @return 带border的UIImage
      */
     func qmui_image(borderColor: UIColor, borderWidth: CGFloat, borderPosition: QMUIImageBorderPosition) -> UIImage {
-        if borderPosition == .all {
+        if borderPosition.contains(.all) {
             return qmui_image(borderColor: borderColor, borderWidth: borderWidth, cornerRadius: 0)
         } else {
             // TODO: 使用bezierPathWithRoundedRect:byRoundingCorners:cornerRadii:这个系统接口
             let path = UIBezierPath()
-            if (QMUIImageBorderPosition.bottom.rawValue & borderPosition.rawValue) == QMUIImageBorderPosition.bottom.rawValue {
+            if borderPosition.contains(.bottom) {
                 path.move(to: CGPoint(x: 0, y: size.height - borderWidth / 2))
                 path.addLine(to: CGPoint(x: size.width, y: size.height - borderWidth / 2))
             }
-            if (QMUIImageBorderPosition.top.rawValue & borderPosition.rawValue) == QMUIImageBorderPosition.top.rawValue {
+            if borderPosition.contains(.top) {
                 path.move(to: CGPoint(x: 0, y: borderWidth / 2))
                 path.addLine(to: CGPoint(x: size.width, y: borderWidth / 2))
             }
-            if (QMUIImageBorderPosition.left.rawValue & borderPosition.rawValue) == QMUIImageBorderPosition.left.rawValue {
+            if borderPosition.contains(.left) {
                 path.move(to: CGPoint(x: borderWidth / 2, y: 0))
                 path.addLine(to: CGPoint(x: borderWidth / 2, y: size.height))
             }
-            if (QMUIImageBorderPosition.right.rawValue & borderPosition.rawValue) == QMUIImageBorderPosition.right.rawValue {
+            if borderPosition.contains(.right) {
                 path.move(to: CGPoint(x: size.width - borderWidth / 2, y: 0))
                 path.addLine(to: CGPoint(x: size.width - borderWidth / 2, y: size.height))
             }
@@ -525,7 +521,7 @@ extension UIImage {
      *
      *  @return 带border的UIImage
      */
-    public static func qmui_image(strokeColor: UIColor, size: CGSize, path: UIBezierPath, addClip: Bool) -> UIImage? {
+    static func qmui_image(strokeColor: UIColor, size: CGSize, path: UIBezierPath, addClip: Bool) -> UIImage? {
         let size = size.flatted
         CGContextInspectSize(size)
         var resultImage: UIImage?
@@ -551,7 +547,7 @@ extension UIImage {
      *
      *  @return 带border的UIImage
      */
-    public static func qmui_image(strokeColor: UIColor, size: CGSize, lineWidth: CGFloat, cornerRadius: CGFloat) -> UIImage? {
+    static func qmui_image(strokeColor: UIColor, size: CGSize, lineWidth: CGFloat, cornerRadius: CGFloat) -> UIImage? {
         CGContextInspectSize(size)
         // 往里面缩一半的lineWidth，应为stroke绘制线的时候是往两边绘制的
         // 如果cornerRadius为0的时候使用bezierPathWithRoundedRect:cornerRadius:会有问题，左上角老是会多出一点，所以区分开
@@ -568,15 +564,34 @@ extension UIImage {
         return UIImage.qmui_image(strokeColor: strokeColor, size: size, path: path, addClip: false)
     }
     
-    /**
-     *  创建一个size为(4, 4)的纯色的UIImage
-     *
-     *  @param color 图片的颜色
-     *
-     *  @return 纯色的UIImage
-     */
-    public static func qmui_image(color: UIColor) -> UIImage? {
-        return qmui_image(color: color, size: CGSize(width: 4, height: 4), cornerRadius: 0)
+    static func qmui_image(strokeColor: UIColor, size: CGSize, lineWidth: CGFloat, borderPosition: QMUIImageBorderPosition) -> UIImage? {
+        CGContextInspectSize(size)
+
+        if borderPosition.contains(.all) {
+            return UIImage.qmui_image(strokeColor: strokeColor, size: size, lineWidth: lineWidth, cornerRadius: 0)
+        } else {
+            // TODO: 使用bezierPathWithRoundedRect:byRoundingCorners:cornerRadii:这个系统接口
+            let path = UIBezierPath()
+            if borderPosition.contains(.bottom) {
+                path.move(to: CGPoint(x: 0, y: size.height - lineWidth / 2))
+                path.addLine(to: CGPoint(x: size.width, y: size.height - lineWidth / 2))
+            }
+            if borderPosition.contains(.top) {
+                path.move(to: CGPoint(x: 0, y: lineWidth / 2))
+                path.addLine(to: CGPoint(x: size.width, y: lineWidth / 2))
+            }
+            if borderPosition.contains(.left) {
+                path.move(to: CGPoint(x: lineWidth / 2, y: 0))
+                path.addLine(to: CGPoint(x: lineWidth / 2, y: size.height))
+            }
+            if borderPosition.contains(.right) {
+                path.move(to: CGPoint(x: size.width - lineWidth / 2, y: 0))
+                path.addLine(to: CGPoint(x: size.width - lineWidth / 2, y: size.height))
+            }
+            path.lineWidth = lineWidth
+            path.close()
+            return UIImage.qmui_image(strokeColor: strokeColor, size: size, path: path, addClip: false)
+        }
     }
     
     /**
@@ -588,7 +603,9 @@ extension UIImage {
      *
      * @return 纯色的UIImage
      */
-    public static func qmui_image(color: UIColor?, size: CGSize, cornerRadius: CGFloat) -> UIImage? {
+    static func qmui_image(color: UIColor?,
+                           size: CGSize = CGSize(width: 4, height: 4),
+                           cornerRadius: CGFloat = 0) -> UIImage? {
         let size = size.flatted
         CGContextInspectSize(size)
         
@@ -621,7 +638,7 @@ extension UIImage {
      *  @param  size                图片的大小
      *  @param  cornerRadius   四个角的圆角值的数组，长度必须为4，顺序分别为[左上角、左下角、右下角、右上角]
      */
-    public static func qmui_image(color: UIColor?, size: CGSize, cornerRadiusArray: [CGFloat]) -> UIImage? {
+    static func qmui_image(color: UIColor?, size: CGSize, cornerRadiusArray: [CGFloat]) -> UIImage? {
         let size = size.flatted
         CGContextInspectSize(size)
         
@@ -646,7 +663,7 @@ extension UIImage {
      *  @param size 图片大小
      *  @param tintColor 图片颜色
      */
-    public static func qmui_image(shape: QMUIImageShape, size: CGSize, tintColor: UIColor?) -> UIImage? {
+    static func qmui_image(shape: QMUIImageShape, size: CGSize, tintColor: UIColor?) -> UIImage? {
         var lineWidth: CGFloat = 0
         switch shape {
         case .navBack:
@@ -672,7 +689,7 @@ extension UIImage {
      *  @param lineWidth 路径大小，不会影响最终size
      *  @param tintColor 图片颜色
      */
-    public static func qmui_image(shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor?) -> UIImage? {
+    static func qmui_image(shape: QMUIImageShape, size: CGSize, lineWidth: CGFloat, tintColor: UIColor?) -> UIImage? {
         let size = size.flatted
         CGContextInspectSize(size)
 
@@ -764,7 +781,7 @@ extension UIImage {
     /**
      *  将文字渲染成图片，最终图片和文字一样大
      */
-    public static func qmui_image(attributedString: NSAttributedString) -> UIImage? {
+    static func qmui_image(attributedString: NSAttributedString) -> UIImage? {
         // TODO: 归到NSAttributedString的扩展中
         let stringSize = attributedString.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil).size.sizeCeil
         UIGraphicsBeginImageContextWithOptions(stringSize, false, 0)
@@ -784,7 +801,7 @@ extension UIImage {
 
      @return `UIView` 的截图
      */
-    public static func qmui_image(view: UIView) -> UIImage? {
+    static func qmui_image(view: UIView) -> UIImage? {
         // TODO: 归到UIView的扩展中
         CGContextInspectSize(view.frame.size)
         // 老方式，因为drawViewHierarchyInRect:afterScreenUpdates:有一定的使用条件，有些情况下不一定截得到图，所有这种情况下可以使用老方式。
@@ -809,7 +826,7 @@ extension UIImage {
 
      @return `UIView` 的截图
      */
-    public static func qmui_image(view: UIView, afterScreenUpdates afterUpdates: Bool) -> UIImage? {
+    static func qmui_image(view: UIView, afterScreenUpdates afterUpdates: Bool) -> UIImage? {
         // TODO: 归到UIView的扩展中
         // iOS7截图新方式，性能好会好一点，不过不一定适用，因为这个方法的使用条件是：界面要已经render完，否则截到得图将会是empty。
         // 如果是iOS6调用这个接口，将会使用老的方式。

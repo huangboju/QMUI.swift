@@ -57,6 +57,8 @@ let IS_47INCH_SCREEN = QMUIHelper.is47InchScreen
 let IS_40INCH_SCREEN = QMUIHelper.is40InchScreen
 /// iPhone4/4s
 let IS_35INCH_SCREEN = QMUIHelper.is35InchScreen
+// iPhone4/4s/5/5s/SE
+let IS_320WIDTH_SCREEN = (IS_35INCH_SCREEN || IS_40INCH_SCREEN)
 
 /// 是否Retina
 let IS_RETINASCREEN = UIScreen.main.scale >= 2.0
@@ -146,20 +148,23 @@ let UIFontMake: (CGFloat) -> UIFont = { UIFont.systemFont(ofSize: $0) }
 let UIFontItalicMake: (CGFloat) -> UIFont = { UIFont.italicSystemFont(ofSize: $0) }
 let UIFontBoldMake: (CGFloat) -> UIFont = { UIFont.boldSystemFont(ofSize: $0) }
 let UIFontBoldWithFont: (UIFont) -> UIFont = { UIFont.boldSystemFont(ofSize: $0.pointSize) }
+
 let UIFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0) }
 let UIFontLightWithFont: (UIFont) -> UIFont = { UIFont.qmui_lightSystemFont(ofSize: $0.pointSize) }
-let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: false) }
+let UIDynamicFontMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .normal, italic: false) }
 let UIDynamicFontMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
-    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: false)
+    UIFont.qmui_dynamicFont(ofSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, weight: .normal, italic: false)
 }
-let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(withSize: $0, bold: true) }
+let UIDynamicFontBoldMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .bold, italic: false) }
 let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { pointSize, upperLimitSize, lowerLimitSize in
-    UIFont.qmui_dynamicFont(withSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, bold: true)
+    UIFont.qmui_dynamicFont(ofSize: pointSize, upperLimitSize: upperLimitSize, lowerLimitSize: lowerLimitSize, weight: .bold, italic: true)
 }
+let UIDynamicFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .light, italic: false) }
 
 // UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.swift
 func UIColorMake(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b) }
 func UIColorMakeWithRGBA(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b, a: a) }
+func UIColorMakeWithHex(_ hex: String) -> UIColor { return UIColor(hexStr: hex) }
 
 /// MARK: - 数学计算
 
@@ -345,14 +350,14 @@ extension CGRect {
         return flat((parentRect.height - height) / 2.0)
     }
 
-    /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持垂直居中时，layoutingRect的originY
+    /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect(self)保持垂直居中时，layoutingRect的originY
     func minYVerticallyCenter(_ layoutingRect: CGRect) -> CGFloat {
-        return minY + minYVerticallyCenter(in: layoutingRect)
+        return minY + layoutingRect.minYVerticallyCenter(in: self)
     }
 
     /// 返回值：同一个坐标系内，想要layoutingRect和已布局完成的referenceRect保持水平居中时，layoutingRect的originX
     func minXHorizontallyCenter(_ layoutingRect: CGRect) -> CGFloat {
-        return minX + minXHorizontallyCenter(in: layoutingRect)
+        return minX + layoutingRect.minXHorizontallyCenter(in: self)
     }
 
     /// 为给定的rect往内部缩小insets的大小
@@ -547,20 +552,28 @@ extension UIEdgeInsets {
         return UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
     }
 
-    mutating func setTop(_ top: CGFloat) {
-        self.top = flat(top)
+    func setTop(_ top: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.top = flat(top)
+        return result
     }
 
-    mutating func setLeft(_ left: CGFloat) {
-        self.left = flat(left)
+    func setLeft(_ left: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.left = flat(left)
+        return result
     }
 
-    mutating func setBottom(bottom: CGFloat) {
-        self.bottom = flat(bottom)
+    func setBottom(_ bottom: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.bottom = flat(bottom)
+        return result
     }
 
-    mutating func setRight(_ right: CGFloat) {
-        self.right = flat(right)
+    func setRight(_ right: CGFloat) -> UIEdgeInsets {
+        var result = self
+        result.right = flat(right)
+        return result
     }
     
     func fixed(_ precision: Int) -> UIEdgeInsets {

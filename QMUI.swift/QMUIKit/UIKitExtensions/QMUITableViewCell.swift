@@ -70,8 +70,9 @@ class QMUITableViewCell: UITableViewCell {
             return super.backgroundColor
         }
         set {
-            if newValue != nil {
-                backgroundView?.backgroundColor = backgroundColor
+            super.backgroundColor = newValue
+            if let backgroundView = self.backgroundView {
+                backgroundView.backgroundColor = newValue
             }
         }
     }
@@ -85,7 +86,7 @@ class QMUITableViewCell: UITableViewCell {
      *
      *  @return 一个QMUITableViewCell实例
      */
-    convenience init(tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
+    required convenience init(tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
         self.init(style: style, reuseIdentifier: reuseIdentifier)
         parentTableView = tableView
     }
@@ -268,7 +269,7 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
 
-    private func didInitialized(_ style: UITableViewCellStyle) {
+    func didInitialized(_ style: UITableViewCellStyle) {
         self.style = style
         
         textLabel?.font = UIFontMake(16)

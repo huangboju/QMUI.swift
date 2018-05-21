@@ -40,7 +40,7 @@ class QDUIKitViewController: QDCommonGridViewController {
     override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
         super.setNavigationItems(isInEditMode, animated: animated)
         title = "QMUIKit"
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(image: UIImageMake("icon_nav_about"), position: .right, target: self, action: #selector(handleAboutItemEvent))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleAboutItemEvent))
     }
     
     @objc private func handleAboutItemEvent() {
@@ -51,10 +51,10 @@ class QDUIKitViewController: QDCommonGridViewController {
     override func didSelectCell(_ title: String) {
         var viewController: UIViewController?
         if title == "UIColor+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDColorViewController()
         }
         if title == "UIImage+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDImageViewController()
         }
         if title == "QMUILabel" {
             viewController = QDLabelViewController()
@@ -84,22 +84,22 @@ class QDUIKitViewController: QDCommonGridViewController {
             viewController = QDAlertController()
         }
         if title == "ViewController Orientation" {
-            viewController = QDSliderViewController()
+            viewController = QDOrientationViewController()
         }
         if title == "QMUINavigationController" {
-            viewController = QDSliderViewController()
+            viewController = QDNavigationListViewController()
         }
         if title == "UITabBarItem+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDTabBarItemViewController()
         }
         if title == "UIFont+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDFontViewController()
         }
         if title == "UIView+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDUIViewQMUIViewController()
         }
         if title == "NSObject+QMUI" {
-            viewController = QDSliderViewController()
+            viewController = QDObjectViewController()
         }
         
         if let viewController = viewController {

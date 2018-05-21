@@ -8,44 +8,85 @@
 
 import UIKit
 
-class QDNavigationButtonViewController: QDCommonListViewController {
+private let kSectionTitleForNormalButton = "文本按钮"
+private let kSectionTitleForBoldButton = "加粗文本按钮"
+private let kSectionTitleForImageButton = "图片按钮"
+private let kSectionTitleForBackButton = "返回按钮"
+private let kSectionTitleForCloseButton = "关闭按钮"
 
+
+class QDNavigationButtonViewController: QDCommonGroupListViewController {
+
+    // MARK: TODO 这里有bug，返回按钮和关闭按钮交替点击会崩溃。而且，UINavigationBar 分类中的 OverrideImplementation 相关实现没有完成。
+    
     private var forceEnableBackGesture: Bool = false
     
     override func initDataSource() {
-        dataSource = ["普通导航栏按钮",
-                      "加粗导航栏按钮",
-                      "图标导航栏按钮",
-                      "关闭导航栏按钮(支持手势返回)",
-                      "自定义返回按钮(支持手势返回)"]
+        let od1 = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            ("[系统]文本按钮", ""),
+            ("[QMUI]文本按钮", "")
+        )
+        let od2 = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            ("[系统]加粗文本按钮", ""),
+            ("[QMUI]加粗文本按钮", "")
+        )
+        let od3 = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            ("[系统]图片按钮", ""),
+            ("[QMUI]图片按钮", "")
+        )
+        let od4 = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            ("[系统]返回按钮", ""),
+            ("[QMUI]返回按钮", "")
+        )
+        let od5 = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            ("[QMUI]关闭按钮", "在 present 的场景经常使用这种关闭按钮")
+        )
+        dataSource = QMUIOrderedDictionary(
+            dictionaryLiteral:
+            (kSectionTitleForNormalButton, od1),
+            (kSectionTitleForBoldButton, od2),
+            (kSectionTitleForImageButton, od3),
+            (kSectionTitleForBackButton, od4),
+            (kSectionTitleForCloseButton, od5)
+        )
     }
     
     override func didSelectCell(_ title: String) {
-        if title == "普通导航栏按钮" {
-            // 最右边的按钮，position 为 Right
-            
-            // 支持用 tintColor 参数指定不一样的颜色
-            // 不是最右边的按钮，position 为 None
-            if let normalItem = QMUINavigationButton.barButtonItem(type: .normal, title: "默认", position: .right, target: nil, action: nil),
-                
-                let colorfulItem = QMUINavigationButton.barButtonItem(type: .normal, title: "颜色", tintColor: QDCommonUI.randomThemeColor(), position: .none, target: nil, action: nil) {
-                navigationItem.rightBarButtonItems = [normalItem, colorfulItem]
-            }
-        } else if title == "加粗导航栏按钮" {
-            if let item = QMUINavigationButton.barButtonItem(type: .bold, title: "完成(5)", position: .right, target: nil, action: nil) {
-                navigationItem.rightBarButtonItems = [item]
-            }
-        } else if title == "图标导航栏按钮" {
-            let image = UIImage.qmui_image(strokeColor: UIColorWhite, size: CGSize(width: 20, height: 20), lineWidth: 3, cornerRadius: 10)
-            if let item = QMUINavigationButton.barButtonItem(image: image, position: .right, target: nil, action: nil) {
-                navigationItem.rightBarButtonItems = [item]
-            }
-        } else if title == "关闭导航栏按钮(支持手势返回)" {
+        if title == "[系统]文本按钮" {
+            let item = UIBarButtonItem.item(title: "文字", target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[QMUI]文本按钮" {
+            let item = UIBarButtonItem.item(button: QMUINavigationButton(type: .normal, title: "文字"), target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[系统]加粗文本按钮" {
+            let item = UIBarButtonItem.item(boldTitle: "加粗", target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[QMUI]加粗文本按钮" {
+            let item = UIBarButtonItem.item(button: QMUINavigationButton(type: .bold, title: "加粗"), target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[系统]图片按钮" {
+            let item = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[QMUI]图片按钮" {
+            let item = UIBarButtonItem.item(button: QMUINavigationButton(image: UIImageMake("icon_nav_about")!), target: nil, action: nil)
+            navigationItem.rightBarButtonItem = item
+        } else if title == "[系统]返回按钮" {
+            navigationItem.leftBarButtonItem = nil // 只要不设置 leftBarButtonItem，就会显示系统的返回按钮
+        } else if title == "[QMUI]返回按钮" {
+            let item = UIBarButtonItem.backItem(target: self, action: #selector(handleBackButtonEvent(_:))) // 自定义返回按钮要自己写代码去 pop 界面
+            navigationItem.leftBarButtonItem = item
+            forceEnableBackGesture = true // 当系统的返回按钮被屏蔽的时候，系统的手势返回也会跟着失效，所以这里要手动强制打开手势返回
+            navigationItem.rightBarButtonItem = nil
+        } else if title == "[QMUI]关闭按钮" {
+            let item = UIBarButtonItem.closeItem(target: self, action: #selector(handleCloseButtonEvent(_:)))
+            navigationItem.leftBarButtonItem = item
             forceEnableBackGesture = true
-            navigationItem.leftBarButtonItem = QMUINavigationButton.closeBarButtonItem(target: self, action: #selector(handleCloseButtonEvent(_:)))
-        } else if title == "自定义返回按钮(支持手势返回)" {
-            forceEnableBackGesture = true
-            navigationItem.leftBarButtonItem = QMUINavigationButton.backBarButtonItem(target: self, action: #selector(handleBackButtonEvent(_:)))
+            navigationItem.rightBarButtonItem = nil
         }
         
         tableView.qmui_clearsSelection()

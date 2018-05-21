@@ -50,7 +50,7 @@ class QDCollectionDemoViewController: QDCommonViewController {
         titleView.isUserInteractionEnabled = true
         titleView.addTarget(self, action: #selector(handleTitleViewTouchEvent), for: .touchUpInside)
         
-        navigationItem.rightBarButtonItem = QMUINavigationButton.barButtonItem(type: .normal, title: isDebug ? "普通模式" : "调试模式", position: .right, target: self, action: #selector(handleDebugItemEvent))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.item(title: isDebug ? "普通模式" : "调试模式", target: self, action: #selector(handleDebugItemEvent))
     }
     
     override func initSubviews() {

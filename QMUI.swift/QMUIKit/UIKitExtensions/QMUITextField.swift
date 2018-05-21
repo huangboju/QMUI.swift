@@ -36,20 +36,8 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
     private weak var originalDelegate: QMUITextFieldDelegate?
 
     override var delegate: UITextFieldDelegate? {
-        get {
-            return super.delegate
-        }
-        set {
-            if newValue as? NSObject != self {
-                originalDelegate = newValue as? QMUITextFieldDelegate
-            } else {
-                originalDelegate = nil
-            }
-            if newValue != nil {
-                super.delegate = self
-            } else {
-                super.delegate = nil
-            }
+        didSet {
+            originalDelegate = delegate as? QMUITextFieldDelegate
         }
     }
 
@@ -104,53 +92,24 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
      *
      *  默认为 TextFieldTextInsets
      */
-    var textInsets: UIEdgeInsets = TextFieldTextInsets {
-        didSet {
-            //            if let thumbView = thumbViewIfExist() {
-            //                thumbView.layer.shadowOffset = thumbShadowOffset
-            //                setNeedsLayout()
-            //            }
-        }
-    }
+    var textInsets: UIEdgeInsets = TextFieldTextInsets
 
     /**
      *  当通过 `setText(_:)`、`setAttributedText(_:)`等方式修改文字时，是否应该自动触发 UIControlEventEditingChanged 事件及 UITextFieldTextDidChangeNotification 通知。
      *
      *  默认为true（注意系统的 UITextField 对这种行为默认是 false）
      */
-    @IBInspectable var shouldResponseToProgrammaticallyTextChanges: Bool = true {
-        didSet {
-            //            if let thumbView = thumbViewIfExist() {
-            //                thumbView.layer.shadowOffset = thumbShadowOffset
-            //                setNeedsLayout()
-            //            }
-        }
-    }
-
+    @IBInspectable var shouldResponseToProgrammaticallyTextChanges: Bool = true
     /**
      *  显示允许输入的最大文字长度，默认为 Int.max，也即不限制长度。
      */
-    @IBInspectable var maximumTextLength: UInt = UInt.max {
-        didSet {
-            //            if let thumbView = thumbViewIfExist() {
-            //                thumbView.layer.shadowOffset = thumbShadowOffset
-            //                setNeedsLayout()
-            //            }
-        }
-    }
+    @IBInspectable var maximumTextLength: UInt = UInt.max
 
     /**
      *  在使用 maximumTextLength 功能的时候，是否应该把文字长度按照 NSString (QMUI) qmui_lengthWhenCountingNonASCIICharacterAsTwo(_:) 的方法来计算。
      *  默认为 false。
      */
-    @IBInspectable var shouldCountingNonASCIICharacterAsTwo: Bool = false {
-        didSet {
-            //            if let thumbView = thumbViewIfExist() {
-            //                thumbView.layer.shadowOffset = thumbShadowOffset
-            //                setNeedsLayout()
-            //            }
-        }
-    }
+    @IBInspectable var shouldCountingNonASCIICharacterAsTwo: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)

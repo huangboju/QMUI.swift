@@ -332,10 +332,9 @@ extension String {
         return String(describing: [..<index(from: to)])
     }
 
-    func substring(with range: NSRange) -> String {
-        let start = index(startIndex, offsetBy: range.location)
-        let end = index(endIndex, offsetBy: range.location + range.length - count)
-        return String(describing: [start ..< end])
+    func substring(with nsrange: NSRange) -> String {
+        guard let range = Range(nsrange, in: self) else { return "" }
+        return String(self[range])
     }
 
     var length: Int {

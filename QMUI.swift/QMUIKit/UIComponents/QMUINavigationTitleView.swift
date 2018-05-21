@@ -472,7 +472,7 @@ class QMUINavigationTitleView: UIControl {
 
     override func layoutSubviews() {
         if bounds.size.isEmpty {
-            print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
+//            print("\(classForCoder), layoutSubviews, size = \(bounds.size)")
             return
         }
 
@@ -523,11 +523,11 @@ class QMUINavigationTitleView: UIControl {
         if style == .subTitleVertical {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, titleLabelSize.height.center(loadingViewSize.height) + titleEdgeInsets.top)
+                loadingView.frame = loadingView.frame.setXY(minX, titleLabelSize.height.center(loadingViewSize.height) + titleEdgeInsets.top)
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, titleLabelSize.height.center(accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
+                accessoryView.frame = accessoryView.frame.setXY(maxX - accessoryView.bounds.width, titleLabelSize.height.center(accessoryView.bounds.height) + titleEdgeInsets.top + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if isTitleLabelShowing {
@@ -546,11 +546,11 @@ class QMUINavigationTitleView: UIControl {
         } else {
 
             if let loadingView = loadingView {
-                loadingView.frame.setXY(minX, maxSize.height.center(loadingViewSize.height))
+                loadingView.frame = loadingView.frame.setXY(minX, maxSize.height.center(loadingViewSize.height))
                 minX = loadingView.frame.maxX + loadingViewMarginRight
             }
             if let accessoryView = accessoryView {
-                accessoryView.frame.setXY(maxX - accessoryView.bounds.width, maxSize.height.center(accessoryView.bounds.height) + accessoryViewOffset.y)
+                accessoryView.frame = accessoryView.frame.setXY(maxX - accessoryView.bounds.width, maxSize.height.center(accessoryView.bounds.height) + accessoryViewOffset.y)
                 maxX = accessoryView.frame.minX - accessoryViewOffset.x
             }
             if isSubtitleLabelShowing {
