@@ -37,7 +37,7 @@ class QDLabViewController: QDCommonListViewController {
         if title == "All System Fonts" {
             viewController = QDAllSystemFontsViewController()
         } else if title == "Default Line Height" {
-            viewController = QDAllSystemFontsViewController()
+            viewController = QDFontPointSizeAndLineHeightViewController()
         } else if title == "Theme" {
             viewController = QDThemeViewController()
         } else if title == "Animation" {

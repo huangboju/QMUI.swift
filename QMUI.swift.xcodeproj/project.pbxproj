@@ -121,6 +121,7 @@
 		D8491CA1208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */; };
 		D84FC0AA20898A6000372786 /* QDMoreOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84FC0A920898A6000372786 /* QDMoreOperationViewController.swift */; };
 		D850BBE420B25AAD0021E21F /* QDMarqueeLabelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D850BBE320B25AAD0021E21F /* QDMarqueeLabelViewController.swift */; };
+		D850BBE620B269910021E21F /* QDFontPointSizeAndLineHeightViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D850BBE520B269910021E21F /* QDFontPointSizeAndLineHeightViewController.swift */; };
 		D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */; };
 		D852C5A3206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */; };
 		D852C5A5206CDC44001B5F36 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */; };
@@ -339,6 +340,7 @@
 		D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplatePinkRose.swift; sourceTree = "<group>"; };
 		D84FC0A920898A6000372786 /* QDMoreOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDMoreOperationViewController.swift; sourceTree = "<group>"; };
 		D850BBE320B25AAD0021E21F /* QDMarqueeLabelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDMarqueeLabelViewController.swift; sourceTree = "<group>"; };
+		D850BBE520B269910021E21F /* QDFontPointSizeAndLineHeightViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDFontPointSizeAndLineHeightViewController.swift; sourceTree = "<group>"; };
 		D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationMacros.swift; sourceTree = "<group>"; };
 		D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+QMUI.swift"; sourceTree = "<group>"; };
 		D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
@@ -865,6 +867,7 @@
 				D8F8F8F52071D76D00ECC2DD /* QDLabViewController.swift */,
 				D8491C9A20843B87004D0170 /* QDAllSystemFontsViewController.swift */,
 				D8491C9C20843BD0004D0170 /* QDThemeViewController.swift */,
+				D850BBE520B269910021E21F /* QDFontPointSizeAndLineHeightViewController.swift */,
 			);
 			path = Lab;
 			sourceTree = "<group>";
@@ -1150,6 +1153,7 @@
 				3E6BE4C91F13C5270089DC6D /* CALayer+QMUI.swift in Sources */,
 				BEB72CE21F13A915006426D3 /* QMUIPieProgressView.swift in Sources */,
 				D8F01FB3204F882F003BCC8A /* QDTabBarViewController.swift in Sources */,
+				D850BBE620B269910021E21F /* QDFontPointSizeAndLineHeightViewController.swift in Sources */,
 				3E6BE4E41F13C5270089DC6D /* UIFont+QMUI.swift in Sources */,
 				D8F88665208F3BAF00014CCF /* QDUIViewDebugViewController.swift in Sources */,
 				D852C5A5206CDC44001B5F36 /* QMUIConfigurationTemplate.swift in Sources */,
