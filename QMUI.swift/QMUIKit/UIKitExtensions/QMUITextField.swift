@@ -36,20 +36,8 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
     private weak var originalDelegate: QMUITextFieldDelegate?
 
     override var delegate: UITextFieldDelegate? {
-        get {
-            return super.delegate
-        }
-        set {
-            if newValue as? NSObject != self {
-                originalDelegate = newValue as? QMUITextFieldDelegate
-            } else {
-                originalDelegate = nil
-            }
-            if newValue != nil {
-                super.delegate = self
-            } else {
-                super.delegate = nil
-            }
+        didSet {
+            originalDelegate = delegate as? QMUITextFieldDelegate
         }
     }
 

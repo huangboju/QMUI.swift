@@ -233,12 +233,11 @@ class QDKeyboardViewController: QDCommonViewController {
         toolbarView.addSubview(toolbarTextField)
         
         toolbarTextField.qmui_keyboardWillChangeFrameNotificationnClosure = { [weak self] (keyboardUserInfo) in
-            print(keyboardUserInfo)
-            if self?.faceButton.isSelected ?? false, let keyboardUserInfo = keyboardUserInfo  {
+            if let strongSelf = self, !strongSelf.faceButton.isSelected, let keyboardUserInfo = keyboardUserInfo  {
                 QMUIKeyboardManager.handleKeyboardNotification(with: keyboardUserInfo, showClosure: { (keyboardUserInfo) in
-                    self?.showToolbarView(with: keyboardUserInfo)
+                    strongSelf.showToolbarView(with: keyboardUserInfo)
                 }, hideClosure: { (keyboardUserInfo) in
-                    self?.hideToolbarView(with: keyboardUserInfo)
+                    strongSelf.hideToolbarView(with: keyboardUserInfo)
                 })
             } else {
                 self?.showToolbarView(with: nil)

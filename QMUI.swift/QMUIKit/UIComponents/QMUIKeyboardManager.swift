@@ -754,7 +754,7 @@ class QMUIKeyboardUserInfo: NSObject {
      */
     fileprivate(set) var targetResponder: UIResponder? {
         didSet {
-            isTargetResponderFocused = targetResponder?.isFirstResponder ?? false
+            isTargetResponderFocused = targetResponder?.keyboardManager_isFirstResponder ?? false
         }
     }
 
