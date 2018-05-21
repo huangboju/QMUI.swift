@@ -120,6 +120,7 @@
 		D8491C9F208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491C9E208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift */; };
 		D8491CA1208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */; };
 		D84FC0AA20898A6000372786 /* QDMoreOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84FC0A920898A6000372786 /* QDMoreOperationViewController.swift */; };
+		D850BBE420B25AAD0021E21F /* QDMarqueeLabelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D850BBE320B25AAD0021E21F /* QDMarqueeLabelViewController.swift */; };
 		D852C5A12069FA1F001B5F36 /* QMUIConfigurationMacros.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */; };
 		D852C5A3206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */; };
 		D852C5A5206CDC44001B5F36 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */; };
@@ -337,6 +338,7 @@
 		D8491C9E208441A9004D0170 /* QMUIConfigurationTemplateGrass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplateGrass.swift; sourceTree = "<group>"; };
 		D8491CA0208441D5004D0170 /* QMUIConfigurationTemplatePinkRose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplatePinkRose.swift; sourceTree = "<group>"; };
 		D84FC0A920898A6000372786 /* QDMoreOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDMoreOperationViewController.swift; sourceTree = "<group>"; };
+		D850BBE320B25AAD0021E21F /* QDMarqueeLabelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QDMarqueeLabelViewController.swift; sourceTree = "<group>"; };
 		D852C5A02069FA1F001B5F36 /* QMUIConfigurationMacros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationMacros.swift; sourceTree = "<group>"; };
 		D852C5A2206B5F00001B5F36 /* UIGestureRecognizer+QMUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIGestureRecognizer+QMUI.swift"; sourceTree = "<group>"; };
 		D852C5A4206CDC44001B5F36 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
@@ -717,6 +719,7 @@
 				D8545F1020AC3D64006EC694 /* QDPieProgressViewController.swift */,
 				D8545F1220AD3CED006EC694 /* QDPopupContainerViewController.swift */,
 				D8545F1620AE93A0006EC694 /* QDKeyboardViewController.swift */,
+				D850BBE320B25AAD0021E21F /* QDMarqueeLabelViewController.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1158,6 +1161,7 @@
 				3E6BE4E91F13C5270089DC6D /* UINavigationController+NavigationBarTransition.swift in Sources */,
 				3E6BE4CA1F13C5270089DC6D /* DispatchQueue+QMUI.swift in Sources */,
 				3E6BE4DC1F13C5270089DC6D /* QMUITextView.swift in Sources */,
+				D850BBE420B25AAD0021E21F /* QDMarqueeLabelViewController.swift in Sources */,
 				D83D41EB1E4C3C2100CC083E /* QMUIHelper.swift in Sources */,
 				D86BBC8420883E3C00CAF107 /* QDCollectionDemoViewController.swift in Sources */,
 				D868955A2086FF2000359F81 /* QDTableViewController.swift in Sources */,

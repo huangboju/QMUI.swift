@@ -99,7 +99,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDKeyboardViewController()
         }
         if title == "QMUIMarqueeLabel" {
-            viewController = QDSliderViewController()
+            viewController = QDMarqueeLabelViewController()
         }
         
         if let viewController = viewController {
