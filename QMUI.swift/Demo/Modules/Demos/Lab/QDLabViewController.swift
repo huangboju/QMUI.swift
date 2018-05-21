@@ -41,7 +41,7 @@ class QDLabViewController: QDCommonListViewController {
         } else if title == "Theme" {
             viewController = QDThemeViewController()
         } else if title == "Animation" {
-            viewController = QDAllSystemFontsViewController()
+            viewController = QDAnimationViewController()
         } else if title == "Log Manager" {
             viewController = QDAllSystemFontsViewController()
         }

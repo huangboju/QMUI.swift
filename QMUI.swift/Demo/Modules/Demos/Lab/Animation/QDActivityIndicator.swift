@@ -151,7 +151,7 @@ extension QDActivityIndicator: QMUIEmptyViewLoadingViewProtocol {
         ]
         
         let line = _lines[index]
-        var x = (bounds.width / 2 - lineWidth) / 2 + bounds.width / 2 * (CGFloat(index) / 3)
+        var x = (bounds.width / 2 - lineWidth) / 2 + bounds.width / 2 * (CGFloat(index / 3))
         if index / 3 <= 0 {
             x += 1
         }
