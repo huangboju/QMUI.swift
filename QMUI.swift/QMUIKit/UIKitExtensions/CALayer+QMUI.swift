@@ -68,7 +68,7 @@ extension CALayer {
             NSStringFromSelector(#selector(getter: shadowPath)): NSNull(),
         ]
 
-        if isKind(of: CAShapeLayer.self) {
+        if self is CAShapeLayer {
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.path))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.fillColor))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.strokeColor))] = NSNull()
@@ -79,7 +79,7 @@ extension CALayer {
             actions[NSStringFromSelector(#selector(getter: CAShapeLayer.lineDashPhase))] = NSNull()
         }
 
-        if isKind(of: CAGradientLayer.self) {
+        if self is CAGradientLayer {
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.colors))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.locations))] = NSNull()
             actions[NSStringFromSelector(#selector(getter: CAGradientLayer.startPoint))] = NSNull()
@@ -88,7 +88,7 @@ extension CALayer {
 
         self.actions = actions
     }
-    
+
     /**
      * 生成虚线的方法，注意返回的是 CAShapeLayer
      * @param lineLength   每一段的线宽
@@ -103,9 +103,9 @@ extension CALayer {
         layer.fillColor = UIColorClear.cgColor
         layer.strokeColor = lineColor
         layer.lineWidth = lineWidth
-        layer.lineDashPattern = [NSNumber(integerLiteral: lineLength), NSNumber(value: lineSpacing)]
+        layer.lineDashPattern = [lineLength, lineSpacing] as [NSNumber]
         layer.masksToBounds = true
-        
+
         let path = CGMutablePath()
         if isHorizontal {
             path.move(to: CGPoint(x: 0, y: lineWidth / 2))
@@ -117,24 +117,24 @@ extension CALayer {
         layer.path = path
         return layer
     }
-    
+
     /**
-     
+
      * 产生一个通用分隔虚线的 layer，高度为 PixelOne，线宽为 2，线距为 2，默认会移除动画，并且背景色用 UIColorSeparator，注意返回的是 CAShapeLayer。
-     
+
      * 其中，InHorizon 是横向；InVertical 是纵向。
-     
+
      */
     static func qmui_seperatorDashLayerInHorizontal() -> CAShapeLayer {
         let layer = CAShapeLayer.qmui_seperatorDashLayer(2, lineSpacing: 2, lineWidth: PixelOne, lineColor: UIColorSeparatorDashed.cgColor, isHorizontal: true)
         return layer
     }
-    
+
     static func qmui_seperatorDashLayerInVertical() -> CAShapeLayer {
         let layer = CAShapeLayer.qmui_seperatorDashLayer(2, lineSpacing: 2, lineWidth: PixelOne, lineColor: UIColorSeparatorDashed.cgColor, isHorizontal: false)
         return layer
     }
-    
+
     /**
      * 产生一个适用于做通用分隔线的 layer，高度为 PixelOne，默认会移除动画，并且背景色用 UIColorSeparator
      */
