@@ -371,10 +371,6 @@ extension UITableView: SelfAware3 {
             for index in 0..<selectors.count {
                 ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
-            
-            if #available(iOS 11, *) {
-                ReplaceMethod(clazz, #selector(UITableView.safeAreaInsetsDidChange), #selector(UITableView.cellHeightCache_safeAreaInsetsDidChange))
-            }
         }
     }
 }
@@ -522,23 +518,6 @@ extension UITableView {
             })
         }
         qmui_moveRow(at: indexPath, to: newIndexPath)
-    }
-    
-    // iOS 11 里，横竖屏带来的 safeAreaInsets 变化时机晚于计算 cell 高度，所以在计算 cell 高度时是获取不到准确的 safeAreaInsets，所以需要在 safeAreaInsetsDidChange 里重新计算
-    // 至于为什么只判断水平方向的变化，请看 https://github.com/QMUI/QMUI_iOS/issues/253
-    @objc func cellHeightCache_safeAreaInsetsDidChange() {
-        let horizontalSafeAreaInsetsChanged = qmui_safeAreaInsetsBeforeChange.left != qmui_safeAreaInsets.left || qmui_safeAreaInsetsBeforeChange.right != qmui_safeAreaInsets.right
-        
-        cellHeightCache_safeAreaInsetsDidChange()
-        
-        if horizontalSafeAreaInsetsChanged {
-            if let delegate = delegate as? QMUICellHeightCache_UITableViewDelegate {
-                delegate.qmui_willReloadAfterSafeAreaInsetsDidChange?(in: self)
-            }
-            qmui_keyedHeightCache.invalidateAllHeightCache()
-            qmui_indexPathHeightCache.invalidateAllHeightCache()
-            qmui_reloadData()
-        }
     }
 }
 

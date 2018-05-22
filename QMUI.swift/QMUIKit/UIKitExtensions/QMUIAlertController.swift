@@ -354,15 +354,15 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     private var cancelAction: QMUIAlertAction?
 
     private lazy var alertActions: [QMUIAlertAction] = {
-        return []
+        []
     }()
 
     private lazy var destructiveActions: [QMUIAlertAction] = {
-        return []
+        []
     }()
 
     private lazy var alertTextFields: [UITextField] = {
-        return []
+        []
     }()
 
     private var keyboardHeight: CGFloat = 0
@@ -388,7 +388,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -396,18 +396,18 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         self.init(nibName: nil, bundle: nil)
 
         didInitialized(title: title, message: message, preferredStyle: preferredStyle)
-        
+
         updateHeaderBackgrondColor()
         updateEffectBackgroundColor()
         updateCornerRadius()
         updateExtendLayerAppearance()
     }
-    
+
     private func didInitialized(title: String?, message: String? = nil, preferredStyle: QMUIAlertControllerStyle) {
         self.title = title
         self.message = message
         self.preferredStyle = preferredStyle
-        
+
         alertContentMargin = QMUIAlertController.appearance().alertContentMargin
         alertContentMaximumWidth = QMUIAlertController.appearance().alertContentMaximumWidth
         alertSeperatorColor = QMUIAlertController.appearance().alertSeperatorColor
@@ -424,7 +424,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         alertButtonHighlightBackgroundColor = QMUIAlertController.appearance().alertButtonHighlightBackgroundColor
         alertHeaderInsets = QMUIAlertController.appearance().alertHeaderInsets
         alertTitleMessageSpacing = QMUIAlertController.appearance().alertTitleMessageSpacing
-        
+
         sheetContentMargin = QMUIAlertController.appearance().sheetContentMargin
         sheetContentMaximumWidth = QMUIAlertController.appearance().sheetContentMaximumWidth
         sheetSeperatorColor = QMUIAlertController.appearance().sheetSeperatorColor
@@ -837,7 +837,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         initModalPresentationController()
 
         delegate?.willShow?(self)
-        
+
         modalPresentationViewController?.show(animated, completion: { [weak self] _ in
             if let strongSelf = self {
                 strongSelf.maskView.alpha = 1
@@ -866,7 +866,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         if !isShowing {
             isNeedsHideAfterAlertShowed = true
         }
-        
+
         delegate?.willHide?(self)
 
         modalPresentationViewController?.hide(animated, completion: { [weak self] _ in
@@ -878,7 +878,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
             } else if self?.preferredStyle == .sheet {
                 self!.containerView.layer.transform = CATransform3DMakeTranslation(0, self!.containerView.bounds.height, 0)
             }
-            
+
             self?.delegate?.didHide?(self!)
 
             if completion != nil {
@@ -1016,12 +1016,12 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
             if let image = $0.button.image(for: .normal), let attributeStr = attributeString {
                 var range = NSRange(location: 0, length: attributeStr.length)
                 let disabledColor = attributeString?.attribute(NSAttributedStringKey.foregroundColor, at: 0, effectiveRange: &range)
-                $0.button.setImage(image.qmui_image(tintColor: disabledColor as! UIColor), for: .disabled)
+                $0.button.setImage(image.qmui_image(tintColor: disabledColor as? UIColor), for: .disabled)
             }
         }
     }
 
-    @objc func handleMaskViewEvent(_ sender: Any) {
+    @objc private func handleMaskViewEvent(_: Any) {
         if shouldRespondMaskViewTouch {
             hide(true, completion: nil)
         }
@@ -1066,46 +1066,56 @@ extension QMUIAlertController {
 }
 
 extension QMUIAlertController {
-    
+
     static func appearance() -> QMUIAlertController {
         DispatchQueue.once(token: QMUIAlertController._onceToken) {
             QMUIAlertController.resetAppearance()
         }
         return QMUIAlertController.alertControllerAppearance!
     }
-    
+
     private static let _onceToken = UUID().uuidString
-    
+
     static var alertControllerAppearance: QMUIAlertController?
-    
+
     private static func resetAppearance() {
         let alertControllerAppearance = QMUIAlertController()
         alertControllerAppearance.alertContentMargin = UIEdgeInsetsMake(0, 0, 0, 0)
         alertControllerAppearance.alertContentMaximumWidth = 270
         alertControllerAppearance.alertSeperatorColor = UIColorMake(211, 211, 219)
         alertControllerAppearance.alertTitleAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorBlack,
-        NSAttributedStringKey.font: UIFontBoldMake(17),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            NSAttributedStringKey.foregroundColor: UIColorBlack,
+            NSAttributedStringKey.font: UIFontBoldMake(17),
+            NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail),
+        ]
         alertControllerAppearance.alertMessageAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlack,
-        NSAttributedStringKey.font: UIFontMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorBlack,
+                NSAttributedStringKey.font: UIFontMake(13),
+                NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail),
+            ]
         alertControllerAppearance.alertButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontMake(17)]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorBlue,
+                NSAttributedStringKey.font: UIFontMake(17),
+            ]
         alertControllerAppearance.alertButtonDisabledAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
-        NSAttributedStringKey.font: UIFontMake(17),
-        NSAttributedStringKey.kern: 0]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
+                NSAttributedStringKey.font: UIFontMake(17),
+                NSAttributedStringKey.kern: 0,
+            ]
         alertControllerAppearance.alertCancelButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontBoldMake(17),
-        NSAttributedStringKey.kern: 0]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorBlue,
+                NSAttributedStringKey.font: UIFontBoldMake(17),
+                NSAttributedStringKey.kern: 0,
+            ]
         alertControllerAppearance.alertDestructiveButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorRed,
-        NSAttributedStringKey.font: UIFontMake(17),
-        NSAttributedStringKey.kern: 0]
+            NSAttributedStringKey.foregroundColor: UIColorRed,
+            NSAttributedStringKey.font: UIFontMake(17),
+            NSAttributedStringKey.kern: 0,
+        ]
         alertControllerAppearance.alertContentCornerRadius = IOS_VERSION > 9.0 ? 13 : 6
         alertControllerAppearance.alertButtonHeight = 44
         alertControllerAppearance.alertHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
@@ -1113,36 +1123,44 @@ extension QMUIAlertController {
         alertControllerAppearance.alertButtonHighlightBackgroundColor = UIColorMake(232, 232, 232)
         alertControllerAppearance.alertHeaderInsets = UIEdgeInsetsMake(20, 16, 20, 16)
         alertControllerAppearance.alertTitleMessageSpacing = 3
-        
+
         alertControllerAppearance.sheetContentMargin = UIEdgeInsetsMake(10, 10, 10, 10)
         alertControllerAppearance.sheetContentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - alertControllerAppearance.sheetContentMargin.horizontalValue
         alertControllerAppearance.sheetSeperatorColor = UIColorMake(211, 211, 219)
-        
+
         alertControllerAppearance.sheetTitleAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
-        NSAttributedStringKey.font: UIFontBoldMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
+            NSAttributedStringKey.font: UIFontBoldMake(13),
+            NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail),
+        ]
         alertControllerAppearance.sheetMessageAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
-        NSAttributedStringKey.font: UIFontMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
+            NSAttributedStringKey.font: UIFontMake(13),
+            NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail),
+        ]
         alertControllerAppearance.sheetButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorBlue,
+                NSAttributedStringKey.font: UIFontMake(20),
+                NSAttributedStringKey.kern: 0,
+            ]
         alertControllerAppearance.sheetButtonDisabledAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
+            [
+                NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
+                NSAttributedStringKey.font: UIFontMake(20),
+                NSAttributedStringKey.kern: 0,
+            ]
         alertControllerAppearance.sheetCancelButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontBoldMake(20),
-        NSAttributedStringKey.kern: 0]
+            NSAttributedStringKey.foregroundColor: UIColorBlue,
+            NSAttributedStringKey.font: UIFontBoldMake(20),
+            NSAttributedStringKey.kern: 0,
+        ]
         alertControllerAppearance.sheetDestructiveButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorRed,
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
-        
+            NSAttributedStringKey.foregroundColor: UIColorRed,
+            NSAttributedStringKey.font: UIFontMake(20),
+            NSAttributedStringKey.kern: 0,
+        ]
+
         alertControllerAppearance.sheetCancelButtonMarginTop = 8
         alertControllerAppearance.sheetContentCornerRadius = IOS_VERSION >= 9.0 ? 13 : 6
         alertControllerAppearance.sheetButtonHeight = IOS_VERSION >= 9.0 ? 57 : 44
@@ -1212,13 +1230,13 @@ class QMUIAlertAction: NSObject {
         self.style = style
         self.handler = handler
     }
-    
+
     private func didInitialized() {
         button.qmui_automaticallyAdjustTouchHighlightedInScrollView = true
         button.addTarget(self, action: #selector(handleAlertActionEvent(_:)), for: .touchUpInside)
     }
 
-    @objc func handleAlertActionEvent(_ sender: Any) {
+    @objc private func handleAlertActionEvent(_: Any) {
         // 需要先调delegate，里面会先恢复keywindow
         delegate?.didClick?(self)
     }

@@ -27,10 +27,7 @@ extension UIView: SelfAware {
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UIView.self
-            if #available(iOS 11, *) {
-                ReplaceMethod(clazz, #selector(safeAreaInsetsDidChange), #selector(qmui_safeAreaInsetsDidChange))
-            }
-            
+
             var selector = #selector((UIView.convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             var qmui_selector = #selector((UIView.qmui_convert(_:to:)) as (UIView) -> (CGPoint, UIView?) -> CGPoint)
             ReplaceMethod(clazz, selector, qmui_selector)
@@ -53,11 +50,6 @@ extension UIView: SelfAware {
             
             ReplaceMethod(clazz, #selector(layoutSublayers(of:)), #selector(qmui_layoutSublayers(of:)))
         }
-    }
-
-    @objc open func qmui_safeAreaInsetsDidChange() {
-        qmui_safeAreaInsetsDidChange()
-        qmui_safeAreaInsetsBeforeChange = qmui_safeAreaInsets
     }
 
     @objc open func qmui_convert(_ point: CGPoint, to view: UIView?) -> CGPoint {
@@ -92,7 +84,6 @@ extension UIView: SelfAware {
 
 extension UIView {
     fileprivate struct Keys {
-        static var safeAreaInsetsBeforeChange = "safeAreaInsetsBeforeChange"
         
         static var borderPosition = "borderPosition"
         static var borderWidth = "borderWidth"
@@ -119,17 +110,6 @@ extension UIView {
             return safeAreaInsets
         }
         return UIEdgeInsets.zero
-    }
-    
-    /// 为了在 safeAreaInsetsDidChange 里得知变化前的 safeAreaInsets 值，增加了这个属性，注意这个属性仅在 `safeAreaInsetsDidChange` 的 super 调用前才有效。
-    /// https://github.com/QMUI/QMUI_iOS/issues/253
-    var qmui_safeAreaInsetsBeforeChange: UIEdgeInsets {
-        get {
-            return (objc_getAssociatedObject(self, &Keys.safeAreaInsetsBeforeChange) as? UIEdgeInsets) ?? UIEdgeInsets.zero
-        }
-        set {
-            objc_setAssociatedObject(self, &Keys.safeAreaInsetsBeforeChange, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
     }
 
     func qmui_removeAllSubviews() {
