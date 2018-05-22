@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-protocol QMUIEmptyViewLoadingViewProtocol: NSObjectProtocol {
+protocol QMUIEmptyViewLoadingViewProtocol {
     func startAnimating() // 当调用 setLoadingViewHidden:false 时，系统将自动调用此处的 startAnimating
 }
 

@@ -7,7 +7,7 @@
 //
 
 /// 与 QMUINavigationController push/pop 相关的一些方法
-@objc protocol QMUINavigationControllerTransitionDelegate: NSObjectProtocol {
+@objc protocol QMUINavigationControllerTransitionDelegate {
     
     /// 当前界面正处于手势返回的过程中，可自行通过 gestureRecognizer.state 来区分手势返回的各个阶段。手势返回有多个阶段（手势返回开始、拖拽过程中、松手并成功返回、松手但不切换界面），不同阶段的 viewController 的状态可能不一样。
     ///
@@ -51,7 +51,7 @@
 }
 
 /// 与 QMUINavigationController 外观样式相关的方法
-@objc protocol QMUINavigationControllerAppearanceDelegate: NSObjectProtocol {
+@objc protocol QMUINavigationControllerAppearanceDelegate {
     
     /// 是否需要将状态栏改为浅色文字，对于 QMUICommonViewController 子类，返回值默认为宏 StatusbarStyleLightInitially 的值，对于 UIViewController，不实现该方法则视为返回 NO。
     /// @warning 需在项目的 Info.plist 文件内设置字段 “View controller-based status bar appearance” 的值为 NO 才能生效，如果不设置，或者值为 YES，则请使用系统提供的 - preferredStatusBarStyle 方法
@@ -76,7 +76,7 @@
 }
 
 /// 与 QMUINavigationController 控制 navigationBar 显隐/动画相关的方法
-@objc protocol QMUICustomNavigationBarTransitionDelegate: NSObjectProtocol {
+@objc protocol QMUICustomNavigationBarTransitionDelegate {
     
     /// 设置每个界面导航栏的显示/隐藏，为了减少对项目的侵入性，默认不开启这个接口的功能，只有当 shouldCustomizeNavigationBarTransitionIfHideable 返回 true 时才会开启此功能。如果需要全局开启，那么就在 Controller 基类里面返回 true；如果是老项目并不想全局使用此功能，那么则可以在单独的界面里面开启。
     @objc optional var preferredNavigationBarHidden: Bool  { get }
@@ -125,7 +125,7 @@
     
 }
 
-let UIViewControllerIsViewWillAppearPropertyKey = "qmuiNav_isViewWillAppear"
+private let UIViewControllerIsViewWillAppearPropertyKey = "qmuiNav_isViewWillAppear"
 
 class QMUINavigationController: UINavigationController {
 
@@ -225,14 +225,10 @@ class QMUINavigationController: UINavigationController {
         
         if let viewController = topViewController as? QMUINavigationControllerDelegate {
             viewControllerPopping = viewController as? UIViewController
-            if viewController.responds(to: #selector(QMUINavigationControllerDelegate.willPopInNavigationController(_:))) {
-                viewController.willPopInNavigationController!(animated)
-            }
+            viewController.willPopInNavigationController?(animated)
         }
         if let viewController = super.popViewController(animated: animated) as? QMUINavigationControllerDelegate {
-            if viewController.responds(to: #selector(QMUINavigationControllerDelegate.didPopInNavigationController(_:))) {
-                viewController.didPopInNavigationController!(animated)
-            }
+            viewController.didPopInNavigationController?(animated)
             return viewController as? UIViewController
         }
         return nil
@@ -264,10 +260,8 @@ class QMUINavigationController: UINavigationController {
             }
 
             if let viewControllerPopping = viewControllerPopping as? QMUINavigationControllerDelegate {
-                if viewControllerPopping.responds(to: #selector(QMUINavigationControllerDelegate.willPopInNavigationController(_:))) {
-                    let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopping.willPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopping.willPopInNavigationController?(animatedArgument)
             }
         }
 
@@ -278,10 +272,8 @@ class QMUINavigationController: UINavigationController {
         // did pop
         for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
             if let viewControllerPopped = viewControllerPopped as? QMUINavigationControllerDelegate {
-                if viewControllerPopped.responds(to: #selector(QMUINavigationControllerDelegate.didPopInNavigationController(_:))) {
-                    let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopped.didPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopped.didPopInNavigationController?(animatedArgument)
             }
         }
         return poppedViewControllers
@@ -308,10 +300,8 @@ class QMUINavigationController: UINavigationController {
         // will pop
         for (i, viewControllerPopping) in viewControllers.reversed().enumerated() {
             if let viewControllerPopping = viewControllerPopping as? QMUINavigationControllerDelegate {
-                if viewControllerPopping.responds(to: #selector(QMUINavigationControllerDelegate.willPopInNavigationController(_:))) {
-                    let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopping.willPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = i == viewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopping.willPopInNavigationController?(animatedArgument)
             }
         }
 
@@ -322,10 +312,8 @@ class QMUINavigationController: UINavigationController {
         // did pop
         for (i, viewControllerPopped) in poppedViewControllers.reversed().enumerated() {
             if let viewControllerPopped = viewControllerPopped as? QMUINavigationControllerDelegate {
-                if viewControllerPopped.responds(to: #selector(QMUINavigationControllerDelegate.didPopInNavigationController(_:))) {
-                    let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopped.didPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = i == poppedViewControllers.count - 1 ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopped.didPopInNavigationController?(animatedArgument)
             }
         }
 
@@ -341,10 +329,8 @@ class QMUINavigationController: UINavigationController {
         }
         viewControllersPopping.forEach { (viewController) in
             if let viewControllerPopping = viewController as? QMUINavigationControllerDelegate {
-                if viewControllerPopping.responds(to: #selector(QMUINavigationControllerDelegate.willPopInNavigationController(_:))) {
-                    let animatedArgument = (viewControllerPopping as? UIViewController)  == topViewController ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopping.willPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = (viewControllerPopping as? UIViewController)  == topViewController ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopping.willPopInNavigationController?(animatedArgument)
             }
         }
         
@@ -353,19 +339,15 @@ class QMUINavigationController: UINavigationController {
         // did pop
         viewControllersPopping.forEach { (viewController) in
             if let viewControllerPopping = viewController as? QMUINavigationControllerDelegate {
-                if viewControllerPopping.responds(to: #selector(QMUINavigationControllerDelegate.didPopInNavigationController(_:))) {
-                    let animatedArgument = (viewControllerPopping as? UIViewController)  == topViewController ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
-                    viewControllerPopping.didPopInNavigationController!(animatedArgument)
-                }
+                let animatedArgument = (viewControllerPopping as? UIViewController)  == topViewController ? animated : false // 只有当前可视的那个 viewController 的 animated 是跟随参数走的，其他 viewController 由于不可视，不管参数的值为多少，都认为是无动画地 pop
+                viewControllerPopping.didPopInNavigationController?(animatedArgument)
             }
         }
         
         // 操作前后如果 topViewController 没发生变化，则为它调用一个特殊的时机
         if topViewController == viewControllers.last {
             if let viewController = topViewController as? QMUINavigationControllerDelegate {
-                if viewController.responds(to: #selector(QMUINavigationControllerDelegate.viewControllerKeepingAppearWhenSetViewControllers(_:))) {
-                    viewController.viewControllerKeepingAppearWhenSetViewControllers!(animated)
-                }
+                viewController.viewControllerKeepingAppearWhenSetViewControllers?(animated)
             }
         }
     }
@@ -390,10 +372,8 @@ class QMUINavigationController: UINavigationController {
                 currentViewController.navigationItem.backBarButtonItem = UIBarButtonItem.item(title: "", target: nil, action: nil)
             } else {
                 if let vc = viewController as? QMUINavigationControllerAppearanceDelegate {
-                    if vc.responds(to: #selector(QMUINavigationControllerAppearanceDelegate.backBarButtonItemTitle(_:))) {
-                        if let title = vc.backBarButtonItemTitle!(currentViewController) {
-                            currentViewController.navigationItem.backBarButtonItem = UIBarButtonItem.item(title: title, target: nil, action: nil)
-                        }
+                    if let title = vc.backBarButtonItemTitle?(currentViewController) {
+                        currentViewController.navigationItem.backBarButtonItem = UIBarButtonItem.item(title: title, target: nil, action: nil)
                     }
                 }
             }
@@ -407,6 +387,7 @@ class QMUINavigationController: UINavigationController {
         return topViewController
     }
     
+    // MARK: 屏幕旋转
     override var shouldAutorotate: Bool {
         if let topViewController = topViewController {
             return topViewController.qmui_hasOverrideUIKitMethod(#function) ? topViewController.shouldAutorotate : true
@@ -423,6 +404,14 @@ class QMUINavigationController: UINavigationController {
         }
     }
     
+    // MARK: HomeIndicator
+    override func childViewControllerForHomeIndicatorAutoHidden() -> UIViewController? {
+        return topViewController
+    }
+    
+    override func prefersHomeIndicatorAutoHidden() -> Bool {
+        return false
+    }
     
     // MARK: - 自定义方法
     // 接管系统手势返回的回调
@@ -453,15 +442,11 @@ class QMUINavigationController: UINavigationController {
         viewControllerWillAppear?.qmui_willAppearByInteractivePopGestureRecognizer = true
         
         if let viewControllerWillDisappear = viewControllerWillDisappear as? QMUINavigationControllerTransitionDelegate {
-            if viewControllerWillDisappear.responds(to: #selector(QMUINavigationControllerTransitionDelegate.navigationController(_:poppingByInteractive:viewController:viewController:))) {
-                viewControllerWillDisappear.navigationController!(self, poppingByInteractive: gestureRecognizer, viewController: viewControllerWillDisappear as? UIViewController, viewController: viewControllerWillAppear)
-            }
+            viewControllerWillDisappear.navigationController?(self, poppingByInteractive: gestureRecognizer, viewController: viewControllerWillDisappear as? UIViewController, viewController: viewControllerWillAppear)
         }
         
         if let viewControllerWillAppear = viewControllerWillAppear as? QMUINavigationControllerTransitionDelegate {
-            if viewControllerWillAppear.responds(to: #selector(QMUINavigationControllerTransitionDelegate.navigationController(_:poppingByInteractive:viewController:viewController:))) {
-                viewControllerWillAppear.navigationController!(self, poppingByInteractive: gestureRecognizer, viewController: viewControllerWillDisappear, viewController: viewControllerWillAppear as? UIViewController)
-            }
+            viewControllerWillAppear.navigationController?(self, poppingByInteractive: gestureRecognizer, viewController: viewControllerWillDisappear, viewController: viewControllerWillAppear as? UIViewController)
         }
     }
     
@@ -495,18 +480,12 @@ extension QMUINavigationController: UINavigationControllerDelegate {
     // 注意如果实现了某一个navigationController的delegate方法，必须同时检查并且调用delegateProxy相对应的方法
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         willShow(viewController, animated: animated)
-//        if let delegateProxy = delegateProxy, delegateProxy.responds(to: #selector(UINavigationControllerDelegate.navigationController(_:willShow:animated:))) {
-//            delegateProxy.navigationController!(navigationController, willShow: viewController, animated: animated)
-//        }
     }
 
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         viewControllerPopping = nil
         isViewControllerTransiting = false
         didShow(viewController, animated: animated)
-//        if let delegateProxy = delegateProxy, delegateProxy.responds(to: #selector(UINavigationControllerDelegate.navigationController(_:didShow:animated:))) {
-//            delegateProxy.navigationController!(navigationController, didShow: viewController, animated: animated)
-//        }
     }
 }
 

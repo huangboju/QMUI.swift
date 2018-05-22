@@ -36,7 +36,7 @@ class QMUIEmotion: NSObject {
     }
 }
 
-@objc fileprivate protocol QMUIEmotionPageViewDelegate: NSObjectProtocol {
+@objc fileprivate protocol QMUIEmotionPageViewDelegate {
     @objc optional func emotionPageView(_ emotionPageView: QMUIEmotionPageView, didSelectEmotion emotion: QMUIEmotion, at index: Int)
     @objc optional func didSelectDeleteButton(in emotionPageView: QMUIEmotionPageView)
 }

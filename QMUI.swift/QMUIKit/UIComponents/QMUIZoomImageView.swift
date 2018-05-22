@@ -13,7 +13,7 @@ private let kTagForCenteredPlayButton = 1
 
 private let kIconsColor = UIColorMakeWithRGBA(255, 255, 255, 0.75)
 
-@objc protocol QMUIZoomImageViewDelegate: NSObjectProtocol {
+@objc protocol QMUIZoomImageViewDelegate {
     
     @objc optional func singleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)
     @objc optional func doubleTouch(in zoomingImageView: QMUIZoomImageView, location: CGPoint)

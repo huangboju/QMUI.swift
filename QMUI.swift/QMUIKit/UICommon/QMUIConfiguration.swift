@@ -7,7 +7,7 @@
 //
 
 /// 所有配置表都应该实现的 protocol
-protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
+protocol QMUIConfigurationTemplateProtocol {
     
     init()
     
@@ -16,7 +16,6 @@ protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
     
     /// 当返回 YES 时，启动 App 的时候 QMUIConfiguration 会自动应用这份配置表。但启动 App 时自动应用的配置表最多只允许一份，如果有多份则其他的会被忽略，需要在某些时机手动应用
     func shouldApplyTemplateAutomatically() -> Bool
-    
 }
 
 /**

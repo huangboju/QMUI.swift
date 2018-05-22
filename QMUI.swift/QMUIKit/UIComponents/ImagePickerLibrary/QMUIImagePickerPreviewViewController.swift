@@ -10,7 +10,7 @@ import Photos
 
 private let TopToolBarViewHeight: CGFloat = 20 + NavigationBarHeight + IPhoneXSafeAreaInsets.top
 
-@objc protocol QMUIImagePickerPreviewViewControllerDelegate: NSObjectProtocol {
+@objc protocol QMUIImagePickerPreviewViewControllerDelegate {
     /**
      *  取消选择图片后被调用
      */

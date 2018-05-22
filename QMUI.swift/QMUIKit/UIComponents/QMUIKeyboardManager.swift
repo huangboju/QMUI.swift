@@ -816,7 +816,7 @@ class QMUIKeyboardUserInfo: NSObject {
     }
 }
 
-@objc protocol QMUIKeyboardManagerDelegate: NSObjectProtocol {
+@objc protocol QMUIKeyboardManagerDelegate {
     /**
      *  键盘即将显示
      */

@@ -19,7 +19,7 @@ private let QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize: CGFloat = 16
 // 相册名称的 insets 默认值
 private let QMUIAlbumTableViewCellDefaultAlbumNameInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 4)
 
-@objc protocol QMUIAlbumViewControllerDelegate: NSObjectProtocol {
+@objc protocol QMUIAlbumViewControllerDelegate {
     /// 点击相簿里某一行时，需要给一个 QMUIImagePickerViewController 对象用于展示九宫格图片列表
     @objc optional func imagePickerViewController(for albumViewController: QMUIAlbumViewController) -> QMUIImagePickerViewController
 

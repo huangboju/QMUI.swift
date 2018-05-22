@@ -7,7 +7,7 @@
 //
 import UIKit
 
-@objc protocol UINavigationControllerBackButtonHandlerProtocol: NSObjectProtocol {
+@objc protocol UINavigationControllerBackButtonHandlerProtocol {
     /// 是否需要拦截系统返回按钮的事件，只有当这里返回YES的时候，才会询问方法：`canPopViewController`
     @objc optional func shouldHoldBackButtonEvent() -> Bool
     

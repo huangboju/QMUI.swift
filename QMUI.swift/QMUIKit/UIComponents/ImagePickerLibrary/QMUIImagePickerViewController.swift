@@ -17,7 +17,7 @@ private let CollectionViewInsetHorizontal = PreferredVarForDevices((PixelOne * 2
 private let CollectionViewInset = UIEdgeInsets(top: CollectionViewInsetHorizontal, left: CollectionViewInsetHorizontal, bottom: CollectionViewInsetHorizontal, right: CollectionViewInsetHorizontal)
 private let CollectionViewCellMargin = CollectionViewInsetHorizontal
 
-@objc protocol QMUIImagePickerViewControllerDelegate: NSObjectProtocol {
+@objc protocol QMUIImagePickerViewControllerDelegate {
     /**
      *  创建一个 ImagePickerPreviewViewController 用于预览图片
      */
