@@ -31,7 +31,7 @@ extension UITabBar: SelfAware2 {
                 ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
             
-            if #available(iOS 11, *) {
+            if #available(iOS 11.0, *) {
                 let selectors = [
                     #selector(setter: backgroundImage),
                     #selector(setter: isTranslucent),
@@ -82,6 +82,18 @@ extension UITabBar: SelfAware2 {
                 newFrame = newFrame.setY(superview?.bounds.height ?? 0 - newFrame.height)
             }
         }
+        
+        // 修复这个 bug：https://github.com/QMUI/QMUI_iOS/issues/309
+        if #available(iOS 11.0, *) {
+            if bounds.height == 49 || bounds.height == 32 {
+                let bottomSafeAreaInsets = safeAreaInsets.bottom > 0 ? safeAreaInsets.bottom : superview?.safeAreaInsets.bottom ?? 0 // 注意，如果只是拿 self.safeAreaInsets 判断，会肉眼看到高度的跳变，因此引入 superview 的值（虽然理论上 tabBar 不一定都会布局到 UITabBarController.view 的底部）
+                let height = newFrame.size.height + bottomSafeAreaInsets
+                newFrame = newFrame.setHeight(height)
+                let y = newFrame.origin.y - bottomSafeAreaInsets
+                newFrame = newFrame.setY(y)
+            }
+        }
+        
         qmui_setFrame(newFrame)
     }
     

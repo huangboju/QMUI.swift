@@ -63,7 +63,7 @@ class QDImageViewController: QDCommonListViewController {
         scrollView.scrollsToTop = false
         contentView.addSubview(scrollView)
         
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
         }
         

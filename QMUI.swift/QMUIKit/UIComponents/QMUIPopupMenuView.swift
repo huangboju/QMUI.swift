@@ -96,7 +96,7 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
         scrollView.scrollsToTop = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
         }
         contentView.addSubview(scrollView)

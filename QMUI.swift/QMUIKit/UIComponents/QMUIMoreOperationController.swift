@@ -675,7 +675,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
         scrollView.qmui_borderColor = scrollViewSeparatorColor
         scrollView.qmui_borderPosition = index != 0 ? .top : .none
         scrollView.scrollsToTop = false
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
         }
         scrollView.contentInset = scrollViewContentInsets

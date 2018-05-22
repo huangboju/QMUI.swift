@@ -39,7 +39,7 @@ class QMUISearchResultsTableViewController: QMUICommonTableViewController {
     
     @objc override func initTableView() {
         super.initTableView()
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = .never
         }
         tableView.keyboardDismissMode = .onDrag

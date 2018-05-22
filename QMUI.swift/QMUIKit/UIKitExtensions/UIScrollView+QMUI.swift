@@ -51,7 +51,7 @@ extension UIScrollView {
     
     /// UIScrollView 的真正 inset，在 iOS11 以后需要用到 adjustedContentInset 而在 iOS11 以前只需要用 contentInset
     var qmui_contentInset: UIEdgeInsets {
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             return adjustedContentInset
         } else {
             return contentInset

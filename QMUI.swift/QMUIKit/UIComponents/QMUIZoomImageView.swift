@@ -337,7 +337,7 @@ class QMUIZoomImageView: UIView {
         scrollView.minimumZoomScale = 0
         scrollView.maximumZoomScale = maximumZoomScale
         scrollView.delegate = self
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
         }
         addSubview(scrollView)

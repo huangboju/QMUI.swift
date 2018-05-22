@@ -240,6 +240,19 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
             updatePlaceholderStyle()
         }
     }
+    
+    override var textContainerInset: UIEdgeInsets {
+        get {
+            return super.textContainerInset
+        }
+        set {
+            super.textContainerInset = newValue
+            if #available(iOS 11.0, *) {
+                // iOS 11 以下修改 textContainerInset 的时候无法自动触发 layoutSubview，导致 placeholderLabel 无法更新布局
+                setNeedsLayout()
+            }
+        }
+    }
 
     override var delegate: UITextViewDelegate? {
         get {

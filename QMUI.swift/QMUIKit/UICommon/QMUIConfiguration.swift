@@ -411,7 +411,7 @@ class QMUIConfiguration {
     }
     
     private func updateNavigationBarLargeTitleTextAttributesIfNeeded() {
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             if navBarLargeTitleFont != nil || navBarLargeTitleColor != nil {
                 var largeTitleTextAttributes = [NSAttributedStringKey: NSObject]()
                 if let navBarLargeTitleFont = navBarLargeTitleFont {

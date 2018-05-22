@@ -87,8 +87,6 @@ class QDCommonGridViewController: QDCommonViewController {
         gridView.frame = CGRect(x: scrollView.qmui_safeAreaInsets.left, y: 0, width: gridViewWidth, height: gridViewHeight)
         let contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)
         scrollView.contentSize = contentSize
-        print(gridView.qmui_safeAreaInsets)
-        print(scrollView.qmui_safeAreaInsets)
     }
     
     // MARK: private

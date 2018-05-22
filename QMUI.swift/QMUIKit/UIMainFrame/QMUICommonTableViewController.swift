@@ -60,7 +60,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
     var tableViewInitialContentInset: UIEdgeInsets! {
         didSet {
             if tableViewInitialContentInset == QMUICommonTableViewControllerInitialContentInsetNotSet {
-                if #available(iOS 11, *) {
+                if #available(iOS 11.0, *) {
                     if isViewLoaded {
                         tableView.contentInsetAdjustmentBehavior = .automatic
                     }
@@ -68,7 +68,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
                     automaticallyAdjustsScrollViewInsets = true
                 }
             } else {
-                if #available(iOS 11, *) {
+                if #available(iOS 11.0, *) {
                     if isViewLoaded {
                         tableView.contentInsetAdjustmentBehavior = .never
                     }
@@ -196,7 +196,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
         
         var insets = tableView.contentInset
         
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             if tableView.contentInsetAdjustmentBehavior != .never {
                 insets = tableView.adjustedContentInset
             }
@@ -307,7 +307,7 @@ extension QMUICommonTableViewController {
         tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionHeaderIdentifier)
         tableView.register(QMUITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: QMUICommonTableViewControllerSectionFooterIdentifier)
         
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             if shouldAdjustTableViewContentInsetsInitially {
                 tableView.contentInsetAdjustmentBehavior = .never
             }

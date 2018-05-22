@@ -24,11 +24,21 @@ extension UIViewController: SelfAware {
             ReplaceMethod(clazz, #selector(description), #selector(qmui_description))
             
             // 兼容 iOS 9.0 以下的版本对 loadViewIfNeeded 方法的调用
-            // MARK: TODO
+//            let newFunc:@convention(block) (UIViewController) -> Void = {
+//                (selfObject) in
+//
+//            }
+//            if #available(iOS 9.0, *) {
+//            } else {
+//                let implementation = imp_implementationWithBlock(newFunc)
+//                class_addMethod(clazz, #selector(loadViewIfNeeded), implementation, "v@:")
+//            }
             
             // 修复 iOS 11 scrollView 无法自动适配不透明的 tabBar，导致底部 inset 错误的问题
             // https://github.com/QMUI/QMUI_iOS/issues/218
-            ReplaceMethod(clazz, #selector(UIViewController.viewDidLoad), #selector(UIViewController.qmui_UIViewController_viewDidLoad))
+            if #available(iOS 11.0, *) {
+                ReplaceMethod(clazz, #selector(UIViewController.viewDidLoad), #selector(UIViewController.qmui_UIViewController_viewDidLoad))
+            }
             
             // 实现 AutomaticallyRotateDeviceOrientation 开关的功能
             ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(qmui_viewWillAppear(_:)))
@@ -166,7 +176,7 @@ extension UIViewController: SelfAware {
     }
     
     @objc func adjustsAdditionalSafeAreaInsetsForOpaqueTabBar(_ notification: Notification) {
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             guard
                 let object = notification.object as? UITabBar,
                 let tabBarController = tabBarController,
@@ -189,7 +199,7 @@ extension UIViewController: SelfAware {
             // 这里直接用 CGRectGetHeight(tabBar.frame) 来计算理论上不准确，但因为系统有这个 bug（https://github.com/QMUI/QMUI_iOS/issues/217），所以暂时用 CGRectGetHeight(tabBar.frame) 来代替
             let correctSafeAreaInsetsBottom = tabBarHidden ? tabBar.safeAreaInsets.bottom : tabBar.frame.height
             let additionalSafeAreaInsetsBottom = correctSafeAreaInsetsBottom - tabBar.safeAreaInsets.bottom
-            additionalSafeAreaInsets.setBottom(additionalSafeAreaInsetsBottom)
+            additionalSafeAreaInsets = additionalSafeAreaInsets.setBottom(additionalSafeAreaInsetsBottom)
         }
     }
 }

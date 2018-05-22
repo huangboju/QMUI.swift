@@ -157,7 +157,7 @@ class QMUIEmptyView: UIView {
 
     private lazy var scrollView: UIScrollView = { // 保证内容超出屏幕时也不至于直接被clip（比如横屏时)
         let scrollView = UIScrollView()
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
         }
         scrollView.showsVerticalScrollIndicator = false

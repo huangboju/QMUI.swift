@@ -143,7 +143,7 @@ class QMUINavigationButton: UIButton {
             
             // 对于奇数大小的字号，不同 iOS 版本的偏移策略不同，统一一下
             if let titleLabel = titleLabel, titleLabel.font.pointSize / 2.0 > 0 {
-                if #available(iOS 11, *) {
+                if #available(iOS 11.0, *) {
                     insets.top = PixelOne
                     insets.bottom = -PixelOne
                 } else {
@@ -162,7 +162,7 @@ class QMUINavigationButton: UIButton {
             insets.top = 1
         } else if type == .back {
             insets.top = PixelOne
-            if #available(iOS 11, *) {
+            if #available(iOS 11.0, *) {
             } else {
                 insets.left = 8
             }
@@ -186,7 +186,7 @@ class QMUINavigationButton: UIButton {
         adjustsImageWhenHighlighted = false
         adjustsImageWhenDisabled = false
         
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             translatesAutoresizingMaskIntoConstraints = false// 打开这个才能让 iOS 11 下的 alignmentRectInsets 生效
         }
         
@@ -351,7 +351,7 @@ extension UINavigationItem: SelfAware2 {
         // 自动给 position 赋值
         item.qmui_navigationButton?.buttonPosition = .left
         // iOS 11，调整自定义返回按钮的位置 https://github.com/QMUI/QMUI_iOS/issues/279
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             guard let navigationBar = qmui_navigationBar else {
                 return
             }
@@ -376,7 +376,7 @@ extension UINavigationItem: SelfAware2 {
         }
         
         // iOS 11，调整自定义返回按钮的位置 https://github.com/QMUI/QMUI_iOS/issues/279
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
             guard let navigationBar = qmui_navigationBar else {
                 return
             }
@@ -445,7 +445,7 @@ extension UINavigationItem: SelfAware2 {
     
     // 监控是否在 iOS 10 及以下，手势返回的过程中，手势返回背后的那个界面修改了 navigationItem，这可能导致 bug：https://github.com/QMUI/QMUI_iOS/issues/302
     private var detectSetItemsWhenPopping: Bool {
-        if #available(iOS 11, *) {
+        if #available(iOS 11.0, *) {
         } else {
             if let qmui_navigationBar = qmui_navigationBar, let navController = qmui_navigationBar.delegate as? UINavigationController {
                 if navController.topViewController?.qmui_willAppearByInteractivePopGestureRecognizer ?? false && navController.topViewController?.qmui_navigationControllerPopGestureRecognizerChanging ?? false {
@@ -484,6 +484,129 @@ extension UIViewController {
     }
 }
 
+extension UINavigationBar: SelfAware3 {
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake3() {
+        DispatchQueue.once(token: _onceToken) {
+            
+            OverrideMethod1()
+            OverrideMethod2()
+            OverrideMethod3()
+            OverrideMethod4()
+        }
+    }
+    
+    static func OverrideMethod1() {
+        // 拿到method
+        let method = class_getInstanceMethod(UINavigationBar.self, #selector(UINavigationBar.pushItem(_:animated:)))
+        // 通过method拿到imp， imp实际上就是一个函数指针
+        let oldImp = method_getImplementation(method!)
+        // 由于IMP是函数指针，所以接收时需要指定@convention(c)
+        typealias Imp  = @convention(c) (UINavigationBar, Selector, UINavigationItem, Bool) -> Void
+        // 将函数指针强转为兼容函数指针的闭包
+        let oldImpBlock = unsafeBitCast(oldImp, to: Imp.self)
+        
+        // imp_implementationWithBlock的参数需要的是一个oc的block，所以需要指定convention(block)
+        let newFunc:@convention(block) (UINavigationBar, UINavigationItem, Bool) -> Void = {
+            (selfObject, item, animated) in
+            // iOS 11，调整自定义返回按钮的位置 https://github.com/QMUI/QMUI_iOS/issues/279
+            var shouldSetTagBeforeCallingSuper = false // 如果要 push 进的新 item 本身就是自定义返回按钮，那么要先打好标记再调用 super，否则先调用 super 再打标记，实测只有这样才不会导致跳动
+            
+            if #available(iOS 11.0, *) {
+                shouldSetTagBeforeCallingSuper = item.leftBarButtonItem?.qmui_isCustomizedBackBarButtonItem ?? false
+            }
+            if shouldSetTagBeforeCallingSuper {
+                selfObject.qmui_customizingBackBarButtonItem = item.leftBarButtonItem?.qmui_isCustomizedBackBarButtonItem ?? false
+            }
+            
+            oldImpBlock(selfObject, #selector(UINavigationBar.pushItem(_:animated:)), item, animated)
+            
+            if !shouldSetTagBeforeCallingSuper {
+                selfObject.qmui_customizingBackBarButtonItem = item.leftBarButtonItem?.qmui_isCustomizedBackBarButtonItem ?? false
+            }
+        }
+        let imp = imp_implementationWithBlock(unsafeBitCast(newFunc, to: AnyObject.self))
+        method_setImplementation(method!, imp)
+    }
+    
+    static func OverrideMethod2() {
+        // 拿到method
+        let method = class_getInstanceMethod(UINavigationBar.self, #selector(UINavigationBar.popItem(animated:)))
+        // 通过method拿到imp， imp实际上就是一个函数指针
+        let oldImp = method_getImplementation(method!)
+        // 由于IMP是函数指针，所以接收时需要指定@convention(c)
+        typealias Imp  = @convention(c) (UINavigationBar, Selector, Bool) -> UINavigationItem
+        // 将函数指针强转为兼容函数指针的闭包
+        let oldImpBlock = unsafeBitCast(oldImp, to: Imp.self)
+        
+        // imp_implementationWithBlock的参数需要的是一个oc的block，所以需要指定convention(block)
+        let newFunc:@convention(block) (UINavigationBar, Bool) -> UINavigationItem = {
+            (selfObject, animated) in
+            // iOS 11，调整自定义返回按钮的位置 https://github.com/QMUI/QMUI_iOS/issues/279
+            if #available(iOS 11.0, *) {
+                if let items = selfObject.items {
+                    let itemWillAppear = items.count >= 2 ? items[items.count - 2] : nil
+                    selfObject.qmui_customizingBackBarButtonItem = itemWillAppear?.leftBarButtonItem?.qmui_isCustomizedBackBarButtonItem ?? false
+                }
+            }
+            return oldImpBlock(selfObject, #selector(UINavigationBar.popItem(animated:)), animated)
+        }
+        let imp = imp_implementationWithBlock(unsafeBitCast(newFunc, to: AnyObject.self))
+        method_setImplementation(method!, imp)
+    }
+    
+    static func OverrideMethod3() {
+        // 拿到method
+        let method = class_getInstanceMethod(UINavigationBar.self, #selector(UINavigationBar.setItems(_:animated:)))
+        // 通过method拿到imp， imp实际上就是一个函数指针
+        let oldImp = method_getImplementation(method!)
+        // 由于IMP是函数指针，所以接收时需要指定@convention(c)
+        typealias Imp  = @convention(c) (UINavigationBar, Selector, [UINavigationItem], Bool) -> Void
+        // 将函数指针强转为兼容函数指针的闭包
+        let oldImpBlock = unsafeBitCast(oldImp, to: Imp.self)
+        
+        // imp_implementationWithBlock的参数需要的是一个oc的block，所以需要指定convention(block)
+        let newFunc:@convention(block) (UINavigationBar, [UINavigationItem], Bool) -> Void = {
+            (selfObject, items, animated) in
+            // iOS 11，调整自定义返回按钮的位置 https://github.com/QMUI/QMUI_iOS/issues/279
+            if #available(iOS 11.0, *) {
+                selfObject.qmui_customizingBackBarButtonItem = items.last?.leftBarButtonItem?.qmui_isCustomizedBackBarButtonItem ?? false
+            }
+            oldImpBlock(selfObject, #selector(UINavigationBar.setItems(_:animated:)), items, animated)
+        }
+        let imp = imp_implementationWithBlock(unsafeBitCast(newFunc, to: AnyObject.self))
+        method_setImplementation(method!, imp)
+    }
+    
+    static func OverrideMethod4() {
+        // 拿到method
+        let method = class_getInstanceMethod(UINavigationBar.self, #selector(UINavigationBar.layoutSubviews))
+        // 通过method拿到imp， imp实际上就是一个函数指针
+        let oldImp = method_getImplementation(method!)
+        // 由于IMP是函数指针，所以接收时需要指定@convention(c)
+        typealias Imp  = @convention(c) (UINavigationBar, Selector) -> Void
+        // 将函数指针强转为兼容函数指针的闭包
+        let oldImpBlock = unsafeBitCast(oldImp, to: Imp.self)
+        
+        // imp_implementationWithBlock的参数需要的是一个oc的block，所以需要指定convention(block)
+        let newFunc:@convention(block) (UINavigationBar) -> Void = {
+            (selfObject) in
+            oldImpBlock(selfObject, #selector(UINavigationBar.layoutSubviews))
+            // 强制修改 contentView 的 directionalLayoutMargins.leading，在使用自定义返回按钮时减小 8
+            if #available(iOS 11.0, *) {
+                if let contentView = selfObject.qmui_contentView {
+                    var value = contentView.directionalLayoutMargins
+                    value.leading = value.trailing - (selfObject.qmui_customizingBackBarButtonItem ? 8 : 0)
+                    contentView.directionalLayoutMargins = value
+                }
+            }
+        }
+        let imp = imp_implementationWithBlock(unsafeBitCast(newFunc, to: AnyObject.self))
+        method_setImplementation(method!, imp)
+    }
+}
+
 extension UINavigationBar {
     
     /// 获取 navigationBar 内部的 contentView
@@ -504,16 +627,9 @@ extension UINavigationBar {
     fileprivate var qmui_customizingBackBarButtonItem: Bool {
         set {
             objc_setAssociatedObject(self, &Keys.customizingBackBarButtonItem, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            if #available(iOS 11, *) {
-                if let contentView = qmui_contentView, contentView.safeAreaInsets.left == 0,  contentView.safeAreaInsets.right == 0 {
-                    // TODO: molice iPhone X 横屏下，这段代码会导致 margins 不断变大，待解决，目前先屏蔽横屏的情况（也即 safeAreaInsets 左右不为0）
-                    var layoutMargins = contentView.directionalLayoutMargins
-                    let leadingMargin = max(0, layoutMargins.trailing - contentView.safeAreaInsets.right - (qmui_customizingBackBarButtonItem ? 8 : 0))
-                    if layoutMargins.leading != leadingMargin {
-                        layoutMargins.leading = leadingMargin
-                        contentView.directionalLayoutMargins = layoutMargins
-                    }
-                }
+            if #available(iOS 11.0, *) {
+                setNeedsLayout()
+                layoutIfNeeded()
             }
         }
         get {

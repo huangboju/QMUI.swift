@@ -106,11 +106,14 @@ extension UINavigationController {
     }
 
     private func resetSubviewsInNavBar(_ navBar: UINavigationBar) {
-        // Workaround for >= iOS7.1. Thanks to @boliva - http://stackoverflow.com/posts/comments/34452906
-        for view in navBar.subviews {
-            if view.alpha < 1.0 {
-                UIView.animate(withDuration: 0.25) {
-                    view.alpha = 1.0
+        if #available(iOS 11.0, *) {
+        } else {
+            // Workaround for >= iOS7.1. Thanks to @boliva - http://stackoverflow.com/posts/comments/34452906
+            for view in navBar.subviews {
+                if view.alpha < 1.0 {
+                    UIView.animate(withDuration: 0.25) {
+                        view.alpha = 1.0
+                    }
                 }
             }
         }
