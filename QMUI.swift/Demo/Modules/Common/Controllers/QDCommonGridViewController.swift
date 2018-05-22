@@ -10,13 +10,9 @@ class QDCommonGridViewController: QDCommonViewController {
     
     private(set) var dataSource: QMUIOrderedDictionary<String, UIImage> = [:]
     
-    private(set) var gridView: QMUIGridView = QMUIGridView()
+    private(set) var gridView: QMUIGridView!
     
-    public lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        
-        return scrollView
-    }()
+    private var scrollView: UIScrollView!
     
     /// 子类继承，可以不调super
     open func initDataSource() {
@@ -35,8 +31,10 @@ class QDCommonGridViewController: QDCommonViewController {
     override func initSubviews() {
         super.initSubviews()
         
+        scrollView = UIScrollView()
         view.addSubview(scrollView)
         
+        gridView = QMUIGridView()
         for index in 0..<dataSource.count {
             let subview = generateButton(index)
             gridView.addSubview(subview)
@@ -89,6 +87,8 @@ class QDCommonGridViewController: QDCommonViewController {
         gridView.frame = CGRect(x: scrollView.qmui_safeAreaInsets.left, y: 0, width: gridViewWidth, height: gridViewHeight)
         let contentSize = CGSize(width: gridView.frame.width, height:gridView.frame.maxY)
         scrollView.contentSize = contentSize
+        print(gridView.qmui_safeAreaInsets)
+        print(scrollView.qmui_safeAreaInsets)
     }
     
     // MARK: private
