@@ -170,7 +170,8 @@ extension UIViewController: SelfAware {
     @objc func qmui_UIViewController_viewDidLoad() {
         let isContainerViewController = self is UINavigationController || self is UITabBarController || self is UISplitViewController
         if !isContainerViewController {
-            NotificationCenter.default.addObserver(self, selector: #selector(adjustsAdditionalSafeAreaInsetsForOpaqueTabBar(_:)), name: Notification.QMUI.TabBarStyleChanged, object: nil)
+            NotificationCenter
+                .default.addObserver(self, selector: #selector(adjustsAdditionalSafeAreaInsetsForOpaqueTabBar(_:)), name: Notification.QMUI.TabBarStyleChanged, object: nil)
         }
         qmui_UIViewController_viewDidLoad()
     }

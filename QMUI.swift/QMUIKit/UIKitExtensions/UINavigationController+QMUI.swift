@@ -10,26 +10,26 @@ import UIKit
 @objc protocol UINavigationControllerBackButtonHandlerProtocol {
     /// 是否需要拦截系统返回按钮的事件，只有当这里返回YES的时候，才会询问方法：`canPopViewController`
     @objc optional func shouldHoldBackButtonEvent() -> Bool
-    
+
     /// 是否可以`popViewController`，可以在这个返回里面做一些业务的判断，比如点击返回按钮的时候，如果输入框里面的文本没有满足条件的则可以弹alert并且返回NO
     @objc optional func canPopViewController() -> Bool
-    
+
     /// 当自定义了`leftBarButtonItem`按钮之后，系统的手势返回就失效了。可以通过`forceEnableInteractivePopGestureRecognizer`来决定要不要把那个手势返回强制加回来。当 interactivePopGestureRecognizer.enabled = NO 或者当前`UINavigationController`堆栈的viewControllers小于2的时候此方法无效。
     @objc optional func forceEnableInterativePopGestureRecognizer() -> Bool
 }
 
-extension UINavigationController: SelfAware2
- {
+extension UINavigationController: SelfAware2 {
     private static let _onceToken = UUID().uuidString
 
     static func awake2() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UINavigationController.self
-            
+
             ReplaceMethod(clazz, #selector(UINavigationController.viewDidLoad), #selector(UINavigationController.qmui_viewDidLoad))
             ReplaceMethod(clazz, #selector(UINavigationBarDelegate.navigationBar(_:shouldPop:)), #selector(UINavigationController.qmui_navigationBar(_:shouldPop:)))
-            
+
             // MARK: NavigationBarTransition
+
             ReplaceMethod(clazz, #selector(UINavigationController.pushViewController(_:animated:)), #selector(UINavigationController.NavigationBarTransition_pushViewController(_:animated:)))
             ReplaceMethod(clazz, #selector(UINavigationController.popViewController(animated:)), #selector(UINavigationController.NavigationBarTransition_popViewController(animated:)))
             ReplaceMethod(clazz, #selector(UINavigationController.popToViewController(_:animated:)), #selector(UINavigationController.NavigationBarTransition_popToViewController(_:animated:)))
@@ -46,8 +46,9 @@ extension UINavigationController {
         static var isPoppingViewController = "isPoppingViewController"
         static var originGestureDelegateKey = "originGestureDelegateKey"
     }
-    
-    var tmp_topViewController: UIViewController? {
+
+    // `UINavigationControllerBackButtonHandlerProtocol`的`canPopViewController`功能里面，当 A canPop = NO，B canPop = YES，那么从 B 手势返回到 A，也会触发需求 A 的 `canPopViewController` 方法，这是因为手势返回会去询问`gestureRecognizerShouldBegin:`和`qmui_navigationBar:shouldPopItem:`，而这两个方法里面的 self.topViewController 是不同的对象，所以导致这个问题。所以通过 tmp_topViewController 来记录 self.topViewController 从而保证两个地方的值是相等的。
+    fileprivate var tmp_topViewController: UIViewController? {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.tmp_topViewController) as? UIViewController
         }
@@ -56,6 +57,7 @@ extension UINavigationController {
         }
     }
 
+    /// 获取<b>rootViewController</b>
     var qmui_rootViewController: UIViewController? {
         return viewControllers.first
     }
@@ -87,11 +89,11 @@ extension UINavigationController {
         interactivePopGestureRecognizer?.delegate = self
     }
 
-    @objc func qmui_navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
-        
+    @objc private func qmui_navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
+
         // 如果nav的vc栈中有两个vc，第一个是root，第二个是second。这是second页面如果点击系统的返回按钮，topViewController获取的栈顶vc是second，而如果是直接代码写的pop操作，则获取的栈顶vc是root。也就是说只要代码写了pop操作，则系统会直接将顶层vc也就是second出栈，然后才回调的，所以这时我们获取到的顶层vc就是root了。然而不管哪种方式，参数中的item都是second的item。
         let isPopedByCoding = item != topViewController?.navigationItem
-        
+
         // !isPopedByCoding 要放在前面，这样当 !isPopedByCoding 不满足的时候就不会去询问 canPopViewController 了，可以避免额外调用 canPopViewController 里面的逻辑导致
         let canPop = !isPopedByCoding && canPopViewController(tmp_topViewController ?? topViewController)
         if canPop || isPopedByCoding {
@@ -118,27 +120,27 @@ extension UINavigationController {
             }
         }
     }
-    
+
     private func canPopViewController(_ viewController: UIViewController?) -> Bool {
         var canPop = true
-        
+
         if let vc = viewController as? UINavigationControllerBackButtonHandlerProtocol, let shouldHoldBackButtonEvent = vc.shouldHoldBackButtonEvent, shouldHoldBackButtonEvent(), let canPopViewController = vc.canPopViewController, !canPopViewController() {
             canPop = false
         }
-        
+
         return canPop
     }
 }
 
 extension UINavigationController: UIGestureRecognizerDelegate {
-    
+
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == interactivePopGestureRecognizer {
             tmp_topViewController = topViewController
             let canPop = canPopViewController(tmp_topViewController)
 
             if canPop {
-                if let originGestureDelegate = objc_getAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey) as? UIGestureRecognizerDelegate, (originGestureDelegate.gestureRecognizerShouldBegin != nil)  {
+                if let originGestureDelegate = objc_getAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey) as? UIGestureRecognizerDelegate, (originGestureDelegate.gestureRecognizerShouldBegin != nil) {
                     return originGestureDelegate.gestureRecognizerShouldBegin!(gestureRecognizer)
                 } else {
                     return false
@@ -154,7 +156,7 @@ extension UINavigationController: UIGestureRecognizerDelegate {
         if gestureRecognizer == interactivePopGestureRecognizer {
             if let originGestureDelegate = objc_getAssociatedObject(self, &AssociatedKeys.originGestureDelegateKey) as? UIGestureRecognizerDelegate {
                 // 先判断要不要强制开启手势返回
-                if viewControllers.count > 1, interactivePopGestureRecognizer?.isEnabled ?? false, let viewController =  topViewController as? UINavigationControllerBackButtonHandlerProtocol,  viewController.forceEnableInterativePopGestureRecognizer != nil, viewController.forceEnableInterativePopGestureRecognizer!() {
+                if viewControllers.count > 1, interactivePopGestureRecognizer?.isEnabled ?? false, let viewController = topViewController as? UINavigationControllerBackButtonHandlerProtocol, viewController.forceEnableInterativePopGestureRecognizer != nil, viewController.forceEnableInterativePopGestureRecognizer!() {
                     return true
                 }
 
