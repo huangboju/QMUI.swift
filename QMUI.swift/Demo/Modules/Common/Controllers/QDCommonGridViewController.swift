@@ -12,7 +12,7 @@ class QDCommonGridViewController: QDCommonViewController {
     
     private(set) var gridView: QMUIGridView!
     
-    private var scrollView: UIScrollView!
+    private(set) var scrollView: UIScrollView!
     
     /// 子类继承，可以不调super
     open func initDataSource() {
@@ -40,6 +40,16 @@ class QDCommonGridViewController: QDCommonViewController {
             gridView.addSubview(subview)
         }
         scrollView.addSubview(gridView)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        解决 bug。由于 qmui_UIViewController_viewDidLoad 在 tabBar set 方法发出通知后才进行添加通知，所以重新进行 set 一次，用来触发修改 SafeAreaInsets 的方法。
+        if let tabBarController = tabBarController {
+            let isHidden = tabBarController.tabBar.isHidden
+            tabBarController.tabBar.isHidden = !isHidden
+            tabBarController.tabBar.isHidden = isHidden
+        }
     }
     
     override func viewDidLayoutSubviews() {
