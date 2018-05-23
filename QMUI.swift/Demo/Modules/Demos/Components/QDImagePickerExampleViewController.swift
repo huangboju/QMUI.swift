@@ -123,9 +123,7 @@ class QDImagePickerExampleViewController: QDCommonGroupListViewController {
             // 显示发送中
             showTipLabel("发送中")
             // 使用 delay 模拟网络请求时长
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                Thread.detachNewThreadSelector(#selector(self.showTipLabel(_:)), toTarget:self, with: "成功发送\(imagesAssetArray.count)个资源")
-            }
+            perform(#selector(self.showTipLabel(_:)), with: "成功发送\(imagesAssetArray.count)个资源", afterDelay: 1.5)
         }
     }
     
@@ -270,9 +268,7 @@ extension QDImagePickerExampleViewController: QDSingleImagePickerPreviewViewCont
                 }
                 targetImage = UIImage(data: data)
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                    Thread.detachNewThreadSelector(#selector(self.setAvatar(with:)), toTarget:self, with: targetImage)
-                }
+                self.perform(#selector(self.setAvatar(with:)), with: targetImage, afterDelay: 1.8)
             }
         }
     }

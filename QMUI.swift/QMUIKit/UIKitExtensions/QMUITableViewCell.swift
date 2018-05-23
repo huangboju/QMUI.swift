@@ -184,7 +184,7 @@ class QMUITableViewCell: UITableViewCell {
                     
                     defaultAccessoryButton!.frame = defaultAccessoryButton!.frame.setXY(0, defaultDetailDisclosureView!.frame.minYVerticallyCenter(defaultAccessoryButton!.frame))
                     
-                    defaultAccessoryImageView!.frame = defaultAccessoryImageView!.frame.setXY(defaultAccessoryButton!.frame.maxX + spacingBetweenDetailButtonAndIndicatorImage, defaultAccessoryImageView!.frame.minYVerticallyCenter(defaultDetailDisclosureView!.frame))
+                    defaultAccessoryImageView!.frame = defaultAccessoryImageView!.frame.setXY(defaultAccessoryButton!.frame.maxX + spacingBetweenDetailButtonAndIndicatorImage, defaultDetailDisclosureView!.frame.minYVerticallyCenter(defaultAccessoryImageView!.frame))
                     accessoryView = defaultDetailDisclosureView
                     return
                 }

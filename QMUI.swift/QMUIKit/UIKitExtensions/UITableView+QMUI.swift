@@ -339,7 +339,7 @@ extension UITableView: SelfAware3 {
             let clazz = UITableView.self
             
             let selectors = [
-                #selector(UITableView.reloadData),
+//                #selector(UITableView.reloadData),
                 #selector(UITableView.insertSections(_:with:)),
                 #selector(UITableView.deleteSections(_:with:)),
                 #selector(UITableView.reloadSections(_:with:)),
@@ -354,7 +354,7 @@ extension UITableView: SelfAware3 {
             ]
             
             let qmui_selectors = [
-                #selector(UITableView.qmui_reloadData),
+//                #selector(UITableView.qmui_reloadData),
                 #selector(UITableView.qmui_insertSections(_:with:)),
                 #selector(UITableView.qmui_deleteSections(_:with:)),
                 #selector(UITableView.qmui_reloadSections(_:with:)),

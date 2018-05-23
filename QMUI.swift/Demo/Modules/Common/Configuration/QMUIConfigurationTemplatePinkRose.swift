@@ -206,7 +206,7 @@ class QMUIConfigurationTemplatePinkRose: NSObject, QDThemeProtocol  {
         QMUICMI().supportedOrientationMask = .all // SupportedOrientationMask : 默认支持的横竖屏方向
         QMUICMI().automaticallyRotateDeviceOrientation = true // AutomaticallyRotateDeviceOrientation : 是否在界面切换或 viewController.supportedOrientationMask 发生变化时自动旋转屏幕
         QMUICMI().statusbarStyleLightInitially = true // StatusbarStyleLightInitially : 默认的状态栏内容是否使用白色，默认为 false，也即黑色
-        QMUICMI().needsBackBarButtonItemTitle = true // NeedsBackBarButtonItemTitle : 全局是否需要返回按钮的 title，不需要则只显示一个返回image
+        QMUICMI().needsBackBarButtonItemTitle = false // NeedsBackBarButtonItemTitle : 全局是否需要返回按钮的 title，不需要则只显示一个返回image
         QMUICMI().hidesBottomBarWhenPushedInitially = true // HidesBottomBarWhenPushedInitially : QMUICommonViewController.hidesBottomBarWhenPushed 的初始值，默认为 false，以保持与系统默认值一致，但通常建议改为 YES，因为一般只有 tabBar 首页那几个界面要求为 false
         QMUICMI().preventConcurrentNavigationControllerTransitions = true // PreventConcurrentNavigationControllerTransitions : 自动保护 QMUINavigationController 在上一次 push/pop 尚未结束的时候就进行下一次 push/pop 的行为，避免产生 crash
         QMUICMI().navigationBarHiddenInitially = false // NavigationBarHiddenInitially : QMUINavigationControllerDelegate preferredNavigationBarHidden 的初始值，默认为false

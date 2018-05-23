@@ -160,7 +160,7 @@ class QMUIToastView: UIView {
      * @see toastAnimator
      */
     func hide(_ animated: Bool, afterDelay delay: TimeInterval) {
-        let timer = Timer(timeInterval: delay, target: self, selector: #selector(handleHideTimer), userInfo: animated, repeats: false)
+        let timer = Timer(timeInterval: delay, target: self, selector: #selector(handleHideTimer(_:)), userInfo: animated, repeats: false)
         RunLoop.current.add(timer, forMode: .commonModes)
         hideDelayTimer = timer
     }

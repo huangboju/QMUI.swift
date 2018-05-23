@@ -60,7 +60,7 @@ class QDComponentsViewController: QDCommonGridViewController {
             viewController = QDToastListViewController()
         }
         if title == "QMUIStaticTableView" {
-            viewController = QDStaticTableViewController()
+            viewController = QDStaticTableViewController(style: .grouped)
         }
         if title == "QMUIImagePreviewView" {
             viewController = QDImagePreviewExampleViewController()

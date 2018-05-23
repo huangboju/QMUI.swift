@@ -17,7 +17,7 @@ private let kSectionTitleForCloseButton = "关闭按钮"
 
 class QDNavigationButtonViewController: QDCommonGroupListViewController {
 
-    // MARK: TODO 这里有bug，返回按钮和关闭按钮交替点击会崩溃。而且，UINavigationBar 分类中的 OverrideImplementation 相关实现没有完成。
+    // MARK: TODO 这里有bug，返回按钮和关闭按钮交替点击会崩溃。
     
     private var forceEnableBackGesture: Bool = false
     
