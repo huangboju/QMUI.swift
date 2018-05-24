@@ -44,8 +44,8 @@ class QDCollectionDemoViewController: QDCommonViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         
         titleView.isUserInteractionEnabled = true
         titleView.addTarget(self, action: #selector(handleTitleViewTouchEvent), for: .touchUpInside)
@@ -92,7 +92,7 @@ class QDCollectionDemoViewController: QDCommonViewController {
             debugLayer = nil
         }
         
-        setNavigationItems(false, animated: false)
+        setupNavigationItems()
     }
     
     @objc func handleTitleViewTouchEvent() {

@@ -13,8 +13,7 @@ class QDTableViewCellViewController: QDCommonListViewController {
 
     override func initDataSource() {
         dataSource = ["通过 insets 系列属性调整间距",
-                      "通过配置表修改 accessoryType 的样式",
-                      "动态高度计算"]
+                      "通过配置表修改 accessoryType 的样式"]
     }
     
     override func didSelectCell(_ title: String) {
@@ -24,8 +23,6 @@ class QDTableViewCellViewController: QDCommonListViewController {
             viewController = QDTableViewCellInsetsViewController()
         } else if title == "通过配置表修改 accessoryType 的样式" {
             viewController = QDTableViewCellAccessoryTypeViewController()
-        } else if title == "动态高度计算" {
-            viewController = QDTableViewCellDynamicHeightViewController()
         }
         
         if let viewController = viewController {

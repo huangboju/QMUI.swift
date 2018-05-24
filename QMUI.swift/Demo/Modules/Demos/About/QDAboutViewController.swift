@@ -173,8 +173,8 @@ class QDAboutViewController: QDCommonViewController {
         }
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         title = "关于"
     }
     

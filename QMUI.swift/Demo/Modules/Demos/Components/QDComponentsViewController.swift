@@ -21,6 +21,7 @@ class QDComponentsViewController: QDCommonGridViewController {
                 ("QMUIGridView", UIImageMake("icon_grid_gridView")!),
                 ("QMUIFloatLayoutView", UIImageMake("icon_grid_floatView")!),
                 ("QMUIStaticTableView", UIImageMake("icon_grid_staticTableView")!),
+                ("QMUICellKeyCache", UIImageMake("icon_grid_cellKeyCache")!),
                 ("QMUIPickingImage", UIImageMake("icon_grid_pickingImage")!),
                 ("QMUIAssetsManager", UIImageMake("icon_grid_assetsManager")!),
                 ("QMUIImagePreviewView", UIImageMake("icon_grid_previewImage")!),
@@ -37,8 +38,8 @@ class QDComponentsViewController: QDCommonGridViewController {
         }
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         title = "Components"
         navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleAboutItemEvent))
     }
@@ -61,6 +62,9 @@ class QDComponentsViewController: QDCommonGridViewController {
         }
         if title == "QMUIStaticTableView" {
             viewController = QDStaticTableViewController(style: .grouped)
+        }
+        if title == "QMUICellKeyCache" {
+            viewController = QDCellKeyCacheViewController()
         }
         if title == "QMUIImagePreviewView" {
             viewController = QDImagePreviewExampleViewController()

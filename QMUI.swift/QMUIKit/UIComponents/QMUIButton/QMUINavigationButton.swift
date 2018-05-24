@@ -449,7 +449,7 @@ extension UINavigationItem: SelfAware2 {
         } else {
             if let qmui_navigationBar = qmui_navigationBar, let navController = qmui_navigationBar.delegate as? UINavigationController {
                 if navController.topViewController?.qmui_willAppearByInteractivePopGestureRecognizer ?? false && navController.topViewController?.qmui_navigationControllerPopGestureRecognizerChanging ?? false {
-                    // 注意，判断条件里的 qmui_navigationControllerPopGestureRecognizerChanging 关键在于，它是在 viewWillAppear: 执行后才被置为 YES，而 QMUICommonViewController 是在 viewWillAppear: 里调用 setNavigationItems:，所以刚好过滤了这种场景。因为测试过，在 viewWillAppear: 里操作 items 是没问题的，但在那之后的操作就会有问题。
+                    // 注意，判断条件里的 qmui_navigationControllerPopGestureRecognizerChanging 关键在于，它是在 viewWillAppear: 执行后才被置为 YES，而 QMUICommonViewController 是在 viewWillAppear: 里调用 setupNavigationItems:，所以刚好过滤了这种场景。因为测试过，在 viewWillAppear: 里操作 items 是没问题的，但在那之后的操作就会有问题。
                     print("UINavigationItem (QMUINavigationButton) 拦截了一次可能产生顶部按钮混乱的操作，navigationController is \(navController), topViewController is \(String(describing: navController.topViewController))")
                     return true
                 }

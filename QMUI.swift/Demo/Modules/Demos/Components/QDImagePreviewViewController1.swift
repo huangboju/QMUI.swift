@@ -48,8 +48,8 @@ class QDImagePreviewViewController1: QDCommonViewController {
         imagePreviewView.frame = CGRectFlat(view.bounds.width.center(imagePreviewViewSize.width), originY, imagePreviewViewSize.width, imagePreviewViewSize.height)
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         title = title(for: imagePreviewView.currentImageIndex)
     }
     

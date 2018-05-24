@@ -98,8 +98,8 @@ class QMUICommonViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setNavigationItems(false, animated: false)
-        setToolbarItems(isInEditMode: false, animated: false)
+        setupNavigationItems()
+        setupToolbarItems()
     }
 
     deinit {
@@ -231,8 +231,8 @@ extension QMUICommonViewController: QMUINavigationControllerDelegate {
 
     func viewControllerKeepingAppearWhenSetViewControllers(_: Bool) {
         // 通常和 viewWillAppear: 里做的事情保持一致
-        setNavigationItems(false, animated: false)
-        setToolbarItems(isInEditMode: false, animated: false)
+        setupNavigationItems()
+        setupToolbarItems()
     }
 }
 
@@ -256,7 +256,7 @@ extension QMUICommonViewController {
      *  @param isInEditMode 是否用于编辑模式下
      *  @param animated     是否使用动画呈现
      */
-    @objc func setNavigationItems(_: Bool, animated _: Bool) {
+    @objc func setupNavigationItems() {
         // 子类重写
         navigationItem.titleView = titleView
     }
@@ -267,7 +267,7 @@ extension QMUICommonViewController {
      *  @param isInEditMode 是否用于编辑模式下
      *  @param animated     是否使用动画呈现
      */
-    @objc func setToolbarItems(isInEditMode _: Bool, animated _: Bool) {
+    @objc func setupToolbarItems() {
         // 子类重写
     }
 

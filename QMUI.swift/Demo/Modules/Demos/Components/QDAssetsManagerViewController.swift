@@ -10,8 +10,8 @@ import UIKit
 
 class QDAssetsManagerViewController: QDCommonListViewController {
 
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
     }
 
     override func initDataSource() {

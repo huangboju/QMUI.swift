@@ -19,12 +19,12 @@ class QDEmptyViewController: QDCommonTableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
     }
     
-    override func setToolbarItems(isInEditMode: Bool, animated: Bool) {
-        super.setToolbarItems(isInEditMode: isInEditMode, animated: animated)
+    override func setupToolbarItems() {
+        super.setupToolbarItems()
     }
 }
 

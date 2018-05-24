@@ -6,13 +6,15 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-enum QMUITableViewCellPosition {
-    case none // 初始化用
-    case firstInSection
-    case middleInSection
-    case lastInSection
-    case singleInSection
-    case normal
+/// cell 在当前 section 里的位置，注意判断时要用 (var & xxx) == xxx 的方式
+struct QMUITableViewCellPosition: OptionSet {
+    let rawValue: Int
+    
+    static let none = QMUITableViewCellPosition(rawValue: 1)
+    static let firstInSection = QMUITableViewCellPosition(rawValue: 2)
+    static let middleInSection = QMUITableViewCellPosition(rawValue: 4)
+    static let lastInSection = QMUITableViewCellPosition(rawValue: 8)
+    static let singleInSection = QMUITableViewCellPosition(rawValue: Int(QMUITableViewCellPosition.firstInSection.rawValue) |  Int(QMUITableViewCellPosition.lastInSection.rawValue))
 }
 
 private let kFloatValuePrecision = 4 // 统一一个小数点运算精度
@@ -34,6 +36,8 @@ private let kFloatValuePrecision = 4 // 统一一个小数点运算精度
 extension UITableView {
     /// 将当前tableView按照QMUI统一定义的宏来渲染外观
     func qmui_styledAsQMUITableView() {
+        
+        rowHeight = TableViewCellNormalHeight
         
         var backgroundColor: UIColor?
         if style == .plain {
@@ -280,115 +284,30 @@ extension UITableView {
     }
 }
 
-/// ====================== 计算动态cell高度相关 =======================
-
-/**
- *  UITableView 定义了一套动态计算 cell 高度的方式：
- *
- *  其思路是参考开源代码：https://github.com/forkingdog/UITableView-FDTemplateLayoutCell。
- *
- *  1. cell 必须实现 sizeThatFits: 方法，在里面计算自身的高度并返回
- *  2. 初始化一个 QMUITableView，并为其指定一个 QMUITableViewDataSource
- *  3. 实现 qmui_tableView:cellWithIdentifier: 方法，在里面为不同的 identifier 创建不同的 cell 实例
- *  4. 在 tableView:cellForRowAtIndexPath: 里使用 qmui_tableView:cellWithIdentifier: 获取 cell
- *  5. 在 tableView:heightForRowAtIndexPath: 里使用 UITableView (QMUILayoutCell) 提供的几种方法得到 cell 的高度
- *
- *  这套方式的好处是 tableView 能直接操作 cell 的实例，cell 无需增加额外的专门用于获取 cell 高度的方法。并且这套方式支持基本的高度缓存（可按 key 缓存或按 indexPath 缓存），若使用了缓存，请注意在适当的时机去更新缓存（例如某个 cell 的内容发生变化，可能 cell 的高度也会变化，则需要更新这个 cell 已被缓存起来的高度）。
- *
- *  使用这套方式额外的消耗是每个 identifier 都会生成一个多余的 cell 实例（专用于高度计算），但大部分情况下一个生成一个 cell 实例并不会带来过多的负担，所以一般不用担心这个问题。
- */
-
-// MARK: - QMUIKeyedHeightCache
-extension UITableView {
-    fileprivate struct Keys {
-        static var keyedHeightCache = "keyedHeightCache"
-        static var indexPathHeightCache = "indexPathHeightCache"
-        static var templateCellsByIdentifiers = "templateCellsByIdentifiers"
-        static var staticCellDataSource = "staticCellDataSource"
-    }
-
-    var qmui_keyedHeightCache: QMUICellHeightKeyCache {
-        guard let cache = objc_getAssociatedObject(self, &Keys.keyedHeightCache) as? QMUICellHeightKeyCache else {
-            let cache = QMUICellHeightKeyCache()
-            objc_setAssociatedObject(self, &Keys.keyedHeightCache, cache, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            return cache
-        }
-        return cache
-    }
-}
-
-// MARK: - QMUICellHeightIndexPathCache
-extension UITableView {
-
-    var qmui_indexPathHeightCache: QMUICellHeightIndexPathCache {
-        guard let cache = objc_getAssociatedObject(self, &Keys.indexPathHeightCache) as? QMUICellHeightIndexPathCache else {
-            let cache = QMUICellHeightIndexPathCache()
-            objc_setAssociatedObject(self, &Keys.indexPathHeightCache, cache, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            return cache
-        }
-        return cache
-    }
-}
-
-// MARK: - QMUIIndexPathHeightCacheInvalidation
 extension UITableView: SelfAware3 {
     private static let _onceToken = UUID().uuidString
-
+    
     static func awake3() {
         DispatchQueue.once(token: _onceToken) {
             let clazz = UITableView.self
             
             let selectors = [
-//                #selector(UITableView.reloadData),
-                #selector(UITableView.insertSections(_:with:)),
-                #selector(UITableView.deleteSections(_:with:)),
-                #selector(UITableView.reloadSections(_:with:)),
-                #selector(UITableView.moveSection(_:toSection:)),
-                #selector(UITableView.insertRows(at:with:)),
-                #selector(UITableView.deleteRows(at:with:)),
-                #selector(UITableView.reloadRows(at:with:)),
-                #selector(UITableView.moveRow(at:to:)),
+                #selector(setter: delegate),
                 #selector(UITableView.sizeThatFits(_:)),
                 #selector(setter: dataSource),
                 #selector(setter: delegate),
-            ]
+                ]
             
             let qmui_selectors = [
-//                #selector(UITableView.qmui_reloadData),
-                #selector(UITableView.qmui_insertSections(_:with:)),
-                #selector(UITableView.qmui_deleteSections(_:with:)),
-                #selector(UITableView.qmui_reloadSections(_:with:)),
-                #selector(UITableView.qmui_moveSection(_:toSection:)),
-                #selector(UITableView.qmui_insertRows(at:with:)),
-                #selector(UITableView.qmui_deleteRows(at:with:)),
-                #selector(UITableView.qmui_reloadRows(at:with:)),
-                #selector(UITableView.qmui_moveRow(at:to:)),
+                #selector(UITableView.qmui_setDelegate(_:)),
                 #selector(UITableView.qmui_sizeThatFits(_:)),
                 #selector(UITableView.staticCell_setDataSource),
                 #selector(UITableView.staticCell_setDelegate),
-            ]
+                ]
             
             for index in 0..<selectors.count {
                 ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
             }
-        }
-    }
-}
-
-extension UITableView {
-    
-    @objc func qmui_init(frame: CGRect, style: UITableViewStyle) {
-        qmui_init(frame: frame, style: style)
-        // iOS 11 之后 estimatedRowHeight 默认值变成 UITableViewAutomaticDimension 了，会导致 contentSize 之类的计算不准确，所以这里给一个途径让项目可以方便地禁掉所有 UITableView 的 estimatedXxxHeight
-        
-        if !TableViewEstimatedHeightEnabled {
-            estimatedRowHeight = 0
-            estimatedSectionHeaderHeight = 0
-            estimatedSectionFooterHeight = 0
-        } else {
-            estimatedRowHeight = UITableViewAutomaticDimension
-            estimatedSectionHeaderHeight = UITableViewAutomaticDimension
-            estimatedSectionFooterHeight = UITableViewAutomaticDimension
         }
     }
     
@@ -397,212 +316,4 @@ extension UITableView {
         let result = qmui_sizeThatFits(size)
         return result
     }
-}
-
-extension UITableView {
-
-    @objc func qmui_reloadData() {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                heightsBySection.removeAll()
-            })
-        }
-        qmui_reloadData()
-    }
-
-    @objc func qmui_insertSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            for section in sections {
-                qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection.insert([], at: section)
-                })
-            }
-        }
-        qmui_insertSections(sections, with: rowAnimation)
-    }
-
-    @objc func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            for section in sections {
-                qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection.remove(at: section)
-                })
-            }
-            qmui_deleteSections(sections, with: rowAnimation)
-        }
-    }
-
-    @objc func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            for section in sections {
-                qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection[section].removeAll()
-                })
-            }
-        }
-        qmui_reloadSections(sections, with: rowAnimation)
-    }
-
-    @objc func qmui_moveSection(_ section: Int, toSection newSection: Int) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                heightsBySection.swapAt(section, newSection)
-            })
-        }
-        qmui_moveSection(section, toSection: newSection)
-    }
-
-    @objc func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
-            for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection[indexPath.section].insert(-1, at: indexPath.row)
-                })
-            }
-        }
-        qmui_insertRows(at: indexPaths, with: rowAnimation)
-    }
-
-    @objc func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
-
-            var mutableIndexSetsToRemove: [Int: IndexSet] = [:]
-
-            for indexPath in indexPaths {
-                var mutableIndexSet = mutableIndexSetsToRemove[indexPath.section]
-                if mutableIndexSet == nil {
-                    mutableIndexSet = IndexSet()
-                    mutableIndexSetsToRemove[indexPath.section] = mutableIndexSet
-                }
-                mutableIndexSet?.insert(indexPath.row)
-            }
-
-            for (key, indexSet) in mutableIndexSetsToRemove {
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection[key].remove(at: indexSet)
-                })
-            }
-
-            qmui_deleteRows(at: indexPaths, with: rowAnimation)
-        }
-    }
-
-    @objc func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
-            for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                    heightsBySection[indexPath.section][indexPath.row] = -1
-                })
-            }
-        }
-        qmui_reloadRows(at: indexPaths, with: rowAnimation)
-    }
-
-    @objc func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
-        if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
-            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
-                var sourceRows = heightsBySection[indexPath.section]
-                var destinationRows = heightsBySection[newIndexPath.section]
-                let sourceValue = sourceRows[indexPath.row]
-                let destinationValue = destinationRows[newIndexPath.row]
-                sourceRows[indexPath.row] = destinationValue
-                destinationRows[newIndexPath.row] = sourceValue
-            })
-        }
-        qmui_moveRow(at: indexPath, to: newIndexPath)
-    }
-}
-
-// MARK: - QMUILayoutCell
-extension UITableView {
-    func templateCell(forReuseIdentifier identifier: String) -> UITableViewCell {
-        assert(!identifier.isEmpty, "Expect a valid identifier - \(identifier)")
-        var templateCellsByIdentifiers = objc_getAssociatedObject(self, &Keys.templateCellsByIdentifiers) as? [String: UITableViewCell]
-        if templateCellsByIdentifiers == nil {
-            templateCellsByIdentifiers = [:]
-            objc_setAssociatedObject(self, &Keys.templateCellsByIdentifiers, templateCellsByIdentifiers, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-        var templateCell = templateCellsByIdentifiers![identifier]
-        if templateCell == nil {
-            // 是否有通过dataSource返回的cell
-            if let qmui_dataSource = dataSource as? QMUICellHeightCache_UITableViewDataSource {
-                templateCell = qmui_dataSource.qmui_tableView?(self, cellWithIdentifier: identifier)
-            }
-            // 没有的话，则需要通过register来注册一个cell，否则会crash
-            if templateCell == nil {
-                templateCell = dequeueReusableCell(withIdentifier: identifier)
-                assert(templateCell != nil, "Cell must be registered to table view for identifier - \(identifier)")
-            }
-            templateCell!.contentView.translatesAutoresizingMaskIntoConstraints = false
-            templateCellsByIdentifiers?[identifier] = templateCell
-        }
-        return templateCell!
-    }
-
-    /**
-     *  通过 qmui_tableView:cellWithIdentifier: 得到 identifier 对应的 cell 实例，并在 configuration 里对 cell 进行渲染后，得到 cell 的高度。
-     *  @param  identifier cell 的 identifier
-     *  @param  configuration 用于渲染 cell 的block，一般与 tableView:cellForRowAtIndexPath: 里渲染 cell 的代码一样
-     */
-    func qmui_heightForCell(withIdentifier identifier: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
-        if bounds.isEmpty {
-            return 0
-        }
-
-        let cell = templateCell(forReuseIdentifier: identifier)
-        cell.prepareForReuse()
-        configuration?(cell)
-        let contentWidth = bounds.width - contentInset.horizontalValue
-        var fitSize = CGSize.zero
-        if contentWidth > 0 {
-            let selector = #selector(sizeThatFits)
-            let inherited = !cell.isMember(of: UITableViewCell.self) // 是否UITableViewCell
-
-            let overrided = type(of: cell).instanceMethod(for: selector) != UITableViewCell.instanceMethod(for: selector) // 是否重写了sizeThatFit:
-            if inherited && !overrided {
-                assert(false, "Customized cell must override '-sizeThatFits:' method if not using auto layout.")
-            }
-            fitSize = cell.sizeThatFits(CGSize(width: contentWidth, height: CGFloat.greatestFiniteMagnitude))
-        }
-        return ceil(fitSize.height)
-    }
-
-    // 通过indexPath缓存高度
-    func qmui_heightForCell(withIdentifier identifier: String, cacheBy indexPath: IndexPath, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
-        if bounds.isEmpty {
-            return 0
-        }
-
-        if qmui_indexPathHeightCache.existsHeight(at: indexPath) {
-            return qmui_indexPathHeightCache.height(for: indexPath)
-        }
-
-        let height = qmui_heightForCell(withIdentifier: identifier, configuration: configuration)
-        qmui_indexPathHeightCache.cache(height: height, by: indexPath)
-        return height
-    }
-
-    // 通过key缓存高度
-    func qmui_heightForCell(withIdentifier identifier: String, cacheByKey key: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
-        if bounds.isEmpty {
-            return 0
-        }
-
-        if qmui_keyedHeightCache.existsHeight(for: key) {
-            return qmui_keyedHeightCache.height(for: key)
-        }
-
-        let height = qmui_heightForCell(withIdentifier: identifier, configuration: configuration)
-        qmui_keyedHeightCache.cache(height, by: key)
-        return height
-    }
-    
 }

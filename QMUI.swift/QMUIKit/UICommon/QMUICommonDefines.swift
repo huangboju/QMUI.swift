@@ -191,15 +191,44 @@ func StringFromBool(_flag: Bool) -> String {
 }
 
 /// MARK: - 方法-C对象、结构操作
-func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
-    let oriMethod = class_getInstanceMethod(_class, _originSelector)
-    let newMethod = class_getInstanceMethod(_class, _newSelector)
-    let isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod!), method_getTypeEncoding(newMethod!))
-    if isAddedMethod {
-        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod!), method_getTypeEncoding(oriMethod!))
-    } else {
-        method_exchangeImplementations(oriMethod!, newMethod!)
+func ReplaceMethodInTwoClasses(_ _fromClass: AnyClass, _ _originSelector: Selector, _ _toClass: AnyClass, _ _newSelector: Selector) {
+    let oriMethod = class_getInstanceMethod(_fromClass, _originSelector)
+    guard let newMethod = class_getInstanceMethod(_toClass, _newSelector) else {
+        return
     }
+    if let superclass = class_getSuperclass(_fromClass) {
+        let tryToExchangeSuperclassMethod = superclass.instancesRespond(to: _originSelector) && class_getInstanceMethod(superclass, _originSelector) == class_getInstanceMethod(_fromClass, _originSelector)
+        if tryToExchangeSuperclassMethod {
+            print("注意，\(NSStringFromClass(_fromClass)) 准备替换方法 \(NSStringFromSelector(_originSelector)), 但这个方法来自于父类 \(NSStringFromClass(superclass))")
+        }
+    }
+    
+    let isAddedMethod = class_addMethod(_fromClass, _originSelector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod))
+    if isAddedMethod {
+        var oriMethodIMP: IMP
+        var oriMethodTypeEncoding: UnsafePointer<Int8>?
+        if let oriMethod = oriMethod {
+            oriMethodIMP = method_getImplementation(oriMethod)
+            oriMethodTypeEncoding = method_getTypeEncoding(oriMethod)
+        } else {
+            let newFunc:@convention(block) (AnyObject) -> Void = {
+                (selfObject) in
+            }
+            oriMethodIMP = imp_implementationWithBlock(unsafeBitCast(newFunc, to: AnyObject.self))
+        }
+        if oriMethodTypeEncoding != nil {
+            class_replaceMethod(_toClass, _newSelector, oriMethodIMP, oriMethodTypeEncoding)
+        } else {
+            class_replaceMethod(_toClass, _newSelector, oriMethodIMP, "v@:")
+        }
+    } else {
+        method_exchangeImplementations(oriMethod!, newMethod)
+    }
+}
+
+
+func ReplaceMethod(_ _class: AnyClass, _ _originSelector: Selector, _ _newSelector: Selector) {
+    ReplaceMethodInTwoClasses(_class, _originSelector, _class, _newSelector)
 }
 
 /// MARK: - CGFloat

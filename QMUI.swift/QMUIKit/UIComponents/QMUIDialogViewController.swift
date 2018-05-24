@@ -205,7 +205,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         buttonHighlightedBackgroundColor = dialogViewControllerAppearance.buttonHighlightedBackgroundColor
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
+    override func setupNavigationItems() {
         // 不继承父类的实现，从而避免把 titleView 放到 navigationItem 上
     }
     

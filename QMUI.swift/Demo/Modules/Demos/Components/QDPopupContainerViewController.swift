@@ -128,8 +128,8 @@ class QDPopupContainerViewController: QDCommonViewController {
         ]
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         navigationItem.rightBarButtonItem = UIBarButtonItem.item(image: UIImageMake("icon_nav_about"), target: self, action: #selector(handleRightBarButtonItemEvent(_:)))
     }
     

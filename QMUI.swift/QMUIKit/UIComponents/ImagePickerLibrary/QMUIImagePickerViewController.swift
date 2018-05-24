@@ -209,8 +209,8 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         view.backgroundColor = UIColorWhite
     }
 
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         navigationItem.rightBarButtonItem = UIBarButtonItem.item(title: "取消", target: self, action: #selector(handleCancelPickerImage(_:)))
     }
 

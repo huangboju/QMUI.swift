@@ -29,8 +29,8 @@ class QDFontViewController: QDCommonGroupListViewController {
             ("默认", od1), ("动态字体", od2))
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         title = "UIFont+QMUI"
     }
     

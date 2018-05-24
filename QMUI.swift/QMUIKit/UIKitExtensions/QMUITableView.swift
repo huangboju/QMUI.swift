@@ -20,16 +20,11 @@ class QMUITableView: UITableView {
 
     func didInitialized() {
         qmui_styledAsQMUITableView()
-        
-//        if !TableViewEstimatedHeightEnabled {
-//            estimatedRowHeight = 0
-//            estimatedSectionHeaderHeight = 0
-//            estimatedSectionFooterHeight = 0
-//        } else {
-//            estimatedRowHeight = UITableViewAutomaticDimension
-//            estimatedSectionHeaderHeight = UITableViewAutomaticDimension
-//            estimatedSectionFooterHeight = UITableViewAutomaticDimension
-//        }
+    }
+    
+    deinit {
+        delegate = nil
+        dataSource = nil
     }
 
     // 保证一直存在tableFooterView，以去掉列表内容不满一屏时尾部的空白分割线

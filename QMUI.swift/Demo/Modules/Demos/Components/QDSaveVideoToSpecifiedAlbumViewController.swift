@@ -27,8 +27,8 @@ class QDSaveVideoToSpecifiedAlbumViewController: QDCommonViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func setNavigationItems(_ isInEditMode: Bool, animated: Bool) {
-        super.setNavigationItems(isInEditMode, animated: animated)
+    override func setupNavigationItems() {
+        super.setupNavigationItems()
         title = "保存视频到指定相册"
     }
     
