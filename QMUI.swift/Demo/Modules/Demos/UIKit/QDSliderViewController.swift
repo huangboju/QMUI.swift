@@ -19,7 +19,6 @@ class QDSliderViewController: QDCommonViewController {
         
         // 支持修改圆点的阴影样式
         slider.thumbShadowColor = slider.minimumTrackTintColor?.withAlphaComponent(0.3)
-        slider.thumbShadowColor = .red
         slider.thumbShadowOffset = CGSize(width: 0, height: 2)
         slider.thumbShadowRadius = 3
         return slider
@@ -56,10 +55,6 @@ class QDSliderViewController: QDCommonViewController {
         view.addSubview(systemSlider)
         view.addSubview(label1)
         view.addSubview(label2)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.slider.thumbShadowColor = .green
-        }
     }
     
     override func viewDidLayoutSubviews() {
