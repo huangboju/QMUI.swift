@@ -179,6 +179,7 @@ class QMUICommonViewController: UIViewController {
      *
      *  @return YES表示成功进行一次布局，NO表示本次调用并没有进行布局操作（例如emptyView还没被初始化）
      */
+    @discardableResult
     func layoutEmptyView() -> Bool {
         if let emptyView = emptyView {
             // 由于为self.emptyView设置frame时会调用到self.view，为了避免导致viewDidLoad提前触发，这里需要判断一下self.view是否已经被初始化

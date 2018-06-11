@@ -564,6 +564,7 @@ extension UIEdgeInsets {
         return result
     }
 
+    @discardableResult
     func setBottom(_ bottom: CGFloat) -> UIEdgeInsets {
         var result = self
         result.bottom = flat(bottom)

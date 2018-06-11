@@ -132,10 +132,10 @@ class QDDialogViewController: QDCommonGroupListViewController {
         dialogViewController.titleView.horizontalTitleFont = UIFontBoldMake(17)
         dialogViewController.buttonHighlightedBackgroundColor = dialogViewController.headerViewBackgroundColor.qmui_colorWithAlphaAddedToWhite(0.3)
         var buttonTitleAttributes = dialogViewController.buttonTitleAttributes
-        buttonTitleAttributes[NSAttributedStringKey.foregroundColor] = dialogViewController.headerViewBackgroundColor
+        buttonTitleAttributes[.foregroundColor] = dialogViewController.headerViewBackgroundColor
         dialogViewController.buttonTitleAttributes = buttonTitleAttributes
         dialogViewController.submitButton?.setImage(
-            UIImageMake("icon_emotion")?.qmui_imageResized(in: CGSize(width: 18, height: 18), contentMode: .scaleToFill)?.qmui_image(tintColor: buttonTitleAttributes[NSAttributedStringKey.foregroundColor] as! UIColor), for: .normal)
+            UIImageMake("icon_emotion")?.qmui_imageResized(in: CGSize(width: 18, height: 18), contentMode: .scaleToFill)?.qmui_image(tintColor: buttonTitleAttributes[.foregroundColor] as? UIColor), for: .normal)
         dialogViewController.submitButton?.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 8)
         
         dialogViewController.show()
