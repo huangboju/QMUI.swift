@@ -50,7 +50,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         }
     }
     
-    @objc dynamic var titleLabelTextColor: UIColor = UIColorMake(53, 60, 70) {
+    @objc dynamic var titleLabelTextColor: UIColor = UIColor(r: 53, g: 60, b: 70) {
         didSet {
             titleView?.titleLabel.textColor = titleLabelTextColor
         }
@@ -63,13 +63,13 @@ class QMUIDialogViewController: QMUICommonViewController {
         }
     }
     
-    @objc dynamic var subTitleLabelTextColor: UIColor = UIColorMake(133, 140, 150) {
+    @objc dynamic var subTitleLabelTextColor: UIColor = UIColor(r: 133, g: 140, b: 150) {
         didSet {
             titleView?.subtitleLabel.textColor = subTitleLabelTextColor
         }
     }
 
-    @objc dynamic var headerSeparatorColor: UIColor? = UIColorMake(222, 224, 226) {
+    @objc dynamic var headerSeparatorColor: UIColor? = UIColor(r: 222, g: 224, b: 226) {
         didSet {
             if let layer = headerViewSeparatorLayer {
                 layer.backgroundColor = headerSeparatorColor?.cgColor
@@ -79,7 +79,7 @@ class QMUIDialogViewController: QMUICommonViewController {
 
     @objc dynamic var headerViewHeight: CGFloat = 48
     
-    @objc dynamic var headerViewBackgroundColor: UIColor = UIColorMake(244, 245, 247) {
+    @objc dynamic var headerViewBackgroundColor: UIColor = UIColor(r: 244, g: 245, b: 247) {
         didSet {
             if isViewLoaded {
                 headerView.backgroundColor = headerViewBackgroundColor
@@ -89,7 +89,7 @@ class QMUIDialogViewController: QMUICommonViewController {
     
     @objc dynamic var contentViewMargins: UIEdgeInsets = .zero
     
-    @objc dynamic var footerSeparatorColor: UIColor? = UIColorMake(222, 224, 226) {
+    @objc dynamic var footerSeparatorColor: UIColor? = UIColor(r: 222, g: 224, b: 226) {
         didSet {
             if let layer = footerViewSeparatorLayer {
                 layer.backgroundColor = footerSeparatorColor?.cgColor
@@ -401,15 +401,15 @@ extension QMUIDialogViewController {
             dialogViewControllerAppearance.backgroundColor = UIColorClear
             dialogViewControllerAppearance.titleTintColor = UIColorBlack
             dialogViewControllerAppearance.titleLabelFont = UIFontMake(16)
-            dialogViewControllerAppearance.titleLabelTextColor = UIColorMake(53, 60, 70)
+            dialogViewControllerAppearance.titleLabelTextColor = UIColor(r: 53, g: 60, b: 70)
             dialogViewControllerAppearance.subTitleLabelFont = UIFontMake(12)
-            dialogViewControllerAppearance.subTitleLabelTextColor = UIColorMake(133, 140, 150)
+            dialogViewControllerAppearance.subTitleLabelTextColor = UIColor(r: 133, g: 140, b: 150)
             
-            dialogViewControllerAppearance.headerSeparatorColor = UIColorMake(222, 224, 226)
+            dialogViewControllerAppearance.headerSeparatorColor = UIColor(r: 222, g: 224, b: 226)
             dialogViewControllerAppearance.headerViewHeight = 48
-            dialogViewControllerAppearance.headerViewBackgroundColor = UIColorMake(244, 245, 247)
+            dialogViewControllerAppearance.headerViewBackgroundColor = UIColor(r: 244, g: 245, b: 247)
             dialogViewControllerAppearance.contentViewMargins = .zero;
-            dialogViewControllerAppearance.footerSeparatorColor = UIColorMake(222, 224, 226)
+            dialogViewControllerAppearance.footerSeparatorColor = UIColor(r: 222, g: 224, b: 226)
             dialogViewControllerAppearance.footerViewHeight = 48
             dialogViewControllerAppearance.footerViewBackgroundColor = UIColorWhite
             

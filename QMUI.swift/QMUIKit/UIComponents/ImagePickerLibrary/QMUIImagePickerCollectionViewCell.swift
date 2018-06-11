@@ -154,7 +154,7 @@ class QMUIImagePickerCollectionViewCell: UICollectionViewCell {
             _videoBottomShadowLayer = CAGradientLayer()
             _videoBottomShadowLayer!.qmui_removeDefaultAnimations()
             _videoBottomShadowLayer!.colors = [
-                UIColorMake(0, 0, 0).cgColor,
+                UIColor(r: 0, g: 0, b: 0).cgColor,
                 UIColorMakeWithRGBA(0, 0, 0, 0.6).cgColor,
             ]
             contentView.layer.addSublayer(_videoBottomShadowLayer!)

@@ -43,7 +43,7 @@ class QMUIMarqueeLabel: UILabel {
     var fadeWidth: CGFloat = 20
 
     /// 渐变遮罩外边缘的颜色，请使用带 Alpha 通道的颜色
-    var fadeStartColor: UIColor? = UIColorMake(255, 255, 255) {
+    var fadeStartColor: UIColor? = UIColor(r: 255, g: 255, b: 255) {
         didSet {
             updateFadeLayerColors()
         }
@@ -58,7 +58,7 @@ class QMUIMarqueeLabel: UILabel {
 
     /// YES 表示文字会在打开 shouldFadeAtEdge 的情况下，从左边的渐隐区域之后显示，NO 表示不管有没有打开 shouldFadeAtEdge，都会从 label 的边缘开始显示。默认为 NO。
     /// @note 如果文字宽度本身就没超过 label 宽度（也即无需滚动），此时必定不会显示渐隐，则这个属性不会影响文字的显示位置。
-    var textStartAfterFade: Bool = false
+    var textStartAfterFade = false
 
     private var displayLink: CADisplayLink?
     private var offsetX: CGFloat = 0 {

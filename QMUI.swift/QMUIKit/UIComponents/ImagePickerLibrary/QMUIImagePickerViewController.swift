@@ -171,7 +171,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
             sendButton.isEnabled = false
             sendButton.titleLabel?.font = UIFontMake(16)
             sendButton.contentHorizontalAlignment = .right
-            sendButton.setTitleColor(UIColorMake(124, 124, 124), for: .normal)
+            sendButton.setTitleColor(UIColor(r: 124, g: 124, b: 124), for: .normal)
             sendButton.setTitleColor(UIColorGray, for: .disabled)
             sendButton.setTitle("发送", for: .normal)
             sendButton.qmui_outsideEdge = UIEdgeInsets(top: -12, left: -20, bottom: -12, right: -20)

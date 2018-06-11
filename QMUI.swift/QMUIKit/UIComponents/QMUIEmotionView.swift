@@ -168,8 +168,8 @@ class QMUIEmotionView: UIView {
 
         pageControl = UIPageControl()
         pageControl.addTarget(self, action: #selector(handlePageControlEvent(_:)), for: .valueChanged)
-        pageControl.pageIndicatorTintColor = UIColorMake(210, 210, 210)
-        pageControl.currentPageIndicatorTintColor = UIColorMake(162, 162, 162)
+        pageControl.pageIndicatorTintColor = UIColor(r: 210, g: 210, b: 210)
+        pageControl.currentPageIndicatorTintColor = UIColor(r: 162, g: 162, b: 162)
         addSubview(pageControl)
 
         sendButton = QMUIButton()

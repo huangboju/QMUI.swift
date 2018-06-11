@@ -24,10 +24,7 @@ protocol QMUIConfigurationTemplateProtocol: NSObjectProtocol {
  */
 class QMUIConfiguration {
     
-    static let shared: QMUIConfiguration = {
-        let instance = QMUIConfiguration()
-        return instance
-    } ()
+    static let shared: QMUIConfiguration = QMUIConfiguration()
     
     private init() {
         
@@ -76,22 +73,22 @@ class QMUIConfiguration {
     var clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
     var white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
     var black = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-    var gray = UIColorMake(179, 179, 179)
-    var grayDarken = UIColorMake(163, 163, 163)
-    var grayLighten = UIColorMake(198, 198, 198)
-    var red = UIColorMake(250, 58, 58)
-    var green = UIColorMake(159, 214, 97)
-    var blue = UIColorMake(49, 189, 243)
-    var yellow = UIColorMake(255, 207, 71)
+    var gray = UIColor(r: 179, g: 179, b: 179)
+    var grayDarken = UIColor(r: 163, g: 163, b: 163)
+    var grayLighten = UIColor(r: 198, g: 198, b: 198)
+    var red = UIColor(r: 250, g: 58, b: 58)
+    var green = UIColor(r: 159, g: 214, b: 97)
+    var blue = UIColor(r: 49, g: 189, b: 243)
+    var yellow = UIColor(r: 255, g: 207, b: 71)
     
-    var linkColor = UIColorMake(56, 116, 171)
+    var linkColor = UIColor(r: 56, g: 116, b: 171)
     var disabledColor: UIColor
     var backgroundColor: UIColor?
     var maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35)
     var maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5)
-    var separatorColor = UIColorMake(222, 224, 226)
-    var separatorDashedColor = UIColorMake(17, 17, 17)
-    var placeholderColor = UIColorMake(196, 200, 208)
+    var separatorColor = UIColor(r: 222, g: 224, b: 226)
+    var separatorDashedColor = UIColor(r: 17, g: 17, b: 17)
+    var placeholderColor = UIColor(r: 196, g: 200, b: 208)
     
     var testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
     var testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
@@ -348,15 +345,15 @@ class QMUIConfiguration {
     var tableViewCellTitleLabelColor: UIColor?
     var tableViewCellDetailLabelColor: UIColor?
     var tableViewCellBackgroundColor: UIColor
-    var tableViewCellSelectedBackgroundColor = UIColorMake(238, 239, 241)
+    var tableViewCellSelectedBackgroundColor = UIColor(r: 238, g: 239, b: 241)
     var tableViewCellWarningBackgroundColor: UIColor
     var tableViewCellDisclosureIndicatorImage: UIImage?
     var tableViewCellCheckmarkImage: UIImage?
     var tableViewCellDetailButtonImage: UIImage?
     var tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator: CGFloat = 12
 
-    var tableViewSectionHeaderBackgroundColor = UIColorMake(244, 244, 244)
-    var tableViewSectionFooterBackgroundColor = UIColorMake(244, 244, 244)
+    var tableViewSectionHeaderBackgroundColor = UIColor(r: 244, g: 244, b: 244)
+    var tableViewSectionFooterBackgroundColor = UIColor(r: 244, g: 244, b: 244)
     var tableViewSectionHeaderFont = UIFontBoldMake(12)
     var tableViewSectionFooterFont = UIFontBoldMake(12)
     var tableViewSectionHeaderTextColor: UIColor

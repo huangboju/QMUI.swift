@@ -83,7 +83,7 @@ class QDChangeNavBarStyleViewController: QDCommonListViewController {
         } else if barStyle == .light {
             return nil // nil则用系统默认颜色（带磨砂）
         } else if barStyle == .dark {
-            return UIImage.qmui_image(color: UIColorMake(66, 66, 66))
+            return UIImage.qmui_image(color: UIColor(r: 66, g: 66, b: 66))
         } else {
             return NavBarBackgroundImage
         }
@@ -95,7 +95,7 @@ class QDChangeNavBarStyleViewController: QDCommonListViewController {
         } else if barStyle == .light {
             return nil // nil则用系统默认颜色
         } else if barStyle == .dark {
-            return UIImage.qmui_image(color: UIColorMake(99, 99, 99), size: CGSize(width: 10, height: PixelOne), cornerRadius:0)
+            return UIImage.qmui_image(color: UIColor(r: 99, g: 99, b: 99), size: CGSize(width: 10, height: PixelOne), cornerRadius:0)
         } else {
             return NavBarShadowImage
         }

@@ -1011,8 +1011,8 @@ class QMUIZoomImageViewVideoToolbar: UIView {
         addSubview(pauseButton)
 
         slider = QMUISlider()
-        slider.minimumTrackTintColor = UIColorMake(195, 195, 195)
-        slider.maximumTrackTintColor = UIColorMake(95, 95, 95)
+        slider.minimumTrackTintColor = UIColor(r: 195, g: 195, b: 195)
+        slider.maximumTrackTintColor = UIColor(r: 95, g: 95, b: 95)
         slider.thumbSize = CGSize(width: 12, height: 12)
         slider.thumbColor = UIColorWhite
         addSubview(slider)

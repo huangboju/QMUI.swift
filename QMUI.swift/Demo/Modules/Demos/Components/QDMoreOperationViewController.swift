@@ -111,11 +111,11 @@ class QDMoreOperationViewController: QDCommonListViewController {
         } else if title == "支持修改皮肤样式（例如夜间模式）" {
             let moreOperationController = QMUIMoreOperationController()
             moreOperationController.delegate = self
-            moreOperationController.contentBackgroundColor = UIColorMake(34, 34, 34)
-            moreOperationController.cancelButtonSeparatorColor = UIColorMake(51, 51, 51)
-            moreOperationController.cancelButtonBackgroundColor = UIColorMake(34, 34, 34)
-            moreOperationController.cancelButtonTitleColor = UIColorMake(102, 102, 102)
-            moreOperationController.itemTitleColor = UIColorMake(102, 102, 102)
+            moreOperationController.contentBackgroundColor = UIColor(r: 34, g: 34, b: 34)
+            moreOperationController.cancelButtonSeparatorColor = UIColor(r: 51, g: 51, b: 51)
+            moreOperationController.cancelButtonBackgroundColor = UIColor(r: 34, g: 34, b: 34)
+            moreOperationController.cancelButtonTitleColor = UIColor(r: 102, g: 102, b: 102)
+            moreOperationController.itemTitleColor = UIColor(r: 102, g: 102, b: 102)
             moreOperationController.items = [
                 // 第一行
                 [QMUIMoreOperationItemView(image: UIImageMake("icon_moreOperation_shareFriend")!, title: "分享给微信好友", handler: nil),

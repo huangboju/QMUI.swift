@@ -52,18 +52,18 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI.gray = UIColorGray4 // UIColorGray  : 最常用的灰色
         QMUICMI.grayDarken = UIColorGray3 // UIColorGrayDarken : 深一点的灰色
         QMUICMI.grayLighten = UIColorGray7 // UIColorGrayLighten : 浅一点的灰色
-        QMUICMI.red = UIColorMake(250, 58, 58) // UIColorRed : 红色
+        QMUICMI.red = UIColor(r: 250, g: 58, b: 58) // UIColorRed : 红色
         QMUICMI.green = UIColorTheme4 // UIColorGreen : 绿色
-        QMUICMI.blue = UIColorMake(49, 189, 243) // UIColorBlue : 蓝色
+        QMUICMI.blue = UIColor(r: 49, g: 189, b: 243) // UIColorBlue : 蓝色
         QMUICMI.yellow = UIColorTheme3 // UIColorYellow : 黄色
         
-        QMUICMI.linkColor = UIColorMake(56, 116, 171) // UIColorLink : 文字链接颜色
+        QMUICMI.linkColor = UIColor(r: 56, g: 116, b: 171) // UIColorLink : 文字链接颜色
         QMUICMI.disabledColor = UIColorGray
         QMUICMI.backgroundColor = UIColorWhite // UIColorForBackground : 界面背景色，默认用于 QMUICommonViewController.view 的背景色
         QMUICMI.maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35) // UIColorMask : 深色的背景遮罩，默认用于 QMAlertController、QMUIDialogViewController 等弹出控件的遮罩
         QMUICMI.maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5) // UIColorMaskWhite : 浅色的背景遮罩，QMUIKit 里默认没用到，只是占个位
-        QMUICMI.separatorColor = UIColorMake(222, 224, 226) // UIColorSeparator : 全局默认的分割线颜色，默认用于列表分隔线颜色、UIView (QMUI_Border) 分隔线颜色
-        QMUICMI.separatorDashedColor = UIColorMake(17, 17, 17) // UIColorSeparatorDashed : 全局默认的虚线分隔线的颜色，默认 QMUIKit 暂时没用到
+        QMUICMI.separatorColor = UIColor(r: 222, g: 224, b: 226) // UIColorSeparator : 全局默认的分割线颜色，默认用于列表分隔线颜色、UIView (QMUI_Border) 分隔线颜色
+        QMUICMI.separatorDashedColor = UIColor(r: 17, g: 17, b: 17) // UIColorSeparatorDashed : 全局默认的虚线分隔线的颜色，默认 QMUIKit 暂时没用到
         QMUICMI.placeholderColor = UIColorGray8 // UIColorPlaceholder，全局的输入框的 placeholder 颜色，默认用于 QMUITextField、QMUITextView，不影响系统 UIKit 的输入框
         
         // 测试用的颜色
@@ -120,10 +120,10 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         
         // MARK: TabBar
         
-        QMUICMI.tabBarBackgroundImage = UIImage.qmui_image(color: UIColorMake(249, 249, 249))?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)) // TabBarBackgroundImage : UITabBar 的背景图
+        QMUICMI.tabBarBackgroundImage = UIImage.qmui_image(color: UIColor(r: 249, g: 249, b: 249))?.resizableImage(withCapInsets: UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)) // TabBarBackgroundImage : UITabBar 的背景图
         QMUICMI.tabBarBarTintColor = nil // TabBarBarTintColor : UITabBar 的 barTintColor
         QMUICMI.tabBarShadowImageColor = UIColorSeparator // TabBarShadowImageColor : UITabBar 的 shadowImage 的颜色，会自动创建一张 1px 高的图片
-        QMUICMI.tabBarTintColor = UIColorMake(4, 189, 231) // TabBarTintColor : UITabBar 的 tintColor
+        QMUICMI.tabBarTintColor = UIColor(r: 4, g: 189, b: 231) // TabBarTintColor : UITabBar 的 tintColor
         QMUICMI.tabBarItemTitleColor = UIColorGray6 // TabBarItemTitleColor : 未选中的 UITabBarItem 的标题颜色
         QMUICMI.tabBarItemTitleColorSelected = TabBarTintColor // TabBarItemTitleColorSelected : 选中的 UITabBarItem 的标题颜色
         QMUICMI.tabBarItemTitleFont = nil // TabBarItemTitleFont : UITabBarItem 的标题字体
@@ -142,13 +142,13 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         
         // MARK: SearchBar
         
-        QMUICMI.searchBarTextFieldBackground = UIColorMake(237, 238, 240) // SearchBarTextFieldBackground : QMUISearchBar 里的文本框的背景颜色
+        QMUICMI.searchBarTextFieldBackground = UIColor(r: 237, g: 238, b: 240) // SearchBarTextFieldBackground : QMUISearchBar 里的文本框的背景颜色
         QMUICMI.searchBarTextFieldBorderColor = nil // SearchBarTextFieldBorderColor : QMUISearchBar 里的文本框的边框颜色
         QMUICMI.searchBarBottomBorderColor = UIColorClear // SearchBarBottomBorderColor : QMUISearchBar 底部分隔线颜色
         QMUICMI.searchBarBarTintColor = UIColorWhite // SearchBarBarTintColor : QMUISearchBar 的 barTintColor，也即背景色
         QMUICMI.searchBarTintColor = themeTintColor // SearchBarTintColor : QMUISearchBar 的 tintColor，也即上面的操作控件的主题色
         QMUICMI.searchBarTextColor = UIColorBlack // SearchBarTextColor : QMUISearchBar 里的文本框的文字颜色
-        QMUICMI.searchBarPlaceholderColor = UIColorMake(136, 136, 143) // SearchBarPlaceholderColor : QMUISearchBar 里的文本框的 placeholder 颜色
+        QMUICMI.searchBarPlaceholderColor = UIColor(r: 136, g: 136, b: 143) // SearchBarPlaceholderColor : QMUISearchBar 里的文本框的 placeholder 颜色
         QMUICMI.searchBarFont = nil // SearchBarFont : QMUISearchBar 里的文本框的文字字体及 placeholder 的字体
         QMUICMI.searchBarSearchIconImage = nil // SearchBarSearchIconImage : QMUISearchBar 里的放大镜 icon
         QMUICMI.searchBarClearIconImage = nil // SearchBarClearIconImage : QMUISearchBar 里的文本框输入文字时右边的清空按钮的图片
@@ -159,7 +159,7 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI.tableViewEstimatedHeightEnabled = false // TableViewEstimatedHeightEnabled : 是否要开启全局 UITableView 的 estimatedRow(Section/Footer)Height
         
         QMUICMI.tableViewBackgroundColor = nil // TableViewBackgroundColor : Plain 类型的 QMUITableView 的背景色颜色
-        QMUICMI.tableViewGroupedBackgroundColor = UIColorMake(246, 246, 246) // TableViewGroupedBackgroundColor : Grouped 类型的 QMUITableView 的背景色
+        QMUICMI.tableViewGroupedBackgroundColor = UIColor(r: 246, g: 246, b: 246) // TableViewGroupedBackgroundColor : Grouped 类型的 QMUITableView 的背景色
         QMUICMI.tableSectionIndexColor = UIColorGrayDarken // TableSectionIndexColor : 列表右边的字母索引条的文字颜色
         QMUICMI.tableSectionIndexBackgroundColor = UIColorClear // TableSectionIndexBackgroundColor : 列表右边的字母索引条的背景色
         QMUICMI.tableSectionIndexTrackingBackgroundColor = UIColorClear // TableSectionIndexTrackingBackgroundColor : 列表右边的字母索引条在选中时的背景色
@@ -169,15 +169,15 @@ class QMUIConfigurationTemplate: NSObject, QDThemeProtocol {
         QMUICMI.tableViewCellTitleLabelColor = UIColorGray3 // TableViewCellTitleLabelColor : QMUITableViewCell 的 textLabel 的文字颜色
         QMUICMI.tableViewCellDetailLabelColor = UIColorGray5 // TableViewCellDetailLabelColor : QMUITableViewCell 的 detailTextLabel 的文字颜色
         QMUICMI.tableViewCellBackgroundColor = UIColorWhite // TableViewCellBackgroundColor : QMUITableViewCell 的背景色
-        QMUICMI.tableViewCellSelectedBackgroundColor = UIColorMake(238, 239, 241) // TableViewCellSelectedBackgroundColor : QMUITableViewCell 点击时的背景色
+        QMUICMI.tableViewCellSelectedBackgroundColor = UIColor(r: 238, g: 239, b: 241) // TableViewCellSelectedBackgroundColor : QMUITableViewCell 点击时的背景色
         QMUICMI.tableViewCellWarningBackgroundColor = UIColorYellow // TableViewCellWarningBackgroundColor : QMUITableViewCell 用于表示警告时的背景色，备用
-        QMUICMI.tableViewCellDisclosureIndicatorImage = UIImage.qmui_image(shape: .disclosureIndicator, size: CGSize(width: 6, height: 10), lineWidth: 1, tintColor: UIColorMake(173, 180, 190)) // TableViewCellDisclosureIndicatorImage : QMUITableViewCell 当 accessoryType 为 UITableViewCellAccessoryDisclosureIndicator 时的箭头的图片
+        QMUICMI.tableViewCellDisclosureIndicatorImage = UIImage.qmui_image(shape: .disclosureIndicator, size: CGSize(width: 6, height: 10), lineWidth: 1, tintColor: UIColor(r: 173, g: 180, b: 190)) // TableViewCellDisclosureIndicatorImage : QMUITableViewCell 当 accessoryType 为 UITableViewCellAccessoryDisclosureIndicator 时的箭头的图片
         QMUICMI.tableViewCellCheckmarkImage = UIImage.qmui_image(shape: .checkmark, size: CGSize(width: 15, height: 12), tintColor: themeTintColor) // TableViewCellCheckmarkImage : QMUITableViewCell 当 accessoryType 为 UITableViewCellAccessoryCheckmark 时的打钩的图片
         QMUICMI.tableViewCellDetailButtonImage = UIImage.qmui_image(shape: .detailButtonImage, size: CGSize(width: 20, height: 20), tintColor: themeTintColor) // TableViewCellDetailButtonImage : QMUITableViewCell 当 accessoryType 为 UITableViewCellAccessoryDetailButton 或 UITableViewCellAccessoryDetailDisclosureButton 时右边的 i 按钮图片
         QMUICMI.tableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator = 12 // TableViewCellSpacingBetweenDetailButtonAndDisclosureIndicator : 列表 cell 右边的 i 按钮和向右箭头之间的间距（仅当两者都使用了自定义图片并且同时显示时才生效）
         
-        QMUICMI.tableViewSectionHeaderBackgroundColor = UIColorMake(244, 244, 244) // TableViewSectionHeaderBackgroundColor : Plain 类型的 QMUITableView sectionHeader 的背景色
-        QMUICMI.tableViewSectionFooterBackgroundColor = UIColorMake(244, 244, 244) // TableViewSectionFooterBackgroundColor : Plain 类型的 QMUITableView sectionFooter 的背景色
+        QMUICMI.tableViewSectionHeaderBackgroundColor = UIColor(r: 244, g: 244, b: 244) // TableViewSectionHeaderBackgroundColor : Plain 类型的 QMUITableView sectionHeader 的背景色
+        QMUICMI.tableViewSectionFooterBackgroundColor = UIColor(r: 244, g: 244, b: 244) // TableViewSectionFooterBackgroundColor : Plain 类型的 QMUITableView sectionFooter 的背景色
         QMUICMI.tableViewSectionHeaderFont = UIFontBoldMake(12) // TableViewSectionHeaderFont : Plain 类型的 QMUITableView sectionHeader 里的文字字体
         QMUICMI.tableViewSectionFooterFont = UIFontBoldMake(12) // TableViewSectionFooterFont : Plain 类型的 QMUITableView sectionFooter 里的文字字体
         QMUICMI.tableViewSectionHeaderTextColor = UIColorGray5 // TableViewSectionHeaderTextColor : Plain 类型的 QMUITableView sectionHeader 里的文字颜色

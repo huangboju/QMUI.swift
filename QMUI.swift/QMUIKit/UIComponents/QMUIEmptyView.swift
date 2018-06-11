@@ -126,14 +126,14 @@ class QMUIEmptyView: UIView {
     // 颜色
 
     /// 默认为(93, 100, 110)
-    @objc dynamic var textLabelTextColor = UIColorMake(93, 100, 110) {
+    @objc dynamic var textLabelTextColor = UIColor(r: 93, g: 100, b: 110) {
         didSet {
             textLabel.textColor = textLabelTextColor
         }
     }
 
     /// 默认为(133, 140, 150)
-    @objc dynamic var detailTextLabelTextColor = UIColorMake(133, 140, 150) {
+    @objc dynamic var detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150) {
         didSet {
             updateDetailTextLabel(with: detailTextLabel.text)
         }
@@ -360,15 +360,15 @@ extension QMUIEmptyView {
             emptyViewAppearance.textLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
             emptyViewAppearance.detailTextLabelInsets = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
             emptyViewAppearance.actionButtonInsets = .zero
-            emptyViewAppearance.verticalOffset = -30;
+            emptyViewAppearance.verticalOffset = -30
             
             
             emptyViewAppearance.textLabelFont = UIFontMake(15)
             emptyViewAppearance.detailTextLabelFont = UIFontMake(14)
             emptyViewAppearance.actionButtonFont = UIFontMake(15)
             
-            emptyViewAppearance.textLabelTextColor = UIColorMake(93, 100, 110)
-            emptyViewAppearance.detailTextLabelTextColor = UIColorMake(133, 140, 150)
+            emptyViewAppearance.textLabelTextColor = UIColor(r: 93, g: 100, b: 110)
+            emptyViewAppearance.detailTextLabelTextColor = UIColor(r: 133, g: 140, b: 150)
             emptyViewAppearance.actionButtonTitleColor = ButtonTintColor
         }
     }

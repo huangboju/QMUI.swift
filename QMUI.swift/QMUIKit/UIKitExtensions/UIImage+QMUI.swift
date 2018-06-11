@@ -694,7 +694,7 @@ extension UIImage {
         CGContextInspectSize(size)
 
         var resultImage: UIImage?
-        let tintColor = tintColor ?? UIColorMake(255, 255, 255)
+        let tintColor = tintColor ?? UIColor(r: 255, g: 255, b: 255)
 
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }

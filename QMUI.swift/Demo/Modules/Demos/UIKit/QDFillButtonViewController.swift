@@ -27,7 +27,7 @@ class QDFillButtonViewController: QDCommonViewController {
         fillButton.titleLabel?.font = UIFontMake(14)
         // 默认点击态是半透明处理，如果需要点击态是其他颜色，修改下面两个属性
         // fillButton2.adjustsButtonWhenHighlighted = false
-        // fillButton2.highlightedBackgroundColor = UIColorMake(70, 160, 242)
+        // fillButton2.highlightedBackgroundColor = UIColor(r: 70, 160, 242)
         fillButton.setTitle("QMUIFillButtonColorRed", for: .normal)
         return fillButton
     }()

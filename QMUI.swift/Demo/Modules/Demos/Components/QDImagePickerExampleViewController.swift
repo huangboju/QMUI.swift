@@ -198,7 +198,7 @@ extension QDImagePickerExampleViewController: QMUIImagePickerViewControllerDeleg
             let imagePickerPreviewViewController = QMUIImagePickerPreviewViewController()
             imagePickerPreviewViewController.delegate = self
             imagePickerPreviewViewController.view.tag = imagePickerViewController.view.tag
-            imagePickerPreviewViewController.toolBarBackgroundColor = UIColorMake(66, 66, 66)
+            imagePickerPreviewViewController.toolBarBackgroundColor = UIColor(r: 66, g: 66, b: 66)
             return imagePickerPreviewViewController
         } else {
             let imagePickerPreviewViewController = QMUIImagePickerPreviewViewController()

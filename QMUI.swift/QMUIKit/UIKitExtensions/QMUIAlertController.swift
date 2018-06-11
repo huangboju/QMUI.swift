@@ -43,50 +43,54 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     /// alert的最大宽度，默认270。
     @objc dynamic var alertContentMaximumWidth: CGFloat = 270
 
-    /// alert上分隔线颜色，默认 UIColorMake(211, 211, 219)。
-    @objc dynamic var alertSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
+    /// alert上分隔线颜色，默认 UIColor(r: 211, 211, 219)。
+    @objc dynamic var alertSeperatorColor: UIColor = UIColor(r: 211, g: 211, b: 219) {
         didSet {
             updateEffectBackgroundColor()
         }
     }
 
-    /// alert标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc dynamic var alertTitleAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// alert标题样式，默认 [.foregroundColor: UIColor.black, .font: UIFontBoldMake(17), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc dynamic var alertTitleAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColor.black, .font: UIFontBoldMake(17), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateTitle = true
         }
     }
 
-    /// alert信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc dynamic var alertMessageAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.black, NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// alert信息样式，默认 [.foregroundColor: UIColor.black, .font: UIFontMake(13), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc dynamic var alertMessageAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColor.black, .font: UIFontMake(13), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateMessage = true
         }
     }
 
-    /// alert按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0]
-    @objc dynamic var alertButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// alert按钮样式，默认 [.foregroundColor: UIColor.blue, .font: UIFontMake(17), .kern: 0]
+    @objc dynamic var alertButtonAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColor.blue, .font: UIFontMake(17), .kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// alert按钮disabled时的样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// alert按钮disabled时的样式，默认 [.foregroundColor: UIColor(r: 129, 129, 129), .font: UIFontMake(17), .kern: 0 as AnyObject]
+    @objc dynamic var alertButtonDisabledAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor(r: 129, g: 129, b: 129),
+        .font: UIFontMake(17),
+        .kern: 0 as AnyObject
+        ] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// alert cancel 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var alertCancelButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// alert cancel 按钮样式，默认 [.foregroundColor: UIColor.blue, .font: UIFontBoldMake(17), .kern: 0 as AnyObject]
+    @objc dynamic var alertCancelButtonAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColor.blue, .font: UIFontBoldMake(17), .kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// alert destructive 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var alertDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontMake(17), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// alert destructive 按钮样式，默认 [.foregroundColor: UIColor.red, .font: UIFontMake(17), .kern: 0 as AnyObject]
+    @objc dynamic var alertDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [.foregroundColor: UIColor.red, .font: UIFontMake(17), .kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
@@ -116,8 +120,8 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         }
     }
 
-    /// alert按钮高亮背景色，默认 UIColorMake(232, 232, 232)
-    @objc dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
+    /// alert按钮高亮背景色，默认 UIColor(r: 232, 232, 232)
+    @objc dynamic var alertButtonHighlightBackgroundColor: UIColor = UIColor(r: 232, g: 232, b: 232) {
         didSet {
             _needsUpdateAction = true
         }
@@ -135,53 +139,65 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     /// sheet的最大宽度，默认值是5.5英寸的屏幕的宽度减去水平的 sheetContentMargin
     @objc dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsetsMake(10, 10, 10, 10).horizontalValue
 
-    /// sheet分隔线颜色，默认 UIColorMake(211, 211, 219)
-    @objc dynamic var sheetSeperatorColor: UIColor = UIColorMake(211, 211, 219) {
+    /// sheet分隔线颜色，默认 UIColor(r: 211, 211, 219)
+    @objc dynamic var sheetSeperatorColor: UIColor = UIColor(r: 211, g: 211, b: 219) {
         didSet {
             updateEffectBackgroundColor()
         }
     }
 
-    /// sheet标题样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc dynamic var sheetTitleAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontBoldMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// sheet标题样式，默认 [.foregroundColor: UIColor(r: 143, 143, 143), .font: UIFontBoldMake(13), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc dynamic var sheetTitleAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor(r: 143, g: 143, b: 143),
+        .font: UIFontBoldMake(13),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateTitle = true
         }
     }
 
-    /// sheet信息样式，默认 [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
-    @objc dynamic var sheetMessageAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143), NSAttributedStringKey.font: UIFontMake(13), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
+    /// sheet信息样式，默认 [.foregroundColor: UIColor(r: 143, 143, 143), .font: UIFontMake(13), .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+    @objc dynamic var sheetMessageAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor(r: 143, g: 143, b: 143),
+        .font: UIFontMake(13),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)] {
         didSet {
             _needsUpdateMessage = true
         }
     }
 
-    /// sheet按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var sheetButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
+    /// sheet按钮样式，默认 [.foregroundColor: UIColor.blue, .font: UIFontMake(20), .kern: 0 as AnyObject]
+    @objc dynamic var sheetButtonAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor.blue,
+        .font: UIFontMake(20),
+        .kern: 0 as AnyObject] {
         didSet {
             _needsUpdateAction = true
         }
     }
 
-    /// sheet按钮disabled时的样式，默认 [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129), NSAttributedStringKey.font: UIFontMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
-        didSet {
-            _needsUpdateAction = true
-        }
+    /// sheet按钮disabled时的样式，默认 [: Any] = [.foregroundColor: UIColor(r: 129, 129, 129), .font: UIFontMake(20), .kern: 0 as AnyObject]
+    @objc dynamic var sheetButtonDisabledAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor(r: 129, g: 129, b: 129),
+        .font: UIFontMake(20),
+        .kern: 0 as AnyObject] {
+        didSet { _needsUpdateAction = true }
     }
 
-    /// sheet cancel 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var sheetCancelButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
-        didSet {
-            _needsUpdateAction = true
-        }
+    /// sheet cancel 按钮样式，默认 [.foregroundColor: UIColor.blue, .font: UIFontBoldMake(20), .kern: 0 as AnyObject]
+    @objc dynamic var sheetCancelButtonAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor.blue,
+        .font: UIFontBoldMake(20),
+        .kern: 0 as AnyObject] {
+        didSet { _needsUpdateAction = true }
     }
 
-    /// sheet destructive 按钮样式，默认 [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject]
-    @objc dynamic var sheetDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColor.red, NSAttributedStringKey.font: UIFontBoldMake(20), NSAttributedStringKey.kern: 0 as AnyObject] {
-        didSet {
-            _needsUpdateAction = true
-        }
+    /// sheet destructive 按钮样式，默认 [.foregroundColor: UIColor.red, .font: UIFontBoldMake(20), .kern: 0 as AnyObject]
+    @objc dynamic var sheetDestructiveButtonAttributes: [NSAttributedStringKey: Any] = [
+        .foregroundColor: UIColor.red,
+        .font: UIFontBoldMake(20),
+        .kern: 0 as AnyObject] {
+        didSet { _needsUpdateAction = true }
     }
 
     /// sheet cancel 按钮距离其上面元素（按钮或者header）的间距，默认8pt
@@ -211,11 +227,9 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         }
     }
 
-    /// sheet按钮高亮背景色，默认 UIColorMake(232, 232, 232)
-    @objc dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColorMake(232, 232, 232) {
-        didSet {
-            _needsUpdateAction = true
-        }
+    /// sheet按钮高亮背景色，默认 UIColor(r: 232, 232, 232)
+    @objc dynamic var sheetButtonHighlightBackgroundColor: UIColor = UIColor(r: 232, g: 232, b: 232) {
+        didSet { _needsUpdateAction = true }
     }
 
     /// sheet头部四边insets间距
@@ -944,7 +958,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
         textField.textColor = .black
         textField.autocapitalizationType = .none
         textField.clearButtonMode = .whileEditing
-        textField.layer.borderColor = UIColorMake(210, 210, 210).cgColor
+        textField.layer.borderColor = UIColor(r: 210, g: 210, b: 210).cgColor
         textField.layer.borderWidth = PixelOne
         headerScrollView.addSubview(textField)
         alertTextFields.append(textField)
@@ -1015,7 +1029,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
 
             if let image = $0.button.image(for: .normal), let attributeStr = attributeString {
                 var range = NSRange(location: 0, length: attributeStr.length)
-                let disabledColor = attributeString?.attribute(NSAttributedStringKey.foregroundColor, at: 0, effectiveRange: &range)
+                let disabledColor = attributeString?.attribute(.foregroundColor, at: 0, effectiveRange: &range)
                 $0.button.setImage(image.qmui_image(tintColor: disabledColor as! UIColor), for: .disabled)
             }
         }
@@ -1082,73 +1096,77 @@ extension QMUIAlertController {
         let alertControllerAppearance = QMUIAlertController()
         alertControllerAppearance.alertContentMargin = UIEdgeInsetsMake(0, 0, 0, 0)
         alertControllerAppearance.alertContentMaximumWidth = 270
-        alertControllerAppearance.alertSeperatorColor = UIColorMake(211, 211, 219)
+        alertControllerAppearance.alertSeperatorColor = UIColor(r: 211, g: 211, b: 219)
         alertControllerAppearance.alertTitleAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorBlack,
-        NSAttributedStringKey.font: UIFontBoldMake(17),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        .foregroundColor: UIColorBlack,
+        .font: UIFontBoldMake(17),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
         alertControllerAppearance.alertMessageAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlack,
-        NSAttributedStringKey.font: UIFontMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+        [.foregroundColor: UIColorBlack,
+        .font: UIFontMake(13),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
         alertControllerAppearance.alertButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontMake(17)]
+        [   .foregroundColor: UIColorBlue,
+        .font: UIFontMake(17)]
         alertControllerAppearance.alertButtonDisabledAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
-        NSAttributedStringKey.font: UIFontMake(17),
-        NSAttributedStringKey.kern: 0]
+            [
+                .foregroundColor: UIColor(r: 129, g: 129, b: 129),
+                .font: UIFontMake(17),
+                .kern: 0
+        ]
         alertControllerAppearance.alertCancelButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontBoldMake(17),
-        NSAttributedStringKey.kern: 0]
+        [
+            .foregroundColor: UIColorBlue,
+            .font: UIFontBoldMake(17),
+            .kern: 0
+        ]
         alertControllerAppearance.alertDestructiveButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorRed,
-        NSAttributedStringKey.font: UIFontMake(17),
-        NSAttributedStringKey.kern: 0]
+        .foregroundColor: UIColorRed,
+        .font: UIFontMake(17),
+        .kern: 0]
         alertControllerAppearance.alertContentCornerRadius = IOS_VERSION > 9.0 ? 13 : 6
         alertControllerAppearance.alertButtonHeight = 44
         alertControllerAppearance.alertHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
         alertControllerAppearance.alertButtonBackgroundColor = alertControllerAppearance.alertHeaderBackgroundColor
-        alertControllerAppearance.alertButtonHighlightBackgroundColor = UIColorMake(232, 232, 232)
+        alertControllerAppearance.alertButtonHighlightBackgroundColor = UIColor(r: 232, g: 232, b: 232)
         alertControllerAppearance.alertHeaderInsets = UIEdgeInsetsMake(20, 16, 20, 16)
         alertControllerAppearance.alertTitleMessageSpacing = 3
         
         alertControllerAppearance.sheetContentMargin = UIEdgeInsetsMake(10, 10, 10, 10)
         alertControllerAppearance.sheetContentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - alertControllerAppearance.sheetContentMargin.horizontalValue
-        alertControllerAppearance.sheetSeperatorColor = UIColorMake(211, 211, 219)
+        alertControllerAppearance.sheetSeperatorColor = UIColor(r: 211, g: 211, b: 219)
         
         alertControllerAppearance.sheetTitleAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
-        NSAttributedStringKey.font: UIFontBoldMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            .foregroundColor: UIColor(r: 143, g: 143, b: 143),
+        .font: UIFontBoldMake(13),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
         alertControllerAppearance.sheetMessageAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorMake(143, 143, 143),
-        NSAttributedStringKey.font: UIFontMake(13),
-        NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
+            .foregroundColor: UIColor(r: 143, g: 143, b: 143),
+        .font: UIFontMake(13),
+        .paragraphStyle: NSMutableParagraphStyle(lineHeight: 0, lineBreakMode: .byTruncatingTail)]
         alertControllerAppearance.sheetButtonAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
+        [.foregroundColor: UIColorBlue,
+        .font: UIFontMake(20),
+        .kern: 0]
         alertControllerAppearance.sheetButtonDisabledAttributes =
-        [NSAttributedStringKey.foregroundColor: UIColorMake(129, 129, 129),
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
+            [.foregroundColor: UIColor(r: 129, g: 129, b: 129),
+        .font: UIFontMake(20),
+        .kern: 0]
         alertControllerAppearance.sheetCancelButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorBlue,
-        NSAttributedStringKey.font: UIFontBoldMake(20),
-        NSAttributedStringKey.kern: 0]
+        .foregroundColor: UIColorBlue,
+        .font: UIFontBoldMake(20),
+        .kern: 0]
         alertControllerAppearance.sheetDestructiveButtonAttributes = [
-        NSAttributedStringKey.foregroundColor: UIColorRed,
-        NSAttributedStringKey.font: UIFontMake(20),
-        NSAttributedStringKey.kern: 0]
+        .foregroundColor: UIColorRed,
+        .font: UIFontMake(20),
+        .kern: 0]
         
         alertControllerAppearance.sheetCancelButtonMarginTop = 8
         alertControllerAppearance.sheetContentCornerRadius = IOS_VERSION >= 9.0 ? 13 : 6
         alertControllerAppearance.sheetButtonHeight = IOS_VERSION >= 9.0 ? 57 : 44
         alertControllerAppearance.sheetHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
         alertControllerAppearance.sheetButtonBackgroundColor = alertControllerAppearance.sheetHeaderBackgroundColor
-        alertControllerAppearance.sheetButtonHighlightBackgroundColor = UIColorMake(232, 232, 232)
+        alertControllerAppearance.sheetButtonHighlightBackgroundColor = UIColor(r: 232, g: 232, b: 232)
         alertControllerAppearance.sheetHeaderInsets = UIEdgeInsetsMake(16, 16, 16, 16)
         alertControllerAppearance.sheetTitleMessageSpacing = 8
         alertControllerAppearance.isExtendBottomLayout = false

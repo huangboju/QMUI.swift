@@ -49,7 +49,7 @@ class QDKeyboardCustomViewController: QDCommonViewController {
         containerView.addSubview(textView)
         
         toolbarView = UIView()
-        toolbarView.backgroundColor = UIColorMake(246, 246, 246)
+        toolbarView.backgroundColor = UIColor(r: 246, g: 246, b: 246)
         toolbarView.qmui_borderColor = UIColorSeparator
         toolbarView.qmui_borderPosition = .top
         containerView.addSubview(toolbarView)
