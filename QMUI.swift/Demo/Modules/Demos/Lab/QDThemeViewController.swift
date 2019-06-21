@@ -126,7 +126,7 @@ class QDThemeButton: QMUIButton {
         setTitleColor(UIColorGray3, for: .normal)
         
         layer.borderWidth = PixelOne
-        layer.borderColor = UIColorMakeWithRGBA(0, 0, 0, 0.1).cgColor
+        layer.borderColor = UIColor(r: 0, g: 0, b: 0, a: 0.1).cgColor
         layer.cornerRadius = 4
         layer.masksToBounds = true
     }

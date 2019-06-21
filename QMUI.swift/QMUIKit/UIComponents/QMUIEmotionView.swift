@@ -318,7 +318,7 @@ fileprivate class QMUIEmotionPageView: UICollectionViewCell {
 
         emotionSelectedBackgroundView = UIView()
         emotionSelectedBackgroundView.isUserInteractionEnabled = false
-        emotionSelectedBackgroundView.backgroundColor = UIColorMakeWithRGBA(0, 0, 0, 0.16)
+        emotionSelectedBackgroundView.backgroundColor = UIColor(r: 0, g: 0, b: 0, a: 0.16)
         emotionSelectedBackgroundView.layer.cornerRadius = 3
         emotionSelectedBackgroundView.alpha = 0
         addSubview(emotionSelectedBackgroundView)

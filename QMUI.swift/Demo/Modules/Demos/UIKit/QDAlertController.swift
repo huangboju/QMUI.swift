@@ -69,7 +69,7 @@ class QDAlertController: QDCommonGroupListViewController {
             titleAttributs[.foregroundColor] = UIColorWhite
             alertController.alertTitleAttributes = titleAttributs
             var messageAttributs = alertController.alertMessageAttributes
-            messageAttributs[.foregroundColor] = UIColorMakeWithRGBA(255, 255, 255, 0.75)
+            messageAttributs[.foregroundColor] = UIColor(r: 255, g: 255, b: 255, a: 0.75)
             alertController.alertMessageAttributes = messageAttributs
             if let themeTintColor = QDThemeManager.shared.currentTheme?.themeTintColor {
                 alertController.alertHeaderBackgroundColor = themeTintColor

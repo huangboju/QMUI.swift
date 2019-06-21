@@ -159,7 +159,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
     var contentPaddings: UIEdgeInsets = .zero
     
     // 每一行之间的顶部分隔线，对第一行无效
-    var scrollViewSeparatorColor: UIColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
+    var scrollViewSeparatorColor: UIColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
         didSet {
             updateScrollViewsBorderStyle()
         }
@@ -259,7 +259,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
     }
     
     // 取消按钮的顶部分隔线颜色
-    var cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15) {
+    var cancelButtonSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15) {
         didSet {
             cancelButton.qmui_borderColor = cancelButtonSeparatorColor
         }
@@ -769,9 +769,9 @@ extension QMUIMoreOperationController {
         moreOperationViewControllerAppearance.contentEdgeMargin = 10
         moreOperationViewControllerAppearance.contentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - moreOperationViewControllerAppearance.contentEdgeMargin * 2
         moreOperationViewControllerAppearance.contentCornerRadius = 10
-        moreOperationViewControllerAppearance.contentPaddings = UIEdgeInsets.init(top: 10, left: 0, bottom: 5, right: 0)
-        moreOperationViewControllerAppearance.scrollViewSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15)
-        moreOperationViewControllerAppearance.scrollViewContentInsets = UIEdgeInsets.init(top: 14, left: 8, bottom: 14, right: 8)
+        moreOperationViewControllerAppearance.contentPaddings = UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
+        moreOperationViewControllerAppearance.scrollViewSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15)
+        moreOperationViewControllerAppearance.scrollViewContentInsets = UIEdgeInsets(top: 14, left: 8, bottom: 14, right: 8)
         
         moreOperationViewControllerAppearance.itemBackgroundColor = UIColorClear
         moreOperationViewControllerAppearance.itemTitleColor = UIColorGrayDarken
@@ -783,7 +783,7 @@ extension QMUIMoreOperationController {
         
         moreOperationViewControllerAppearance.cancelButtonBackgroundColor = UIColorWhite
         moreOperationViewControllerAppearance.cancelButtonTitleColor = UIColorBlue
-        moreOperationViewControllerAppearance.cancelButtonSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15)
+        moreOperationViewControllerAppearance.cancelButtonSeparatorColor = UIColor(r: 0, g: 0, b: 0, a: 0.15)
         moreOperationViewControllerAppearance.cancelButtonFont = UIFontBoldMake(16)
         moreOperationViewControllerAppearance.cancelButtonHeight = 56.0
         moreOperationViewControllerAppearance.cancelButtonMarginTop = 0

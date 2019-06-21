@@ -107,14 +107,14 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     @objc dynamic var alertButtonHeight: CGFloat = 44
 
     /// alert头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
-    @objc dynamic var alertHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var alertHeaderBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// alert按钮背景色，默认值同`alertHeaderBackgroundColor`
-    @objc dynamic var alertButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var alertButtonBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
         didSet {
             _needsUpdateAction = true
         }
@@ -128,16 +128,16 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     }
 
     /// alert头部四边insets间距
-    @objc dynamic var alertHeaderInsets: UIEdgeInsets = UIEdgeInsets.init(top: 20, left: 16, bottom: 20, right: 16)
+    @objc dynamic var alertHeaderInsets: UIEdgeInsets = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
 
     /// alert头部title和message之间的间距，默认3pt
     @objc dynamic var alertTitleMessageSpacing: CGFloat = 3
 
     /// sheet距离屏幕四边的间距，默认UIEdgeInsetsMake(10, 10, 10, 10)。
-    @objc dynamic var sheetContentMargin: UIEdgeInsets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
+    @objc dynamic var sheetContentMargin: UIEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 
     /// sheet的最大宽度，默认值是5.5英寸的屏幕的宽度减去水平的 sheetContentMargin
-    @objc dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10).horizontalValue
+    @objc dynamic var sheetContentMaximumWidth: CGFloat = QMUIHelper.screenSizeFor55Inch.width - UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10).horizontalValue
 
     /// sheet分隔线颜色，默认 UIColor(r: 211, 211, 219)
     @objc dynamic var sheetSeperatorColor: UIColor = UIColor(r: 211, g: 211, b: 219) {
@@ -214,14 +214,14 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     @objc dynamic var sheetButtonHeight: CGFloat = (IOS_VERSION >= 9.0 ? 57 : 44)
 
     /// sheet头部（非按钮部分）背景色，默认值是：UIColorMakeWithRGBA(247, 247, 247, 1)
-    @objc dynamic var sheetHeaderBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var sheetHeaderBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
         didSet {
             updateHeaderBackgrondColor()
         }
     }
 
     /// sheet按钮背景色，默认值同`sheetHeaderBackgroundColor`
-    @objc dynamic var sheetButtonBackgroundColor: UIColor = UIColorMakeWithRGBA(247, 247, 247, 1) {
+    @objc dynamic var sheetButtonBackgroundColor: UIColor = UIColor(r: 247, g: 247, b: 247, a: 1) {
         didSet {
             _needsUpdateAction = true
         }
@@ -233,7 +233,7 @@ class QMUIAlertController: UIViewController, QMUIAlertActionDelegate, QMUIModalP
     }
 
     /// sheet头部四边insets间距
-    @objc dynamic var sheetHeaderInsets: UIEdgeInsets = UIEdgeInsets.init(top: 16, left: 16, bottom: 16, right: 16)
+    @objc dynamic var sheetHeaderInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
     /// sheet头部title和message之间的间距，默认8pt
     @objc dynamic var sheetTitleMessageSpacing: CGFloat = 8
@@ -1126,7 +1126,7 @@ extension QMUIAlertController {
         .kern: 0]
         alertControllerAppearance.alertContentCornerRadius = IOS_VERSION > 9.0 ? 13 : 6
         alertControllerAppearance.alertButtonHeight = 44
-        alertControllerAppearance.alertHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
+        alertControllerAppearance.alertHeaderBackgroundColor = UIColor(r: 247, g: 247, b: 247, a: 1)
         alertControllerAppearance.alertButtonBackgroundColor = alertControllerAppearance.alertHeaderBackgroundColor
         alertControllerAppearance.alertButtonHighlightBackgroundColor = UIColor(r: 232, g: 232, b: 232)
         alertControllerAppearance.alertHeaderInsets = UIEdgeInsets.init(top: 20, left: 16, bottom: 20, right: 16)
@@ -1164,7 +1164,7 @@ extension QMUIAlertController {
         alertControllerAppearance.sheetCancelButtonMarginTop = 8
         alertControllerAppearance.sheetContentCornerRadius = IOS_VERSION >= 9.0 ? 13 : 6
         alertControllerAppearance.sheetButtonHeight = IOS_VERSION >= 9.0 ? 57 : 44
-        alertControllerAppearance.sheetHeaderBackgroundColor = UIColorMakeWithRGBA(247, 247, 247, 1)
+        alertControllerAppearance.sheetHeaderBackgroundColor = UIColor(r: 247, g: 247, b: 247, a: 1)
         alertControllerAppearance.sheetButtonBackgroundColor = alertControllerAppearance.sheetHeaderBackgroundColor
         alertControllerAppearance.sheetButtonHighlightBackgroundColor = UIColor(r: 232, g: 232, b: 232)
         alertControllerAppearance.sheetHeaderInsets = UIEdgeInsets.init(top: 16, left: 16, bottom: 16, right: 16)

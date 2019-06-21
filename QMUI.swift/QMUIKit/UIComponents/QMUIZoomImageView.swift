@@ -11,7 +11,7 @@ import PhotosUI
 
 private let kTagForCenteredPlayButton = 1
 
-private let kIconsColor = UIColorMakeWithRGBA(255, 255, 255, 0.75)
+private let kIconsColor = UIColor(r: 255, g: 255, b: 255, a: 0.75)
 
 @objc protocol QMUIZoomImageViewDelegate: NSObjectProtocol {
     
@@ -998,7 +998,7 @@ class QMUIZoomImageViewVideoToolbar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = UIColorMakeWithRGBA(0.5, 255, 0, 0)
+        backgroundColor = UIColor(r: 0.5, g: 255, b: 0, a: 0)
 
         playButton = QMUIButton()
         playButton.qmui_outsideEdge = UIEdgeInsets(top: -10, left: -10, bottom: -10, right: -10)
@@ -1099,7 +1099,7 @@ fileprivate class QMUIZoomImageViewImageGenerator {
         context.setStrokeColor(color.cgColor)
 
         // circle outside
-        context.setFillColor(UIColorMakeWithRGBA(255, 255, 255, 0.75).cgColor)
+        context.setFillColor(UIColor(r: 255, g: 255, b: 255, a: 0.75).cgColor)
         let circleLineWidth: CGFloat = 1
         // consider line width to avoid edge clip
         let circle = UIBezierPath(ovalIn: CGRect(x: circleLineWidth / 2,

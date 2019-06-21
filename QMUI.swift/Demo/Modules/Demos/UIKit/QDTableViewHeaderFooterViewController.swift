@@ -132,7 +132,7 @@ class QDTableViewInsetDebugPanelView: UIView {
         super.init(frame: frame)
         
         isUserInteractionEnabled = false
-        backgroundColor = UIColorMakeWithRGBA(0, 0, 0, 0.7)
+        backgroundColor = UIColor(r: 0, g: 0, b: 0, a: 0.7)
         
         addSubview(visibleHeadersLabel)
         addSubview(visibleHeadersValue)

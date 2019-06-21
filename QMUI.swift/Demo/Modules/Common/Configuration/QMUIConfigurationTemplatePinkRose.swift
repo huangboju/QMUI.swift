@@ -40,9 +40,9 @@ class QMUIConfigurationTemplatePinkRose: NSObject, QDThemeProtocol  {
         // === 修改配置值 === //
         
         // MARK: Global Color
-        QMUICMI.clear = UIColor(red: 1, green: 1, blue: 1, alpha: 0)
-        QMUICMI.white = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
-        QMUICMI.black = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+        QMUICMI.clear = UIColor(r: 1, g: 1, b: 1, a: 0)
+        QMUICMI.white = UIColor(r: 1, g: 1, b: 1, a: 1)
+        QMUICMI.black = UIColor(r: 0, g: 0, b: 0, a: 1)
         QMUICMI.gray = UIColorGray4 // UIColorGray  : 最常用的灰色
         QMUICMI.grayDarken = UIColorGray3 // UIColorGrayDarken : 深一点的灰色
         QMUICMI.grayLighten = UIColorGray7 // UIColorGrayLighten : 浅一点的灰色
@@ -54,16 +54,16 @@ class QMUIConfigurationTemplatePinkRose: NSObject, QDThemeProtocol  {
         QMUICMI.linkColor = UIColor(r: 56, g: 116, b: 171) // UIColorLink : 文字链接颜色
         QMUICMI.disabledColor = UIColorGray
         QMUICMI.backgroundColor = UIColorWhite // UIColorForBackground : 界面背景色，默认用于 QMUICommonViewController.view 的背景色
-        QMUICMI.maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35) // UIColorMask : 深色的背景遮罩，默认用于 QMAlertController、QMUIDialogViewController 等弹出控件的遮罩
-        QMUICMI.maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5) // UIColorMaskWhite : 浅色的背景遮罩，QMUIKit 里默认没用到，只是占个位
+        QMUICMI.maskDarkColor = UIColor(r: 0, g: 0, b: 0, a: 0.35) // UIColorMask : 深色的背景遮罩，默认用于 QMAlertController、QMUIDialogViewController 等弹出控件的遮罩
+        QMUICMI.maskLightColor = UIColor(r: 255, g: 255, b: 255, a: 0.5) // UIColorMaskWhite : 浅色的背景遮罩，QMUIKit 里默认没用到，只是占个位
         QMUICMI.separatorColor = UIColor(r: 222, g: 224, b: 226) // UIColorSeparator : 全局默认的分割线颜色，默认用于列表分隔线颜色、UIView (QMUI_Border) 分隔线颜色
         QMUICMI.separatorDashedColor = UIColor(r: 17, g: 17, b: 17) // UIColorSeparatorDashed : 全局默认的虚线分隔线的颜色，默认 QMUIKit 暂时没用到
         QMUICMI.placeholderColor = UIColorGray8 // UIColorPlaceholder，全局的输入框的 placeholder 颜色，默认用于 QMUITextField、QMUITextView，不影响系统 UIKit 的输入框
         
         // 测试用的颜色
-        QMUICMI.testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
-        QMUICMI.testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
-        QMUICMI.testColorBlue = UIColorMakeWithRGBA(0, 0, 255, 0.3)
+        QMUICMI.testColorRed = UIColor(r: 255, g: 0, b: 0, a: 0.3)
+        QMUICMI.testColorGreen = UIColor(r: 0, g: 255, b: 0, a: 0.3)
+        QMUICMI.testColorBlue = UIColor(r: 0, g: 0, b: 255, a: 0.3)
         
         // MARK: UIControl
         QMUICMI.controlHighlightedAlpha = 0.5 // UIControlHighlightedAlpha : UIControl 系列控件在 highlighted 时的 alpha，默认用于 QMUIButton、 QMUINavigationTitleView

@@ -84,15 +84,15 @@ class QMUIConfiguration {
     var linkColor = UIColor(r: 56, g: 116, b: 171)
     var disabledColor: UIColor
     var backgroundColor: UIColor?
-    var maskDarkColor = UIColorMakeWithRGBA(0, 0, 0, 0.35)
-    var maskLightColor = UIColorMakeWithRGBA(255, 255, 255, 0.5)
+    var maskDarkColor = UIColor(r: 0, g: 0, b: 0, a: 0.35)
+    var maskLightColor = UIColor(r: 255, g: 255, b: 255, a: 0.5)
     var separatorColor = UIColor(r: 222, g: 224, b: 226)
     var separatorDashedColor = UIColor(r: 17, g: 17, b: 17)
     var placeholderColor = UIColor(r: 196, g: 200, b: 208)
     
-    var testColorRed = UIColorMakeWithRGBA(255, 0, 0, 0.3)
-    var testColorGreen = UIColorMakeWithRGBA(0, 255, 0, 0.3)
-    var testColorBlue = UIColorMakeWithRGBA(0, 0, 255, 0.3)
+    var testColorRed = UIColor(r: 255, g: 0, b: 0, a: 0.3)
+    var testColorGreen = UIColor(r: 0, g: 255, b: 0, a: 0.3)
+    var testColorBlue = UIColor(r: 0, g: 0, b: 255, a: 0.3)
 
     // MARK: UIControl
     var controlHighlightedAlpha: CGFloat = 0.5

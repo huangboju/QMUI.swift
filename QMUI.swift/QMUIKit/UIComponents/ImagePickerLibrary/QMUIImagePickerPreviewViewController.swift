@@ -26,7 +26,7 @@ private let TopToolBarViewHeight: CGFloat = 20 + NavigationBarHeight + IPhoneXSa
 
 class QMUIImagePickerPreviewViewController: QMUIImagePreviewViewController {
     
-    var toolBarBackgroundColor = UIColorMakeWithRGBA(27, 27, 27, 0.9) {
+    var toolBarBackgroundColor = UIColor(r: 27, g: 27, b: 27, a: 0.9) {
         didSet {
             topToolBarView.backgroundColor = toolBarBackgroundColor
         }

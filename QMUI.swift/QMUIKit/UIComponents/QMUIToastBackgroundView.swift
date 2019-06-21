@@ -32,7 +32,7 @@ class QMUIToastBackgroundView: UIView {
     /**
      * 如果不设置磨砂，则styleColor直接作为`QMUIToastBackgroundView`的backgroundColor；如果需要磨砂，则会新增加一个`UIVisualEffectView`放在`QMUIToastBackgroundView`上面
      */
-    var styleColor: UIColor = UIColorMakeWithRGBA(0, 0, 0, 0.8) {
+    var styleColor: UIColor = UIColor(r: 0, g: 0, b: 0, a: 0.8) {
         didSet {
             backgroundColor = styleColor
         }

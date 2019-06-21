@@ -161,10 +161,6 @@ let UIDynamicFontBoldMakeWithLimit: (CGFloat, CGFloat, CGFloat) -> UIFont = { po
 }
 let UIDynamicFontLightMake: (CGFloat) -> UIFont = { UIFont.qmui_dynamicFont(ofSize: $0, weight: .light, italic: false) }
 
-// UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.swift
-func UIColorMakeWithRGBA(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor { return UIColor(r: r, g: g, b: b, a: a) }
-func UIColorMakeWithHex(_ hex: String) -> UIColor { return UIColor(hexStr: hex) }
-
 /// MARK: - 数学计算
 
 let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }

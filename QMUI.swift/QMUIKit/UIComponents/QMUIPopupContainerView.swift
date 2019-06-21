@@ -651,7 +651,7 @@ extension QMUIPopupContainerView {
         backgroundColor = UIColorWhite
         maskViewBackgroundColor = UIColorMask
         highlightedBackgroundColor = nil
-        shadowColor = UIColorMakeWithRGBA(0, 0, 0, 0.1)
+        shadowColor = UIColor(r: 0, g: 0, b: 0, a: 0.1)
         borderColor = UIColorGrayLighten
         borderWidth = PixelOne
         cornerRadius = 10

@@ -50,7 +50,7 @@ class QMUIMarqueeLabel: UILabel {
     }
 
     /// 渐变遮罩内边缘的颜色，一般是 fadeStartColor 的 alpha 通道为 0 的色值
-    var fadeEndColor: UIColor? = UIColorMakeWithRGBA(255, 255, 255, 1) {
+    var fadeEndColor: UIColor? = UIColor(r: 255, g: 255, b: 255, a: 1) {
         didSet {
             updateFadeLayerColors()
         }

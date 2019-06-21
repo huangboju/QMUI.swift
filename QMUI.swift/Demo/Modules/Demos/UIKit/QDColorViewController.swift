@@ -134,7 +134,7 @@ fileprivate class QDColorCellThatGenerateFromHex: QDColorTableViewCell {
         super.initSubviews()
         titleLabel.text = "通过HEX创建"
         
-        let resultColor = UIColor(hexStr: "#cddc39") // 关键方法
+        let resultColor = UIColor(hex: 0xCDDC39) // 关键方法
         circle = generateCircle(with: resultColor)
         contentView.addSubview(circle)
         
@@ -164,7 +164,7 @@ fileprivate class QDColorCellThatGetColorInfo: QDColorTableViewCell {
         
         titleLabel.text = "获取颜色信息"
         
-        let rawColor = UIColor(hexStr: "#e69832").withAlphaComponent(0.75)
+        let rawColor = UIColor(hex: 0xE69832).withAlphaComponent(0.75)
         // 关键方法
         let alpha = rawColor.qmui_alpha
         let red = rawColor.qmui_red
@@ -245,8 +245,8 @@ fileprivate class QDColorCellThatResetAlpha: QDColorTableViewCell {
         super.initSubviews()
         
         titleLabel.text = "去除alpha通道"
-        
-        let rawColor = UIColorMakeWithHex("#e91e63").withAlphaComponent(0.6)
+
+        let rawColor = UIColor(hex: 0xE91E63).withAlphaComponent(0.6)
         let resultColor = rawColor.qmui_colorWithoutAlpha  // 关键方法
         
         circle1 = generateCircle(with: rawColor)
@@ -293,8 +293,8 @@ fileprivate class QDColorCellThatInverseColor: QDColorTableViewCell {
         super.initSubviews()
         
         titleLabel.text = "计算反色"
-        
-        let rawColor = UIColorMakeWithHex("#ff9800")
+
+        let rawColor = UIColor(hex: 0xFF9800)
         let resultColor = rawColor.qmui_inverseColor  // 关键方法
         
         circle1 = generateCircle(with: rawColor)
@@ -328,9 +328,9 @@ fileprivate class QDColorCellThatNeutralizeColors: QDColorTableViewCell {
         super.initSubviews()
         
         titleLabel.text = "计算过渡色"
-        
-        let rawColor1 = UIColorMakeWithHex("#b1dcff")
-        let rawColor2 = UIColorMakeWithHex("#0e4068")
+
+        let rawColor1 = UIColor(hex: 0xB1DCFF)
+        let rawColor2 = UIColor(hex: 0x0E4068)
         let resultColor = UIColor.qmui_color(from: rawColor1, to: rawColor2, progress: 0.5)  // 关键方法
         
         circle1 = generateCircle(with: rawColor1)
@@ -372,8 +372,8 @@ fileprivate class QDColorCellThatBlendColors: QDColorTableViewCell {
         
         titleLabel.text = "计算叠加色"
         
-        let rawColor1 = UIColorMakeWithHex("#68a0ce")
-        let rawColor2 = UIColorMakeWithHex("#e91e63").withAlphaComponent(0.5)
+        let rawColor1 = UIColor(hex: 0x68A0CE)
+        let rawColor2 = UIColor(hex: 0xE91E63).withAlphaComponent(0.5)
         let resultColor = UIColor.qmui_colorWithBackendColor(rawColor1, frontColor: rawColor2)  // 关键方法
         
         circle1 = generateCircle(with: rawColor1)
@@ -413,8 +413,8 @@ fileprivate class QDColorCellThatAdjustAlphaAndBlend: QDColorTableViewCell {
         
         titleLabel.text = "先更改alpha，再与另一个颜色叠加"
         
-        let rawColor1 = UIColorMakeWithHex("#795548")
-        let rawColor2 = UIColorMakeWithHex("#cddc39")
+        let rawColor1 = UIColor(hex: 0x795548)
+        let rawColor2 = UIColor(hex: 0xCDDC39)
         let resultColor = rawColor1.qmui_color(with: 0.5, backgroundColor: rawColor2)  // 关键方法
         
         circle1 = generateCircle(with: rawColor1)

@@ -63,7 +63,7 @@ class QDToastListViewController: QDCommonListViewController {
             let tips = QMUITips.showInfo(text: "活动已经结束", detailText: "本次活动时间为2月1号-2月15号", in: parentView, hideAfterDelay: 2)
             if let backgroundView = tips.backgroundView as? QMUIToastBackgroundView {
                 backgroundView.showldBlurBackgroundView = true
-                backgroundView.styleColor = UIColorMakeWithRGBA(232, 232, 232, 0.8)
+                backgroundView.styleColor = UIColor(r: 232, g: 232, b: 232, a: 0.8)
                 tips.tintColor = UIColorBlack
             }
         } else if title == "Custom Content View" {
