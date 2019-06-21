@@ -261,7 +261,7 @@ class QMUIImagePickerViewController: QMUICommonViewController {
         let contentInsetBottom = operationToolBarViewHeight - collectionView.qmui_safeAreaInsets.bottom // 由于 behavior 的特性，底部会自动加上 safeAreaInsets.bottom，所以这里去掉它，因为 toolbarViewHeight 里已经包含了
         
         if collectionView.contentInset.bottom != contentInsetBottom {
-            collectionView.contentInset = collectionView.contentInset.setBottom(contentInsetBottom)
+            collectionView.contentInset.bottom = contentInsetBottom
             collectionView.scrollIndicatorInsets = collectionView.contentInset
             // 放在这里是因为有时候会先走完 refreshWithAssetsGroup 里的 completion 再走到这里，此时前者不会导致 scollToInitialPosition 的滚动，所以在这里再调用一次保证一定会滚
             scrollToInitialPositionIfNeeded()

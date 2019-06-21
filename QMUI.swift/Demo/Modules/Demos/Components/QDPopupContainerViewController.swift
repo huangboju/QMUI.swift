@@ -150,7 +150,7 @@ class QDPopupContainerViewController: QDCommonViewController {
         let sectionHeight = viewportHeight / 3
         
         button1.frame = button1.frame.setXY(view.bounds.width.center(button1.frame.width), minY + (sectionHeight - button1.frame.height) / 2)
-        popupView1.safetyMarginsOfSuperview = popupView1.safetyMarginsOfSuperview.setTop(qmui_navigationBarMaxYInViewCoordinator + 10)
+        popupView1.safetyMarginsOfSuperview.top = qmui_navigationBarMaxYInViewCoordinator + 10
         popupView1.layout(with: button1) // 相对于 button1 布局
         
         separatorLayer1.frame = CGRectFlat(0, minY + sectionHeight, view.bounds.width, PixelOne)

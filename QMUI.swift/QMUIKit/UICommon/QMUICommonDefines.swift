@@ -547,31 +547,6 @@ extension UIEdgeInsets {
         return UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
     }
 
-    func setTop(_ top: CGFloat) -> UIEdgeInsets {
-        var result = self
-        result.top = flat(top)
-        return result
-    }
-
-    func setLeft(_ left: CGFloat) -> UIEdgeInsets {
-        var result = self
-        result.left = flat(left)
-        return result
-    }
-
-    @discardableResult
-    func setBottom(_ bottom: CGFloat) -> UIEdgeInsets {
-        var result = self
-        result.bottom = flat(bottom)
-        return result
-    }
-
-    func setRight(_ right: CGFloat) -> UIEdgeInsets {
-        var result = self
-        result.right = flat(right)
-        return result
-    }
-    
     func fixed(_ precision: Int) -> UIEdgeInsets {
         let top = self.top.fixed(precision)
         let left = self.left.fixed(precision)
