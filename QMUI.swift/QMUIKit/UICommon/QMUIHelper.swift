@@ -402,8 +402,6 @@ extension QMUIHelper {
         @unknown default:
             fatalError()
         }
-
-        return UIEdgeInsets.zero
     }
 
     private static var _isHighPerformanceDevice = -1
