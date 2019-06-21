@@ -51,11 +51,11 @@ class QMUIAlbumTableViewCell: QMUITableViewCell {
     var albumAssetsNumberFontSize = QMUIAlbumTableViewCellDefaultAlbumAssetsNumberFontSize // 相册资源数量的字号
     var albumNameInsets = QMUIAlbumTableViewCellDefaultAlbumNameInsets // 相册名称的 insets
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
-    override func didInitialized(_ style: UITableViewCellStyle) {
+    override func didInitialized(_ style: UITableViewCell.CellStyle) {
         super.didInitialized(style)
 
         imageView?.contentMode = .scaleAspectFill

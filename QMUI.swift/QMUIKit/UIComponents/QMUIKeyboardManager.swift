@@ -139,12 +139,12 @@ class QMUIKeyboardManager: NSObject {
 
     // MARK: - Notification
     private func addKeyboardNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow(_:)), name: NSNotification.Name.UIKeyboardDidShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide(_:)), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: NSNotification.Name.UIKeyboardDidChangeFrame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide(_:)), name: UIResponder.keyboardDidHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidChangeFrame(_:)), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
     }
 
     @objc private func keyboardWillShow(_ notification: Notification) {
@@ -380,7 +380,7 @@ class QMUIKeyboardManager: NSObject {
             aKeyboardMoveUserInfo.keyboardManager = self
             aKeyboardMoveUserInfo.targetResponder = keyboardMoveUserInfo?.targetResponder
             aKeyboardMoveUserInfo.animationDuration = keyboardMoveUserInfo?.animationDuration ?? 0.25
-            aKeyboardMoveUserInfo.animationCurve = keyboardMoveUserInfo?.animationCurve ?? UIViewAnimationCurve.easeIn
+            aKeyboardMoveUserInfo.animationCurve = keyboardMoveUserInfo?.animationCurve ?? UIView.AnimationCurve.easeIn
             aKeyboardMoveUserInfo.animationOptions = keyboardMoveUserInfo?.animationOptions ?? []
             aKeyboardMoveUserInfo.beginFrame = keyboardMoveBeginRect
             aKeyboardMoveUserInfo.endFrame = endFrame
@@ -679,31 +679,37 @@ class QMUIKeyboardViewFrameObserver: NSObject {
     }
 
     private func addFrameObserver() {
-        keyboardView.addObserver(self, forKeyPath: "frame", options: [], context: nil)
-        keyboardView.addObserver(self, forKeyPath: "center", options: [], context: nil)
-        keyboardView.addObserver(self, forKeyPath: "bounds", options: [], context: nil)
-        keyboardView.addObserver(self, forKeyPath: "transform", options: [], context: nil)
+        [
+            "frame",
+            "center",
+            "bounds",
+            "transform"
+            ].forEach { keyboardView.addObserver(self, forKeyPath: $0, options: [], context: nil) }
     }
 
     private func removeFrameObserver() {
-        keyboardView.removeObserver(self, forKeyPath: "frame")
-        keyboardView.removeObserver(self, forKeyPath: "center")
-        keyboardView.removeObserver(self, forKeyPath: "bounds")
-        keyboardView.removeObserver(self, forKeyPath: "transform")
+        [
+        "frame",
+         "center",
+         "bounds",
+         "transform"
+        ].forEach { keyboardView.removeObserver(self, forKeyPath: $0) }
     }
 }
 
-extension UIViewAnimationCurve {
-    fileprivate func toAnimationOptions() -> UIViewAnimationOptions {
+extension UIView.AnimationCurve {
+    fileprivate func toAnimationOptions() -> UIView.AnimationOptions {
         switch self {
         case .easeInOut:
-            return UIViewAnimationOptions.curveEaseInOut
+            return UIView.AnimationOptions.curveEaseInOut
         case .easeIn:
-            return UIViewAnimationOptions.curveEaseIn
+            return UIView.AnimationOptions.curveEaseIn
         case .easeOut:
-            return UIViewAnimationOptions.curveEaseOut
+            return UIView.AnimationOptions.curveEaseOut
         case .linear:
-            return UIViewAnimationOptions.curveLinear
+            return UIView.AnimationOptions.curveLinear
+        @unknown default:
+            fatalError()
         }
     }
 }
@@ -725,18 +731,18 @@ class QMUIKeyboardUserInfo: NSObject {
      */
     fileprivate(set) var notification: Notification? {
         didSet {
-            if let notNilAnimationDuration = originUserInfo[UIKeyboardAnimationDurationUserInfoKey] as? TimeInterval {
+            if let notNilAnimationDuration = originUserInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
                 animationDuration = notNilAnimationDuration
             }
-            if let notNilAnimationCurve = originUserInfo[UIKeyboardAnimationCurveUserInfoKey] as? UIViewAnimationCurve {
+            if let notNilAnimationCurve = originUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UIView.AnimationCurve {
                 animationCurve = notNilAnimationCurve
                 animationOptions = notNilAnimationCurve.toAnimationOptions()
             }
 
-            if let notNilbeginFrame = originUserInfo[UIKeyboardFrameBeginUserInfoKey] as? CGRect {
+            if let notNilbeginFrame = originUserInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect {
                 beginFrame = notNilbeginFrame
             }
-            if let notNilEndFrame = originUserInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect {
+            if let notNilEndFrame = originUserInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                 endFrame = notNilEndFrame
             }
         }
@@ -792,12 +798,12 @@ class QMUIKeyboardUserInfo: NSObject {
     /**
      *  获取键盘动画的Curve参数
      */
-    fileprivate(set) var animationCurve: UIViewAnimationCurve = .easeInOut
+    fileprivate(set) var animationCurve: UIView.AnimationCurve = .easeInOut
 
     /**
      *  获取键盘动画的Options参数
      */
-    fileprivate(set) var animationOptions: UIViewAnimationOptions = []
+    fileprivate(set) var animationOptions: UIView.AnimationOptions = []
 
     /**
      *  获取当前键盘在view上的可见高度，也就是键盘和view重叠的高度。如果view=nil，则直接返回键盘的实际高度。

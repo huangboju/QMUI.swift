@@ -104,7 +104,7 @@ class QMUIEmotionView: UIView {
     var deleteButtonImage = QMUIHelper.image(name: "QMUI_emotion_delete")
 
     /// 发送按钮的文字样式，默认为{NSFontAttributeName: UIFontMake(15), NSForegroundColorAttributeName: UIColorWhite}
-    var sendButtonTitleAttributes: [NSAttributedStringKey: Any] = [:] {
+    var sendButtonTitleAttributes: [NSAttributedString.Key: Any] = [:] {
         didSet {
             if let title = sendButton.currentTitle {
                 sendButton.setAttributedTitle(NSAttributedString(string: title, attributes: sendButtonTitleAttributes), for: .normal)
@@ -234,7 +234,7 @@ class QMUIEmotionView: UIView {
 
 extension QMUIEmotionView: QMUIEmotionPageViewDelegate {
     fileprivate func emotionPageView(_: QMUIEmotionPageView, didSelectEmotion emotion: QMUIEmotion, at _: Int) {
-        guard let i = emotions.index(of: emotion) else { return }
+        guard let i = emotions.firstIndex(of: emotion) else { return }
         didSelectEmotionClosure?(i, emotion)
     }
 

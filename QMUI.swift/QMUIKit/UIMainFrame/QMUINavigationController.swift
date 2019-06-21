@@ -403,7 +403,7 @@ class QMUINavigationController: UINavigationController {
     }
 
     // 重写这个方法才能让 viewControllers 对 statusBar 的控制生效
-    override var childViewControllerForStatusBarStyle: UIViewController? {
+    override var childForStatusBarStyle: UIViewController? {
         return topViewController
     }
     

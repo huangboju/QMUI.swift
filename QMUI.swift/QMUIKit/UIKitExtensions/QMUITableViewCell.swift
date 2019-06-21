@@ -10,7 +10,7 @@ import UIKit
 
 class QMUITableViewCell: UITableViewCell {
 
-    private(set) var style: UITableViewCellStyle = .default
+    private(set) var style: UITableViewCell.CellStyle = .default
 
     /**
      *  imageEdgeInsets，这个属性用来调整imageView里面图片的位置，有些情况titleLabel前面是一个icon，但是icon与titleLabel的间距不是你想要的。<br/>
@@ -86,12 +86,12 @@ class QMUITableViewCell: UITableViewCell {
      *
      *  @return 一个QMUITableViewCell实例
      */
-    required convenience init(tableView: UITableView, style: UITableViewCellStyle = .default, reuseIdentifier: String?) {
+    required convenience init(tableView: UITableView, style: UITableViewCell.CellStyle = .default, reuseIdentifier: String?) {
         self.init(style: style, reuseIdentifier: reuseIdentifier)
         parentTableView = tableView
     }
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         didInitialized(style)
     }
@@ -116,7 +116,7 @@ class QMUITableViewCell: UITableViewCell {
     }
 
     // 重写accessoryType，如果是UITableViewCellAccessoryDisclosureIndicator类型的，则使用 QMUIConfigurationTemplate.m 配置表里的图片
-    override var accessoryType: UITableViewCellAccessoryType {
+    override var accessoryType: UITableViewCell.AccessoryType {
         didSet {
             if accessoryType == .disclosureIndicator {
                 if let indicatorImage = TableViewCellDisclosureIndicatorImage {
@@ -269,7 +269,7 @@ class QMUITableViewCell: UITableViewCell {
         }
     }
 
-    func didInitialized(_ style: UITableViewCellStyle) {
+    func didInitialized(_ style: UITableViewCell.CellStyle) {
         self.style = style
         
         textLabel?.font = UIFontMake(16)

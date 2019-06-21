@@ -94,7 +94,7 @@ class QDCommonGridViewController: QDCommonViewController {
     // MARK: private
     private func generateButton(_ index: Int) -> QDCommonGridButton {
         let keyName = dataSource.allKeys[index]
-        let attributes = [NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.font: UIFontMake(11), NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 12, lineBreakMode: .byTruncatingTail, textAlignment: .center)]
+        let attributes = [NSAttributedString.Key.foregroundColor: UIColorGray6, NSAttributedString.Key.font: UIFontMake(11), NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 12, lineBreakMode: .byTruncatingTail, textAlignment: .center)]
         let attributedString = NSAttributedString(string: keyName, attributes: attributes)
         let image = dataSource[keyName]
         

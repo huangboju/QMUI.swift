@@ -13,8 +13,8 @@ func CodeFontMake(_ pointSize: CGFloat) -> UIFont {
     return UIFont(name: "Menlo", size: pointSize)!
 }
 
-func CodeAttributes(_ fontSize: CGFloat) -> [NSAttributedStringKey : Any] {
-    let attributes: [NSAttributedStringKey : Any] = [
+func CodeAttributes(_ fontSize: CGFloat) -> [NSAttributedString.Key : Any] {
+    let attributes: [NSAttributedString.Key : Any] = [
         .font : CodeFontMake(fontSize),
         .foregroundColor: QDThemeManager.shared.currentTheme?.themeCodeColor ?? UIColorBlack
     ]

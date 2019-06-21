@@ -26,7 +26,7 @@ class QDTextFieldViewController: QDCommonViewController {
 
     private lazy var tipsLabel: UILabel = {
         let label = UILabel()
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font: UIFontMake(12), NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: UIFontMake(12), NSAttributedString.Key.foregroundColor: UIColorGray6, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16)]
         label.attributedText = NSAttributedString(string: "支持自定义 placeholder 颜色，支持调整输入框与文字之间的间距，支持限制最大可输入的文字长度（可试试输入 emoji、从中文输入法候选词输入等）。", attributes: attributes)
         label.numberOfLines = 0
         return label

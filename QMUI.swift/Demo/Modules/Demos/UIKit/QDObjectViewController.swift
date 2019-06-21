@@ -40,7 +40,7 @@ class QDObjectViewController: QDCommonTableViewController {
     
     override func showEmptyView() {
         super.showEmptyView()
-        emptyView?.textLabel.qmui_textAttributes = [NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24)]
+        emptyView?.textLabel.qmui_textAttributes = [NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24)]
     }
     
     private func allClassesArray() -> [String] {
@@ -101,9 +101,9 @@ class QDObjectViewController: QDCommonTableViewController {
         let cell = qmui_tableView(tableView, cellWithIdentifier: "cell") as? QMUITableViewCell
         let className = autocompletionClasses[indexPath.row]
         if let text = searchBar?.text, let matchingRange = className.lowercased().range(of: text.lowercased()) {
-            let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : CodeFontMake(14), NSAttributedStringKey.foregroundColor: UIColorGray1]
+            let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : CodeFontMake(14), NSAttributedString.Key.foregroundColor: UIColorGray1]
             let attributedString = NSMutableAttributedString(string: className, attributes: attributes)
-            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: QDThemeManager.shared.currentTheme?.themeTintColor ?? UIColorBlue, range: NSRange(matchingRange, in: text))
+            attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: QDThemeManager.shared.currentTheme?.themeTintColor ?? UIColorBlue, range: NSRange(matchingRange, in: text))
             cell?.textLabel?.attributedText = attributedString
         }
         cell?.updateCellAppearance(indexPath)

@@ -23,7 +23,7 @@ class QDSearchViewController: QDCommonTableViewController {
         return mySearchController
     }()
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         // 这个属性默认就是 false，这里依然写出来只是为了提醒 QMUICommonTableViewController 默认就集成了 QMUISearchController，如果你的界面本身就是 QMUICommonTableViewController 的子类，则也可以直接通过将这个属性改为 true 来创建 QMUISearchController
         shouldShowSearchBar = false
@@ -60,9 +60,9 @@ extension QDSearchViewController {
             cell?.textLabel?.text = keywords[indexPath.row]
         } else {
             let keyword = searchResultsKeywords[indexPath.row]
-            let attributedString = NSMutableAttributedString(string: keyword, attributes: [NSAttributedStringKey.foregroundColor: UIColorBlack])
+            let attributedString = NSMutableAttributedString(string: keyword, attributes: [NSAttributedString.Key.foregroundColor: UIColorBlack])
             if let string = mySearchController.searchBar?.text, let range = keyword.range(of: string), let color = QDThemeManager.shared.currentTheme?.themeTintColor {
-                attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: NSRange(range, in: string))
+                attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: NSRange(range, in: string))
             }
             cell?.textLabel?.attributedText = attributedString
         }

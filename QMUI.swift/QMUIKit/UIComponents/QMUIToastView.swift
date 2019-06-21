@@ -51,7 +51,7 @@ class QMUIToastView: UIView {
         _maskView.backgroundColor = UIColorClear
         addSubview(_maskView)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(statusBarOrientationDidChange), name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(statusBarOrientationDidChange), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
     }
 
     private func commonInit() {
@@ -59,7 +59,7 @@ class QMUIToastView: UIView {
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidChangeStatusBarOrientation, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
     }
 
     // MARK: - 横竖屏
@@ -161,7 +161,7 @@ class QMUIToastView: UIView {
      */
     func hide(_ animated: Bool, afterDelay delay: TimeInterval) {
         let timer = Timer(timeInterval: delay, target: self, selector: #selector(handleHideTimer), userInfo: animated, repeats: false)
-        RunLoop.current.add(timer, forMode: .commonModes)
+        RunLoop.current.add(timer, forMode: RunLoop.Mode.common)
         hideDelayTimer = timer
     }
 

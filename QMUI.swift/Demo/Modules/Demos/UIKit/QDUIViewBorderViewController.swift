@@ -41,7 +41,7 @@ class QDUIViewBorderViewController: QDCommonViewController {
         let label = QMUILabel()
         label.contentEdgeInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         label.numberOfLines = 0
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorGray1]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorGray1]
         let attributedString = NSMutableAttributedString(string: text, attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         text.enumerateCodeString { (codeString, codeRange) in

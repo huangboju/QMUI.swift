@@ -88,7 +88,7 @@ class QMUIConfigurationTemplateGrass: NSObject, QDThemeProtocol {
         
         // MARK: TextField & TextView
         QMUICMI.textFieldTintColor = themeTintColor // TextFieldTintColor : QMUITextField、QMUITextView 的 tintColor，不影响 UIKit 的输入框
-        QMUICMI.textFieldTextInsets = UIEdgeInsetsMake(0, 7, 0, 7);                 // TextFieldTextInsets : QMUITextField 的内边距，不影响 UITextField
+        QMUICMI.textFieldTextInsets = UIEdgeInsets.init(top: 0, left: 7, bottom: 0, right: 7);                 // TextFieldTextInsets : QMUITextField 的内边距，不影响 UITextField
         
         // MARK: NavigationBar
         QMUICMI.navBarHighlightedAlpha = 0.2 // NavBarHighlightedAlpha : QMUINavigationButton 在 highlighted 时的 alpha
@@ -176,25 +176,25 @@ class QMUIConfigurationTemplateGrass: NSObject, QDThemeProtocol {
         QMUICMI.tableViewSectionFooterFont = UIFontBoldMake(12) // TableViewSectionFooterFont : Plain 类型的 QMUITableView sectionFooter 里的文字字体
         QMUICMI.tableViewSectionHeaderTextColor = UIColorGray5 // TableViewSectionHeaderTextColor : Plain 类型的 QMUITableView sectionHeader 里的文字颜色
         QMUICMI.tableViewSectionFooterTextColor = UIColorGray // TableViewSectionFooterTextColor : Plain 类型的 QMUITableView sectionFooter 里的文字颜色
-        QMUICMI.tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0) // TableViewSectionHeaderAccessoryMargins : Plain 类型的 QMUITableView sectionHeader accessoryView 的间距
-        QMUICMI.tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0) // TableViewSectionFooterAccessoryMargins : Plain 类型的 QMUITableView sectionFooter accessoryView 的间距
-        QMUICMI.tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15) // TableViewSectionHeaderContentInset : Plain 类型的 QMUITableView sectionHeader 里的内容的 padding
-        QMUICMI.tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15) // TableViewSectionFooterContentInset : Plain 类型的 QMUITableView sectionFooter 里的内容的 padding
+        QMUICMI.tableViewSectionHeaderAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0) // TableViewSectionHeaderAccessoryMargins : Plain 类型的 QMUITableView sectionHeader accessoryView 的间距
+        QMUICMI.tableViewSectionFooterAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0) // TableViewSectionFooterAccessoryMargins : Plain 类型的 QMUITableView sectionFooter accessoryView 的间距
+        QMUICMI.tableViewSectionHeaderContentInset = UIEdgeInsets.init(top: 4, left: 15, bottom: 4, right: 15) // TableViewSectionHeaderContentInset : Plain 类型的 QMUITableView sectionHeader 里的内容的 padding
+        QMUICMI.tableViewSectionFooterContentInset = UIEdgeInsets.init(top: 4, left: 15, bottom: 4, right: 15) // TableViewSectionFooterContentInset : Plain 类型的 QMUITableView sectionFooter 里的内容的 padding
         
         QMUICMI.tableViewGroupedSectionHeaderFont = UIFontMake(12) // TableViewGroupedSectionHeaderFont : Grouped 类型的 QMUITableView sectionHeader 里的文字字体
         QMUICMI.tableViewGroupedSectionFooterFont = UIFontMake(12) // TableViewGroupedSectionFooterFont : Grouped 类型的 QMUITableView sectionFooter 里的文字字体
         QMUICMI.tableViewGroupedSectionHeaderTextColor = UIColorGrayDarken // TableViewGroupedSectionHeaderTextColor : Grouped 类型的 QMUITableView sectionHeader 里的文字颜色
         QMUICMI.tableViewGroupedSectionFooterTextColor = UIColorGray // TableViewGroupedSectionFooterTextColor : Grouped 类型的 QMUITableView sectionFooter 里的文字颜色
-        QMUICMI.tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0) // TableViewGroupedSectionHeaderAccessoryMargins : Grouped 类型的 QMUITableView sectionHeader accessoryView 的间距
-        QMUICMI.tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0) // TableViewGroupedSectionFooterAccessoryMargins : Grouped 类型的 QMUITableView sectionFooter accessoryView 的间距
-        QMUICMI.tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension // TableViewGroupedSectionHeaderDefaultHeight : Grouped 类型的 QMUITableView sectionHeader 的默认高度（也即没使用自定义的 sectionHeaderView 时的高度），注意如果不需要间距，请用 CGFLOAT_MIN
-        QMUICMI.tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension // TableViewGroupedSectionFooterDefaultHeight : Grouped 类型的 QMUITableView sectionFooter 的默认高度（也即没使用自定义的 sectionFooterView 时的高度），注意如果不需要间距，请用 CGFLOAT_MIN
-        QMUICMI.tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, PreferredVarForDevices(20, 15, 15, 15), 8, PreferredVarForDevices(20, 15, 15, 15)) // TableViewGroupedSectionHeaderContentInset : Grouped 类型的 QMUITableView sectionHeader 里的内容的 padding
-        QMUICMI.tableViewGroupedSectionFooterContentInset = UIEdgeInsetsMake(8, 15, 2, 15) // TableViewGroupedSectionFooterContentInset : Grouped 类型的 QMUITableView sectionFooter 里的内容的 padding
+        QMUICMI.tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0) // TableViewGroupedSectionHeaderAccessoryMargins : Grouped 类型的 QMUITableView sectionHeader accessoryView 的间距
+        QMUICMI.tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0) // TableViewGroupedSectionFooterAccessoryMargins : Grouped 类型的 QMUITableView sectionFooter accessoryView 的间距
+        QMUICMI.tableViewGroupedSectionHeaderDefaultHeight = UITableView.automaticDimension // TableViewGroupedSectionHeaderDefaultHeight : Grouped 类型的 QMUITableView sectionHeader 的默认高度（也即没使用自定义的 sectionHeaderView 时的高度），注意如果不需要间距，请用 CGFLOAT_MIN
+        QMUICMI.tableViewGroupedSectionFooterDefaultHeight = UITableView.automaticDimension // TableViewGroupedSectionFooterDefaultHeight : Grouped 类型的 QMUITableView sectionFooter 的默认高度（也即没使用自定义的 sectionFooterView 时的高度），注意如果不需要间距，请用 CGFLOAT_MIN
+        QMUICMI.tableViewGroupedSectionHeaderContentInset = UIEdgeInsets.init(top: 16, left: PreferredVarForDevices(20, 15, 15, 15), bottom: 8, right: PreferredVarForDevices(20, 15, 15, 15)) // TableViewGroupedSectionHeaderContentInset : Grouped 类型的 QMUITableView sectionHeader 里的内容的 padding
+        QMUICMI.tableViewGroupedSectionFooterContentInset = UIEdgeInsets.init(top: 8, left: 15, bottom: 2, right: 15) // TableViewGroupedSectionFooterContentInset : Grouped 类型的 QMUITableView sectionFooter 里的内容的 padding
         
         // MARK: UIWindowLevel
-        QMUICMI.windowLevelQMUIAlertView = UIWindowLevelAlert - 4 // UIWindowLevelQMUIAlertView : QMUIModalPresentationViewController、QMUIPopupContainerView 里使用的 UIWindow 的 windowLevel
-        QMUICMI.windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1 // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
+        QMUICMI.windowLevelQMUIAlertView = UIWindow.Level.alert.rawValue - 4 // UIWindowLevelQMUIAlertView : QMUIModalPresentationViewController、QMUIPopupContainerView 里使用的 UIWindow 的 windowLevel
+        QMUICMI.windowLevelQMUIImagePreviewView = UIWindow.Level.statusBar.rawValue + 1 // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
         
         // MARK: QMUILog
         //        QMUICMI.shouldPrintDefaultLog = true // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log

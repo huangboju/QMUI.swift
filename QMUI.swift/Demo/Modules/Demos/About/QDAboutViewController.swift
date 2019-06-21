@@ -71,7 +71,7 @@ class QDAboutViewController: QDCommonViewController {
     private lazy var copyrightLabel: UILabel = {
         let copyrightLabel = UILabel()
         copyrightLabel.numberOfLines = 0
-        let attributes = [NSAttributedStringKey.font : UIFontMake(12), NSAttributedStringKey.foregroundColor: UIColorGray5, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16, lineBreakMode: .byWordWrapping, textAlignment: .center)]
+        let attributes = [NSAttributedString.Key.font : UIFontMake(12), NSAttributedString.Key.foregroundColor: UIColorGray5, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16, lineBreakMode: .byWordWrapping, textAlignment: .center)]
         copyrightLabel.attributedText = NSAttributedString(string: "© 2018 QMUI Team All Rights Reserved.", attributes: attributes)
         return copyrightLabel
     }()
@@ -179,7 +179,7 @@ class QDAboutViewController: QDCommonViewController {
     }
     
     private func saveImageAsFile(_ image: UIImage) {
-        let imageData = UIImagePNGRepresentation(image)
+        let imageData = image.pngData()
         let documentDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
         let imageName = userDefaultsKeyForAboutLogoImage
         let imagePath = documentDirectory.appendingPathComponent(imageName)
@@ -210,7 +210,7 @@ class QDAboutViewController: QDCommonViewController {
     private func openUrl(_ string: String) {
         guard let url = URL(string: string) else { return }
         if #available(iOS 10, *) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            UIApplication.shared.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
         } else {
             UIApplication.shared.openURL(url)
         }
@@ -232,4 +232,9 @@ class QDAboutViewController: QDCommonViewController {
     deinit {
         print("\(type(of: self))  deinit")
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

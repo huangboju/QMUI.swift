@@ -89,7 +89,7 @@ class QDThemeViewController: QDCommonViewController {
             $0.isSelected = themeButton == $0
         }
         
-        let themeIndex = themeButtons.index(of: themeButton) ?? 0
+        let themeIndex = themeButtons.firstIndex(of: themeButton) ?? 0
         let theme = themes[themeIndex]
         QDThemeManager.shared.currentTheme = theme
         let value = String(describing: type(of: theme))

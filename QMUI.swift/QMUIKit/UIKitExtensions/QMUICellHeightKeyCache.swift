@@ -14,7 +14,7 @@ class QMUICellHeightKeyCache: NSObject {
     private var mutableHeightsByKeyForLandscape: [String: CGFloat] = [:]
 
     private var mutableHeightsByKeyForCurrentOrientation: [String: CGFloat] {
-        return UIDeviceOrientationIsPortrait(UIDevice.current.orientation) ? mutableHeightsByKeyForPortrait : mutableHeightsByKeyForLandscape
+        return UIDevice.current.orientation.isPortrait ? mutableHeightsByKeyForPortrait : mutableHeightsByKeyForLandscape
     }
 
     func existsHeight(for key: String) -> Bool {

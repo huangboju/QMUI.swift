@@ -112,7 +112,7 @@ class QMUIToastContentView: UIView {
     /**
      * 设置textLabel的attributes
      */
-    var textLabelAttributes = [NSAttributedStringKey.font: UIFontBoldMake(16), NSAttributedStringKey.foregroundColor: UIColorWhite, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)] {
+    var textLabelAttributes = [NSAttributedString.Key.font: UIFontBoldMake(16), NSAttributedString.Key.foregroundColor: UIColorWhite, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)] {
         didSet {
             if textLabelText.length > 0 {
                 // 刷新label的Attributes
@@ -125,7 +125,7 @@ class QMUIToastContentView: UIView {
     /**
      * 设置detailTextLabel的attributes
      */
-    var detailTextLabelAttributes = [NSAttributedStringKey.font: UIFontBoldMake(12), NSAttributedStringKey.foregroundColor: UIColorWhite, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)] {
+    var detailTextLabelAttributes = [NSAttributedString.Key.font: UIFontBoldMake(12), NSAttributedString.Key.foregroundColor: UIColorWhite, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)] {
         didSet {
             if detailTextLabelText.length > 0 {
                 // 刷新label的Attributes

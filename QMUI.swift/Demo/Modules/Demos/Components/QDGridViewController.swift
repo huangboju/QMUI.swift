@@ -41,7 +41,7 @@ class QDGridViewController: QDCommonViewController {
         }
         
         tipsLabel = UILabel()
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(12), NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(12), NSAttributedString.Key.foregroundColor: UIColorGray6, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)]
         tipsLabel.attributedText = NSAttributedString(string: "适用于那种要将若干个 UIView 以九宫格的布局摆放的情况，支持显示 item 之间的分隔线。\n注意当 QMUIGridView 宽度发生较大变化时（例如横屏旋转），并不会自动增加列数，这种场景要么自己重新设置 columnCount，要么改为用 UICollectionView 实现。", attributes: attributes)
         tipsLabel.numberOfLines = 0
         view.addSubview(tipsLabel)

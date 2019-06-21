@@ -116,7 +116,7 @@ class QMUIFillButton: QMUIButton {
         }
     }
     
-    override func setImage(_ image: UIImage?, for state: UIControlState) {
+    override func setImage(_ image: UIImage?, for state: UIControl.State) {
         var image = image
         if adjustsImageWithTitleTextColor {
             image = image?.withRenderingMode(.alwaysTemplate)
@@ -127,7 +127,7 @@ class QMUIFillButton: QMUIButton {
     private func updateImageColor() {
         self.imageView?.tintColor = adjustsImageWithTitleTextColor ? self.titleTextColor : nil
         if self.currentImage != nil {
-            let states: [UIControlState] = [.normal, .highlighted, .disabled]
+            let states: [UIControl.State] = [.normal, .highlighted, .disabled]
             for state in states {
                 if let image = self.image(for: state) {
                     if self.adjustsImageWithTitleTextColor {

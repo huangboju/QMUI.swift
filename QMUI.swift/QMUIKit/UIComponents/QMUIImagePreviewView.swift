@@ -107,7 +107,7 @@ class QMUIImagePreviewView: UIView {
         collectionView.showsVerticalScrollIndicator = false
         collectionView.scrollsToTop = false
         collectionView.delaysContentTouches = false
-        collectionView.decelerationRate = UIScrollViewDecelerationRateFast
+        collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
         if #available(iOS 11, *) {
             collectionView.contentInsetAdjustmentBehavior = .never
         }

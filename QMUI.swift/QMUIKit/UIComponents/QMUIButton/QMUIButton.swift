@@ -323,6 +323,8 @@ class QMUIButton: UIButton {
                         titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
                         titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
                     }
+                @unknown default:
+                    fatalError()
                 }
             } else {
                 switch contentVerticalAlignment {
@@ -350,6 +352,8 @@ class QMUIButton: UIButton {
                         titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
                         titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
                     }
+                @unknown default:
+                    fatalError()
                 }
             }
             
@@ -385,6 +389,8 @@ class QMUIButton: UIButton {
                     titleFrame = titleFrame.setY(contentEdgeInsets.top + titleEdgeInsets.top)
                     titleFrame = titleFrame.setHeight(contentSize.height - titleEdgeInsets.verticalValue)
                 }
+            @unknown default:
+                fatalError()
             }
             
             if imagePosition == .left {
@@ -526,7 +532,7 @@ class QMUIButton: UIButton {
         if adjustsTitleTintColorAutomatically, let currentAttributedTitle = currentAttributedTitle {
             let attributedString = NSMutableAttributedString(attributedString: currentAttributedTitle)
             let range = NSRange(location: 0, length: attributedString.length)
-            attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: tintColor, range: range)
+            attributedString.addAttribute(.foregroundColor, value: tintColor!, range: range)
             setAttributedTitle(attributedString, for: .normal)
         }
     }
@@ -534,10 +540,10 @@ class QMUIButton: UIButton {
     private func updateImageRenderingModeIfNeeded() {
         // 实际上对于 UIButton 而言如果设置了 UIControlStateNormal 的 image，则其他所有 state 下的 image 默认都会返回 normal 这张图，所以这个判断只对 UIControlStateNormal 做就行了
         guard let _ = currentImage, let _ = image(for: .normal) else { return }
-        let states: [UIControlState] = [[.normal], [.highlighted], [.selected], [.selected, .highlighted], [.disabled]]
+        let states: [UIControl.State] = [[.normal], [.highlighted], [.selected], [.selected, .highlighted], [.disabled]]
 
         for state in states {
-            if state.rawValue > UIControlState.normal.rawValue && qmui_hasCustomizedButtonProp(with: .image, for: state) {
+            if state.rawValue > UIControl.State.normal.rawValue && qmui_hasCustomizedButtonProp(with: .image, for: state) {
                 // 这个 state 自定义过 image，就不用处理
                 continue
             }
@@ -554,7 +560,7 @@ class QMUIButton: UIButton {
         }
     }
 
-    override func setImage(_ image: UIImage?, for state: UIControlState) {
+    override func setImage(_ image: UIImage?, for state: UIControl.State) {
         var tmpImage = image
         if adjustsImageTintColorAutomatically {
             tmpImage = image?.withRenderingMode(.alwaysTemplate)

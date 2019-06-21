@@ -209,7 +209,7 @@ class QMUIStaticTableViewCellData: NSObject {
     }
     
     /// init cell 时要使用的 style
-    var style: UITableViewCellStyle
+    var style: UITableViewCell.CellStyle
     
     /// cell 的高度，默认为 TableViewCellNormalHeight
     var height: CGFloat
@@ -246,7 +246,7 @@ class QMUIStaticTableViewCellData: NSObject {
     
     init(identifier: Int,
          cellClass: AnyClass = QMUITableViewCell.self,
-         style: UITableViewCellStyle = .default,
+         style: UITableViewCell.CellStyle = .default,
          height: CGFloat = TableViewCellNormalHeight,
          image: UIImage? = nil,
          text: String,
@@ -272,7 +272,7 @@ class QMUIStaticTableViewCellData: NSObject {
         self.accessoryAction = accessoryAction
     }
     
-    static func tableViewCellAccessoryType(withStaticAccessoryType type: QMUIStaticTableViewCellAccessoryType) -> UITableViewCellAccessoryType {
+    static func tableViewCellAccessoryType(withStaticAccessoryType type: QMUIStaticTableViewCellAccessoryType) -> UITableViewCell.AccessoryType {
         switch type {
         case .disclosureIndicator:
             return .disclosureIndicator

@@ -577,7 +577,7 @@ class QMUINavigationTitleView: UIControl {
     }
 
     // MARK: - setter / getter
-    override var contentHorizontalAlignment: UIControlContentHorizontalAlignment {
+    override var contentHorizontalAlignment: UIControl.ContentHorizontalAlignment {
         didSet {
             refreshLayout()
         }

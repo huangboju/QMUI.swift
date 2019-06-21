@@ -119,7 +119,7 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
 
             resultAttributes = resultAttributes?.map { attribute in
                 var scale: CGFloat = 0
-                let distance = fabs(offset - attribute.center.x)
+                let distance = abs(offset - attribute.center.x)
                 if distance >= distanceForMinimumScale {
                     scale = self.minimumScale
                 } else if distance == distanceForMaximumScale {
@@ -157,8 +157,8 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
                     transform = transform.rotated(by: AngleWithDegrees(degress))
                     attribute.transform = transform
                     attribute.zIndex = 1
-                    if fabs(distance) < centerMin {
-                        centerMin = fabs(distance)
+                    if abs(distance) < centerMin {
+                        centerMin = abs(distance)
                         centerAttribute = attribute
                     }
                     return attribute
@@ -176,12 +176,12 @@ class QMUICollectionViewPagingLayout: UICollectionViewFlowLayout {
         var proposedContentOffset = proposedContentOffset
         let itemSpacing = finalItemSize.width + minimumLineSpacing
 
-        if !allowsMultipleItemScroll || fabs(velocity.x) <= fabs(mutipleItemScrollVelocityLimit) {
+        if !allowsMultipleItemScroll || abs(velocity.x) <= abs(mutipleItemScrollVelocityLimit) {
             // 只滚动一页
 
             let contentOffset = collectionView?.contentOffset ?? .zero
 
-            if fabs(velocity.x) > velocityForEnsurePageDown {
+            if abs(velocity.x) > velocityForEnsurePageDown {
                 // 为了更容易触发翻页，这里主动增加滚动位置
                 let scrollingToRight = proposedContentOffset.x < contentOffset.x
                 proposedContentOffset = CGPoint(x: contentOffset.x + (itemSpacing / 2) * (scrollingToRight ? -1 : 1), y: contentOffset.y)

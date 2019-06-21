@@ -66,10 +66,10 @@ class QDAlertController: QDCommonGroupListViewController {
             // 弹窗
             let alertController = QMUIAlertController(title: "确定删除？", message: "删除后将无法恢复，请慎重考虑", preferredStyle: .alert)
             var titleAttributs = alertController.alertTitleAttributes
-            titleAttributs[NSAttributedStringKey.foregroundColor] = UIColorWhite
+            titleAttributs[.foregroundColor] = UIColorWhite
             alertController.alertTitleAttributes = titleAttributs
             var messageAttributs = alertController.alertMessageAttributes
-            messageAttributs[NSAttributedStringKey.foregroundColor] = UIColorMakeWithRGBA(255, 255, 255, 0.75)
+            messageAttributs[.foregroundColor] = UIColorMakeWithRGBA(255, 255, 255, 0.75)
             alertController.alertMessageAttributes = messageAttributs
             if let themeTintColor = QDThemeManager.shared.currentTheme?.themeTintColor {
                 alertController.alertHeaderBackgroundColor = themeTintColor
@@ -78,11 +78,11 @@ class QDAlertController: QDCommonGroupListViewController {
             alertController.alertTitleMessageSpacing = 7
             
             var buttonAttributes = alertController.alertButtonAttributes
-            buttonAttributes[NSAttributedStringKey.foregroundColor] = alertController.alertHeaderBackgroundColor
+            buttonAttributes[.foregroundColor] = alertController.alertHeaderBackgroundColor
             alertController.alertButtonAttributes = buttonAttributes
             
             var cancelButtonAttributes = alertController.alertCancelButtonAttributes
-            cancelButtonAttributes[NSAttributedStringKey.foregroundColor] = buttonAttributes[NSAttributedStringKey.foregroundColor]
+            cancelButtonAttributes[.foregroundColor] = buttonAttributes[NSAttributedString.Key.foregroundColor]
             alertController.alertCancelButtonAttributes = cancelButtonAttributes
             
             alertController.add(action: action1)
@@ -142,10 +142,10 @@ class QDAlertController: QDCommonGroupListViewController {
             
             let alertController = QMUIAlertController(title: "确定删除？", message: "删除后将无法恢复，请慎重考虑", preferredStyle: .sheet)
             var titleAttributs = alertController.sheetTitleAttributes
-            titleAttributs[NSAttributedStringKey.foregroundColor] = UIColorWhite
+            titleAttributs[.foregroundColor] = UIColorWhite
             alertController.sheetTitleAttributes = titleAttributs
             var messageAttributs = alertController.sheetMessageAttributes
-            messageAttributs[NSAttributedStringKey.foregroundColor] = UIColorWhite
+            messageAttributs[.foregroundColor] = UIColorWhite
             alertController.sheetMessageAttributes = messageAttributs
             if let themeTintColor = QDThemeManager.shared.currentTheme?.themeTintColor {
                 alertController.sheetHeaderBackgroundColor = themeTintColor
@@ -153,11 +153,11 @@ class QDAlertController: QDCommonGroupListViewController {
             alertController.sheetSeperatorColor = alertController.sheetButtonBackgroundColor
             
             var buttonAttributes = alertController.sheetButtonAttributes
-            buttonAttributes[NSAttributedStringKey.foregroundColor] = alertController.sheetHeaderBackgroundColor
+            buttonAttributes[.foregroundColor] = alertController.sheetHeaderBackgroundColor
             alertController.sheetButtonAttributes = buttonAttributes
             
             var cancelButtonAttributes = alertController.sheetCancelButtonAttributes
-            cancelButtonAttributes[NSAttributedStringKey.foregroundColor] = buttonAttributes[NSAttributedStringKey.foregroundColor]
+            cancelButtonAttributes[.foregroundColor] = buttonAttributes[.foregroundColor]
             alertController.sheetCancelButtonAttributes = cancelButtonAttributes
             
             alertController.add(action: action1)
@@ -248,7 +248,7 @@ class QDAlertController: QDCommonGroupListViewController {
         
         let group = CAAnimationGroup()
         group.animations = [positionAnimation, scaleAnimation, alphaAnimation]
-        group.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        group.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         group.repeatCount = Float.infinity
         group.duration = 1.3
         

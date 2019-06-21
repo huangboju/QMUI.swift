@@ -112,7 +112,7 @@ class QMUIGhostButton: QMUIButton {
     private func updateImageColor() {
         imageView?.tintColor = adjustsImageWithGhostColor ? ghostColor : nil
         guard let _ = currentImage else { return }
-        let states: [UIControlState] = [.normal, .highlighted, .disabled]
+        let states: [UIControl.State] = [.normal, .highlighted, .disabled]
         for state in states {
             if let image = image(for: state) {
                 if adjustsImageWithGhostColor {
@@ -126,7 +126,7 @@ class QMUIGhostButton: QMUIButton {
         }
     }
     
-    override func setImage(_ image: UIImage?, for state: UIControlState) {
+    override func setImage(_ image: UIImage?, for state: UIControl.State) {
         var newImage = image
         if adjustsImageWithGhostColor {
             newImage = image?.withRenderingMode(.alwaysTemplate)

@@ -92,7 +92,7 @@ extension UIFont {
         if upperLimitSize == 0 {
             tmpUpperLimitSize = fontSize + 5
         }
-        var font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
+        var font = UIFont.preferredFont(forTextStyle: UIFont.TextStyle.body)
         let offsetPointSize = font.pointSize - 17 // default UIFontTextStyleBody fontSize is 17
         var finalPointSize = fontSize + offsetPointSize
         finalPointSize = max(min(finalPointSize, tmpUpperLimitSize), lowerLimitSize)

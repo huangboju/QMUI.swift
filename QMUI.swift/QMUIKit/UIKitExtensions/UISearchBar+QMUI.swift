@@ -32,9 +32,9 @@ extension UISearchBar: SelfAware2 {
             return
         }
 
-        var attributes = [NSAttributedStringKey: Any]()
-        attributes[NSAttributedStringKey.foregroundColor] = qmui_placeholderColor
-        attributes[NSAttributedStringKey.font] = qmui_font
+        var attributes = [NSAttributedString.Key: Any]()
+        attributes[NSAttributedString.Key.foregroundColor] = qmui_placeholderColor
+        attributes[NSAttributedString.Key.font] = qmui_font
         qmui_textField?.attributedPlaceholder = NSAttributedString(string: newPlaceholder, attributes: attributes)
     }
 
@@ -44,7 +44,7 @@ extension UISearchBar: SelfAware2 {
         fixLandscapeStyle()
         fixSafeAreaInsetsStyle()
 
-        if !UIEdgeInsetsEqualToEdgeInsets(qmui_textFieldMargins, UIEdgeInsets.zero) {
+        if qmui_textFieldMargins != UIEdgeInsets.zero {
             if let qmui_textField = qmui_textField {
                 qmui_textField.frame = qmui_textField.frame.insetEdges(qmui_textFieldMargins)
             }
@@ -344,7 +344,7 @@ extension UISearchBar {
         // 设置搜索icon
         if let searchIconImage = SearchBarSearchIconImage {
             if !searchIconImage.size.equalTo(CGSize(width: 13, height: 13)) {
-                print("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSStringFromCGSize(CGSize(width: 13, height: 23)))")
+                print("搜索框放大镜图片（SearchBarSearchIconImage）的大小最好为 (13, 13)，否则会失真，目前的大小为 \(NSCoder.string(for: CGSize(width: 13, height: 23)))")
             }
             setImage(searchIconImage, for: .search, state: .normal)
         }

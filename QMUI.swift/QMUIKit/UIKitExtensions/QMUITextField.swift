@@ -134,7 +134,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
 
     func updateAttributedPlaceholderIfNeeded() {
         if let _ = placeholder {
-            attributedPlaceholder = NSAttributedString(string: placeholder!, attributes: [NSAttributedStringKey.foregroundColor: placeholderColor])
+            attributedPlaceholder = NSAttributedString(string: placeholder!, attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
         }
     }
 
@@ -185,10 +185,10 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
             return
         }
 
-        var lineHeight = (defaultTextAttributes[NSAttributedStringKey.paragraphStyle.rawValue] as! NSParagraphStyle).minimumLineHeight
+        var lineHeight = (convertFromNSAttributedStringKeyDictionary(defaultTextAttributes)[NSAttributedString.Key.paragraphStyle.rawValue] as! NSParagraphStyle).minimumLineHeight
 
         if lineHeight == 0 {
-            lineHeight = (defaultTextAttributes[NSAttributedStringKey.font.rawValue] as! UIFont).lineHeight
+            lineHeight = (convertFromNSAttributedStringKeyDictionary(defaultTextAttributes)[NSAttributedString.Key.font.rawValue] as! UIFont).lineHeight
         }
 
         if scrollView.contentSize.height > ceil(lineHeight) && scrollView.contentOffset.y < 0 {
@@ -215,7 +215,7 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
 
     func fireTextDidChangeEvent(forTextField textField: QMUITextField) {
         textField.sendActions(for: .editingChanged)
-        NotificationCenter.default.post(name: NSNotification.Name.UITextFieldTextDidChange, object: textField)
+        NotificationCenter.default.post(name: UITextField.textDidChangeNotification, object: textField)
     }
 
     private func lengthWithString(_ string: String) -> UInt {
@@ -266,4 +266,9 @@ class QMUITextField: UITextField, QMUITextFieldDelegate, UIScrollViewDelegate {
 
         return true
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKeyDictionary(_ input: [NSAttributedString.Key: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
 }

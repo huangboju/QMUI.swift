@@ -65,10 +65,10 @@ extension UITabBar: SelfAware2 {
         guard let selectedItem = selectedItem, let items = self.items else { return }
         var olderSelectedIndex = -1
         if self.selectedItem != nil {
-            olderSelectedIndex = items.index(of: selectedItem) ?? -1
+            olderSelectedIndex = items.firstIndex(of: selectedItem) ?? -1
         }
         qmui_setSelectedItem(selectedItem)
-        let newerSelectedIndex = Int(items.index(of: selectedItem) ?? -1)
+        let newerSelectedIndex = Int(items.firstIndex(of: selectedItem) ?? -1)
         // 只有双击当前正在显示的界面的 tabBarItem，才能正常触发双击事件
         canItemRespondDoubleTouch = olderSelectedIndex == newerSelectedIndex
     }
@@ -129,7 +129,7 @@ extension UITabBar: SelfAware2 {
             self.revertTabBarItemTouch()
         }
 
-        guard let selectedIndex = items?.index(of: selectedItem!) else {
+        guard let selectedIndex = items?.firstIndex(of: selectedItem!) else {
             return
         }
         if lastTouchedTabBarItemViewIndex == UITabBar.kLastTouchedTabBarItemIndexNone {

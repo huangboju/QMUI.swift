@@ -115,7 +115,7 @@ class QMUIModalPresentationViewController: UIViewController {
      *  限制`contentView`布局时的最大宽度，默认为iPhone 6竖屏下的屏幕宽度减去`contentViewMargins`在水平方向的值，也即浮层在iPhone 6 Plus或iPad上的宽度以iPhone 6上的宽度为准。
      *  @warning 当设置了`layoutBlock`属性时，此属性不生效
      */
-    var maximumContentViewWidth: CGFloat = QMUIHelper.screenSizeFor47Inch.width - UIEdgeInsetsMake(20, 20, 20, 20).horizontalValue
+    var maximumContentViewWidth: CGFloat = QMUIHelper.screenSizeFor47Inch.width - UIEdgeInsets.init(top: 20, left: 20, bottom: 20, right: 20).horizontalValue
 
     /**
      *  背景遮罩，默认为一个普通的`UIView`，背景色为`UIColorMask`，可设置为自己的view，注意`dimmingView`的大小将会盖满整个控件。
@@ -246,7 +246,7 @@ class QMUIModalPresentationViewController: UIViewController {
     
     private func didInitialized() {
         animationStyle = .fade
-        contentViewMargins = UIEdgeInsetsMake(20, 20, 20, 20)
+        contentViewMargins = UIEdgeInsets.init(top: 20, left: 20, bottom: 20, right: 20)
         maximumContentViewWidth = QMUIHelper.screenSizeFor47Inch.width - contentViewMargins.horizontalValue
         
         modalTransitionStyle = .crossDissolve
@@ -300,8 +300,8 @@ class QMUIModalPresentationViewController: UIViewController {
             _animated = appearAnimated
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         if contentViewController != nil {
             contentViewController!.qmui_modalPresentationViewController = self
@@ -378,8 +378,8 @@ class QMUIModalPresentationViewController: UIViewController {
         }
         
         // 在降下键盘前取消对键盘事件的监听，从而避免键盘影响隐藏浮层的动画
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         
         // 如果是因为 present 了新的界面导致走到 willDisappear，则后面那些降下浮层的操作都可以不用做了
         if willDisappearByPresentedViewController {
@@ -540,7 +540,7 @@ class QMUIModalPresentationViewController: UIViewController {
         previousKeyWindow = UIApplication.shared.keyWindow
         if containerWindow == nil {
             containerWindow = QMUIModalPresentationWindow()
-            containerWindow?.windowLevel = UIWindowLevelQMUIAlertView
+            containerWindow?.windowLevel = UIWindow.Level(rawValue: UIWindowLevelQMUIAlertView)
             containerWindow?.backgroundColor = UIColorClear // 避免横竖屏旋转时出现黑色
         }
 

@@ -44,7 +44,7 @@ class QDDynamicTableViewCell: QMUITableViewCell {
         return label
     }()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         initSubviews()
     }
@@ -72,7 +72,7 @@ class QDDynamicTableViewCell: QMUITableViewCell {
         if string.qmui_trim.isEmpty {
             return nil
         }
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: lineHeight, lineBreakMode: .byTruncatingTail)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: lineHeight, lineBreakMode: .byTruncatingTail)]
         let attriString = NSAttributedString(string: string, attributes: attributes)
         return attriString
     }

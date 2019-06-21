@@ -342,7 +342,7 @@ extension String {
     }
 
     subscript(i: Int) -> String {
-        return self[Range(i ..< i + 1)]
+        return self[i ..< i + 1]
     }
 
     subscript(r: Range<Int>) -> String {
@@ -350,6 +350,6 @@ extension String {
                                             upper: min(length, max(0, r.upperBound))))
         let start = index(startIndex, offsetBy: range.lowerBound)
         let end = index(start, offsetBy: range.upperBound - range.lowerBound)
-        return String(self[Range(start ..< end)])
+        return String(self[start ..< end])
     }
 }

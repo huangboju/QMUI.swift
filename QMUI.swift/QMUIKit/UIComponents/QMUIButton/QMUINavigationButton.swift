@@ -76,7 +76,7 @@ class QMUINavigationButton: UIButton {
         self.init(type: .image)
         setImage(image, for: .normal)
         // 系统在iOS8及以后的版本默认对image的UIBarButtonItem加了上下3、左右11的padding，所以这里统一一下
-        contentEdgeInsets = UIEdgeInsetsMake(3, 11, 3, 11)
+        contentEdgeInsets = UIEdgeInsets.init(top: 3, left: 11, bottom: 3, right: 11)
         sizeToFit()
     }
     
@@ -85,7 +85,7 @@ class QMUINavigationButton: UIButton {
     }
     
     // 修复系统的UIBarButtonItem里的图片无法跟着tintColor走
-    override func setImage(_ image: UIImage?, for state: UIControlState) {
+    override func setImage(_ image: UIImage?, for state: UIControl.State) {
         if var image = image, self.image(for: state) != image {
             if image.renderingMode == .automatic {
                 // 由于 QMUINavigationButton 是用于 UIBarButtonItem 的，所以默认的行为应该是尽量去跟随 tintColor，所以做了这个优化

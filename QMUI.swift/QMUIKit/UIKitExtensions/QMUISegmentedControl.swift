@@ -56,12 +56,12 @@ public class QMUISegmentedControl: UISegmentedControl {
 
     private func setTitleTextAttributes(with textColor: UIColor, selectedTextColor: UIColor, fontSize: UIFont) {
         setTitleTextAttributes([
-            NSAttributedStringKey.foregroundColor: textColor,
-            NSAttributedStringKey.font: fontSize,
+            NSAttributedString.Key.foregroundColor: textColor,
+            NSAttributedString.Key.font: fontSize,
         ], for: .normal)
         setTitleTextAttributes([
-            NSAttributedStringKey.foregroundColor: selectedTextColor,
-            NSAttributedStringKey.font: fontSize,
+            NSAttributedString.Key.foregroundColor: selectedTextColor,
+            NSAttributedString.Key.font: fontSize,
         ], for: .selected)
     }
 

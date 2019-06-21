@@ -59,7 +59,7 @@ extension UILabel: SelfAware2 {
         // 去除最后一个字的 kern 效果，使得文字整体在视觉上居中
         // 只有当 qmui_textAttributes 中设置了 kern 时这里才应该做调整
         if let attributedString = string.mutableCopy() as? NSMutableAttributedString {
-            attributedString.removeAttribute(NSAttributedStringKey.kern, range: NSMakeRange(string.length - 1, 1))
+            attributedString.removeAttribute(NSAttributedString.Key.kern, range: NSMakeRange(string.length - 1, 1))
             
             // 判断是否应该应用上通过 qmui_setLineHeight: 设置的行高
             var shouldAdjustLineHeight = true
@@ -67,7 +67,7 @@ extension UILabel: SelfAware2 {
                 shouldAdjustLineHeight = false
             }
             
-            attributedString.enumerateAttribute(NSAttributedStringKey.paragraphStyle, in: NSMakeRange(0, attributedString.length), options: []) { (style, range, stop) in
+            attributedString.enumerateAttribute(NSAttributedString.Key.paragraphStyle, in: NSMakeRange(0, attributedString.length), options: []) { (style, range, stop) in
                 // 如果用户已经通过传入 NSParagraphStyle 对文字整个 range 设置了行高，则这里不应该再次调整行高
                 if range == NSMakeRange(0, attributedString.length) {
                     if let style = style as? NSParagraphStyle, (style.maximumLineHeight != 0 || style.minimumLineHeight != 0) {
@@ -78,7 +78,7 @@ extension UILabel: SelfAware2 {
             
             if shouldAdjustLineHeight {
                 let paraStyle = NSMutableParagraphStyle(lineHeight: qmui_lineHeight, lineBreakMode: lineBreakMode, textAlignment: textAlignment)
-                attributedString.addAttribute(NSAttributedStringKey.paragraphStyle, value: paraStyle, range: NSMakeRange(0, attributedString.length))
+                attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paraStyle, range: NSMakeRange(0, attributedString.length))
             }
             
             return NSAttributedString(attributedString: attributedString)
@@ -116,9 +116,9 @@ extension UILabel {
      * 唯一例外的极端情况是：先用方法2将文字设成红色，再用方法1将文字设成蓝色，最后再 setText，这时虽然代码执行顺序靠后的是方法1，但最终生效的会是方法2，为了避免这种极端情况的困扰，建议不要同时使用方法1和方法2去设置同一种样式。
      *
      */
-    var qmui_textAttributes: [NSAttributedStringKey: Any] {
+    var qmui_textAttributes: [NSAttributedString.Key: Any] {
         get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.kAssociatedObjectKey_textAttributes) as? [NSAttributedStringKey: Any] ?? [:]
+            return objc_getAssociatedObject(self, &AssociatedKeys.kAssociatedObjectKey_textAttributes) as? [NSAttributedString.Key: Any] ?? [:]
         }
         set {
             let prevTextAttributes: NSDictionary = qmui_textAttributes as NSDictionary
@@ -139,15 +139,15 @@ extension UILabel {
             // 1）当前 attributedText 包含的样式可能来源于两方面：通过 qmui_textAttributes 设置的、通过直接传入 attributedString 设置的，这里要过滤删除掉前者的样式效果，保留后者的样式效果
             if prevTextAttributes.count > 0 {
                 // 找出现在 attributedText 中哪些 attrs 是通过上次的 qmui_textAttributes 设置的
-                var willRemovedAttributes = [NSAttributedStringKey]()
+                var willRemovedAttributes = [NSAttributedString.Key]()
                 string.enumerateAttributes(in: NSMakeRange(0, string.length), options: NSAttributedString.EnumerationOptions(rawValue: 0)) { attrs, range, _ in
                     let attrsDic: NSDictionary = attrs as NSDictionary
                     // 如果存在 kern 属性，则只有 range 是第一个字至倒数第二个字，才有可能是通过 qmui_textAttribtus 设置的
-                    if let currentKern = attrsDic[NSAttributedStringKey.kern] as? NSNumber,
-                        let prevKern = prevTextAttributes[NSAttributedStringKey.kern] as? NSNumber,
+                    if let currentKern = attrsDic[NSAttributedString.Key.kern] as? NSNumber,
+                        let prevKern = prevTextAttributes[NSAttributedString.Key.kern] as? NSNumber,
                         currentKern.isEqual(to: prevKern),
                         NSEqualRanges(range, NSMakeRange(0, string.length - 1)) {
-                        string.removeAttribute(NSAttributedStringKey.kern, range: NSMakeRange(0, string.length - 1))
+                        string.removeAttribute(NSAttributedString.Key.kern, range: NSMakeRange(0, string.length - 1))
                     }
 
                     // 上面排除掉 kern 属性后，如果 range 不是整个字符串，那肯定不是通过 qmui_textAttributes 设置的

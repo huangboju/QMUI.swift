@@ -93,7 +93,7 @@ class QMUIMarqueeLabel: UILabel {
         super.didMoveToWindow()
         if window != nil {
             displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink))
-            displayLink?.add(to: RunLoop.current, forMode: .commonModes)
+            displayLink?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
         } else {
             displayLink?.invalidate()
             displayLink = nil

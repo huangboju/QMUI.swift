@@ -23,7 +23,7 @@ class QDEmotionsViewController: QDCommonViewController {
         descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
         
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorGray1, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorGray1, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)]
         let attributedString = NSMutableAttributedString(string: "本界面以 QMUIEmotionInputManager 为例，展示 QMUIEmotionView 的功能，若需查看 QMUIEmotionView 的使用方式，请参考 QMUIEmotionInputManager。", attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) in

@@ -176,7 +176,7 @@ extension QMUIHelper {
      * @warning 注意iOS8以下的系统在横屏时得到的rect，宽度和高度相反了，所以不建议直接通过这个方法获取高度，而是使用<code>keyboardHeightWithNotification:inView:</code>，因为在后者的实现里会将键盘的rect转换坐标系，转换过程就会处理横竖屏旋转问题。
      */
     static func keyboardRect(_ notification: Notification?) -> CGRect {
-        guard let keyboardRect = (notification?.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
+        guard let keyboardRect = (notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return .zero }
         return keyboardRect
     }
 
@@ -205,20 +205,20 @@ extension QMUIHelper {
 
     /// 获取键盘显示/隐藏的动画时长，注意返回值可能为0
     static func keyboardAnimationDuration(_ notification: Notification?) -> TimeInterval {
-        guard let animationDuration = notification?.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? Double else { return 0 }
+        guard let animationDuration = notification?.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return 0 }
         return animationDuration
     }
 
     /// 获取键盘显示/隐藏的动画时间函数
-    static func keyboardAnimationCurve(_ notification: Notification?) -> UIViewAnimationCurve {
-        guard let curve = notification?.userInfo?[UIKeyboardAnimationCurveUserInfoKey] as? Int else { return .easeIn }
-        return UIViewAnimationCurve(rawValue: curve)!
+    static func keyboardAnimationCurve(_ notification: Notification?) -> UIView.AnimationCurve {
+        guard let curve = notification?.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int else { return .easeIn }
+        return UIView.AnimationCurve(rawValue: curve)!
     }
 
     /// 获取键盘显示/隐藏的动画时间函数
-    static func keyboardAnimationOptions(_ notification: Notification?) -> UIViewAnimationOptions {
+    static func keyboardAnimationOptions(_ notification: Notification?) -> UIView.AnimationOptions {
         let rawValue = UInt(QMUIHelper.keyboardAnimationCurve(notification).rawValue)
-        return UIViewAnimationOptions(rawValue: rawValue)
+        return UIView.AnimationOptions(rawValue: rawValue)
     }
 }
 
@@ -232,13 +232,13 @@ extension QMUIHelper {
      */
     static func redirectAudioRoute(_ speaker: Bool, temporary: Bool) {
         let audioSession = AVAudioSession.sharedInstance()
-        if audioSession.category != AVAudioSessionCategoryPlayAndRecord {
+        if audioSession.category != AVAudioSession.Category.playAndRecord {
             return
         }
         if temporary {
             try? audioSession.overrideOutputAudioPort(speaker ? .speaker : .none)
         } else {
-            try? audioSession.setCategory(audioSession.category, with: speaker ? .defaultToSpeaker : [])
+//            try? audioSession.setCategory(speaker ? .ambient : [])
         }
     }
 
@@ -247,14 +247,14 @@ extension QMUIHelper {
      *
      *  @param category 使用iOS7的category，iOS6的会自动适配
      */
-    static func setAudioSession(category: String) {
-        let categories = [
-            AVAudioSessionCategoryAmbient,
-            AVAudioSessionCategorySoloAmbient,
-            AVAudioSessionCategoryPlayback,
-            AVAudioSessionCategoryRecord,
-            AVAudioSessionCategoryPlayAndRecord,
-            AVAudioSessionCategoryAudioProcessing,
+    static func setAudioSession(_ category: AVAudioSession.Category) {
+        let categories: [AVAudioSession.Category] = [
+            .ambient,
+            .soloAmbient,
+            .playback,
+            .record,
+            .playAndRecord,
+            .audioProcessing,
         ]
 
         // 如果不属于系统category，返回
@@ -265,23 +265,23 @@ extension QMUIHelper {
         try? AVAudioSession.sharedInstance().setCategory(category)
     }
 
-    private static func categoryForLowVersion(_ category: String) -> Int {
-        if category == AVAudioSessionCategoryAmbient {
+    private static func categoryForLowVersion(_ category: AVAudioSession.Category) -> Int {
+        if category == .ambient {
             return kAudioSessionCategory_AmbientSound
         }
-        if category == AVAudioSessionCategorySoloAmbient {
+        if category == .soloAmbient {
             return kAudioSessionCategory_SoloAmbientSound
         }
-        if category == AVAudioSessionCategoryPlayback {
+        if category == .playback {
             return kAudioSessionCategory_MediaPlayback
         }
-        if category == AVAudioSessionCategoryRecord {
+        if category == .record {
             return kAudioSessionCategory_RecordAudio
         }
-        if category == AVAudioSessionCategoryPlayAndRecord {
+        if category == .playAndRecord {
             return kAudioSessionCategory_PlayAndRecord
         }
-        if category == AVAudioSessionCategoryAudioProcessing {
+        if category == .audioProcessing {
             return kAudioSessionCategory_AudioProcessing
         }
         return kAudioSessionCategory_AmbientSound
@@ -389,16 +389,18 @@ extension QMUIHelper {
 
         switch orientation {
         case .portrait:
-            return UIEdgeInsetsMake(44, 0, 34, 0)
+            return UIEdgeInsets(top: 44, left: 0, bottom: 34, right: 0)
 
         case .portraitUpsideDown:
-            UIEdgeInsetsMake(34, 0, 44, 0)
+            return UIEdgeInsets(top: 34, left: 0, bottom: 44, right: 0)
 
         case .landscapeLeft, .landscapeRight:
-            return UIEdgeInsetsMake(0, 44, 21, 44)
+            return UIEdgeInsets(top: 0, left: 44, bottom: 21, right: 44)
 
         case .unknown:
-            return UIEdgeInsetsMake(44, 0, 34, 0)
+            return UIEdgeInsets(top: 44, left: 0, bottom: 34, right: 0)
+        @unknown default:
+            fatalError()
         }
 
         return UIEdgeInsets.zero
@@ -567,9 +569,9 @@ extension QMUIHelper: SelfAware {
             shared._isKeyboardVisible = false
             shared.lastKeyboardHeight = 0
             shared.orientationBeforeChangingByHelper = .unknown
-            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
-            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
-            NotificationCenter.default.addObserver(shared, selector: #selector(handleDeviceOrientation(_:)), name: .UIDeviceOrientationDidChange, object: nil)
+            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+            NotificationCenter.default.addObserver(shared, selector: #selector(handleKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+            NotificationCenter.default.addObserver(shared, selector: #selector(handleDeviceOrientation(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         }
     }
     

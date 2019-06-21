@@ -279,7 +279,7 @@ extension UIImage {
      *  @return 处理完的图片
      */
     func qmui_imageResized(in limitedSize: CGSize,
-                           contentMode: UIViewContentMode = .scaleAspectFit,
+                           contentMode: UIView.ContentMode = .scaleAspectFit,
                            scale:CGFloat = 0) -> UIImage? {
         var tmpScale = scale
         if scale == 0 {
@@ -328,7 +328,7 @@ extension UIImage {
      *
      *  @return 处理完的图片
      */
-    func qmui_image(orientation: UIImageOrientation) -> UIImage {
+    func qmui_image(orientation: UIImage.Orientation) -> UIImage {
         if orientation == .up {
             return self
         }
@@ -371,6 +371,8 @@ extension UIImage {
             // 向左、向右翻转是一样的
             context.translateBy(x: contextSize.width, y: 0)
             context.scaleBy(x: -1, y: 1)
+        @unknown default:
+            fatalError()
         }
 
         // 在前面画布的旋转、移动的结果上绘制自身即可，这里不用考虑旋转带来的宽高置换的问题
@@ -766,7 +768,7 @@ extension UIImage {
             let fontPointSize = flat(size.height * 0.8)
             let font = UIFont(name: "Georgia", size: fontPointSize) ?? .systemFont(ofSize: fontPointSize)
 
-            let string = NSAttributedString(string: "i", attributes: [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: tintColor])
+            let string = NSAttributedString(string: "i", attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: tintColor])
             let stringSize = string.boundingRect(with: size, options: .usesFontLeading, context: nil)
 
             string.draw(at: CGPoint(x: size.width.center(stringSize.width), y: size.height.center(stringSize.height)))

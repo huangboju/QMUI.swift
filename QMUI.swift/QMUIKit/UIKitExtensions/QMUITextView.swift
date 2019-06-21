@@ -41,7 +41,7 @@ import UIKit
 private let kSystemTextViewDefaultFontPointSize: CGFloat = 12.0
 
 /// 当系统的 textView.textContainerInset 为 UIEdgeInsets.zero 时，文字与 textView 边缘的间距。实测得到，请勿修改（在输入框font大于13时准确，小于等于12时，y有-1px的偏差）。
-private let kSystemTextViewFixTextInsets: UIEdgeInsets = UIEdgeInsetsMake(0, 5, 0, 5)
+private let kSystemTextViewFixTextInsets: UIEdgeInsets = UIEdgeInsets.init(top: 0, left: 5, bottom: 0, right: 5)
 
 /**
  *  自定义 UITextView，提供的特性如下：
@@ -76,14 +76,14 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
      */
     @IBInspectable var placeholder: String? {
         didSet {
-            let attributes = Dictionary(uniqueKeysWithValues: typingAttributes.map {
-                key, value in (NSAttributedStringKey(key), value)
+            let attributes = Dictionary(uniqueKeysWithValues: convertFromNSAttributedStringKeyDictionary(typingAttributes).map {
+                key, value in (key, value)
             })
             placeholderLabel?.attributedText = NSAttributedString(string: placeholder ?? "", attributes: attributes)
 
             if let placeholderLabel = self.placeholderLabel {
                 placeholderLabel.textColor = placeholderColor
-                sendSubview(toBack: placeholderLabel)
+                sendSubviewToBack(placeholderLabel)
             }
             setNeedsLayout()
         }
@@ -161,7 +161,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
 
                 delegate?.textViewDidChange?(self)
 
-                NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: self)
+                NotificationCenter.default.post(name: UITextView.textDidChangeNotification, object: self)
             } else {
                 super.text = newValue
 
@@ -200,7 +200,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
 
                 delegate?.textViewDidChange?(self)
 
-                NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: self)
+                NotificationCenter.default.post(name: UITextView.textDidChangeNotification, object: self)
             } else {
                 super.attributedText = newValue
 
@@ -211,12 +211,12 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     }
 
     /// 重写 typingAttributes 的 setter 方法
-    override var typingAttributes: [String: Any] {
+    override var typingAttributes: [NSAttributedString.Key: Any] {
         get {
-            return super.typingAttributes
+            return convertFromNSAttributedStringKeyDictionary(super.typingAttributes)
         }
         set {
-            super.typingAttributes = newValue
+            super.typingAttributes = convertToNSAttributedStringKeyDictionary(newValue)
             updatePlaceholderStyle()
         }
     }
@@ -292,7 +292,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
         self.placeholderLabel = placeholderLabel
         addSubview(placeholderLabel)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTextChanged(_:)), name: NSNotification.Name.UITextViewTextDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTextChanged(_:)), name: UITextView.textDidChangeNotification, object: nil)
     }
 
     deinit {
@@ -336,7 +336,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
                 let resultHeight = textView!.sizeThatFits(CGSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude)).height
 
                 if debug {
-                    print("handleTextDidChange, text = \(textView!.text), resultHeight = \(resultHeight)")
+                    print("handleTextDidChange, text = \(textView!.text ?? ""), resultHeight = \(resultHeight)")
                 }
 
                 // 通知delegate去更新textView的高度
@@ -416,7 +416,7 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if debug {
-            print("textView.text(\(textView.text.length) | \(textView.text.qmui_lengthWhenCountingNonASCIICharacterAsTwo) = \(textView.text)\nmarkedTextRange = \(String(describing: textView.markedTextRange))\nrange = \(NSStringFromRange(range))\ntext = \(text)")
+            print("textView.text(\(textView.text.length) | \(textView.text.qmui_lengthWhenCountingNonASCIICharacterAsTwo) = \(textView.text ?? "")\nmarkedTextRange = \(String(describing: textView.markedTextRange))\nrange = \(NSStringFromRange(range))\ntext = \(text)")
         }
 
         if text == "\n" {
@@ -532,4 +532,14 @@ class QMUITextView: UITextView, QMUITextViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         originalDelegate?.scrollViewDidZoom?(scrollView)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKeyDictionary(_ input: [NSAttributedString.Key: Any]) -> [NSAttributedString.Key: Any] {
+    return Dictionary(uniqueKeysWithValues: input.map {key, value in (key, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSAttributedStringKeyDictionary(_ input: [NSAttributedString.Key: Any]) -> [NSAttributedString.Key: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (key, value)})
 }

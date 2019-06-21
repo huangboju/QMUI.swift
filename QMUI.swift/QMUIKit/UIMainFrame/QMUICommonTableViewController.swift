@@ -32,7 +32,7 @@ private let QMUICommonTableViewControllerSectionFooterIdentifier = "QMUISectionF
  */
 class QMUICommonTableViewController: QMUICommonViewController {
     /// 获取当前的 `UITableViewStyle`
-    private(set) var style: UITableViewStyle = .plain
+    private(set) var style: UITableView.Style = .plain
 
     /// 获取当前的 tableView
     fileprivate var _tableView: QMUITableView?
@@ -90,7 +90,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
         self.init(style: .plain)
     }
 
-    init(style: UITableViewStyle) {
+    init(style: UITableView.Style) {
         super.init(nibName: nil, bundle: nil)
         didInitialized(with: style)
     }
@@ -100,7 +100,7 @@ class QMUICommonTableViewController: QMUICommonViewController {
         didInitialized(with: .plain)
     }
 
-    func didInitialized(with style: UITableViewStyle) {
+    func didInitialized(with style: UITableView.Style) {
         self.style = style
         tableViewInitialContentInset = QMUICommonTableViewControllerInitialContentInsetNotSet
         tableViewInitialScrollIndicatorInsets = QMUICommonTableViewControllerInitialContentInsetNotSet

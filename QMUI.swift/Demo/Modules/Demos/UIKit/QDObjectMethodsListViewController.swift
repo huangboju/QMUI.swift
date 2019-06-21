@@ -39,7 +39,7 @@ class QDObjectMethodsListViewController: QDCommonViewController {
     }
     
     private func attributedStringForTextView() -> NSAttributedString {
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : CodeFontMake(14), NSAttributedStringKey.foregroundColor: UIColorGray1, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : CodeFontMake(14), NSAttributedString.Key.foregroundColor: UIColorGray1, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24)]
         let attributedString = NSAttributedString(string: selectorNames.joined(separator: "\n"), attributes: attributes)
         return attributedString
     }

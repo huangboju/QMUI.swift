@@ -43,7 +43,7 @@ class QDImagePreviewViewController2: QDCommonViewController {
         view.addSubview(imageButton)
         
         tipsLabel = UILabel()
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(12), NSAttributedStringKey.foregroundColor: UIColorGray6, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16, lineBreakMode: .byWordWrapping, textAlignment: .center)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(12), NSAttributedString.Key.foregroundColor: UIColorGray6, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 16, lineBreakMode: .byWordWrapping, textAlignment: .center)]
         let attributedText = NSAttributedString(string: "点击图片后可左右滑动，期间也可尝试横竖屏", attributes: attributes)
         tipsLabel.attributedText = attributedText
         tipsLabel.numberOfLines = 0

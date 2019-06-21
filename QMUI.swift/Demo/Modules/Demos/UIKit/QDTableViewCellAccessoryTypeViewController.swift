@@ -30,7 +30,7 @@ class QDTableViewCellAccessoryTypeViewController: QDCommonTableViewController {
             cell = QMUITableViewCell(tableView: self.tableView, reuseIdentifier: identifier)
             cell!.textLabel?.adjustsFontSizeToFitWidth = true
             cell!.textLabel?.text = dataSource[indexPath.row]
-            cell!.accessoryType = UITableViewCellAccessoryType(rawValue: indexPath.row)!
+            cell!.accessoryType = UITableViewCell.AccessoryType(rawValue: indexPath.row)!
             cell!.updateCellAppearance(indexPath)
         }
         return cell ?? UITableViewCell()

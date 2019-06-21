@@ -22,7 +22,7 @@ class QDCAShapeLoadingViewController: QDCommonViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -50,7 +50,7 @@ class QDCAShapeLoadingViewController: QDCommonViewController {
         shapeLayer1 = CAShapeLayer()
         shapeLayer1.strokeColor = UIColorTheme1.cgColor
         shapeLayer1.fillColor = UIColorClear.cgColor
-        shapeLayer1.lineCap = kCALineCapRound
+        shapeLayer1.lineCap = CAShapeLayerLineCap.round
         shapeLayer1.strokeStart = 0
         shapeLayer1.strokeEnd = 0.4
         shapeLayer1.lineWidth = kPathLineWidth
@@ -60,7 +60,7 @@ class QDCAShapeLoadingViewController: QDCommonViewController {
         shapeLayer2 = CAShapeLayer()
         shapeLayer2.strokeColor = UIColorTheme3.cgColor
         shapeLayer2.fillColor = UIColorClear.cgColor
-        shapeLayer2.lineCap = kCALineCapRound
+        shapeLayer2.lineCap = CAShapeLayerLineCap.round
         shapeLayer2.strokeStart = -0.5
         shapeLayer2.strokeEnd = 0
         shapeLayer2.lineWidth = kPathLineWidth

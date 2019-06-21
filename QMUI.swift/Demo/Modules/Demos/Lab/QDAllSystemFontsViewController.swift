@@ -12,7 +12,7 @@ class QDAllSystemFontsViewController: QDCommonTableViewController {
 
     private var allFonts: [UIFont]!
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         allFonts = [UIFont]()
         DispatchQueue.global().async {

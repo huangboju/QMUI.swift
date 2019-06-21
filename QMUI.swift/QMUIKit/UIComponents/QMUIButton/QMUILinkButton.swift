@@ -67,7 +67,7 @@ class QMUILinkButton: QMUIButton {
         underlineLayer.frame = CGRect(x: underlineInsets.left, y: (titleLabel?.frame.maxY ?? 0) +  underlineInsets.top - underlineInsets.bottom, width: bounds.width - underlineInsets.horizontalValue, height: underlineWidth)
     }
     
-    override func setTitleColor(_ color: UIColor?, for state: UIControlState) {
+    override func setTitleColor(_ color: UIColor?, for state: UIControl.State) {
         super.setTitleColor(color, for: state)
         updateUnderlineColor()
     }

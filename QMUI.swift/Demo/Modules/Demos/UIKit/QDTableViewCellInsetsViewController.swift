@@ -59,16 +59,16 @@ class QDTableViewCellInsetsViewController: QDCommonTableViewController {
             cell.detailTextLabel?.text = nil
         } else if indexPath.section == 1 {
             cell.detailTextLabel?.text = "imageEdgeInsets"
-            cell.imageEdgeInsets = UIEdgeInsetsMake(0, 30, 0, 0)
+            cell.imageEdgeInsets = UIEdgeInsets.init(top: 0, left: 30, bottom: 0, right: 0)
         } else if indexPath.section == 2 {
             cell.detailTextLabel?.text = "textLabelEdgeInsets"
-            cell.textLabelEdgeInsets = UIEdgeInsetsMake(-6, 30, 0, 0)
+            cell.textLabelEdgeInsets = UIEdgeInsets.init(top: -6, left: 30, bottom: 0, right: 0)
         } else if indexPath.section == 3 {
             cell.detailTextLabel?.text = "detailTextLabelEdgeInsets"
-            cell.detailTextLabelEdgeInsets = UIEdgeInsetsMake(6, 30, 0, 0);
+            cell.detailTextLabelEdgeInsets = UIEdgeInsets.init(top: 6, left: 30, bottom: 0, right: 0);
         } else if indexPath.section == 4 {
             cell.detailTextLabel?.text = "accessoryEdgeInsets, accessoryEdgeInsets, accessoryEdgeInsets, accessoryEdgeInsets, accessoryEdgeInsets, accessoryEdgeInsets"
-            cell.accessoryEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 32);
+            cell.accessoryEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 32);
         }
         
         return cell

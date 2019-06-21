@@ -38,7 +38,7 @@ class QDOrientationViewController: QDCommonTableViewController {
                 ]])
         
         orientationLabel = QMUILabel(with: UIFontMake(14), textColor: UIColorGray7)
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(14), NSAttributedStringKey.foregroundColor: UIColorGray7, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22, lineBreakMode: .byWordWrapping, textAlignment: .center)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(14), NSAttributedString.Key.foregroundColor: UIColorGray7, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22, lineBreakMode: .byWordWrapping, textAlignment: .center)]
         orientationLabel.attributedText = NSAttributedString(string: "当前界面支持的方向：\n\(descriptionString(supportedOrientationMask))", attributes: attributes)
         orientationLabel.numberOfLines = 2
         orientationLabel.contentEdgeInsets = UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)

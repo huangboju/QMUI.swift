@@ -30,7 +30,7 @@ class QDAllAnimationViewController: QDCommonViewController {
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -177,7 +177,7 @@ class QDAllAnimationViewController: QDCommonViewController {
         
         let group = CAAnimationGroup()
         group.animations = [positionAnimation, scaleAnimation, alphaAnimation]
-        group.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        group.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         group.repeatCount = Float.infinity
         group.duration = 1.3
         
@@ -193,14 +193,14 @@ class QDAllAnimationViewController: QDCommonViewController {
         position2Animation.values = [0, 100, 120, 220]
         position2Animation.keyTimes = [0, 0.35, 0.65, 1]
         position2Animation.timingFunctions = [
-            CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut),
-            CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear),
-            CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)]
+            CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeOut),
+            CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear),
+            CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeIn)]
         position2Animation.isAdditive = true
         
         let alpha2Animation = CAKeyframeAnimation()
         alpha2Animation.keyPath = "opacity"
-        alpha2Animation.fillMode = kCAFillModeForwards
+        alpha2Animation.fillMode = CAMediaTimingFillMode.forwards
         alpha2Animation.isRemovedOnCompletion = false
         alpha2Animation.duration = 2.4
         alpha2Animation.values = [0, 1, 1, 1, 0]

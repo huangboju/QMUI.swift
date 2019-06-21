@@ -18,7 +18,7 @@ class QDUIViewDebugViewController: QDCommonViewController {
     override func initSubviews() {
         super.initSubviews()
         
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorGray1]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorGray1]
         let attributedString = NSMutableAttributedString(string: "通过 qmui_shouldShowDebugColor 让 UIView 以及其所有的 subviews 都加上一个背景色，方便查看其布局情况", attributes: attributes)
         attributedString.string.enumerateCodeString { (codeString, codeRange) in
             attributedString.addAttributes(CodeAttributes(16), range: codeRange)

@@ -199,7 +199,7 @@ class QMUIEmptyView: UIView {
 
         scrollView.addSubview(contentView)
 
-        loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        loadingView = UIActivityIndicatorView(style: .gray)
         if let loadingView = loadingView as? UIActivityIndicatorView {
             loadingView.hidesWhenStopped = false// 此控件是通过loadingView.hidden属性来控制显隐的，如果UIActivityIndicatorView的hidesWhenStopped属性设置为true的话，则手动设置它的hidden属性就会失效，因此这里要置为false
             contentView.addSubview(loadingView)
@@ -290,9 +290,9 @@ class QMUIEmptyView: UIView {
     func updateDetailTextLabel(with text: String?) {
         if let text = text {
             let string = NSAttributedString(string: text, attributes: [
-                NSAttributedStringKey.font: detailTextLabelFont,
-                NSAttributedStringKey.foregroundColor: detailTextLabelTextColor,
-                NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping, textAlignment: .center),
+                NSAttributedString.Key.font: detailTextLabelFont,
+                NSAttributedString.Key.foregroundColor: detailTextLabelTextColor,
+                NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: detailTextLabelFont.pointSize + 10, lineBreakMode: .byWordWrapping, textAlignment: .center),
             ])
             detailTextLabel.attributedText = string
         }

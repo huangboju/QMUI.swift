@@ -332,8 +332,8 @@ class QMUIAsset: NSObject {
     /**
      * 获取图片的 UIImageOrientation 值，仅 assetType 为 QMUIAssetTypeImage 或 QMUIAssetTypeLivePhoto 时有效
      */
-    var imageOrientation: UIImageOrientation? {
-        var orientation: UIImageOrientation?
+    var imageOrientation: UIImage.Orientation? {
+        var orientation: UIImage.Orientation?
         if assetType == .image {
             if phAssetInfo == nil {
                 // PHAsset 的 UIImageOrientation 需要调用过 requestImageDataForAsset 才能获取
@@ -342,7 +342,7 @@ class QMUIAsset: NSObject {
                 })
             }
             // 从 PhAssetInfo 中获取 UIImageOrientation 对应的字段
-            orientation = phAssetInfo?[kAssetInfoOrientation] as? UIImageOrientation ?? .up
+            orientation = phAssetInfo?[kAssetInfoOrientation] as? UIImage.Orientation ?? .up
         } else {
             orientation = .up
         }

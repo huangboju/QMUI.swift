@@ -65,7 +65,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "默认的布局是上下左右居中，可通过contentViewMargins、maximumContentViewWidth属性来调整宽高、上下左右的偏移。\n你现在可以试试旋转一下设备试试看。"
-        let attributedString = NSMutableAttributedString(string: string, attributes: [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle])
+        let attributedString = NSMutableAttributedString(string: string, attributes: [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle])
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
             attributedString.addAttributes(codeAttributes, range: codeRange)
@@ -74,7 +74,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         label.attributedText = attributedString
         contentView.addSubview(label)
         
-        let contentViewPadding = UIEdgeInsetsMake(20, 20, 20, 20)
+        let contentViewPadding = UIEdgeInsets.init(top: 20, left: 20, bottom: 20, right: 20)
         let contentLimitWidth = contentView.bounds.width - contentViewPadding.horizontalValue
         
         let labelSize = label.sizeThatFits(CGSize(width: contentLimitWidth, height: CGFloat.greatestFiniteMagnitude))
@@ -108,7 +108,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "QMUIModalPresentationViewController允许自定义背景遮罩的dimmingView，例如这里的背景遮罩是拿当前界面进行截图磨砂后显示出来的。"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         
         let codeAttributes = CodeAttributes(16)
@@ -148,7 +148,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "利用layoutClosure可以自定义浮层的布局，注意此时contentViewMargins、maximumContentViewWidth属性均无效，如果需要实现外间距、最大宽高的保护，请自行计算。\n另外搭配showingAnimation、hidingAnimation也可制作自己的显示/隐藏动画，例如这个例子里实现了一个从底部升起的面板，升起后停靠在容器底端，你可以试着旋转设备，会发现依然能正确布局。"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
@@ -214,10 +214,10 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 20)
         paragraphStyle.paragraphSpacing = 10
         let string = "如果你的浮层里有输入框，建议在把输入框添加到界面上后立即调用becomeFirstResponder（如果你用contentViewController，则在viewWillAppear:时调用becomeFirstResponder），以保证键盘跟随浮层一起显示。\n而在浮层消失时，modalViewController会自动降下键盘，所以你的浮层里并不需要处理。"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(12), NSAttributedStringKey.foregroundColor: UIColorGrayDarken, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(12), NSAttributedString.Key.foregroundColor: UIColorGrayDarken, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         
-        let codeAttributes = [NSAttributedStringKey.font : UIFontMake(12), NSAttributedStringKey.foregroundColor: (QDThemeManager.shared.currentTheme?.themeCodeColor ?? UIColorGrayDarken).withAlphaComponent(0.8)]
+        let codeAttributes = [NSAttributedString.Key.font : UIFontMake(12), NSAttributedString.Key.foregroundColor: (QDThemeManager.shared.currentTheme?.themeCodeColor ?? UIColorGrayDarken).withAlphaComponent(0.8)]
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
             attributedString.addAttributes(codeAttributes, range: codeRange)
         }
@@ -246,7 +246,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "QMUIModalPresentationViewController支持 3 种使用方式，当前使用第 1 种，注意状态栏被遮罩盖住了"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
@@ -278,7 +278,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "QMUIModalPresentationViewController支持 3 种使用方式，当前使用第 2 种，注意遮罩无法盖住屏幕顶部的状态栏。"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
@@ -323,7 +323,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "QMUIModalPresentationViewController支持 3 种使用方式，当前使用第 3 种，注意可以透过遮罩外的空白地方点击到背后的 cell"
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle]
         let attributedString = NSMutableAttributedString(string: string, attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString { (codeString, codeRange) -> () in
@@ -362,7 +362,7 @@ fileprivate class QDModalContentViewController: UIViewController {
         let paragraphStyle = NSMutableParagraphStyle(lineHeight: 24)
         paragraphStyle.paragraphSpacing = 16
         let string = "如果你的浮层是以UIViewController的形式存在的，那么就可以通过modalViewController.contentViewController属性来显示出来。\n利用UIViewController的特点，你可以方便地管理复杂的UI状态，并且响应设备在不同状态下的布局。\n例如这个例子里，图片和文字的排版会随着设备的方向变化而变化，你可以试着旋转屏幕看看效果。"
-        let attributedString = NSMutableAttributedString(string: string, attributes: [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorBlack, NSAttributedStringKey.paragraphStyle: paragraphStyle])
+        let attributedString = NSMutableAttributedString(string: string, attributes: [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorBlack, NSAttributedString.Key.paragraphStyle: paragraphStyle])
         let codeAttributes = CodeAttributes(16)
         attributedString.string.enumerateCodeString {
             if $0 != "UI" {
@@ -387,7 +387,7 @@ fileprivate class QDModalContentViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        let padding = UIEdgeInsetsMake(20, 20, 20, 20)
+        let padding = UIEdgeInsets.init(top: 20, left: 20, bottom: 20, right: 20)
         let contentSize = CGSize(width: view.bounds.width - padding.horizontalValue, height: view.bounds.height - padding.verticalValue)
         scrollView.frame = view.bounds
         

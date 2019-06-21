@@ -29,7 +29,7 @@ class QDReplicatorLayerViewController: QDCommonViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleWillEnterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {

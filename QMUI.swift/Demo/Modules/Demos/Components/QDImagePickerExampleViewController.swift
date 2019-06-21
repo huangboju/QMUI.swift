@@ -265,7 +265,7 @@ extension QDImagePickerExampleViewController: QDSingleImagePickerPreviewViewCont
             if isHEIC {
                 // iOS 11 中新增 HEIF/HEVC 格式的资源，直接发送新格式的照片到不支持新格式的设备，照片可能会无法识别，可以先转换为通用的 JPEG 格式再进行使用。
                 // 详细请浏览：https://github.com/QMUI/QMUI_iOS/issues/224
-                guard let tmpImage = targetImage, let data = UIImageJPEGRepresentation(tmpImage, 1) else {
+                guard let tmpImage = targetImage, let data = tmpImage.jpegData(compressionQuality: 1) else {
                     return
                 }
                 targetImage = UIImage(data: data)

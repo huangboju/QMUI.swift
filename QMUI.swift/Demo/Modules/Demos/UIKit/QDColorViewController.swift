@@ -77,7 +77,7 @@ fileprivate class QDColorTableViewCell: QMUITableViewCell {
         initSubviews()
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
@@ -85,7 +85,7 @@ fileprivate class QDColorTableViewCell: QMUITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    required convenience init(tableView: UITableView, style: UITableViewCellStyle, reuseIdentifier: String?) {
+    required convenience init(tableView: UITableView, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         fatalError("init(tableView:style:reuseIdentifier:) has not been implemented")
     }
     

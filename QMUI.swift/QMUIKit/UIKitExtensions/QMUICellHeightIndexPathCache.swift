@@ -17,7 +17,7 @@ class QMUICellHeightIndexPathCache {
     var automaticallyInvalidateEnabled = false
 
     private var heightsBySectionForCurrentOrientation: [[CGFloat]] {
-        return UIDeviceOrientationIsPortrait(UIDevice.current.orientation) ? heightsBySectionForPortrait : heightsBySectionForLandscape
+        return UIDevice.current.orientation.isPortrait ? heightsBySectionForPortrait : heightsBySectionForLandscape
     }
 
     // Height cache

@@ -38,7 +38,7 @@ class QMUITips: QMUIToastView {
     func showLoading(text: String? = nil,
                      detailText: String? = nil,
                      hideAfterDelay delay: TimeInterval = QMUITipsAutomaticallyHideToastSeconds) {
-        let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let indicator = UIActivityIndicatorView(style: .whiteLarge)
         indicator.startAnimating()
         contentCustomView = indicator
         showTip(text: text,

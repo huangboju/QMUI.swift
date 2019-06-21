@@ -11,8 +11,8 @@ enum QMUIVisualEffectViewStyle {
     case light
     case dark
 
-    var effStyle: UIBlurEffectStyle {
-        let effStyle: UIBlurEffectStyle
+    var effStyle: UIBlurEffect.Style {
+        let effStyle: UIBlurEffect.Style
         switch self {
         case .extraLight:
             effStyle = .extraLight

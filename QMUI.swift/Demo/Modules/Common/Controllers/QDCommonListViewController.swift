@@ -12,7 +12,7 @@ class QDCommonListViewController: QMUICommonTableViewController {
     
     var dataSourceWithDetailText: QMUIOrderedDictionary<String, String>?
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         initDataSource()
     }

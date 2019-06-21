@@ -911,7 +911,7 @@ class QDImageViewController: QDCommonListViewController {
         scrollView.addSubview(originImageLabel)
         minY = originImageLabel.frame.maxY + 6
         
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: QDCommonUI.randomThemeColor()]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: QDCommonUI.randomThemeColor()]
         let attributedString1 = NSAttributedString(string: "这是UILabel的显示效果", attributes: attributes)
         let attributedString2 = NSAttributedString(string: "这是UIImage的显示效果", attributes: attributes)
         

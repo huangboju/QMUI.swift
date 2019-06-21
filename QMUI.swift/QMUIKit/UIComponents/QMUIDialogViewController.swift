@@ -122,7 +122,7 @@ class QMUIDialogViewController: QMUICommonViewController {
         }
     }
     
-    @objc dynamic var buttonTitleAttributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.foregroundColor: UIColorBlue, NSAttributedStringKey.kern: 2] {
+    @objc dynamic var buttonTitleAttributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.foregroundColor: UIColorBlue, NSAttributedString.Key.kern: 2] {
         didSet {
             if let cancelTitle = cancelButton?.attributedTitle(for: .normal)?.string {
                 cancelButton?.setAttributedTitle(NSAttributedString(string: cancelTitle, attributes: buttonTitleAttributes), for: .normal)
@@ -242,8 +242,8 @@ class QMUIDialogViewController: QMUICommonViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // subview都在[super viewDidLoad]里添加，所以在添加完subview后再强制把headerView和footerView拉到最前面，以保证分隔线不会被subview盖住
-        view.bringSubview(toFront: headerView)
-        view.bringSubview(toFront: footerView)
+        view.bringSubviewToFront(headerView)
+        view.bringSubviewToFront(footerView)
 
         view.backgroundColor = UIColorClear // 减少Color Blended Layers
         view.layer.cornerRadius = cornerRadius
@@ -396,7 +396,7 @@ extension QMUIDialogViewController {
         DispatchQueue.once(token: QMUIDialogViewController._onceToken) {
             let dialogViewControllerAppearance = QMUIDialogViewController(nibName: nil, bundle: nil)
             dialogViewControllerAppearance.cornerRadius = 6
-            dialogViewControllerAppearance.dialogViewMargins = UIEdgeInsetsMake(20, 20, 20, 20) // 在实例的 didInitialized 里会适配 iPhone X 的 safeAreaInsets
+            dialogViewControllerAppearance.dialogViewMargins = UIEdgeInsets.init(top: 20, left: 20, bottom: 20, right: 20) // 在实例的 didInitialized 里会适配 iPhone X 的 safeAreaInsets
             dialogViewControllerAppearance.maximumContentViewWidth = QMUIHelper.screenSizeFor55Inch.width - dialogViewControllerAppearance.dialogViewMargins.horizontalValue
             dialogViewControllerAppearance.backgroundColor = UIColorClear
             dialogViewControllerAppearance.titleTintColor = UIColorBlack
@@ -414,7 +414,7 @@ extension QMUIDialogViewController {
             dialogViewControllerAppearance.footerViewBackgroundColor = UIColorWhite
             
             dialogViewControllerAppearance.buttonBackgroundColor = nil
-            dialogViewControllerAppearance.buttonTitleAttributes = [NSAttributedStringKey.foregroundColor: UIColorBlue, NSAttributedStringKey.kern: 2]
+            dialogViewControllerAppearance.buttonTitleAttributes = [NSAttributedString.Key.foregroundColor: UIColorBlue, NSAttributedString.Key.kern: 2]
             dialogViewControllerAppearance.buttonHighlightedBackgroundColor = UIColorBlue.withAlphaComponent(0.25)
             
             QMUIDialogViewController.dialogViewControllerAppearance = dialogViewControllerAppearance

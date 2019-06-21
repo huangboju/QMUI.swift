@@ -56,7 +56,7 @@ extension UIButton {
      * @note 该方法和 setTitleColor:forState: 均可设置字体颜色，如果二者冲突，则代码顺序较后的方法定义的颜色会最终生效
      * @note 如果包含了 NSKernAttributeName ，则此方法会自动帮你去掉最后一个字的 kern 效果，否则容易导致文字整体在视觉上不居中
      */
-    func qmui_setTitleAttributes(_ attributes: [NSAttributedStringKey: Any], for state: UIControlState) {
+    func qmui_setTitleAttributes(_ attributes: [NSAttributedString.Key: Any], for state: UIControl.State) {
         var attributes = attributes
         if attributes.isEmpty {
             qmui_titleAttributes.removeValue(forKey: state.rawValue)
@@ -76,12 +76,12 @@ extension UIButton {
 
         // 一个系统的不好的特性（bug?）：如果你给 UIControlStateHighlighted（或者 normal 之外的任何 state）设置了包含 NSFont/NSKern/NSUnderlineAttributeName 之类的 attributedString ，但又仅用 setTitle:forState: 给 UIControlStateNormal 设置了普通的 string ，则按钮从 highlighted 切换回 normal 状态时，font 之类的属性依然会停留在 highlighted 时的状态
         // 为了解决这个问题，我们要确保一旦有 normal 之外的 state 通过设置 qmui_titleAttributes 属性而导致使用了 attributedString，则 normal 也必须使用 attributedString
-        if qmui_titleAttributes.count > 0 && qmui_titleAttributes[UIControlState.normal.rawValue] == nil {
+        if qmui_titleAttributes.count > 0 && qmui_titleAttributes[UIControl.State.normal.rawValue] == nil {
             qmui_setTitleAttributes([:], for: .normal)
         }
     }
 
-    @objc func qmui_setTitle(_ title: String, for state: UIControlState) {
+    @objc func qmui_setTitle(_ title: String, for state: UIControl.State) {
         qmui_setTitle(title, for: state)
         
         _markQMUICustomize(type: .title, for: state, value: title)
@@ -92,7 +92,7 @@ extension UIButton {
 
         if state == .normal {
             for attribute in qmui_titleAttributes {
-                let keyState = UIControlState(rawValue: attribute.key)
+                let keyState = UIControl.State(rawValue: attribute.key)
                 let titleForState = self.title(for: keyState) ?? ""
                 let attributeString = NSAttributedString(string: titleForState, attributes: attribute.value)
                 setAttributedTitle(attributedStringWithEndKernRemoved(attributeString), for: keyState)
@@ -108,37 +108,37 @@ extension UIButton {
     }
 
     // 如果之前已经设置了此 state 下的文字颜色，则覆盖掉之前的颜色
-    @objc private func qmui_setTitleColor(_ color: UIColor, for state: UIControlState) {
+    @objc private func qmui_setTitleColor(_ color: UIColor, for state: UIControl.State) {
         qmui_setTitleColor(color, for: state)
         
         _markQMUICustomize(type: .titleColor, for: state, value: color)
 
         if let attribute = self.qmui_titleAttributes[state.rawValue] {
             var newAttribute = attribute
-            newAttribute[NSAttributedStringKey.foregroundColor] = color
+            newAttribute[NSAttributedString.Key.foregroundColor] = color
             qmui_setTitleAttributes(newAttribute, for: state)
         }
     }
     
-    @objc private func qmui_setTitleShadowColor(_ color: UIColor, for state: UIControlState) {
+    @objc private func qmui_setTitleShadowColor(_ color: UIColor, for state: UIControl.State) {
         qmui_setTitleShadowColor(color, for: state)
         
         _markQMUICustomize(type: .titleShadowColor, for: state, value: color)
     }
     
-    @objc private func qmui_setImage(_ image: UIImage?, for state: UIControlState) {
+    @objc private func qmui_setImage(_ image: UIImage?, for state: UIControl.State) {
         qmui_setImage(image, for: state)
         
         _markQMUICustomize(type: .image, for: state, value: image)
     }
     
-    @objc private func qmui_setBackgroundImage(_ image: UIImage?, for state: UIControlState) {
+    @objc private func qmui_setBackgroundImage(_ image: UIImage?, for state: UIControl.State) {
         qmui_setBackgroundImage(image, for: state)
         
         _markQMUICustomize(type: .backgroundImage, for: state, value: image)
     }
     
-    @objc private func qmui_setAttributedTitle(_ title: NSAttributedString?, for state: UIControlState) {
+    @objc private func qmui_setAttributedTitle(_ title: NSAttributedString?, for state: UIControl.State) {
         qmui_setAttributedTitle(title, for: state)
         
         _markQMUICustomize(type: .attributedTitle, for: state, value: title)
@@ -151,7 +151,7 @@ extension UIButton {
         }
 
         let mutableString = NSMutableAttributedString(attributedString: string)
-        mutableString.removeAttribute(NSAttributedStringKey.kern, range: NSMakeRange(string.length - 1, 1))
+        mutableString.removeAttribute(NSAttributedString.Key.kern, range: NSMakeRange(string.length - 1, 1))
         return NSAttributedString(attributedString: mutableString)
     }
 
@@ -160,9 +160,9 @@ extension UIButton {
         static var qmuiCustomizeButtonPropDict = "qmuiCustomizeButtonPropDict"
     }
 
-    private var qmui_titleAttributes: [UInt: [NSAttributedStringKey: Any]] {
+    private var qmui_titleAttributes: [UInt: [NSAttributedString.Key: Any]] {
         get {
-            return (objc_getAssociatedObject(self, &AssociatedKeys.titleAttributes) as? [UInt: [NSAttributedStringKey: Any]]) ?? [:]
+            return (objc_getAssociatedObject(self, &AssociatedKeys.titleAttributes) as? [UInt: [NSAttributedString.Key: Any]]) ?? [:]
         }
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.titleAttributes, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -178,7 +178,7 @@ extension UIButton {
         }
     }
     
-    private func _markQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControlState, value: Any?) {
+    private func _markQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControl.State, value: Any?) {
         if let _ = value {
             _setQMUICustomize(type: type, for: state)
         } else {
@@ -186,7 +186,7 @@ extension UIButton {
         }
     }
     
-    private func _setQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControlState) {
+    private func _setQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControl.State) {
         if qmui_customizeButtonPropDict == nil {
             qmui_customizeButtonPropDict = [:]
         }
@@ -198,7 +198,7 @@ extension UIButton {
         qmui_customizeButtonPropDict![state.rawValue]![type.rawValue] = true
     }
     
-    private func _removeQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControlState) {
+    private func _removeQMUICustomize(type: QMUICustomizeButtonPropType, for state: UIControl.State) {
         if qmui_customizeButtonPropDict == nil || qmui_customizeButtonPropDict![state.rawValue] == nil {
             return
         }
@@ -211,7 +211,7 @@ extension UIButton {
      * 判断该 button 在特定 UIControlState 下是否设置了属性
      * @note 该方法会对设置了任何 QMUICustomizeButtonPropType 都返回 YES
      */
-    func qmui_hasCustomizedButtonProp(for state: UIControlState) -> Bool {
+    func qmui_hasCustomizedButtonProp(for state: UIControl.State) -> Bool {
         guard let qmui_customizeButtonPropDict = self.qmui_customizeButtonPropDict else {
             return false
         }
@@ -223,7 +223,7 @@ extension UIButton {
      * 判断该 button 在特定 UIControlState 下是否设置了某个 QMUICustomizeButtonPropType 属性
      * @param type 对应于 UIbutton 的 setXXX:forState 办法
      */
-    func qmui_hasCustomizedButtonProp(with type: QMUICustomizeButtonPropType, for state: UIControlState) -> Bool {
+    func qmui_hasCustomizedButtonProp(with type: QMUICustomizeButtonPropType, for state: UIControl.State) -> Bool {
         guard let qmui_customizeButtonPropDict = self.qmui_customizeButtonPropDict, let dict = qmui_customizeButtonPropDict[state.rawValue] else {
             return false
         }

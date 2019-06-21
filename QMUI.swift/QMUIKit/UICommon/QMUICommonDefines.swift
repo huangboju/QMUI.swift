@@ -30,9 +30,9 @@ let IOS_VERSION = (UIDevice.current.systemVersion as NSString).floatValue
 let IOS_VERSION_NUMBER = QMUIHelper.numbericOSVersion
 
 /// 是否横竖屏，用户界面横屏了才会返回true
-let IS_LANDSCAPE = UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation)
+let IS_LANDSCAPE = UIApplication.shared.statusBarOrientation.isLandscape
 /// 无论支不支持横屏，只要设备横屏了，就会返回YES
-let IS_DEVICE_LANDSCAPE = UIDeviceOrientationIsLandscape(UIDevice.current.orientation)
+let IS_DEVICE_LANDSCAPE = UIDevice.current.orientation.isLandscape
 
 /// 屏幕宽度，会根据横竖屏的变化而变化
 let SCREEN_WIDTH = UIScreen.main.bounds.width
@@ -170,13 +170,13 @@ func UIColorMakeWithHex(_ hex: String) -> UIColor { return UIColor(hexStr: hex) 
 let AngleWithDegrees: (CGFloat) -> CGFloat = { .pi * $0 / 180.0 }
 
 /// MARK: - 动画
-extension UIViewAnimationOptions {
-    static var curveOut: UIViewAnimationOptions {
-        return UIViewAnimationOptions(rawValue: 7 << 16)
+extension UIView.AnimationOptions {
+    static var curveOut: UIView.AnimationOptions {
+        return UIView.AnimationOptions(rawValue: 7 << 16)
     }
 
-    static var curveIn: UIViewAnimationOptions {
-        return UIViewAnimationOptions(rawValue: 8 << 16)
+    static var curveIn: UIView.AnimationOptions {
+        return UIView.AnimationOptions(rawValue: 8 << 16)
     }
 }
 

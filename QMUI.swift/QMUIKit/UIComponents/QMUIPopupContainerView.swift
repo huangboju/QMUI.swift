@@ -224,7 +224,7 @@ class QMUIPopupContainerView: UIControl {
                                    height: bounds.height - arrowSize.height - borderWidth * 2 - contentEdgeInsets.verticalValue)
         // contentView的圆角取一个比整个path的圆角小的最大值（极限情况下如果self.contentEdgeInsets.left比self.cornerRadius还大，那就意味着contentView不需要圆角了）
         // 这么做是为了尽量去掉contentView对内容不必要的裁剪，以免有些东西被裁剪了看不到
-        let contentViewCornerRadius = fabs(fmin(contentView.frame.minX - cornerRadius, 0))
+        let contentViewCornerRadius = abs(fmin(contentView.frame.minX - cornerRadius, 0))
         contentView.layer.cornerRadius = contentViewCornerRadius
 
         let isImageViewShowing = isSubviewShowing(imageView)
@@ -258,7 +258,7 @@ class QMUIPopupContainerView: UIControl {
         if popupWindow == nil {
             popupWindow = QMUIPopupContainerViewWindow()
             popupWindow?.backgroundColor = UIColorClear
-            popupWindow?.windowLevel = UIWindowLevelQMUIAlertView
+            popupWindow?.windowLevel = UIWindow.Level(rawValue: UIWindowLevelQMUIAlertView)
             let viewController = QMUIPopContainerViewController()
             (viewController.view as? QMUIPopContainerMaskControl)?.popupContainerView = self
             if automaticallyHidesWhenUserTap {

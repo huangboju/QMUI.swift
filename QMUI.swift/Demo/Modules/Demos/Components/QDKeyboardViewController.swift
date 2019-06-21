@@ -107,7 +107,7 @@ class QDKeyboardCustomViewController: QDCommonViewController {
         view.frame = parentViewController.view.bounds
         
         // 需要先布局好
-        parentViewController.addChildViewController(self)
+        parentViewController.addChild(self)
         parentViewController.view.addSubview(view)
         view.layoutIfNeeded()
         
@@ -119,7 +119,7 @@ class QDKeyboardCustomViewController: QDCommonViewController {
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
             self.maskControl.alpha = 1
         }) { (finished) in
-            self.didMove(toParentViewController: self)
+            self.didMove(toParent: self)
             // 这一句触发viewDidAppear:
             self.endAppearanceTransition()
         }
@@ -128,14 +128,14 @@ class QDKeyboardCustomViewController: QDCommonViewController {
     }
     
     fileprivate func hide() {
-        self.willMove(toParentViewController: nil)
+        self.willMove(toParent: nil)
         // 这一句触发viewWillDisappear:
         beginAppearanceTransition(false, animated: true)
         UIView.animate(withDuration: 0.25, delay: 0, options: .curveOut, animations: {
             self.maskControl.alpha = 0
         }) { (finished) in
             self.view.removeFromSuperview()
-            self.removeFromParentViewController()
+            self.removeFromParent()
             // 这一句触发viewDidAppear:
             self.endAppearanceTransition()
             self.view.removeFromSuperview()
@@ -196,7 +196,7 @@ class QDKeyboardViewController: QDCommonViewController {
         
         contentLabel = QMUILabel()
         contentLabel.numberOfLines = 0
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : UIFontMake(16), NSAttributedStringKey.foregroundColor: UIColorGray1, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24, lineBreakMode: .byCharWrapping)]
+        let attributes: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font : UIFontMake(16), NSAttributedString.Key.foregroundColor: UIColorGray1, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 24, lineBreakMode: .byCharWrapping)]
         let contentAttributedString = NSMutableAttributedString(string: "QMUIKeyboardManager 以更方便的方式管理键盘事件，无需再关心 notification、键盘坐标转换、判断是否目标输入框等问题，并兼容 iPad 浮动键盘和外接键盘。\nQMUIKeyboardManager 有两种使用方式，一种是直接使用，一种是集成到 UITextField(QMUI) 及 UITextView(QMUI) 内。", attributes: attributes)
         let codeAttributes = CodeAttributes(16)
         contentAttributedString.string.enumerateCodeString { (codeString, codeRange) in

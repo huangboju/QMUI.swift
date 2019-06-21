@@ -49,7 +49,7 @@ class QMUILabel: UILabel {
     }
 
     override func drawText(in rect: CGRect) {
-        super.drawText(in: UIEdgeInsetsInsetRect(rect, contentEdgeInsets))
+        super.drawText(in: rect.inset(by: contentEdgeInsets))
     }
 
     override var isHighlighted: Bool {
@@ -67,7 +67,7 @@ class QMUILabel: UILabel {
             longGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGestureRecognizer))
             addGestureRecognizer(longGestureRecognizer!)
 
-            NotificationCenter.default.addObserver(self, selector: #selector(handleMenuWillHideNotification), name: .UIMenuControllerWillHideMenu, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleMenuWillHideNotification), name: UIMenuController.willHideMenuNotification, object: nil)
 
             if !(highlightedBackgroundColor != nil) {
                 highlightedBackgroundColor = TableViewCellSelectedBackgroundColor // 设置个默认值

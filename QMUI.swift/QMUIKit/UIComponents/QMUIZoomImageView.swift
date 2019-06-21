@@ -192,7 +192,7 @@ class QMUIZoomImageView: UIView {
             videoPlayerView?.frame = videoSize.rect.applying(videoPlayerView!.transform)
             
             NotificationCenter.default.addObserver(self, selector: #selector(handleVideoPlayToEndEvent), name: .AVPlayerItemDidPlayToEndTime, object: videoPlayerItem)
-            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: .UIApplicationDidEnterBackground, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
             
             configVideoProgressSlider()
             
@@ -291,7 +291,7 @@ class QMUIZoomImageView: UIView {
                 cloudDownloadRetryButton?.isHidden = true
             case .downloading:
                 cloudProgressView?.isHidden = false
-                cloudProgressView?.superview?.bringSubview(toFront: cloudProgressView!)
+                cloudProgressView?.superview?.bringSubviewToFront(cloudProgressView!)
                 cloudDownloadRetryButton?.isHidden = true
             case .canceled:
                 cloudProgressView?.isHidden = true
@@ -299,7 +299,7 @@ class QMUIZoomImageView: UIView {
             case .failed:
                 cloudProgressView?.isHidden = true
                 cloudDownloadRetryButton?.isHidden = false
-                cloudDownloadRetryButton?.superview?.bringSubview(toFront: cloudDownloadRetryButton!)
+                cloudDownloadRetryButton?.superview?.bringSubviewToFront(cloudDownloadRetryButton!)
             }
             if statusChanged {
                 setNeedsLayout()
@@ -410,7 +410,7 @@ class QMUIZoomImageView: UIView {
         NotificationCenter.default.removeObserver(self)
     }
 
-    override var contentMode: UIViewContentMode {
+    override var contentMode: UIView.ContentMode {
         didSet {
             if contentMode != oldValue {
                 revertZooming()
@@ -592,7 +592,7 @@ class QMUIZoomImageView: UIView {
     }
 
     @objc func handleVideoPlayToEndEvent() {
-        videoPlayer?.seek(to: CMTimeMake(0, 1))
+        videoPlayer?.seek(to: CMTimeMake(value: 0, timescale: 1))
         videoCenteredPlayButton?.isHidden = false
         videoToolbar?.playButton.isHidden = false
         videoToolbar?.pauseButton.isHidden = true
@@ -610,7 +610,7 @@ class QMUIZoomImageView: UIView {
 
             let currentValue = slider.value
 
-            videoPlayer?.seek(to: CMTimeMakeWithSeconds(Float64(currentValue), Int32(NSEC_PER_SEC)), completionHandler: { _ in
+            videoPlayer?.seek(to: CMTimeMakeWithSeconds(Float64(currentValue), preferredTimescale: Int32(NSEC_PER_SEC)), completionHandler: { _ in
                 DispatchQueue.main.async {
                     self.isSeekingVideo = false
                 }
@@ -697,7 +697,7 @@ class QMUIZoomImageView: UIView {
         if videoPlayer == nil {
             return
         }
-        videoPlayer?.seek(to: CMTimeMake(0, 1))
+        videoPlayer?.seek(to: CMTimeMake(value: 0, timescale: 1))
         pauseVideo()
         syncVideoProgressSlider()
         videoToolbar?.isHidden = true
@@ -792,7 +792,7 @@ class QMUIZoomImageView: UIView {
     private func destroyVideoRelatedObjectsIfNeeded() {
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
         removePlayerTimeObserver()
 
         videoPlayerView?.removeFromSuperview()

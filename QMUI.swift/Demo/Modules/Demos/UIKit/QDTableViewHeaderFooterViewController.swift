@@ -161,13 +161,16 @@ class QDTableViewInsetDebugPanelView: UIView {
         let isSectionHeader0Pinned = tableView.qmui_isHeaderPinned(for: 0)
         let isSectionHeader1Pinned = tableView.qmui_isHeaderPinned(for: 1)
         
-        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font : pinnedHeaderValue.font, NSAttributedStringKey.foregroundColor: UIColorWhite]
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font : pinnedHeaderValue.font!,
+            .foregroundColor: UIColorWhite
+        ]
         let headerPinnedString = NSMutableAttributedString(string: "0: \(isSectionHeader0Pinned) | 1: \(isSectionHeader1Pinned)", attributes: attributes)
         
         let range0 = isSectionHeader0Pinned ? NSMakeRange(3, 4) : NSMakeRange(3, 5)
         let range1 = isSectionHeader1Pinned ? NSMakeRange(headerPinnedString.length - 4, 4) : NSMakeRange(headerPinnedString.length - 5, 5)
-        headerPinnedString.addAttribute(NSAttributedStringKey.foregroundColor, value: isSectionHeader0Pinned ? UIColorGreen : UIColorRed, range: range0)
-        headerPinnedString.addAttribute(NSAttributedStringKey.foregroundColor, value: isSectionHeader1Pinned ? UIColorGreen : UIColorRed, range: range1)
+        headerPinnedString.addAttribute(.foregroundColor, value: isSectionHeader0Pinned ? UIColorGreen : UIColorRed, range: range0)
+        headerPinnedString.addAttribute(.foregroundColor, value: isSectionHeader1Pinned ? UIColorGreen : UIColorRed, range: range1)
         headerPinnedValue.attributedText = headerPinnedString
     }
     

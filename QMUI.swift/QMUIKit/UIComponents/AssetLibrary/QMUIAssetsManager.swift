@@ -128,7 +128,7 @@ class QMUIAssetsManager {
      *  @warning 在支持“智能相册”的系统版本（iOS 8.0 及以上版本）也中无法通过该方法把图片保存到“智能相册”，
      *           “智能相册”只能由系统控制资源的增删。
      */
-    func saveImage(withImageRef imageRef: CGImage, albumAssetsGroup: QMUIAssetsGroup, orientation: UIImageOrientation, completionBlock: QMUIWriteAssetCompletionBlock) {
+    func saveImage(withImageRef imageRef: CGImage, albumAssetsGroup: QMUIAssetsGroup, orientation: UIImage.Orientation, completionBlock: QMUIWriteAssetCompletionBlock) {
         let albumPhAssetCollection = albumAssetsGroup.phAssetCollection
         // 把图片加入到指定的相册对应的 PHAssetCollection
         PHPhotoLibrary.shared().addImageToAlbum(
@@ -315,7 +315,7 @@ extension PHPhotoLibrary {
      */
     func addImageToAlbum(imageRef: CGImage,
                          albumAssetCollection: PHAssetCollection,
-                         orientation: UIImageOrientation,
+                         orientation: UIImage.Orientation,
                          completionHandler: ((Bool, Date?, Error?) -> Void)?) {
         let targetImage = UIImage(cgImage: imageRef, scale: ScreenScale, orientation: orientation)
         PHPhotoLibrary.shared().addImageToAlbum(image: targetImage, imagePathURL: nil, albumAssetCollection: albumAssetCollection, completionHandler: completionHandler)

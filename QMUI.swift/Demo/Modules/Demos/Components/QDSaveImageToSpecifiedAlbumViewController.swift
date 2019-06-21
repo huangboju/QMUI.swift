@@ -123,7 +123,7 @@ class QDSaveImageToSpecifiedAlbumViewController: QDCommonViewController {
     
     private func image(from text: String, textColor: UIColor) -> UIImage? {
         let font = UIFontMake(95)
-        let fontAttributes = [NSAttributedStringKey.font : font, NSAttributedStringKey.foregroundColor: textColor]
+        let fontAttributes = [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor: textColor]
         let size = text.size(withAttributes:fontAttributes)
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         text.draw(at: CGPoint(x: 0, y: 0),withAttributes: fontAttributes)

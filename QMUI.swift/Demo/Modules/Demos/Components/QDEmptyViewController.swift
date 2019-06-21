@@ -10,7 +10,7 @@ import UIKit
 
 class QDEmptyViewController: QDCommonTableViewController {
 
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         shouldShowSearchBar = true
     }

@@ -16,7 +16,7 @@ class QDCommonGroupListViewController: QDCommonTableViewController {
         self.init(style: .grouped)
     }
     
-    override func didInitialized(with style: UITableViewStyle) {
+    override func didInitialized(with style: UITableView.Style) {
         super.didInitialized(with: style)
         initDataSource()
     }

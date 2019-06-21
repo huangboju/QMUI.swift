@@ -136,7 +136,7 @@ extension UIView {
         subviews.forEach { $0.removeFromSuperview() }
     }
 
-    static func qmui_animate(with animated: Bool, duration: TimeInterval, delay: TimeInterval, options: UIViewAnimationOptions, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
+    static func qmui_animate(with animated: Bool, duration: TimeInterval, delay: TimeInterval, options: UIView.AnimationOptions, animations: @escaping () -> Void, completion: ((_ finish: Bool) -> Void)?) {
         if animated {
             UIView.animate(withDuration: duration, delay: delay, options: options, animations: animations, completion: completion)
         } else {

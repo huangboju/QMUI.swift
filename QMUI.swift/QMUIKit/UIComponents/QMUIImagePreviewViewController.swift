@@ -131,7 +131,7 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
     private func initPreviewWindowIfNeeded() {
         if previewWindow == nil {
             previewWindow = UIWindow()
-            previewWindow?.windowLevel = UIWindowLevelQMUIImagePreviewView
+            previewWindow?.windowLevel = UIWindow.Level(rawValue: UIWindowLevelQMUIImagePreviewView)
             previewWindow?.backgroundColor = UIColorClear
         }
     }

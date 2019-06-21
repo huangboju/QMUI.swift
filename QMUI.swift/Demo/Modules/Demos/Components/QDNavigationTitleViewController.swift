@@ -24,9 +24,9 @@ class QDNavigationTitleViewController: QDCommonListViewController {
         return popupMenuView
     }()
     
-    private var horizontalAlignment: UIControlContentHorizontalAlignment = .center
+    private var horizontalAlignment: UIControl.ContentHorizontalAlignment = .center
     
-    override init(style: UITableViewStyle) {
+    override init(style: UITableView.Style) {
         super.init(style: style)
         
     }

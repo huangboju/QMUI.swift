@@ -180,7 +180,7 @@ class QMUIConfiguration {
     }
     var navBarBackButtonTitlePositionAdjustment = UIOffset.zero {
         didSet {
-            if !UIOffsetEqualToOffset(UIOffset.zero, navBarBackButtonTitlePositionAdjustment) {
+            if UIOffset.zero != navBarBackButtonTitlePositionAdjustment {
                 let backBarButtonItem = UIBarButtonItem.appearance()
                 backBarButtonItem
                     .setBackButtonTitlePositionAdjustment(navBarBackButtonTitlePositionAdjustment,
@@ -200,7 +200,7 @@ class QMUIConfiguration {
             let customBackIndicatorImageSize = navBarBackIndicatorImage!.size
             if customBackIndicatorImageSize != systemBackIndicatorImageSize {
                 let imageExtensionVerticalFloat = systemBackIndicatorImageSize.height.center(customBackIndicatorImageSize.height)
-                navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_image(spacingExtensionInsets: UIEdgeInsetsMake(imageExtensionVerticalFloat, 0, imageExtensionVerticalFloat, systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
+                navBarBackIndicatorImage = navBarBackIndicatorImage!.qmui_image(spacingExtensionInsets: UIEdgeInsets.init(top: imageExtensionVerticalFloat, left: 0, bottom: imageExtensionVerticalFloat, right: systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width))?.withRenderingMode(navBarBackIndicatorImage!.renderingMode)
             }
             
             navBarAppearance.backIndicatorImage = navBarBackIndicatorImage
@@ -213,7 +213,7 @@ class QMUIConfiguration {
     
     var navBarLoadingMarginRight: CGFloat = 3
     var navBarAccessoryViewMarginLeft: CGFloat = 5
-    var navBarActivityIndicatorViewStyle: UIActivityIndicatorViewStyle = .gray
+    var navBarActivityIndicatorViewStyle: UIActivityIndicatorView.Style = .gray
     var navBarAccessoryViewTypeDisclosureIndicatorImage: UIImage?
 
     // MARK: TabBar
@@ -248,9 +248,9 @@ class QMUIConfiguration {
     var tabBarItemTitleColor: UIColor? {
         didSet {
             guard let tabBarItemTitleColor = tabBarItemTitleColor else { return }
-            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
-            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
-            textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColor
+            let attributes = convertFromOptionalNSAttributedStringKeyDictionary(UITabBarItem.appearance().titleTextAttributes(for: .normal)) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedString.Key($0.key), $0.value) })
+            textAttributes[NSAttributedString.Key.foregroundColor] = tabBarItemTitleColor
             UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
                 $0.setTitleTextAttributes(textAttributes, for: .normal)
@@ -260,9 +260,9 @@ class QMUIConfiguration {
     var tabBarItemTitleColorSelected: UIColor? {
         didSet {
             guard let tabBarItemTitleColorSelected = tabBarItemTitleColorSelected else { return }
-            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
-            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
-            textAttributes[NSAttributedStringKey.foregroundColor] = tabBarItemTitleColorSelected
+            let attributes = convertFromOptionalNSAttributedStringKeyDictionary(UITabBarItem.appearance().titleTextAttributes(for: .normal)) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedString.Key($0.key), $0.value) })
+            textAttributes[NSAttributedString.Key.foregroundColor] = tabBarItemTitleColorSelected
             UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .selected)
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
                 $0.setTitleTextAttributes(textAttributes, for: .selected)
@@ -272,9 +272,9 @@ class QMUIConfiguration {
     var tabBarItemTitleFont: UIFont? {
         didSet {
             guard let tabBarItemTitleFont = tabBarItemTitleFont else { return }
-            let attributes = UITabBarItem.appearance().titleTextAttributes(for: .normal) ?? [String: Any]()
-            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedStringKey($0.key), $0.value) })
-            textAttributes[NSAttributedStringKey.font] = tabBarItemTitleFont
+            let attributes = convertFromOptionalNSAttributedStringKeyDictionary(UITabBarItem.appearance().titleTextAttributes(for: .normal)) ?? [String: Any]()
+            var textAttributes = Dictionary(uniqueKeysWithValues:attributes.lazy.map { (NSAttributedString.Key($0.key), $0.value) })
+            textAttributes[NSAttributedString.Key.font] = tabBarItemTitleFont
             UITabBarItem.appearance().setTitleTextAttributes(textAttributes, for: .normal)
             QMUIHelper.visibleViewController?.tabBarController?.tabBar.items?.forEach {
                 $0.setTitleTextAttributes(textAttributes, for: .normal)
@@ -358,25 +358,25 @@ class QMUIConfiguration {
     var tableViewSectionFooterFont = UIFontBoldMake(12)
     var tableViewSectionHeaderTextColor: UIColor
     var tableViewSectionFooterTextColor: UIColor
-    var tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    var tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    var tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
-    var tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15)
+    var tableViewSectionHeaderAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0)
+    var tableViewSectionFooterAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0)
+    var tableViewSectionHeaderContentInset = UIEdgeInsets.init(top: 4, left: 15, bottom: 4, right: 15)
+    var tableViewSectionFooterContentInset = UIEdgeInsets.init(top: 4, left: 15, bottom: 4, right: 15)
 
     var tableViewGroupedSectionHeaderFont = UIFontMake(12)
     var tableViewGroupedSectionFooterFont = UIFontMake(12)
     var tableViewGroupedSectionHeaderTextColor: UIColor
     var tableViewGroupedSectionFooterTextColor: UIColor
-    var tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    var tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0)
-    var tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension
-    var tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension
-    var tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, 15, 8, 15)
-    var tableViewGroupedSectionFooterContentInset = UIEdgeInsetsMake(8, 15, 2, 15)
+    var tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0)
+    var tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsets.init(top: 0, left: 15, bottom: 0, right: 0)
+    var tableViewGroupedSectionHeaderDefaultHeight = UITableView.automaticDimension
+    var tableViewGroupedSectionFooterDefaultHeight = UITableView.automaticDimension
+    var tableViewGroupedSectionHeaderContentInset = UIEdgeInsets.init(top: 16, left: 15, bottom: 8, right: 15)
+    var tableViewGroupedSectionFooterContentInset = UIEdgeInsets.init(top: 8, left: 15, bottom: 2, right: 15)
 
     // MARK: UIWindowLevel
-    var windowLevelQMUIAlertView: CGFloat = UIWindowLevelAlert - 4
-    var windowLevelQMUIImagePreviewView: CGFloat = UIWindowLevelStatusBar + 1
+    var windowLevelQMUIAlertView: CGFloat = UIWindow.Level.alert.rawValue - 4
+    var windowLevelQMUIImagePreviewView: CGFloat = UIWindow.Level.statusBar.rawValue + 1
 
     // MARK: QMUILog
 //    var shouldPrintDefaultLog: Bool
@@ -395,12 +395,12 @@ class QMUIConfiguration {
 
     private func updateNavigationBarTitleAttributesIfNeeded() {
         if navBarTitleFont != nil || navBarTitleColor != nil {
-            var titleTextAttributes = [NSAttributedStringKey: NSObject]()
+            var titleTextAttributes = [NSAttributedString.Key: NSObject]()
             if let navBarTitleFont = navBarTitleFont {
-                titleTextAttributes[NSAttributedStringKey.font] = navBarTitleFont
+                titleTextAttributes[NSAttributedString.Key.font] = navBarTitleFont
             }
             if let navBarTitleColor = navBarTitleColor {
-                titleTextAttributes[NSAttributedStringKey.foregroundColor] = navBarTitleColor
+                titleTextAttributes[NSAttributedString.Key.foregroundColor] = navBarTitleColor
             }
             UINavigationBar.appearance().titleTextAttributes = titleTextAttributes
             QMUIHelper.visibleViewController?.navigationController?.navigationBar.titleTextAttributes = titleTextAttributes
@@ -410,12 +410,12 @@ class QMUIConfiguration {
     private func updateNavigationBarLargeTitleTextAttributesIfNeeded() {
         if #available(iOS 11, *) {
             if navBarLargeTitleFont != nil || navBarLargeTitleColor != nil {
-                var largeTitleTextAttributes = [NSAttributedStringKey: NSObject]()
+                var largeTitleTextAttributes = [NSAttributedString.Key: NSObject]()
                 if let navBarLargeTitleFont = navBarLargeTitleFont {
-                    largeTitleTextAttributes[NSAttributedStringKey.font] = navBarLargeTitleFont
+                    largeTitleTextAttributes[NSAttributedString.Key.font] = navBarLargeTitleFont
                 }
                 if let navBarLargeTitleColor = navBarLargeTitleColor {
-                    largeTitleTextAttributes[NSAttributedStringKey.foregroundColor] = navBarLargeTitleColor
+                    largeTitleTextAttributes[NSAttributedString.Key.foregroundColor] = navBarLargeTitleColor
                 }
                 UINavigationBar.appearance().largeTitleTextAttributes = largeTitleTextAttributes
                 QMUIHelper.visibleViewController?.navigationController?
@@ -452,3 +452,9 @@ class QMUIConfiguration {
 }
 
 fileprivate var QMUI_hasAppliedInitialTemplate: Bool = false
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromOptionalNSAttributedStringKeyDictionary(_ input: [NSAttributedString.Key: Any]?) -> [String: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}

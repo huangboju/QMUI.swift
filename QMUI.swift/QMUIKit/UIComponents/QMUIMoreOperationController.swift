@@ -166,7 +166,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
     }
     
     // // 每一行内部的 padding
-    var scrollViewContentInsets: UIEdgeInsets = UIEdgeInsetsMake(14, 8, 14, 8) {
+    var scrollViewContentInsets: UIEdgeInsets = UIEdgeInsets.init(top: 14, left: 8, bottom: 14, right: 8) {
         didSet {
             for scrollView in mutableScrollViews {
                 scrollView.contentInset = scrollViewContentInsets
@@ -221,7 +221,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
         didSet {
             for section in mutableItems {
                 for itemView in section {
-                    itemView.titleEdgeInsets = UIEdgeInsetsMake(itemTitleMarginTop, 0, 0, 0)
+                    itemView.titleEdgeInsets = UIEdgeInsets.init(top: itemTitleMarginTop, left: 0, bottom: 0, right: 0)
                     itemView.setNeedsLayout()
                 }
             }
@@ -646,7 +646,7 @@ class QMUIMoreOperationController: UIViewController, QMUIModalPresentationViewCo
     /// 获取指定 itemView 在当前控件里的 indexPath，如果不存在则返回 nil
     func indexPath(with itemView: QMUIMoreOperationItemView) -> IndexPath? {
         for section in 0..<mutableItems.count {
-            if let index = mutableItems[section].index(of: itemView) {
+            if let index = mutableItems[section].firstIndex(of: itemView) {
                 return IndexPath(item: index, section: section)
             }
         }
@@ -769,9 +769,9 @@ extension QMUIMoreOperationController {
         moreOperationViewControllerAppearance.contentEdgeMargin = 10
         moreOperationViewControllerAppearance.contentMaximumWidth = QMUIHelper.screenSizeFor55Inch.width - moreOperationViewControllerAppearance.contentEdgeMargin * 2
         moreOperationViewControllerAppearance.contentCornerRadius = 10
-        moreOperationViewControllerAppearance.contentPaddings = UIEdgeInsetsMake(10, 0, 5, 0)
+        moreOperationViewControllerAppearance.contentPaddings = UIEdgeInsets.init(top: 10, left: 0, bottom: 5, right: 0)
         moreOperationViewControllerAppearance.scrollViewSeparatorColor = UIColorMakeWithRGBA(0, 0, 0, 0.15)
-        moreOperationViewControllerAppearance.scrollViewContentInsets = UIEdgeInsetsMake(14, 8, 14, 8)
+        moreOperationViewControllerAppearance.scrollViewContentInsets = UIEdgeInsets.init(top: 14, left: 8, bottom: 14, right: 8)
         
         moreOperationViewControllerAppearance.itemBackgroundColor = UIColorClear
         moreOperationViewControllerAppearance.itemTitleColor = UIColorGrayDarken
