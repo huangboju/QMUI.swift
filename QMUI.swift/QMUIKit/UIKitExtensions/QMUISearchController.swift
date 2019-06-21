@@ -14,41 +14,36 @@
  * <li>渲染最终用于显示搜索结果的UITableView的数据，该tableView的delegate、dataSource均在这里实现</li>
  * </ol>
  */
-protocol QMUISearchControllerDelegate: UITableViewDataSource, UITableViewDelegate {
+@objc protocol QMUISearchControllerDelegate: UITableViewDataSource, UITableViewDelegate {
     /**
      * 搜索框文字发生变化时的回调，请自行调用 `[tableView reloadData]` 来更新界面。
      * @warning 搜索框文字为空（例如第一次点击搜索框进入搜索状态时，或者文字全被删掉了，或者点击搜索框的×）也会走进来，此时参数searchString为@""，这是为了和系统的UISearchController保持一致
      */
     func searchController(_ searchController: QMUISearchController, updateResultsFor searchString: String?)
 
-    func willPresent(_ searchController: QMUISearchController)
-    func didPresent(_ searchController: QMUISearchController)
-    func willDismiss(_ searchController: QMUISearchController)
-    func didDismiss(_ searchController: QMUISearchController)
-    func search(_ controller: QMUISearchController, didLoadSearchResults tableView: UITableView)
-    func search(_ Controller: QMUISearchController, willShow emptyView: QMUIEmptyView)
-}
-
-extension QMUISearchControllerDelegate {
-    func willPresent(_: QMUISearchController) {}
-    func didPresent(_: QMUISearchController) {}
-    func willDismiss(_: QMUISearchController) {}
-    func didDismiss(_: QMUISearchController) {}
-    func search(_: QMUISearchController, didLoadSearchResults _: UITableView) {}
-    func search(_: QMUISearchController, willShow _: QMUIEmptyView) {}
+    @objc optional func willPresent(_ searchController: QMUISearchController)
+    @objc optional func didPresent(_ searchController: QMUISearchController)
+    @objc optional func willDismiss(_ searchController: QMUISearchController)
+    @objc optional func didDismiss(_ searchController: QMUISearchController)
+    @objc optional func search(_ controller: QMUISearchController, didLoadSearchResults tableView: UITableView)
+    @objc optional func search(_ Controller: QMUISearchController, willShow emptyView: QMUIEmptyView)
 }
 
 protocol QMUISearchResultsTableViewControllerDelegate: class {
-    func didLoadTableViewInSearchResultsTableViewController(_ viewController: QMUISearchResultsTableViewController)
+    func didLoadTableView(in searchResultsTableViewController: QMUISearchResultsTableViewController)
 }
 
 class QMUISearchResultsTableViewController: QMUICommonTableViewController {
-    open weak var delegate: QMUISearchResultsTableViewControllerDelegate?
-
-    override func initTableView() {
+    
+    fileprivate weak var delegate: QMUISearchResultsTableViewControllerDelegate?
+    
+    @objc override func initTableView() {
         super.initTableView()
+        if #available(iOS 11, *) {
+            tableView.contentInsetAdjustmentBehavior = .never
+        }
         tableView.keyboardDismissMode = .onDrag
-        delegate?.didLoadTableViewInSearchResultsTableViewController(self)
+        delegate?.didLoadTableView(in: self)
     }
 }
 
@@ -139,7 +134,7 @@ class QMUISearchController: QMUICommonViewController {
         searchController?.delegate = self
         searchBar = searchController?.searchBar
         if searchBar?.frame.isEmpty ?? true {
-            // iOS8 下 searchBar.frame 默认是 CGRectZero，不 sizeToFit 就看不到了
+            // iOS8 下 searchBar.frame 默认是 .zero，不 sizeToFit 就看不到了
             searchBar?.sizeToFit()
         }
         searchBar?.qmui_styledAsQMUISearchBar()
@@ -156,13 +151,13 @@ class QMUISearchController: QMUICommonViewController {
     open private(set) var searchBar: UISearchBar?
 
     open var tableView: UITableView? {
-        if let searchController = searchController {
-            return (searchController.searchResultsController as? QMUICommonTableViewController)?.tableView
+        if let searchController = searchController, let searchResultsController = searchController.searchResultsController as? QMUICommonTableViewController {
+            return searchResultsController.tableView
         }
         return nil
     }
 
-    /// 在搜索文字为空时会展示的一个 view，通常用于实现“最近搜索”之类的功能。launchView 最终会被布局为撑满搜索框以下的所有空间。
+    /// 在搜索文字为空时会展示的@objc 一个 view，通常用于实现“最近搜索”之类的功能。launchView 最终会被布局为撑满搜索框以下的所有空间。
     open var launchView: UIView? {
         didSet {
             searchController?.customDimmingView = launchView
@@ -211,7 +206,7 @@ class QMUISearchController: QMUICommonViewController {
 
         // 格式化样式，以适应当前项目的需求
         emptyView?.backgroundColor = TableViewBackgroundColor ?? UIColorWhite
-        searchResultsDelegate?.search(self, willShow: emptyView!)
+        searchResultsDelegate?.search?(self, willShow: emptyView!)
 
         if let searchController = searchController {
             let superview = searchController.searchResultsController?.view
@@ -220,7 +215,7 @@ class QMUISearchController: QMUICommonViewController {
             assert(false, "QMUISearchController无法为emptyView找到合适的superview")
         }
 
-        layoutEmptyView()
+        _ = layoutEmptyView()
     }
 }
 
@@ -233,8 +228,8 @@ extension QMUISearchController: UISearchResultsUpdating {
 
 // MARK: - QMUISearchResultsTableViewControllerDelegate
 extension QMUISearchController: QMUISearchResultsTableViewControllerDelegate {
-    func didLoadTableViewInSearchResultsTableViewController(_ viewController: QMUISearchResultsTableViewController) {
-        searchResultsDelegate?.search(self, didLoadSearchResults: viewController.tableView)
+    func didLoadTableView(in viewController: QMUISearchResultsTableViewController) {
+        searchResultsDelegate?.search?(self, didLoadSearchResults: viewController.tableView)
     }
 }
 
@@ -242,19 +237,171 @@ extension QMUISearchController: QMUISearchResultsTableViewControllerDelegate {
 extension QMUISearchController: UISearchControllerDelegate {
 
     func willPresentSearchController(_: UISearchController) {
-        searchResultsDelegate?.willPresent(self)
+        searchResultsDelegate?.willPresent?(self)
     }
 
     func didPresentSearchController(_: UISearchController) {
-        searchResultsDelegate?.didPresent(self)
+        searchResultsDelegate?.didPresent?(self)
     }
 
     func willDismissSearchController(_: UISearchController) {
-        searchResultsDelegate?.willDismiss(self)
+        searchResultsDelegate?.willDismiss?(self)
     }
 
     func didDismissSearchController(_: UISearchController) {
         hideEmptyView()
-        searchResultsDelegate?.didDismiss(self)
+        searchResultsDelegate?.didDismiss?(self)
+    }
+}
+
+// MARK: Search
+extension QMUICommonTableViewController: SelfAware2, QMUISearchControllerDelegate {
+
+    /**
+     *  是否应该在显示空界面时自动隐藏搜索框
+     *
+     *  默认为 false
+     */
+    var shouldHideSearchBarWhenEmptyViewShowing: Bool {
+        return false
+    }
+    
+    /**
+     *  初始化searchController和searchBar，在initSubViews的时候被自动调用。
+     *
+     *  会询问 `self.shouldShowSearchBar`，若返回 `YES`，则创建 searchBar 并将其以 `tableHeaderView` 的形式呈现在界面里；若返回 `NO`，则将 `tableHeaderView` 置为nil。
+     *
+     *  @warning `self.shouldShowSearchBar` 默认为 NO，需要 searchBar 的界面必须手动将其置为 `YES`。
+     */
+    @objc func initSearchController() {
+        if isViewLoaded && shouldShowSearchBar && searchController == nil {
+            searchController = QMUISearchController(contentsViewController: self)
+            searchController?.searchResultsDelegate = self
+            searchController?.searchBar?.placeholder = "搜索"
+            searchController?.searchBar?.qmui_usedAsTableHeaderView = true // 以 tableHeaderView 的方式使用 searchBar 的话，将其置为 YES，以辅助兼容一些系统 bug
+            tableView.tableHeaderView = searchController?.searchBar
+            searchBar = searchController?.searchBar
+        }
+    }
+    
+    private static let _onceToken = UUID().uuidString
+    
+    static func awake2() {
+        DispatchQueue.once(token: _onceToken) {
+            let clazz = QMUICommonTableViewController.self
+            
+            ReplaceMethod(clazz, #selector(initSubviews), #selector(search_initSubviews))
+            ReplaceMethod(clazz, #selector(viewWillAppear(_:)), #selector(search_viewWillAppear(_:)))
+            ReplaceMethod(clazz, #selector(hideEmptyView), #selector(search_hideEmptyView))
+            ReplaceMethod(clazz, #selector(showEmptyView), #selector(search_showEmptyView))
+        }
+    }
+    
+    @objc func search_initSubviews() {
+        search_initSubviews()
+        initSearchController()
+    }
+    
+    @objc  func search_viewWillAppear(_ animated: Bool) {
+        search_viewWillAppear(animated)
+        searchController?.tableView?.qmui_clearsSelection()
+    }
+    
+    @objc func search_showEmptyView() {
+        search_showEmptyView()
+        if shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == searchBar {
+            tableView.tableHeaderView = nil
+        }
+    }
+    
+    @objc func search_hideEmptyView() {
+        search_hideEmptyView()
+        if shouldShowSearchBar && shouldHideSearchBarWhenEmptyViewShowing && tableView.tableHeaderView == nil {
+            initSearchController()
+            // 隐藏 emptyView 后重新设置 tableHeaderView，会导致原先 shouldHideTableHeaderViewInitial 隐藏头部的操作被重置，所以下面的 force 参数要传 YES
+            // https://github.com/QMUI/QMUI_iOS/issues/128
+            tableView.tableHeaderView = searchBar
+            hideTableHeaderViewInitialIfCan(animated: false, force: true)
+        }
+    }
+    
+    private struct Keys {
+        static var shouldShowSearchBar = "shouldShowSearchBar"
+        static var searchController = "searchController"
+        static var searchBar = "searchBar"
+    }
+    
+    /**
+     *  控制列表里是否需要搜索框，如果为 YES，则会在 viewDidLoad 之后创建一个 searchBar 作为 tableHeaderView；如果为 false，则会移除已有的 searchBar 和 searchController。
+     *  默认为 false。
+     *  @note 若在 viewDidLoad 之前设置为 true，也会等到 viewDidLoad 时才去创建搜索框。
+     */
+    var shouldShowSearchBar: Bool {
+        set {
+            let isValueChanged = shouldShowSearchBar != newValue
+            if !isValueChanged {
+                return
+            }
+            objc_setAssociatedObject(self, &Keys.shouldShowSearchBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            if shouldShowSearchBar {
+                initSearchController()
+            } else {
+                if searchBar != nil {
+                    if tableView.tableHeaderView == searchBar {
+                        tableView.tableHeaderView = nil
+                    }
+                    searchBar?.removeFromSuperview()
+                    searchBar = nil
+                }
+                if searchController != nil {
+                    searchController?.searchResultsDelegate = nil
+                    searchController = nil
+                }
+            }
+        }
+        get {
+            return objc_getAssociatedObject(self, &Keys.shouldShowSearchBar) as? Bool ?? false
+        }
+    }
+    
+    /**
+     *  获取当前的 searchController，注意只有当 `shouldShowSearchBar` 为 `YES` 时才有用
+     *
+     *  默认为 `nil`
+     *
+     *  @see QMUITableViewDelegate
+     */
+    var searchController: QMUISearchController? {
+        set {
+            objc_setAssociatedObject(self, &Keys.searchController, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &Keys.searchController) as? QMUISearchController
+        }
+    }
+    
+    /**
+     *  获取当前的 searchBar，注意只有当 `shouldShowSearchBar` 为 `YES` 时才有用
+     *
+     *  默认为 `nil`
+     *
+     *  @see QMUITableViewDelegate
+     */
+    var searchBar: UISearchBar? {
+        set {
+            objc_setAssociatedObject(self, &Keys.searchBar, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            let result = objc_getAssociatedObject(self, &Keys.searchBar)
+            return result as? UISearchBar
+        }
+    }
+    
+    @objc func searchController(_ searchController: QMUISearchController, updateResultsFor searchString: String?) {
+        
+    }
+    
+    override var preferredNavigationBarHidden: Bool {
+        return (searchController?.isActive ?? false) ? true : super.preferredNavigationBarHidden
     }
 }

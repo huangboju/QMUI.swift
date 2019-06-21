@@ -8,7 +8,7 @@
 
 class QMUITestView: UIView {
     deinit {
-        print("\(classForCoder, #function)")
+        print("\((classForCoder, #function))")
     }
 
     override var frame: CGRect {
@@ -57,7 +57,7 @@ class QMUITestView: UIView {
 
 class QMUITestWindow: UIWindow {
     deinit {
-        print("\(classForCoder, #function)")
+        print("\((classForCoder, #function))")
     }
 
     override func addSubview(_ view: UIView) {

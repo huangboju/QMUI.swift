@@ -112,7 +112,7 @@ class QMUIToastContentView: UIView {
     /**
      * 设置textLabel的attributes
      */
-    var textLabelAttributes = [NSAttributedStringKey.font: UIFontBoldMake(16), NSAttributedStringKey.foregroundColor: UIColorWhite, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)] {
+    var textLabelAttributes = [NSAttributedString.Key.font: UIFontBoldMake(16), NSAttributedString.Key.foregroundColor: UIColorWhite, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 22)] {
         didSet {
             if textLabelText.length > 0 {
                 // 刷新label的Attributes
@@ -125,7 +125,7 @@ class QMUIToastContentView: UIView {
     /**
      * 设置detailTextLabel的attributes
      */
-    var detailTextLabelAttributes = [NSAttributedStringKey.font: UIFontBoldMake(12), NSAttributedStringKey.foregroundColor: UIColorWhite, NSAttributedStringKey.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)] {
+    var detailTextLabelAttributes = [NSAttributedString.Key.font: UIFontBoldMake(12), NSAttributedString.Key.foregroundColor: UIColorWhite, NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle(lineHeight: 18)] {
         didSet {
             if detailTextLabelText.length > 0 {
                 // 刷新label的Attributes
@@ -202,9 +202,9 @@ class QMUIToastContentView: UIView {
         if hasCustomView {
             if !hasTextLabel && !hasDetailTextLabel {
                 // 处理有minimumSize的情况
-                minY = bounds.height.center(with: customView?.bounds.height ?? 0)
+                minY = bounds.height.center(customView?.bounds.height ?? 0)
             }
-            customView?.frame = CGRectFlat(contentWidth.center(with: customView?.bounds.width ?? 0),
+            customView?.frame = CGRectFlat(contentWidth.center(customView?.bounds.width ?? 0),
                                            minY,
                                            customView?.bounds.width ?? 0,
                                            customView?.bounds.height ?? 0)
@@ -215,9 +215,9 @@ class QMUIToastContentView: UIView {
             let textLabelSize = textLabel.sizeThatFits(CGSize(width: maxContentWidth, height: .greatestFiniteMagnitude))
             if !hasCustomView && !hasDetailTextLabel {
                 // 处理有minimumSize的情况
-                minY = bounds.height.center(with: textLabelSize.height)
+                minY = bounds.height.center(textLabelSize.height)
             }
-            textLabel.frame = CGRectFlat(contentWidth.center(with: maxContentWidth),
+            textLabel.frame = CGRectFlat(contentWidth.center(maxContentWidth),
                                          minY,
                                          maxContentWidth,
                                          textLabelSize.height)
@@ -229,9 +229,9 @@ class QMUIToastContentView: UIView {
             let detailTextLabelSize = detailTextLabel.sizeThatFits(CGSize(width: maxContentWidth, height: .greatestFiniteMagnitude))
             if !hasCustomView && !hasTextLabel {
                 // 处理有minimumSize的情况
-                minY = bounds.height.center(with: detailTextLabelSize.height)
+                minY = bounds.height.center(detailTextLabelSize.height)
             }
-            detailTextLabel.frame = CGRectFlat(contentWidth.center(with: maxContentWidth),
+            detailTextLabel.frame = CGRectFlat(contentWidth.center(maxContentWidth),
                                                minY,
                                                maxContentWidth,
                                                detailTextLabelSize.height)

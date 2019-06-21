@@ -8,7 +8,7 @@
 
 class QMUITableView: UITableView {
 
-    override init(frame: CGRect, style: UITableViewStyle) {
+    override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         didInitialized()
     }
@@ -20,6 +20,16 @@ class QMUITableView: UITableView {
 
     func didInitialized() {
         qmui_styledAsQMUITableView()
+        
+//        if !TableViewEstimatedHeightEnabled {
+//            estimatedRowHeight = 0
+//            estimatedSectionHeaderHeight = 0
+//            estimatedSectionFooterHeight = 0
+//        } else {
+//            estimatedRowHeight = UITableViewAutomaticDimension
+//            estimatedSectionHeaderHeight = UITableViewAutomaticDimension
+//            estimatedSectionFooterHeight = UITableViewAutomaticDimension
+//        }
     }
 
     // 保证一直存在tableFooterView，以去掉列表内容不满一屏时尾部的空白分割线
@@ -33,7 +43,7 @@ class QMUITableView: UITableView {
 
     override func touchesShouldCancel(in view: UIView) -> Bool {
         if let delegate = delegate as? QMUITableViewDelegate {
-            return delegate.tableView(self, touchesShouldCancelIn: view)
+            return delegate.tableView?(self, touchesShouldCancelIn: view) ?? true
         }
 
         // 默认情况下只有当view是非UIControl的时候才会返回yes，这里统一对UIButton也返回yes

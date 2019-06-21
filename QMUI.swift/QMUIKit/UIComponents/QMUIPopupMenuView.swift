@@ -16,29 +16,33 @@
  *  5. 调用 showWithAnimated: 即可显示（参考父类）。
  */
 class QMUIPopupMenuView: QMUIPopupContainerView {
-    public var shouldShowItemSeparator = false
-    public var shouldShowSectionSeparatorOnly = false
-    public var separatorColor = UIColorSeparator
+    var shouldShowItemSeparator: Bool = false
+    var shouldShowSectionSeparatorOnly: Bool = false
+    var separatorColor: UIColor = UIColorSeparator
 
-    public var itemTitleFont = UIFontMake(16)
-    public var itemHighlightedBackgroundColor = TableViewCellSelectedBackgroundColor
+    var itemTitleFont: UIFont = UIFontMake(16)
+    var itemHighlightedBackgroundColor: UIColor = TableViewCellSelectedBackgroundColor
 
-    public var padding: UIEdgeInsets = .zero
-    public var itemHeight: CGFloat = 44
-    public var imageMarginRight: CGFloat = 6
-    public var separatorInset: UIEdgeInsets = .zero
+    var padding: UIEdgeInsets = .zero
+    var itemHeight: CGFloat = 44
+    var imageMarginRight: CGFloat = 6
+    var separatorInset: UIEdgeInsets = .zero
 
-    public var items: [QMUIPopupMenuItem] = [] {
+    var items: [QMUIPopupMenuItem] = [] {
         didSet {
             itemSections = [items]
         }
     }
 
-    public var itemSections: [[QMUIPopupMenuItem]] = [] {
+    var itemSections: [[QMUIPopupMenuItem]] = [] {
         didSet {
             configureItems()
         }
     }
+    
+    private var scrollView: UIScrollView!
+    
+    private var itemSeparatorLayers: [CALayer] = []
 
     private func shouldShowSeparator(at row: Int, rowCount: Int, in section: Int, sectionCount: Int) -> Bool {
         return (!shouldShowSectionSeparatorOnly && shouldShowItemSeparator && row < rowCount - 1) || (shouldShowSectionSeparatorOnly && row == rowCount - 1 && section < sectionCount - 1)
@@ -84,23 +88,20 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
         }
     }
 
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.scrollsToTop = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
-        return scrollView
-    }()
-
-    private lazy var itemSeparatorLayers: [CALayer] = []
-
     override func didInitialized() {
         super.didInitialized()
         contentEdgeInsets = .zero
 
+        scrollView = UIScrollView()
+        scrollView.scrollsToTop = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        if #available(iOS 11, *) {
+            scrollView.contentInsetAdjustmentBehavior = .never
+        }
         contentView.addSubview(scrollView)
-
-        padding = UIEdgeInsets(top: cornerRadius / 2.0, left: 16, bottom: cornerRadius / 2.0, right: 16)
+        
+        updateAppearanceForPopupMenuView()
     }
 
     override func sizeThatFitsInContentView(_ size: CGSize) -> CGSize {
@@ -145,27 +146,39 @@ class QMUIPopupMenuView: QMUIPopupContainerView {
     }
 }
 
+extension QMUIPopupMenuView {
+    fileprivate func updateAppearanceForPopupMenuView() {
+        separatorColor = UIColorSeparator
+        itemTitleFont = UIFontMake(16)
+        itemHighlightedBackgroundColor = TableViewCellSelectedBackgroundColor
+        padding = UIEdgeInsets(top: cornerRadius / 2, left: 16, bottom: cornerRadius / 2, right: 16)
+        itemHeight = 44
+        imageMarginRight = 6
+        separatorInset = .zero
+    }
+}
+
 /**
  *  配合 QMUIPopupMenuView 使用，用于表示一项菜单项。
  *  支持显示图片和标题，以及点击事件的回调。
  *  可在 QMUIPopupMenuView 里统一修改菜单项的样式，如果某个菜单项需要特殊调整，可获取到对应的 QMUIPopupMenuItem.button 并进行调整。
  */
-public class QMUIPopupMenuItem: NSObject {
-    public var image: UIImage? {
+class QMUIPopupMenuItem: NSObject {
+    var image: UIImage? {
         didSet {
             button.setImage(image, for: .normal)
         }
     }
 
-    public var title: String? {
+    var title: String? {
         didSet {
             button.setTitle(title, for: .normal)
         }
     }
 
-    public var handler: (() -> Void)?
+    var handler: (() -> Void)?
 
-    public var button: QMUIButton!
+    fileprivate(set) var button: QMUIButton!
 
     init(image: UIImage?, title: String?, handler: (() -> Void)?) {
         super.init()

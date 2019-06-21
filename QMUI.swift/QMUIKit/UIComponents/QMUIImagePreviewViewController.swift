@@ -21,9 +21,19 @@
  */
 class QMUIImagePreviewViewController: QMUICommonViewController {
 
-    public var imagePreviewView: QMUIImagePreviewView?
+    private var _imagePreviewView: QMUIImagePreviewView?
+    var imagePreviewView: QMUIImagePreviewView? {
+        get {
+            if #available(iOS 9.0, *) {
+                loadViewIfNeeded()
+            } else {
+                view.alpha = 1
+            }
+            return _imagePreviewView
+        }
+    }
 
-    public var backgroundColor = UIColorBlack {
+    var backgroundColor = UIColorBlack {
         didSet {
             if isViewLoaded {
                 view.backgroundColor = backgroundColor
@@ -34,12 +44,14 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
     private var previewWindow: UIWindow?
     private var shouldStartWithFading = false
     private var previewFromRect: CGRect = .zero
-    private var transitionImageView: UIImageView?
+    private var transitionCornerRadius: CGFloat = 0
+    private var transitionImageView: UIImageView!
     private var backgroundColorTemporarily: UIColor?
 
     override func didInitialized() {
         super.didInitialized()
         automaticallyAdjustsScrollViewInsets = false
+        backgroundColor = UIColorBlack
     }
 
     override func viewDidLoad() {
@@ -49,8 +61,10 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
 
     override func initSubviews() {
         super.initSubviews()
-        imagePreviewView = QMUIImagePreviewView(frame: view.bounds)
+        _imagePreviewView = QMUIImagePreviewView(frame: view.bounds)
         view.addSubview(imagePreviewView!)
+        
+        transitionImageView = UIImageView()
     }
 
     override func viewDidLayoutSubviews() {
@@ -94,16 +108,19 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
 
             let transitionToRect = view.convert(zoomImageView.imageViewRectInZoomImageView, from: zoomImageView.superview)
 
-            transitionImageView?.contentMode = zoomImageView.imageView.contentMode
-            transitionImageView?.image = zoomImageView.imageView.image
-            transitionImageView?.frame = transitionFromRect
-            view.addSubview(transitionImageView!)
+            transitionImageView.contentMode = zoomImageView.imageView!.contentMode
+            transitionImageView.image = zoomImageView.imageView?.image
+            transitionImageView.frame = transitionFromRect
+            transitionImageView.clipsToBounds = true
+            transitionImageView.layer.cornerRadius = transitionCornerRadius
+            view.addSubview(transitionImageView)
 
             UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
-                self.transitionImageView?.frame = transitionToRect
+                self.transitionImageView.frame = transitionToRect
+                self.transitionImageView.layer.cornerRadius = 0
                 self.view.backgroundColor = self.backgroundColorTemporarily
             }, completion: { _ in
-                self.transitionImageView?.removeFromSuperview()
+                self.transitionImageView.removeFromSuperview()
                 self.imagePreviewView?.collectionView.isHidden = false
                 self.backgroundColorTemporarily = nil
             })
@@ -114,7 +131,7 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
     private func initPreviewWindowIfNeeded() {
         if previewWindow == nil {
             previewWindow = UIWindow()
-            previewWindow?.windowLevel = UIWindowLevelQMUIImagePreviewView
+            previewWindow?.windowLevel = UIWindow.Level(rawValue: UIWindowLevelQMUIImagePreviewView)
             previewWindow?.backgroundColor = UIColorClear
         }
     }
@@ -134,10 +151,6 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
 
         } else {
             previewFromRect = rect
-
-            if transitionImageView == nil {
-                transitionImageView = UIImageView()
-            }
 
             // 为动画做准备，先置为透明
             backgroundColorTemporarily = view.backgroundColor
@@ -166,19 +179,20 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
         let transitionFromRect = zoomImageView!.imageViewRectInZoomImageView
         let transitionToRect = rect
 
-        transitionImageView?.image = zoomImageView?.image
-        transitionImageView?.frame = transitionFromRect
+        transitionImageView.image = zoomImageView?.image
+        transitionImageView.frame = transitionFromRect
         view.addSubview(transitionImageView!)
         imagePreviewView?.collectionView.isHidden = true
 
         backgroundColorTemporarily = view.backgroundColor
 
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveOut, animations: {
-            self.transitionImageView?.frame = transitionToRect
+            self.transitionImageView.frame = transitionToRect
+            self.transitionImageView.layer.cornerRadius = self.transitionCornerRadius
             self.view.backgroundColor = UIColorClear
         }, completion: { _ in
             self.removePreviewWindow()
-            self.transitionImageView?.removeFromSuperview()
+            self.transitionImageView.removeFromSuperview()
             self.imagePreviewView?.collectionView.isHidden = false
             self.view.backgroundColor = self.backgroundColorTemporarily
             self.backgroundColorTemporarily = nil
@@ -187,12 +201,17 @@ class QMUIImagePreviewViewController: QMUICommonViewController {
 }
 
 // MARK: - UIWindow
+/**
+ *  以 UIWindow 的形式来预览图片，优点是能盖住界面上所有元素（包括状态栏），缺点是无法进行 viewController 的界面切换（因为被 UIWindow 盖住了）
+ */
 extension QMUIImagePreviewViewController {
     /**
      *  从指定 rect 的位置以动画的形式进入预览
      *  @param rect 在当前屏幕坐标系里的 rect，注意传进来的 rect 要做坐标系转换，例如：[view.superview convertRect:view.frame toView:nil]
+     *  @param cornerRadius 做打开动画时是否要从某个圆角渐变到 0
      */
-    public func startPreviewFromRectInScreen(_ rect: CGRect) {
+    func startPreviewFromRectInScreen(_ rect: CGRect, cornerRadius: CGFloat = 0) {
+        transitionCornerRadius = cornerRadius
         startPreviewWithFadingAnimation(false, orFromRect: rect)
     }
 
@@ -200,21 +219,24 @@ extension QMUIImagePreviewViewController {
      *  将当前图片缩放到指定 rect 的位置，然后退出预览
      *  @param rect 在当前屏幕坐标系里的 rect，注意传进来的 rect 要做坐标系转换，例如：[view.superview convertRect:view.frame toView:nil]
      */
-    public func endPreviewToRectInScreen(_ rect: CGRect) {
+    func endPreviewToRectInScreen(_ rect: CGRect) {
         endPreviewWithFadingAnimation(false, orToRect: rect)
+        transitionCornerRadius = 0
     }
 
     /**
      *  以渐现的方式开始图片预览
      */
-    public func startPreviewFading() {
+    func startPreviewFading() {
+        transitionCornerRadius = 0
         startPreviewWithFadingAnimation(true, orFromRect: .zero)
     }
 
     /**
      *  使用渐隐的动画退出图片预览
      */
-    public func endPreviewFading() {
+    func endPreviewFading() {
         endPreviewWithFadingAnimation(true, orToRect: .zero)
+        transitionCornerRadius = 0
     }
 }

@@ -11,7 +11,8 @@ extension UIColor: SelfAware {
 
     static func awake() {
         DispatchQueue.once(token: _onceToken) {
-            ReplaceMethod(NSClassFromString("UIDeviceRGBColor")!, #selector(description), #selector(getter: qmui_description))
+            let clazz = UIColor.self
+            ReplaceMethod(clazz, #selector(description), #selector(getter: qmui_description))
         }
     }
 }
@@ -38,7 +39,7 @@ extension UIColor {
      *
      * @return UIColor对象
      */
-    public convenience init(hexStr: String) {
+    convenience init(hexStr: String) {
 
         let colorString = hexStr.replacingOccurrences(of: "#", with: "").uppercased()
 
@@ -61,14 +62,14 @@ extension UIColor {
             blue = UIColor.colorComponent(from: colorString, start: 3, length: 1)
         case 6: // #RRGGBB
             alpha = 1.0
-            red = UIColor.colorComponent(from: colorString, start: 0, length: 1)
-            green = UIColor.colorComponent(from: colorString, start: 2, length: 1)
-            blue = UIColor.colorComponent(from: colorString, start: 4, length: 1)
+            red = UIColor.colorComponent(from: colorString, start: 0, length: 2)
+            green = UIColor.colorComponent(from: colorString, start: 2, length: 2)
+            blue = UIColor.colorComponent(from: colorString, start: 4, length: 2)
         case 8: // #AARRGGBB
             alpha = UIColor.colorComponent(from: colorString, start: 0, length: 2)
-            red = UIColor.colorComponent(from: colorString, start: 2, length: 1)
-            green = UIColor.colorComponent(from: colorString, start: 4, length: 1)
-            blue = UIColor.colorComponent(from: colorString, start: 6, length: 1)
+            red = UIColor.colorComponent(from: colorString, start: 2, length: 2)
+            green = UIColor.colorComponent(from: colorString, start: 4, length: 2)
+            blue = UIColor.colorComponent(from: colorString, start: 6, length: 2)
         default:
 
             // TODO:
@@ -82,12 +83,12 @@ extension UIColor {
     private static func colorComponent(from string: String, start: Int, length: Int) -> CGFloat {
         let substring = string.substring(with: NSRange(location: start, length: length))
         let fullHex = length == 2 ? substring : substring + substring
-        var hexComponent = 0
-        Scanner(string: fullHex).scanInt(&hexComponent)
+        var hexComponent: UInt32 = 0
+        Scanner(string: fullHex).scanHexInt32(&hexComponent)
         return CGFloat(hexComponent) / 255.0
     }
 
-    public convenience init(hex: Int, alpha: CGFloat = 1) {
+    convenience init(hex: Int, alpha: CGFloat = 1) {
 
         let c = curry { $0 / CGFloat(255) }
 
@@ -101,7 +102,7 @@ extension UIColor {
     /**
      *  将当前色值转换为hex字符串，通道排序是AARRGGBB（与Android保持一致）
      */
-    public var qmui_hexString: String {
+    var qmui_hexString: String {
         let alpha = qmui_alpha * 255
         let red = qmui_red * 255
         let green = qmui_green * 255
@@ -121,7 +122,7 @@ extension UIColor {
      *
      *  @return 红色通道的色值，值范围为0.0-1.0
      */
-    public var qmui_red: CGFloat {
+    var qmui_red: CGFloat {
         var r: CGFloat = 0
         if getRed(&r, green: nil, blue: nil, alpha: nil) {
             return r
@@ -134,7 +135,7 @@ extension UIColor {
      *
      *  @return 绿色通道的色值，值范围为0.0-1.0
      */
-    public var qmui_green: CGFloat {
+    var qmui_green: CGFloat {
         var g: CGFloat = 0
         if getRed(nil, green: &g, blue: nil, alpha: nil) {
             return g
@@ -147,7 +148,7 @@ extension UIColor {
      *
      *  @return 蓝色通道的色值，值范围为0.0-1.0
      */
-    public var qmui_blue: CGFloat {
+    var qmui_blue: CGFloat {
         var b: CGFloat = 0
         if getRed(nil, green: nil, blue: &b, alpha: nil) {
             return b
@@ -160,7 +161,7 @@ extension UIColor {
      *
      *  @return 透明通道的色值，值范围为0.0-1.0
      */
-    public var qmui_alpha: CGFloat {
+    var qmui_alpha: CGFloat {
         var a: CGFloat = 0
         if getRed(nil, green: nil, blue: nil, alpha: &a) {
             return a
@@ -171,7 +172,7 @@ extension UIColor {
     /**
      *  获取当前UIColor对象里的hue（色相）
      */
-    public var qmui_hue: CGFloat {
+    var qmui_hue: CGFloat {
         var h: CGFloat = 0
         if getHue(&h, saturation: nil, brightness: nil, alpha: nil) {
             return h
@@ -182,7 +183,7 @@ extension UIColor {
     /**
      *  获取当前UIColor对象里的saturation（饱和度）
      */
-    public var qmui_saturation: CGFloat {
+    var qmui_saturation: CGFloat {
         var s: CGFloat = 0
         if getHue(nil, saturation: &s, brightness: nil, alpha: nil) {
             return s
@@ -193,7 +194,7 @@ extension UIColor {
     /**
      *  获取当前UIColor对象里的brightness（亮度）
      */
-    public var qmui_brightness: CGFloat {
+    var qmui_brightness: CGFloat {
         var b: CGFloat = 0
         if getHue(nil, saturation: nil, brightness: &b, alpha: nil) {
             return b
@@ -206,7 +207,7 @@ extension UIColor {
      *
      *  @return alpha通道为1.0，其他rgb通道与原UIColor对象一致的新UIColor对象
      */
-    public var qmui_colorWithoutAlpha: UIColor? {
+    var qmui_colorWithoutAlpha: UIColor? {
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
@@ -220,14 +221,14 @@ extension UIColor {
     /**
      *  计算当前color叠加了alpha之后放在指定颜色的背景上的色值
      */
-    public func qmui_color(with alpha: CGFloat, backgroundColor: UIColor) -> UIColor {
+    func qmui_color(with alpha: CGFloat, backgroundColor: UIColor) -> UIColor {
         return UIColor.qmui_colorWithBackendColor(backgroundColor, frontColor: withAlphaComponent(alpha))
     }
 
     /**
      *  计算当前color叠加了alpha之后放在白色背景上的色值
      */
-    public func qmui_colorWithAlphaAddedToWhite(_ alpha: CGFloat) -> UIColor {
+    func qmui_colorWithAlphaAddedToWhite(_ alpha: CGFloat) -> UIColor {
         return qmui_color(with: alpha, backgroundColor: UIColorWhite)
     }
 
@@ -236,7 +237,7 @@ extension UIColor {
      *  @param toColor 目标颜色
      *  @param progress 变化程度，取值范围0.0f~1.0f
      */
-    public func qmui_transition(to color: UIColor, progress: CGFloat) -> UIColor {
+    func qmui_transition(to color: UIColor, progress: CGFloat) -> UIColor {
         return UIColor.qmui_color(from: self, to: color, progress: progress)
     }
 
@@ -244,7 +245,7 @@ extension UIColor {
      *  计算两个颜色叠加之后的最终色（注意区分前景色后景色的顺序）<br/>
      *  @link http://stackoverflow.com/questions/10781953/determine-rgba-colour-received-by-combining-two-colours @/link
      */
-    public static func qmui_colorWithBackendColor(_ backendColor: UIColor, frontColor: UIColor) -> UIColor {
+    static func qmui_colorWithBackendColor(_ backendColor: UIColor, frontColor: UIColor) -> UIColor {
         let bgAlpha = backendColor.qmui_alpha
         let bgRed = backendColor.qmui_red
         let bgGreen = backendColor.qmui_green
@@ -269,7 +270,7 @@ extension UIColor {
      *  @param toColor 目标颜色
      *  @param progress 变化程度，取值范围0.0f~1.0f
      */
-    public static func qmui_color(from fromColor: UIColor, to toColor: UIColor, progress: CGFloat) -> UIColor {
+    static func qmui_color(from fromColor: UIColor, to toColor: UIColor, progress: CGFloat) -> UIColor {
         let progress = min(progress, 1.0)
         let fromRed = fromColor.qmui_red
         let fromGreen = fromColor.qmui_green
@@ -292,7 +293,7 @@ extension UIColor {
     /**
      *  产生一个随机色，大部分情况下用于测试
      */
-    public static var qmui_randomColor: UIColor {
+    static var qmui_randomColor: UIColor {
 
         let red = (CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0)
         let green = (CGFloat(arc4random()).truncatingRemainder(dividingBy: 255) / 255.0)
@@ -308,7 +309,7 @@ extension UIColor {
      *
      *  @return 若为深色则返回“YES”，浅色则返回“NO”
      */
-    public var qmui_colorIsDark: Bool {
+    var qmui_colorIsDark: Bool {
         var red: CGFloat = 0.0, green: CGFloat = 0.0, blue: CGFloat = 0.0, alpha: CGFloat = 0.0
 
         getRed(&red, green: &green, blue: &blue, alpha: &alpha)
@@ -324,7 +325,7 @@ extension UIColor {
      *
      *  @link http://stackoverflow.com/questions/5893261/how-to-get-inverse-color-from-uicolor @/link
      */
-    public var qmui_inverseColor: UIColor {
+    var qmui_inverseColor: UIColor {
         guard let componentColors = cgColor.components else { return self }
         let newColor = UIColor(red: 1.0 - componentColors[0], green: 1.0 - componentColors[1], blue: 1.0 - componentColors[2], alpha: componentColors[3])
         return newColor
@@ -332,5 +333,17 @@ extension UIColor {
 
     convenience init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat = 1) {
         self.init(red: r / 255.0, green: g / 255.0, blue: b / 255.0, alpha: a)
+    }
+    
+    /**
+     *  获取当前系统的默认 tintColor 色值
+     */
+    static var _systemTintColor: UIColor? = nil
+    static var qmui_isSystemTintColor: UIColor {
+        if _systemTintColor == nil {
+            let view = UIView()
+            _systemTintColor = view.tintColor
+        }
+        return _systemTintColor!
     }
 }

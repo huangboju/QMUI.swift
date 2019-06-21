@@ -6,7 +6,7 @@
 //  Copyright © 2017年 伯驹 黄. All rights reserved.
 //
 
-public enum QMUITableViewCellPosition {
+enum QMUITableViewCellPosition {
     case none // 初始化用
     case firstInSection
     case middleInSection
@@ -15,12 +15,38 @@ public enum QMUITableViewCellPosition {
     case normal
 }
 
+private let kFloatValuePrecision = 4 // 统一一个小数点运算精度
+
+/**
+ *  这个分类提供额外的功能包括：
+ *  1. 将给定的 UITableView 格式化为 QMUITableView 风格的样式
+ *  2. 计算给定的某个 view 处于哪个 indexPath 的 cell 上
+ *  3. 计算给定的某个 view 处于哪个 sectionHeader 上
+ *  4. 获取所有可视范围内的 sectionHeader 的 index
+ *  5. 获取正处于 pinned 状态（也即悬停在顶部）的 sectionHeader 的 index
+ *  6. 判断某个给定的 sectionHeader 是否处于 pinned 状态
+ *  7. 判断某个给定的 cell indexPath 是否处于可视范围内
+ *  8. 计算给定的 cell 的 indexPath 所对应的 QMUITableViewCellPosition
+ *  9. 清除当前列表的所有 selection（选中的背景灰色）
+ *  10. 在将 searchBar 作为 tableHeaderView 的情况下，获取列表真实的 contentSize
+ *  11. 在将 searchBar 作为 tableHeaderView 的情况下，判断列表内容是否足够多到可滚动
+ */
 extension UITableView {
     /// 将当前tableView按照QMUI统一定义的宏来渲染外观
-    public func qmui_styledAsQMUITableView() {
-        backgroundColor = style == .plain ? TableViewBackgroundColor : TableViewGroupedBackgroundColor
+    func qmui_styledAsQMUITableView() {
+        
+        var backgroundColor: UIColor?
+        if style == .plain {
+            backgroundColor = TableViewBackgroundColor
+            tableFooterView = UIView() // 去掉空白的cell
+        } else {
+            backgroundColor = TableViewGroupedBackgroundColor
+        }
+        if backgroundColor != nil {
+            self.backgroundColor = backgroundColor
+        }
+
         separatorColor = TableViewSeparatorColor
-        tableFooterView = UIView() // 去掉尾部空cell
         backgroundView = UIView() // 设置一个空的backgroundView，去掉系统的，以使backgroundColor生效
 
         sectionIndexColor = TableSectionIndexColor
@@ -36,9 +62,16 @@ extension UITableView {
      *  @param view 要计算的 UIView
      *  @return view 所在的 indexPath，若不存在则返回 nil
      */
-    @objc public func qmui_indexPathForRow(at view: UIView) -> IndexPath? {
-        let origin = convert(view.frame.origin, from: view.superview)
-        return indexPathForRow(at: origin)
+    func qmui_indexPathForRow(at view: UIView) -> IndexPath? {
+        guard let superview = view.superview else {
+            return nil
+        }
+        let tmpView = view is UITableViewCell && String(describing: type(of: superview)) == "UITableViewWrapperView" ? superview.superview : superview
+        if tmpView == self {
+            // iOS 11 下，cell.superview 是 UITableView，iOS 11 以前，cell.superview 是 UITableViewWrapperView
+            return indexPath(for: view as! UITableViewCell)
+        }
+        return qmui_indexPathForRow(at: superview)
     }
 
     /**
@@ -46,23 +79,98 @@ extension UITableView {
      *  @param view 要计算的 UIView
      *  @return view 所在的 sectionHeaderView 的 section，若不存在则返回 -1
      */
-    public func qmui_indexForSectionHeader(at view: UIView) -> Int {
-
-        let origin = convert(view.frame.origin, from: view.superview)
-
-        for i in (0 ..< numberOfSections).reversed() {
-
-            var rect = rectForHeader(inSection: i) // 这个接口获取到的 rect 是在 contentSize 里的 rect，而不是实际看到的 rect，所以要自行区分 headerView 是否被停靠在顶部
-            let isHeaderViewPinToTop = style == .plain && (rect.minY - contentOffset.y < contentInset.top)
-            if isHeaderViewPinToTop {
-                rect = rect.setY(rect.minY + (contentInset.top - rect.minY + contentOffset.y))
-            }
-
-            if rect.contains(origin) {
+    func qmui_indexForSectionHeader(at view: UIView) -> Int {
+        alertEstimatedHeightUsageIfDetected()
+        
+        var origin = convert(view.frame.origin, from: view.superview)
+        origin = origin.fixed(kFloatValuePrecision) // 避免一些浮点数精度问题导致的计算错误
+        // MARK: TODO molice 针对 section 特别多的场景，优化一下这里的遍历查找
+        for i in 0..<numberOfSections {
+            // MARK: TODO 这里的判断用整个 section 的 rect，可能需要加上“view 是否在 sectionHeader 上的判断”
+            var rectForSection = rect(forSection: i)
+            rectForSection = rectForSection.fixed(kFloatValuePrecision)
+            if rectForSection.contains(origin) {
                 return i
             }
         }
         return -1
+    }
+    
+    /// 获取可视范围内的所有 sectionHeader 的 index
+    var qmui_indexForVisibleSectionHeaders: [Int]? {
+        let visibleCellIndexPaths = indexPathsForVisibleRows ?? []
+        var visibleSections:[Int] = []
+        var result:[Int] = []
+        for indexPath in visibleCellIndexPaths {
+            if visibleSections.count == 0 || indexPath.section != visibleSections.last {
+                visibleSections.append(indexPath.section)
+            }
+        }
+        for section in visibleSections {
+            if qmui_isHeaderVisible(for: section) {
+                result.append(section)
+            }
+        }
+        if result.count == 0 {
+            return nil
+        }
+        return result
+    }
+    
+    /// 获取正处于 pinned（悬停在顶部）状态的 sectionHeader 的序号
+    var qmui_indexOfPinnedSectionHeader: Int {
+        let visibleSectionIndex = qmui_indexForVisibleSectionHeaders ?? []
+        for section in visibleSectionIndex {
+            if qmui_isHeaderVisible(for: section) {
+                return section
+            } else {
+                continue
+            }
+        }
+        return -1
+    }
+    
+    func qmui_isHeaderPinned(for section: Int) -> Bool {
+        if style != .plain || section >= numberOfSections {
+            return false
+        }
+        // 系统这两个接口获取到的 rect 是在 contentSize 里的 rect，而不是实际看到的 rect
+        let rectForSection = rect(forSection: section)
+        let rectForSectionHeader = rectForHeader(inSection: section)
+        let isSectionScrollIntoContentInsetTop = contentOffset.y + qmui_contentInset.top > rectForSection.minY // 表示这个 section 已经往上滚动，超过 contentInset.top 那条线了
+        let isSectionStayInContentInsetTop = contentOffset.y + qmui_contentInset.top <= rectForSection.maxY - rectForSectionHeader.height// 表示这个 section 还没被完全滚走
+        let isPinned = isSectionScrollIntoContentInsetTop && isSectionStayInContentInsetTop
+        return isPinned
+    }
+    
+    private func qmui_isHeaderVisible(for section: Int) -> Bool {
+        if style != .plain || section >= numberOfSections {
+            return false
+        }
+        
+        // 不存在 header 就不用判断
+        let rectForSectionHeader = rectForHeader(inSection: section)
+        if rectForSectionHeader.height <= 0 {
+            return false
+        }
+        // 系统这个接口获取到的 rect 是在 contentSize 里的 rect，而不是实际看到的 rect
+        let rectForSection = rect(forSection: section)
+        let isSectionScrollIntoBounds = rectForSection.minY < contentOffset.y + bounds.height
+        let isSectionStayInContentInsetTop = contentOffset.y + qmui_contentInset.top < rectForSection.maxY // 表示这个 section 还没被完全滚走
+        let isVisible = isSectionScrollIntoBounds && isSectionStayInContentInsetTop
+        return isVisible
+    }
+    
+    /// 判断当前 indexPath 的 item 是否为可视的 item
+    func qmui_cellVisible(at indexPath: IndexPath) -> Bool {
+        if let visibleCellIndexPaths = indexPathsForVisibleRows {
+            for visibleIndexPath in visibleCellIndexPaths{
+                if indexPath == visibleIndexPath {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     /**
@@ -70,7 +178,7 @@ extension UITableView {
      * @param indexPath cell所在的indexPath
      * @return 给定indexPath对应的cell在当前section中所处的位置
      */
-    public func qmui_positionForRow(at indexPath: IndexPath) -> QMUITableViewCellPosition {
+    func qmui_positionForRow(at indexPath: IndexPath) -> QMUITableViewCellPosition {
 
         let numberOfRowsInSection = dataSource?.tableView(self, numberOfRowsInSection: indexPath.section) ?? 0
         if numberOfRowsInSection == 1 {
@@ -85,13 +193,8 @@ extension UITableView {
         return .middleInSection
     }
 
-    /// 判断当前 indexPath 的 item 是否为可视的 item
-    public func qmui_cellVisible(at indexPath: IndexPath) -> Bool {
-        return indexPathsForVisibleRows?.contains(indexPath) ?? false
-    }
-
     // 取消选择状态
-    public func qmui_clearsSelection() {
+    func qmui_clearsSelection() {
         indexPathsForSelectedRows?.forEach {
             deselectRow(at: $0, animated: true)
         }
@@ -103,7 +206,9 @@ extension UITableView {
      * @param indexPath 要滚动的目标indexPath，请自行保证indexPath是合法的
      * @param animated 是否需要动画
      */
-    public func qmui_scrollToRowFittingOffsetY(_ offsetY: CGFloat, at indexPath: IndexPath, animated: Bool) {
+    func qmui_scrollToRowFittingOffsetY(_ offsetY: CGFloat, at indexPath: IndexPath, animated: Bool) {
+        alertEstimatedHeightUsageIfDetected()
+        
         if !qmui_canScroll {
             return
         }
@@ -116,13 +221,16 @@ extension UITableView {
             qmui_scrollToTopAnimated(animated)
         }
     }
-
+    
+    
     /**
      *  当tableHeaderView为UISearchBar时，tableView为了实现searchbar滚到顶部自动吸附的效果，会强制让self.contentSize.height至少为frame.size.height那么高（这样才能滚动，否则不满一屏就无法滚动了），所以此时如果通过self.contentSize获取tableView的内容大小是不准确的，此时可以使用`qmui_realContentSize`替代。
      *
      *  `qmui_realContentSize`是实时通过计算最后一个section的frame，与footerView的frame比较得到实际的内容高度，这个过程不会导致额外的cellForRow调用，请放心使用。
      */
-    public var qmui_realContentSize: CGSize {
+    var qmui_realContentSize: CGSize {
+        alertEstimatedHeightUsageIfDetected()
+        
         if dataSource == nil || delegate == nil {
             return .zero
         }
@@ -137,25 +245,38 @@ extension UITableView {
         }
 
         let lastSectionRect = rect(forSection: lastSection)
-        realContentSize.height = max(realContentSize.height, lastSectionRect.maxY)
+        realContentSize.height = fmax(realContentSize.height, lastSectionRect.maxY)
         return realContentSize
     }
 
     /**
      *  UITableView的tableHeaderView如果是UISearchBar的话，tableView.contentSize会强制设置为至少比bounds高（从而实现headerView的吸附效果），从而导致qmui_canScroll的判断不准确。所以为UITableView重写了qmui_canScroll方法
      */
-    public override var qmui_canScroll: Bool {
+    override var qmui_canScroll: Bool {
         // 没有高度就不用算了，肯定不可滚动，这里只是做个保护
         if bounds.height <= 0 {
             return false
         }
 
         if tableHeaderView is UISearchBar {
-            let canScroll = qmui_realContentSize.height + contentInset.verticalValue > bounds.height
+            let canScroll = qmui_realContentSize.height + qmui_contentInset.verticalValue > bounds.height
             return canScroll
         } else {
             return super.qmui_canScroll
         }
+    }
+    
+    private func alertEstimatedHeightUsageIfDetected() {
+        let usingEstimatedRowHeight = estimatedRowHeight == UITableView.automaticDimension
+        let usingEstimatedSectionHeaderHeight = estimatedSectionHeaderHeight == UITableView.automaticDimension
+        let usingEstimatedSectionFooterHeight = estimatedSectionFooterHeight == UITableView.automaticDimension
+        if usingEstimatedRowHeight || usingEstimatedSectionHeaderHeight || usingEstimatedSectionFooterHeight {
+            QMUISymbolicUsingTableViewEstimatedHeightMakeWarning()
+        }
+    }
+    
+    private func QMUISymbolicUsingTableViewEstimatedHeightMakeWarning() {
+        print("UITableView 的 estimatedRow(SectionHeader / SectionFooter)Height 属性会影响 contentSize、sizeThatFits:、rectForXxx 等方法的计算，导致计算结果不准确，建议重新考虑是否要使用 estimated。可添加 '\(#function)' 的 Symbolic Breakpoint 以捕捉此类信息\n\(Thread.callStackSymbols)")
     }
 }
 
@@ -183,6 +304,7 @@ extension UITableView {
         static var keyedHeightCache = "keyedHeightCache"
         static var indexPathHeightCache = "indexPathHeightCache"
         static var templateCellsByIdentifiers = "templateCellsByIdentifiers"
+        static var staticCellDataSource = "staticCellDataSource"
     }
 
     var qmui_keyedHeightCache: QMUICellHeightKeyCache {
@@ -209,49 +331,94 @@ extension UITableView {
 }
 
 // MARK: - QMUIIndexPathHeightCacheInvalidation
-extension UITableView: SelfAware {
+extension UITableView: SelfAware3 {
     private static let _onceToken = UUID().uuidString
 
-    static func awake() {
+    static func awake3() {
         DispatchQueue.once(token: _onceToken) {
+            let clazz = UITableView.self
+            
             let selectors = [
-                #selector(reloadData),
-                #selector(insertSections(_:with:)),
-                #selector(deleteSections(_:with:)),
-                #selector(reloadSections(_:with:)),
-                #selector(moveSection(_:toSection:)),
-                #selector(insertRows(at:with:)),
-                #selector(deleteRows(at:with:)),
-                #selector(reloadRows(at:with:)),
-                #selector(moveRow(at:to:)),
+                #selector(UITableView.reloadData),
+                #selector(UITableView.insertSections(_:with:)),
+                #selector(UITableView.deleteSections(_:with:)),
+                #selector(UITableView.reloadSections(_:with:)),
+                #selector(UITableView.moveSection(_:toSection:)),
+                #selector(UITableView.insertRows(at:with:)),
+                #selector(UITableView.deleteRows(at:with:)),
+                #selector(UITableView.reloadRows(at:with:)),
+                #selector(UITableView.moveRow(at:to:)),
+                #selector(UITableView.sizeThatFits(_:)),
+                #selector(setter: dataSource),
+                #selector(setter: delegate),
             ]
-
-            for selector in selectors {
-                let swizzledSelector = Selector("qmui_" + selector.description)
-                let originalMethod = class_getInstanceMethod(self, selector)
-                let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-                method_exchangeImplementations(originalMethod!, swizzledMethod!)
+            
+            let qmui_selectors = [
+                #selector(UITableView.qmui_reloadData),
+                #selector(UITableView.qmui_insertSections(_:with:)),
+                #selector(UITableView.qmui_deleteSections(_:with:)),
+                #selector(UITableView.qmui_reloadSections(_:with:)),
+                #selector(UITableView.qmui_moveSection(_:toSection:)),
+                #selector(UITableView.qmui_insertRows(at:with:)),
+                #selector(UITableView.qmui_deleteRows(at:with:)),
+                #selector(UITableView.qmui_reloadRows(at:with:)),
+                #selector(UITableView.qmui_moveRow(at:to:)),
+                #selector(UITableView.qmui_sizeThatFits(_:)),
+                #selector(UITableView.staticCell_setDataSource),
+                #selector(UITableView.staticCell_setDelegate),
+            ]
+            
+            for index in 0..<selectors.count {
+                ReplaceMethod(clazz, selectors[index], qmui_selectors[index])
+            }
+            
+            if #available(iOS 11, *) {
+                ReplaceMethod(clazz, #selector(UITableView.safeAreaInsetsDidChange), #selector(UITableView.cellHeightCache_safeAreaInsetsDidChange))
             }
         }
     }
 }
 
 extension UITableView {
+    
+    @objc func qmui_init(frame: CGRect, style: UITableView.Style) {
+        qmui_init(frame: frame, style: style)
+        // iOS 11 之后 estimatedRowHeight 默认值变成 UITableViewAutomaticDimension 了，会导致 contentSize 之类的计算不准确，所以这里给一个途径让项目可以方便地禁掉所有 UITableView 的 estimatedXxxHeight
+        
+        if !TableViewEstimatedHeightEnabled {
+            estimatedRowHeight = 0
+            estimatedSectionHeaderHeight = 0
+            estimatedSectionFooterHeight = 0
+        } else {
+            estimatedRowHeight = UITableView.automaticDimension
+            estimatedSectionHeaderHeight = UITableView.automaticDimension
+            estimatedSectionFooterHeight = UITableView.automaticDimension
+        }
+    }
+    
+    @objc func qmui_sizeThatFits(_ size: CGSize) -> CGSize {
+        alertEstimatedHeightUsageIfDetected()
+        let result = qmui_sizeThatFits(size)
+        return result
+    }
+}
 
-    func qmui_reloadData() {
+extension UITableView {
+
+    @objc func qmui_reloadData() {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.removeAll()
             })
         }
         qmui_reloadData()
     }
 
-    func qmui_insertSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_insertSections(_ sections: IndexSet, with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.insert([], at: section)
                 })
             }
@@ -259,11 +426,11 @@ extension UITableView {
         qmui_insertSections(sections, with: rowAnimation)
     }
 
-    func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_deleteSections(_ sections: IndexSet, with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection.remove(at: section)
                 })
             }
@@ -271,11 +438,11 @@ extension UITableView {
         }
     }
 
-    func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_reloadSections(_ sections: IndexSet, with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             for section in sections {
                 qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[section].removeAll()
                 })
             }
@@ -283,21 +450,21 @@ extension UITableView {
         qmui_reloadSections(sections, with: rowAnimation)
     }
 
-    func qmui_moveSection(_ section: Int, toSection newSection: Int) {
+    @objc func qmui_moveSection(_ section: Int, toSection newSection: Int) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildSectionsIfNeeded(section)
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 heightsBySection.swapAt(section, newSection)
             })
         }
         qmui_moveSection(section, toSection: newSection)
     }
 
-    func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_insertRows(at indexPaths: [IndexPath], with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[indexPath.section].insert(-1, at: indexPath.row)
                 })
             }
@@ -305,7 +472,7 @@ extension UITableView {
         qmui_insertRows(at: indexPaths, with: rowAnimation)
     }
 
-    func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_deleteRows(at indexPaths: [IndexPath], with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
 
@@ -321,7 +488,7 @@ extension UITableView {
             }
 
             for (key, indexSet) in mutableIndexSetsToRemove {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[key].remove(at: indexSet)
                 })
             }
@@ -330,11 +497,11 @@ extension UITableView {
         }
     }
 
-    func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableViewRowAnimation) {
+    @objc func qmui_reloadRows(at indexPaths: [IndexPath], with rowAnimation: UITableView.RowAnimation) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded(indexPaths)
             for indexPath in indexPaths {
-                qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+                qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                     heightsBySection[indexPath.section][indexPath.row] = -1
                 })
             }
@@ -342,10 +509,10 @@ extension UITableView {
         qmui_reloadRows(at: indexPaths, with: rowAnimation)
     }
 
-    func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
+    @objc func qmui_moveRow(at indexPath: IndexPath, to newIndexPath: IndexPath) {
         if qmui_indexPathHeightCache.automaticallyInvalidateEnabled {
             qmui_indexPathHeightCache.buildCachesAtIndexPathsIfNeeded([indexPath, newIndexPath])
-            qmui_indexPathHeightCache.enumerateAllOrientations(using: { heightsBySection in
+            qmui_indexPathHeightCache.enumerateAllOrientations(handle: { heightsBySection in
                 var sourceRows = heightsBySection[indexPath.section]
                 var destinationRows = heightsBySection[newIndexPath.section]
                 let sourceValue = sourceRows[indexPath.row]
@@ -356,12 +523,29 @@ extension UITableView {
         }
         qmui_moveRow(at: indexPath, to: newIndexPath)
     }
+    
+    // iOS 11 里，横竖屏带来的 safeAreaInsets 变化时机晚于计算 cell 高度，所以在计算 cell 高度时是获取不到准确的 safeAreaInsets，所以需要在 safeAreaInsetsDidChange 里重新计算
+    // 至于为什么只判断水平方向的变化，请看 https://github.com/QMUI/QMUI_iOS/issues/253
+    @objc func cellHeightCache_safeAreaInsetsDidChange() {
+        let horizontalSafeAreaInsetsChanged = qmui_safeAreaInsetsBeforeChange.left != qmui_safeAreaInsets.left || qmui_safeAreaInsetsBeforeChange.right != qmui_safeAreaInsets.right
+        
+        cellHeightCache_safeAreaInsetsDidChange()
+        
+        if horizontalSafeAreaInsetsChanged {
+            if let delegate = delegate as? QMUICellHeightCache_UITableViewDelegate {
+                delegate.qmui_willReloadAfterSafeAreaInsetsDidChange?(in: self)
+            }
+            qmui_keyedHeightCache.invalidateAllHeightCache()
+            qmui_indexPathHeightCache.invalidateAllHeightCache()
+            qmui_reloadData()
+        }
+    }
 }
 
 // MARK: - QMUILayoutCell
 extension UITableView {
     func templateCell(forReuseIdentifier identifier: String) -> UITableViewCell {
-        assert(identifier.isEmpty, "Expect a valid identifier - \(identifier)")
+        assert(!identifier.isEmpty, "Expect a valid identifier - \(identifier)")
         var templateCellsByIdentifiers = objc_getAssociatedObject(self, &Keys.templateCellsByIdentifiers) as? [String: UITableViewCell]
         if templateCellsByIdentifiers == nil {
             templateCellsByIdentifiers = [:]
@@ -370,17 +554,16 @@ extension UITableView {
         var templateCell = templateCellsByIdentifiers![identifier]
         if templateCell == nil {
             // 是否有通过dataSource返回的cell
-            let qmui_dataSource = dataSource as? qmui_UITableViewDataSource
-
-            templateCell = qmui_dataSource?.qmui_tableView(self, cellWithIdentifier: identifier)
+            if let qmui_dataSource = dataSource as? QMUICellHeightCache_UITableViewDataSource {
+                templateCell = qmui_dataSource.qmui_tableView?(self, cellWithIdentifier: identifier)
+            }
             // 没有的话，则需要通过register来注册一个cell，否则会crash
             if templateCell == nil {
                 templateCell = dequeueReusableCell(withIdentifier: identifier)
                 assert(templateCell != nil, "Cell must be registered to table view for identifier - \(identifier)")
             }
-            templateCell?.contentView.translatesAutoresizingMaskIntoConstraints = false
+            templateCell!.contentView.translatesAutoresizingMaskIntoConstraints = false
             templateCellsByIdentifiers?[identifier] = templateCell
-            print("layout cell created - \(identifier)")
         }
         return templateCell!
     }
@@ -390,7 +573,7 @@ extension UITableView {
      *  @param  identifier cell 的 identifier
      *  @param  configuration 用于渲染 cell 的block，一般与 tableView:cellForRowAtIndexPath: 里渲染 cell 的代码一样
      */
-    public func qmui_heightForCell(withIdentifier identifier: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -414,7 +597,7 @@ extension UITableView {
     }
 
     // 通过indexPath缓存高度
-    public func qmui_heightForCell(withIdentifier identifier: String, cacheBy indexPath: IndexPath, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, cacheBy indexPath: IndexPath, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -429,7 +612,7 @@ extension UITableView {
     }
 
     // 通过key缓存高度
-    public func qmui_heightForCell(withIdentifier identifier: String, cacheByKey key: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
+    func qmui_heightForCell(withIdentifier identifier: String, cacheByKey key: String, configuration: ((UITableViewCell) -> Void)?) -> CGFloat {
         if bounds.isEmpty {
             return 0
         }
@@ -442,4 +625,5 @@ extension UITableView {
         qmui_keyedHeightCache.cache(height, by: key)
         return height
     }
+    
 }

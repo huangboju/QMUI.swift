@@ -32,8 +32,8 @@ enum QMUIToastAnimationType: Int {
  */
 class QMUIToastAnimator: NSObject {
 
-    private var _isShowing = false
-    private var _isAnimating = false
+    internal var _isShowing = false
+    internal var _isAnimating = false
 
     /**
      * 初始化方法，请务必使用这个方法来初始化。
@@ -58,7 +58,7 @@ class QMUIToastAnimator: NSObject {
 }
 
 extension QMUIToastAnimator: QMUIToastAnimatorDelegate {
-    func show(with completion: ((Bool) -> Void)?) {
+    @objc func show(with completion: ((Bool) -> Void)?) {
         _isShowing = true
         _isAnimating = true
 
@@ -71,7 +71,7 @@ extension QMUIToastAnimator: QMUIToastAnimatorDelegate {
         })
     }
 
-    func hide(with completion: ((Bool) -> Void)?) {
+    @objc func hide(with completion: ((Bool) -> Void)?) {
         _isShowing = false
         _isAnimating = true
         UIView.animate(withDuration: 0.25, delay: 0, options: [.curveOut, .beginFromCurrentState], animations: {

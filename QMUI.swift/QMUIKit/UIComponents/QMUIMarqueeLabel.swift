@@ -15,22 +15,22 @@
 class QMUIMarqueeLabel: UILabel {
 
     /// 控制滚动的速度，1 表示一帧滚动 1pt，10 表示一帧滚动 10pt，默认为 .5，与系统一致。
-    public var speed: CGFloat = 0.5
+    var speed: CGFloat = 0.5
 
     /// 当文字第一次显示在界面上，以及重复滚动到开头时都要停顿一下，这个属性控制停顿的时长，默认为 2.5（也是与系统一致），单位为秒。
-    public var pauseDurationWhenMoveToEdge: TimeInterval = 2.5
+    var pauseDurationWhenMoveToEdge: TimeInterval = 2.5
 
     /// 用于控制首尾连接的文字之间的间距，默认为 40pt。
-    public var spacingBetweenHeadToTail: CGFloat = 40
+    var spacingBetweenHeadToTail: CGFloat = 40
 
     /**
      *  自动判断 label 的 frame 是否超出当前的 UIWindow 可视范围，超出则自动停止动画。默认为 YES。
      *  @warning 某些场景并无法触发这个自动检测（例如直接调整 label.superview 的 frame 而不是 label 自身的 frame），这种情况暂不处理。
      */
-    public var automaticallyValidateVisibleFrame = true
+    var automaticallyValidateVisibleFrame = true
 
     /// 在文字滚动到左右边缘时，是否要显示一个阴影渐变遮罩，默认为 true。
-    public var shouldFadeAtEdge = true {
+    var shouldFadeAtEdge = true {
         didSet {
             if shouldFadeAtEdge {
                 initFadeLayersIfNeeded()
@@ -40,24 +40,25 @@ class QMUIMarqueeLabel: UILabel {
     }
 
     /// 渐变遮罩的宽度，默认为 20。
-    public var fadeWidth: CGFloat = 20
+    var fadeWidth: CGFloat = 20
 
     /// 渐变遮罩外边缘的颜色，请使用带 Alpha 通道的颜色
-    public var fadeStartColor: UIColor? = UIColor(r: 255, g: 255, b: 255) {
+    var fadeStartColor: UIColor? = UIColor(r: 255, g: 255, b: 255) {
         didSet {
             updateFadeLayerColors()
         }
     }
 
     /// 渐变遮罩内边缘的颜色，一般是 fadeStartColor 的 alpha 通道为 0 的色值
-    public var fadeEndColor: UIColor? = UIColor(r: 255, g: 255, b: 255, a: 1) {
+    var fadeEndColor: UIColor? = UIColorMakeWithRGBA(255, 255, 255, 1) {
         didSet {
             updateFadeLayerColors()
         }
     }
 
-    /// 文字是否要在渐隐区域之后显示，默认为 false，如果想避免停靠在初始位置时文字被遮罩盖住，可以把它改为 true。
-    public var textStartAfterFade = false
+    /// YES 表示文字会在打开 shouldFadeAtEdge 的情况下，从左边的渐隐区域之后显示，NO 表示不管有没有打开 shouldFadeAtEdge，都会从 label 的边缘开始显示。默认为 NO。
+    /// @note 如果文字宽度本身就没超过 label 宽度（也即无需滚动），此时必定不会显示渐隐，则这个属性不会影响文字的显示位置。
+    var textStartAfterFade = false
 
     private var displayLink: CADisplayLink?
     private var offsetX: CGFloat = 0 {
@@ -71,10 +72,10 @@ class QMUIMarqueeLabel: UILabel {
     private var fadeLeftLayer: CAGradientLayer?
     private var fadeRightLayer: CAGradientLayer?
 
-    private var isFirstDisplay = true
+    private var isFirstDisplay: Bool = true
 
     /// 绘制文本时重复绘制的次数，用于实现首尾连接的滚动效果，1 表示不首尾连接，大于 1 表示首尾连接。
-    private var textRepeatCount = 2
+    private var textRepeatCount: Int = 2
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,7 +93,7 @@ class QMUIMarqueeLabel: UILabel {
         super.didMoveToWindow()
         if window != nil {
             displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink))
-            displayLink?.add(to: RunLoop.current, forMode: .commonModes)
+            displayLink?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
         } else {
             displayLink?.invalidate()
             displayLink = nil
@@ -118,8 +119,8 @@ class QMUIMarqueeLabel: UILabel {
     }
 
     override var frame: CGRect {
-        willSet {
-            let isSizeChanged = newValue.size != frame.size
+        didSet {
+            let isSizeChanged = frame.size != oldValue.size
             if isSizeChanged {
                 offsetX = 0
                 displayLink?.isPaused = !shouldPlayDisplayLink
@@ -132,18 +133,25 @@ class QMUIMarqueeLabel: UILabel {
         if textAlignment == .left {
             textInitialX = 0
         } else if textAlignment == .center {
-            textInitialX = max(0, bounds.width.center(with: textWidth))
+            textInitialX = fmax(0, bounds.width.center(textWidth))
         } else if textAlignment == .right {
-            textInitialX = max(0, bounds.width - textWidth)
+            textInitialX = fmax(0, bounds.width - textWidth)
         }
 
         // 考虑渐变遮罩的偏移
-        let textOffsetXByFade = textInitialX < fadeWidth ? ((shouldFadeAtEdge && textStartAfterFade) ? fadeWidth : 0) : 0
+        var textOffsetXByFade: CGFloat = 0
+        let shouldTextStartAfterFade = shouldFadeAtEdge && textStartAfterFade && textWidth > bounds.width
+        if shouldTextStartAfterFade && textInitialX < fadeWidth {
+            textOffsetXByFade = fadeWidth
+        }
         textInitialX += textOffsetXByFade
 
         for i in 0 ..< textRepeatCountConsiderTextWidth {
             attributedText?.draw(in: CGRect(x: offsetX + (textWidth + spacingBetweenHeadToTail) * CGFloat(i) + textInitialX, y: 0, width: textWidth, height: rect.height))
         }
+        
+        // 自定义绘制就不需要调用 super
+        //    [super drawTextInRect:rectToDrawAfterAnimated];
     }
 
     override func layoutSubviews() {
@@ -284,7 +292,7 @@ extension QMUIMarqueeLabel {
      *  尝试开启 label 的滚动动画
      *  @return 是否成功开启
      */
-    public var requestToStartAnimation: Bool {
+    var requestToStartAnimation: Bool {
         automaticallyValidateVisibleFrame = false
         if shouldPlayDisplayLink {
             displayLink?.isPaused = false
@@ -296,7 +304,7 @@ extension QMUIMarqueeLabel {
      *  尝试停止 label 的滚动动画
      *  @return 是否成功停止
      */
-    public var requestToStopAnimation: Bool {
+    var requestToStopAnimation: Bool {
         displayLink?.isPaused = true
         return true
     }

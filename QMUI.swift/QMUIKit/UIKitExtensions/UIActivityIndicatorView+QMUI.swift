@@ -7,8 +7,8 @@
 //
 
 extension UIActivityIndicatorView {
-    public convenience init(activityIndicatorStyle style: UIActivityIndicatorViewStyle, size: CGSize) {
-        self.init(activityIndicatorStyle: style)
+    public convenience init(activityIndicatorStyle style: UIActivityIndicatorView.Style, size: CGSize) {
+        self.init(style: style)
         let initialSize = bounds.size
         let scale = size.width / initialSize.width
         transform = CGAffineTransform(scaleX: scale, y: scale)
