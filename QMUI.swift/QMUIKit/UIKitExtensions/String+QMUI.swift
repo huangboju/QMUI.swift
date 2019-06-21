@@ -150,15 +150,15 @@ extension String {
                 stringLength += 2
             }
 
-            if stringLength >= self.index(after: range.lowerBound).encodedOffset {
+            if stringLength >= self.index(after: range.lowerBound).utf16Offset(in: self) {
                 let currentIndex = self.index(startIndex, offsetBy: index)
 
                 if resultRange.lowerBound == startIndex {
                     resultRange = currentIndex ..< resultRange.upperBound
                 }
 
-                if !resultRange.isEmpty && stringLength >= resultRange.upperBound.encodedOffset {
-                    let upperBound = stringLength == resultRange.upperBound.encodedOffset ?
+                if !resultRange.isEmpty && stringLength >= resultRange.upperBound.utf16Offset(in: self) {
+                    let upperBound = stringLength == resultRange.upperBound.utf16Offset(in: self) ?
                         self.index(after: currentIndex) : currentIndex
                     resultRange = resultRange.lowerBound ..< upperBound
                     return resultRange

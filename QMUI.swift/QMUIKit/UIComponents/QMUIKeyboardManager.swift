@@ -651,7 +651,7 @@ class QMUIKeyboardViewFrameObserver: NSObject {
         }
 
         removeFrameObserver()
-        objc_setAssociatedObject(keyboardView, &Keys.kAssociatedObjectKey_KeyboardViewFrameObserver, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        objc_setAssociatedObject(keyboardView!, &Keys.kAssociatedObjectKey_KeyboardViewFrameObserver, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         keyboardView = aKeyboardView
         addFrameObserver()
         objc_setAssociatedObject(aKeyboardView, &Keys.kAssociatedObjectKey_KeyboardViewFrameObserver, self, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)

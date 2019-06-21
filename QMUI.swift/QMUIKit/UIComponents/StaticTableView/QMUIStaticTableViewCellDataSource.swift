@@ -311,9 +311,9 @@ extension UITableView {
             // 并且 addMethod 操作执行一次之后，直到 App 进程被杀死前都会生效，所以多次进入这段代码可能就会提示添加方法失败，请不用在意
 
             // MARK: TODO
-            addSelector(Selector("numberOfSections(in:)"), implementation: imp_implementationWithBlock(unsafeBitCast(staticCell_numberOfSections, to: AnyObject.self)), types: "l@:@", for: dataSource)
-            addSelector(Selector("tableView(_:numberOfRowsInSection:)"), implementation: imp_implementationWithBlock(staticCell_numberOfRows), types: "l@:@l", for: dataSource)
-            addSelector(Selector("tableView(_:cellForRowAt:)"), implementation: imp_implementationWithBlock(staticCell_cellForRow), types: "@@:@@", for: dataSource)
+            addSelector(#selector(UITableViewDataSource.numberOfSections(in:)), implementation: imp_implementationWithBlock(unsafeBitCast(staticCell_numberOfSections, to: AnyObject.self)), types: "l@:@", for: dataSource)
+            addSelector(#selector(UITableViewDataSource.tableView(_:numberOfRowsInSection:)), implementation: imp_implementationWithBlock(staticCell_numberOfRows), types: "l@:@l", for: dataSource)
+            addSelector(#selector(UITableViewDataSource.tableView(_:cellForRowAt:)), implementation: imp_implementationWithBlock(staticCell_cellForRow), types: "@@:@@", for: dataSource)
         }
         staticCell_setDataSource(dataSource)
     }
