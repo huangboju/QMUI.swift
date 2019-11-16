@@ -206,7 +206,7 @@ class QDModalPresentationViewController: QDCommonGroupListViewController {
         textField.borderStyle = .roundedRect
         textField.font = UIFontMake(16)
         contentView.addSubview(textField)
-        textField.becomeFirstResponder
+        textField.becomeFirstResponder()
         
         let label = UILabel()
         label.numberOfLines = 0
